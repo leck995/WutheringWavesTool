@@ -2,7 +2,7 @@
 一款鸣潮小工具，主要用于抽卡分析，其他功能待添加。
 因为没找到合适的抽卡分析工具，一怒之下花了两天时间自己写了个。
 
-![image.png](https://cdn.nlark.com/yuque/0/2024/png/22760263/1720091615936-9e1a27ed-6bc9-46eb-b566-1db5d6bbdd84.png#averageHue=%23e7eff5&clientId=u5bc055d0-3a11-4&from=paste&height=782&id=ub74a59df&originHeight=782&originWidth=1302&originalType=binary&ratio=1&rotation=0&showTitle=false&size=86988&status=done&style=none&taskId=u2d5be73c-8e01-4a37-8240-93e9c712f97&title=&width=1302)
+![image.png](https://github.com/leck995/WutheringWavesTool/blob/master/temp/img01.png)
 ## 教程
 首次使用，请先打开鸣潮游戏中的抽卡详情界面，否则无法获取到抽卡数据，
 
