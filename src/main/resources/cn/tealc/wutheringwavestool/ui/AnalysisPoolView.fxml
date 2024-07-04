@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.PieChart?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane prefHeight="700.0" prefWidth="1200.0" styleClass="background" stylesheets="@../css/AnalysisPool.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.AnalysisPoolView">
+   <children>
+  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+         <children>
+            <Label styleClass="title-2" text="抽卡分析" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+            <HBox layoutX="1138.0" layoutY="10.0" spacing="20.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+               <children>
+                  <ComboBox fx:id="playerComboBox" prefWidth="150.0" />
+                  <Button layoutX="180.0" layoutY="10.0" mnemonicParsing="false" onAction="#fresh" styleClass="accent" text="刷新" />
+                  <Button mnemonicParsing="false" onAction="#load" styleClass="success" text="获取" />
+               </children>
+            </HBox>
+            <StackPane layoutX="146.0" layoutY="96.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
+               <children>
+                  <ListView fx:id="poolListview" maxWidth="820.0" orientation="HORIZONTAL" prefHeight="70.0" prefWidth="820.0" styleClass="select-listview" />
+               </children>
+            </StackPane>
+            <StackPane layoutY="200.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="160.0">
+               <children>
+                  <HBox fx:id="children" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="100.0">
+                     <children>
+                        <VBox alignment="CENTER" maxHeight="600.0" maxWidth="400.0" spacing="10.0" styleClass="left">
+                           <children>
+                              <StackPane>
+                                 <children>
+                                    <PieChart fx:id="pieChart" maxHeight="300.0" maxWidth="300.0" prefHeight="300.0" prefWidth="300.0" />
+                                    <Label text="欧" visible="false" StackPane.alignment="BOTTOM_RIGHT" />
+                                 </children>
+                              </StackPane>
+                              <VBox alignment="CENTER">
+                                 <children>
+                                    <HBox alignment="CENTER">
+                                       <children>
+                                          <Label text="已 " />
+                                          <Label fx:id="currentCountLabel" layoutX="10.0" layoutY="10.0" styleClass="current-label" text="12" />
+                                          <Label layoutX="119.0" layoutY="10.0" text=" 抽没有出货" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER">
+                                       <children>
+                                          <Label text="总共 " />
+                                          <Label fx:id="totalCountLabel" styleClass="total-label" text="12" />
+                                          <Label layoutX="119.0" layoutY="10.0" text=" 抽，相当于 " />
+                                          <Label fx:id="totalCostLabel" layoutX="139.0" layoutY="10.0" styleClass="total-label" text="16500" />
+                                          <Label layoutX="197.0" layoutY="10.0" text=" 石头" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                              <GridPane alignment="CENTER">
+                                <columnConstraints>
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                </columnConstraints>
+                                <rowConstraints>
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                </rowConstraints>
+                                 <children>
+                                    <Label fx:id="ssrLabel1" styleClass="ssr-label" text="五星" GridPane.halignment="CENTER" />
+                                    <Label fx:id="ssrLabel2" layoutX="10.0" layoutY="18.0" styleClass="ssr-label" text="[15%]" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+                                    <Label fx:id="srLabel1" layoutX="10.0" layoutY="18.0" styleClass="sr-label" text="四星" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                    <Label fx:id="srLabel2" layoutX="330.0" layoutY="18.0" styleClass="sr-label" text="[15%]" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                    <Label fx:id="rLabel1" layoutX="10.0" layoutY="18.0" styleClass="r-label" text="三星" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                                    <Label fx:id="rLabel2" layoutX="10.0" layoutY="18.0" styleClass="r-label" text="[15%]" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                                 </children>
+                              </GridPane>
+                              <HBox alignment="CENTER" layoutX="20.0" layoutY="481.0">
+                                 <children>
+                                    <Label text="五星平均抽数：" />
+                                    <Label fx:id="ssrAvgLabel" styleClass="ssr-label" text="10" />
+                                 </children>
+                              </HBox>
+                              <HBox alignment="CENTER">
+                                 <children>
+                                    <Label layoutX="10.0" layoutY="10.0" text="最欧：" />
+                                    <Label fx:id="ssrMinLabel" layoutX="108.0" layoutY="10.0" styleClass="ssr-label" text="10" />
+                                    <Label alignment="CENTER_RIGHT" layoutX="125.0" layoutY="10.0" prefWidth="80.0" text="最非：" />
+                                    <Label fx:id="ssrMaxLabel" layoutX="167.0" layoutY="10.0" styleClass="current-label" text="10" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <ListView fx:id="ssrListView" maxWidth="400.0" prefWidth="400.0" />
+                     </children>
+                  </HBox>
+               </children>
+            </StackPane>
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>

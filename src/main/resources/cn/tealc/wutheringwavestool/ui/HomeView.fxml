@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+
+
+<AnchorPane fx:id="root" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.HomeView">
+   <children>
+      <HBox spacing="15.0" AnchorPane.bottomAnchor="80.0" AnchorPane.rightAnchor="30.0">
+         <children>
+            <Button mnemonicParsing="false" onAction="#startUpdate" text="启动更新程序" />
+            <Button mnemonicParsing="false" onAction="#startGame" styleClass="accent" text="启动游戏" />
+         </children>
+      </HBox>
+      <Label styleClass="title-2" text="主界面" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+      <ImageView fx:id="roleIV" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="40.0" />
+   </children>
+</AnchorPane>
