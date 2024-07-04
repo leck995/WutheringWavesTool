@@ -80,38 +80,20 @@ public class CardRequestTask extends Task<Map<String, List<CardInfo>>> {
         CardInfo last = newData.getLast();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime newTime = LocalDateTime.parse(last.getTime(), formatter);
-        List<CardInfo> list = new ArrayList<>(newData);
-        for (int i = 0; i < oldData.size(); i++) {
+        List<CardInfo> list = new ArrayList<>();
+        for (int i = oldData.size()-1; i >= 0; i--) {
             CardInfo first = oldData.get(i);
             LocalDateTime oldTime = LocalDateTime.parse(first.getTime(), formatter);
             if (oldTime.isBefore(newTime)){
-                if (i==0){
-                    list.addAll(oldData);
-                    list.addAll(newData);
-                }else {
-                    list.addAll(oldData.subList(i,oldData.size()));
-                    list.addAll(newData);
-                }
-                return list;
+                list.addAll(oldData.subList(i,oldData.size()));
+                break;
             }else if (oldTime.isEqual(newTime)){
-                if (i==oldData.size()-1){
-                    list.addAll(newData);
-                }else {
-                    list.addAll(oldData.subList(i+1,oldData.size()));
-                    list.addAll(newData);
-                }
-                return list;
-            }else {
-                if (i==oldData.size()-1){
-                    list.addAll(newData);
-                    return list;
-                }
-
-
+                list.addAll(oldData.subList(i+1,oldData.size()));
+                break;
             }
         }
-        System.out.println("SSSSSSSSSSS");
-        return null;
+        list.addAll(newData);
+        return list;
     }
 
     private Message query(Map<String,String> params,String cardPoolType) throws IOException, InterruptedException {

@@ -227,12 +227,15 @@ public class AnalysisPoolViewModel implements ViewModel {
             for (Map.Entry<String, List<CardInfo>> entry : data.entrySet()) {
                 list.add(analysis(entry.getKey(),entry.getValue().stream().toList()));
             }
-            analysisDataList.addAll(list);
+            analysisDataList.setAll(list);
             Platform.runLater(() -> {
                 updatePoolDate(analysisDataList.getFirst());
                 publish("update");
             });
         });
+        for (List<CardInfo> value : data.values()) {
+            System.out.println("SIZE:"+value.size());
+        }
     }
 
     /**
