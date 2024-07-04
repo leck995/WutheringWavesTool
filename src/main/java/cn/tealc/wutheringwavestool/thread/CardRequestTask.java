@@ -77,18 +77,26 @@ public class CardRequestTask extends Task<Map<String, List<CardInfo>>> {
     }
 
     private List<CardInfo> update(List<CardInfo> oldData,List<CardInfo> newData){
+
         CardInfo last = newData.getLast();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime newTime = LocalDateTime.parse(last.getTime(), formatter);
         List<CardInfo> list = new ArrayList<>();
-        for (int i = oldData.size()-1; i >= 0; i--) {
+        for (int i = 0; i <oldData.size(); i++) {
             CardInfo first = oldData.get(i);
             LocalDateTime oldTime = LocalDateTime.parse(first.getTime(), formatter);
             if (oldTime.isBefore(newTime)){
                 list.addAll(oldData.subList(i,oldData.size()));
                 break;
             }else if (oldTime.isEqual(newTime)){
-                list.addAll(oldData.subList(i+1,oldData.size()));
+                for (int j = i; j < oldData.size(); j++) {
+                    CardInfo first2 = oldData.get(j);
+                    LocalDateTime oldTime2 = LocalDateTime.parse(first2.getTime(), formatter);
+                    if (oldTime2.isBefore(newTime)){
+                        list.addAll(oldData.subList(j,oldData.size()));
+                        break;
+                    }
+                }
                 break;
             }
         }
