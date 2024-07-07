@@ -15,8 +15,10 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class MainApplication extends Application {
+    public static Stage window;
     @Override
     public void start(Stage stage) throws IOException {
+        window=stage;
         Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
 
         ViewTuple<MainView, MainViewModel> viewTuple = FluentViewLoader.fxmlView(MainView.class).load();

@@ -1,0 +1,46 @@
+.list-view{
+    -fx-background-color: transparent;
+}
+
+.list-view .list-cell{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.list-view .list-cell .user-label{
+    -fx-font-size: 12;
+}
+
+.list-view .list-cell .role-label{
+    -fx-text-fill: -color-fg-subtle;
+    -fx-font-size: 10;
+}
+
+
+
+.goods{
+    -fx-border-color: white;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+}
+.goods .name{
+    -fx-background-color: #30303060;
+    -fx-text-fill: white;
+    -fx-alignment: center;
+    -fx-pref-width: 60;
+    -fx-pref-height: 20;
+    -fx-font-size: 16;
+}
+.goods .index{
+
+}
+
+.goods .num{
+    -fx-text-fill: -color-fg-subtle;
+    -fx-font-size: 10;
+}
+
+.log,
+.log:focused{
+    -fx-background-insets: null;
+}

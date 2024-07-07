@@ -233,9 +233,7 @@ public class AnalysisPoolViewModel implements ViewModel {
                 publish("update");
             });
         });
-        for (List<CardInfo> value : data.values()) {
-            System.out.println("SIZE:"+value.size());
-        }
+
     }
 
     /**

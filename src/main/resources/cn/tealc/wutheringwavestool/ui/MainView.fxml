@@ -10,7 +10,6 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-
 <AnchorPane fx:id="root" prefHeight="750.0" prefWidth="1250.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.MainView">
    <children>
       <SplitPane dividerPositions="0.15" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -24,6 +23,11 @@
                      <toggleGroup>
                         <ToggleGroup fx:id="navToggleGroup" />
                      </toggleGroup>
+                  </ToggleButton>
+                  <ToggleButton fx:id="signBtn" alignment="CENTER_LEFT" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" onAction="#toSign" prefWidth="160.0" styleClass="sign-btn" text="签到" toggleGroup="$navToggleGroup">
+                     <graphic>
+                        <Region prefHeight="200.0" prefWidth="200.0" />
+                     </graphic>
                   </ToggleButton>
                   <ToggleButton fx:id="analysisBtn" alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#toAnalysis" prefWidth="160.0" styleClass="analysis-btn" text="抽卡分析" toggleGroup="$navToggleGroup">
                      <graphic>

@@ -11,11 +11,13 @@ open module cn.tealc.wutheringwavestool {
     requires cn.tealc.teafx ;
     requires org.kordamp.ikonli.core;
     requires org.kordamp.ikonli.material2;
+    requires org.controlsfx.controls;
 
 
     exports cn.tealc.wutheringwavestool;
     exports cn.tealc.wutheringwavestool.model to com.fasterxml.jackson.databind;
     exports cn.tealc.wutheringwavestool.ui;
     exports cn.tealc.wutheringwavestool.model.analysis to com.fasterxml.jackson.databind;
+    exports cn.tealc.wutheringwavestool.model.sign to com.fasterxml.jackson.databind;
 
 }

@@ -112,6 +112,17 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     }
 
     @FXML
+    void toSign(ActionEvent event) {
+        ToggleButton toggleButton= (ToggleButton) event.getSource();
+        if (toggleButton.isSelected()){
+            ViewTuple<SignView, SignViewModel> viewTuple = FluentViewLoader.fxmlView(SignView.class).load();
+            child.getChildren().setAll(viewTuple.getView());
+        }else {
+            toggleButton.setSelected(true);
+        }
+
+    }
+    @FXML
     void toMain(ActionEvent event) {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
