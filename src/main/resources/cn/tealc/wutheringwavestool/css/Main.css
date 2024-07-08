@@ -1,24 +1,37 @@
 .root{
-    -fx-background-color: #EDF2F8;
+    -fx-background-color: #f7f9fc;
 }
-
+.main-nav{
+    -fx-background-color: #f0f3f6;
+}
 .main-nav .toggle-button,
 .main-nav .button{
     -fx-background-color: transparent;
-    -fx-font-size: 18;
-    -fx-text-fill: #767676;
+    -fx-font-size: 13;
+    -fx-font-weight: bold;
+    -fx-text-fill: #737b89;
+    -fx-background-radius: 10;
     -fx-graphic-text-gap: 15;
-    -fx-padding: 5 0 5 10;
+    -fx-padding: 7 10 7 10;
 }
-
+.main-nav .toggle-button .ikonli-font-icon{
+    -fx-icon-color: #737b89;
+}
 .main-nav .toggle-button:hover,
 .main-nav .button:hover{
-    -fx-background-color: #dae5f9;
+    -fx-background-color: #e4e8ec;
+}
+.main-nav .toggle-button:selected .ikonli-font-icon{
+    -fx-icon-color: white;
 }
 .main-nav .toggle-button:selected{
-    -fx-background-color: #dae5f9;
-    -fx-text-fill: #58a6ff;
+    -fx-background-color: -color-accent-fg;
+    -fx-text-fill: white;
 }
+
+
+
+
 .main-nav .toggle-button Region ,
 .main-nav .button Region {
     -fx-background-color: white;
@@ -40,4 +53,20 @@
 .main-nav .setting-btn Region{
     -fx-shape: "M944.48 552.458667l-182.357333 330.666666a73.792 73.792 0 0 1-64.565334 38.325334h-362.133333a73.792 73.792 0 0 1-64.565333-38.325334l-182.357334-330.666666a75.338667 75.338667 0 0 1 0-72.682667l182.357334-330.666667a73.792 73.792 0 0 1 64.565333-38.325333h362.133333a73.792 73.792 0 0 1 64.565334 38.325333l182.357333 330.666667a75.338667 75.338667 0 0 1 0 72.682667z m-55.989333-31.146667a10.773333 10.773333 0 0 0 0-10.378667l-182.037334-330.666666a10.517333 10.517333 0 0 0-9.205333-5.482667H335.733333a10.517333 10.517333 0 0 0-9.205333 5.482667l-182.037333 330.666666a10.773333 10.773333 0 0 0 0 10.378667l182.037333 330.666667a10.517333 10.517333 0 0 0 9.205333 5.472h361.514667a10.517333 10.517333 0 0 0 9.205333-5.472l182.037334-330.666667zM513.738667 682.666667c-94.261333 0-170.666667-76.405333-170.666667-170.666667s76.405333-170.666667 170.666667-170.666667c94.250667 0 170.666667 76.405333 170.666666 170.666667s-76.416 170.666667-170.666666 170.666667z m0-64c58.912 0 106.666667-47.754667 106.666666-106.666667s-47.754667-106.666667-106.666666-106.666667-106.666667 47.754667-106.666667 106.666667 47.754667 106.666667 106.666667 106.666667z";
     -fx-background-color: #a8a5a5;
+}
+
+
+.split-pane .split-pane-divider,
+.split-pane > .split-pane-divider > .horizontal-grabber{
+    -fx-background-color: #f7f9fc;
+}
+
+.title-bar{
+    -fx-background-color: #f7f9fc;
+    -fx-background-radius: 10;
+}
+
+.title-bar > .title-header{
+    -fx-background-color: #f7f9fc;
+    -fx-background-radius: 10 10 0 0;
 }

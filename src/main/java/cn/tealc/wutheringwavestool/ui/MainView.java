@@ -4,10 +4,14 @@ import atlantafx.base.controls.Message;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
 import cn.tealc.teafx.controls.TitleBar;
+import cn.tealc.teafx.enums.TitleBarStyle;
+import cn.tealc.teafx.utils.AnchorPaneUtil;
 import cn.tealc.wutheringwavestool.Config;
+import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
+
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -22,6 +26,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -56,17 +62,33 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     @FXML
     private ToggleButton homeBtn;
 
+    private TitleBar titleBar;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        titleBar=new TitleBar(MainApplication.window, TitleBarStyle.ALL);
+        ImageView icon = new ImageView(new Image(MainApplication.class.getResourceAsStream("image/icon.png"),30,30,true,true));
+        icon.setFitHeight(30);
+        icon.setFitWidth(30);
+        titleBar.setIcon(icon);
+        titleBar.setTitle("鸣潮助手");
+        titleBar.setContent(root.getChildren().getFirst());
+        titleBar.getStylesheets().add(MainApplication.class.getResource("/cn/tealc/wutheringwavestool/css/Default.css").toExternalForm());
+        root.getChildren().add(titleBar);
+        messagePane.toFront();
+        AnchorPaneUtil.setPosition(titleBar,0);
 
 
         if (Config.setting.isFirstViewWithPoolAnalysis()){
             ViewTuple<AnalysisPoolView, AnalysisPoolViewModel> viewTuple = FluentViewLoader.fxmlView(AnalysisPoolView.class).load();
             child.getChildren().setAll(viewTuple.getView());
+
             navToggleGroup.selectToggle(analysisBtn);
         }else {
             ViewTuple<HomeView, HomeViewModel> viewTuple = FluentViewLoader.fxmlView(HomeView.class).load();
             child.getChildren().setAll(viewTuple.getView());
+
         }
 
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.MESSAGE,((s, objects) -> {
@@ -104,6 +126,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
             ViewTuple<AnalysisPoolView, AnalysisPoolViewModel> viewTuple = FluentViewLoader.fxmlView(AnalysisPoolView.class).load();
+
             child.getChildren().setAll(viewTuple.getView());
         }else {
             toggleButton.setSelected(true);
@@ -116,6 +139,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
             ViewTuple<SignView, SignViewModel> viewTuple = FluentViewLoader.fxmlView(SignView.class).load();
+
             child.getChildren().setAll(viewTuple.getView());
         }else {
             toggleButton.setSelected(true);
@@ -127,6 +151,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
             ViewTuple<HomeView, HomeViewModel> viewTuple = FluentViewLoader.fxmlView(HomeView.class).load();
+
             child.getChildren().setAll(viewTuple.getView());
         }else {
             toggleButton.setSelected(true);
@@ -138,6 +163,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
             ViewTuple<SettingView, SettingViewModel> viewTuple = FluentViewLoader.fxmlView(SettingView.class).load();
+
             child.getChildren().setAll(viewTuple.getView());
         }else {
             toggleButton.setSelected(true);

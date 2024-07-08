@@ -13,6 +13,7 @@
 
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.SettingView">
    <children>
+      <Button mnemonicParsing="false" onAction="#toWeb" styleClass="accent" text="前往更新" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
       <Label styleClass="title-2" text="设置" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
       <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
          <children>

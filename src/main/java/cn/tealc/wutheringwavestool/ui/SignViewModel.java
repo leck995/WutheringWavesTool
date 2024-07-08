@@ -37,33 +37,46 @@ public class SignViewModel implements ViewModel {
                 });
                 userInfoList.setAll(list);
                 getSignGoods();
-
-
-
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
-
-
-
-
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.SIGN_USER_DELETE,((s, objects) -> {
             SignUserInfo userInfo = (SignUserInfo) objects[0];
             deleteUser(userInfo);
+        }));
+        MvvmFX.getNotificationCenter().subscribe(NotificationKey.SIGN_USER_UPDATE,((s, objects) -> {
+            int index = (int) objects[0];
+            SignUserInfo userInfo = (SignUserInfo) objects[1];
+            updateUser(index,userInfo);
         }));
     }
 
 
 
+    private SignUserInfo getMain(){
+        List<SignUserInfo> list = userInfoList.filtered(SignUserInfo::getMain).stream().toList();
+        if (!list.isEmpty()){
+            return list.getFirst();
+        }else {
+            if (!userInfoList.isEmpty()){
+                return userInfoList.getFirst();
+            }else
+                return null;
+        }
+    }
 
     private void getSignGoods(){
-        SignGoodsTask task=new SignGoodsTask(userInfoList.getFirst());
-        task.setOnSucceeded(workerStateEvent -> {
-            goodsList.setAll(task.getValue().getValue());
-        });
-        Thread.startVirtualThread(task);
+        SignUserInfo main = getMain();
+        if (main != null){
+            SignGoodsTask task=new SignGoodsTask(main);
+            task.setOnSucceeded(workerStateEvent -> {
+                goodsList.setAll(task.getValue().getValue());
+            });
+            Thread.startVirtualThread(task);
+        }
+
     }
 
 
@@ -89,10 +102,25 @@ public class SignViewModel implements ViewModel {
 
     public boolean addUser(SignUserInfo userInfo) {
         long count = userInfoList.stream()
-                .filter(signUserInfo -> signUserInfo.userId().equals(userInfo.userId()) && signUserInfo.roleId().equals(userInfo.roleId()))
+                .filter(signUserInfo -> signUserInfo.getUserId().equals(userInfo.getUserId()) && signUserInfo.getRoleId().equals(userInfo.getRoleId()))
                 .count();
         if(count == 0){
-            userInfoList.add(userInfo);
+            if (userInfo.getMain()){
+                for (SignUserInfo signUserInfo : userInfoList) {
+                    if (signUserInfo.getMain()){
+                        signUserInfo.setMain(false);
+                    }
+                }
+            }
+
+            if (userInfoList.isEmpty()){
+                userInfoList.add(userInfo);
+            }else {
+                userInfoList.add(userInfo);
+                getSignGoods();
+            }
+
+
             ObjectMapper mapper = new ObjectMapper();
             File signJson=new File("signInfo.json");
             Thread.startVirtualThread(()->{
@@ -102,10 +130,33 @@ public class SignViewModel implements ViewModel {
                     throw new RuntimeException(e);
                 }
             });
+
             return true;
         }else {
             return false;
         }
+    }
+    public boolean updateUser(int index,SignUserInfo userInfo) {
+        if (userInfo.getMain()){
+            for (SignUserInfo signUserInfo : userInfoList) {
+                if (signUserInfo.getMain()){
+                    signUserInfo.setMain(false);
+                }
+            }
+        }
+        userInfoList.set(index,userInfo);
+
+        ObjectMapper mapper = new ObjectMapper();
+        File signJson=new File("signInfo.json");
+        Thread.startVirtualThread(()->{
+            try {
+                mapper.writerWithDefaultPrettyPrinter().writeValue(signJson,userInfoList);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        return true;
     }
 
 

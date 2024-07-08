@@ -1,0 +1,40 @@
+
+.title-bar{
+    -fx-background-color: #f7f9fc;
+    -fx-background-radius: 10;
+}
+
+.title-bar > .title-header{
+    -fx-background-color: #f7f9fc;
+    -fx-background-radius: 10 10 0 0;
+}
+.title-bar > .title-header > .left-header{
+    -fx-background-radius: 10 0 0 0;
+    -fx-background-color: #f0f3f6;
+    -fx-pref-width: 180;
+}
+.title-bar > .title-header > .left-header >  .title{
+    -fx-font-size: 18;
+    -fx-text-fill: #737b89;
+    -fx-font-weight: bold;
+}
+
+.title-bar > .title-header > .right-header  .button:hover,
+.title-bar > .title-header > .right-header  .toggle-button:hover {
+    -fx-background-color:#e4e8ec;
+}
+
+.title-bar > .title-header > .right-header  .button Region,
+.title-bar > .title-header > .right-header  .toggle-button Region{
+    -fx-background-color: #737b89;
+    -fx-pref-width: 14;
+    -fx-pref-height: 14;
+    -fx-max-width: 14;
+    -fx-max-height: 14;
+}
+.title-bar > .title-header > .right-header  .min-btn Region{
+
+    -fx-background-color:#737b89;
+    -fx-pref-height: 2;
+    -fx-max-height: 2;
+}

@@ -9,7 +9,7 @@ package cn.tealc.wutheringwavestool;
 public class NotificationKey {
     public static final String MESSAGE="MESSAGE";
     public static final String SIGN_USER_DELETE="DELETE";
-
+    public static final String SIGN_USER_UPDATE="UPDATE";
 
 
 

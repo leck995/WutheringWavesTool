@@ -34,7 +34,7 @@ public class SignGoodsTask extends Task<Pair<Integer,List<SignGood>>> {
 
     @Override
     protected Pair<Integer,List<SignGood>> call() throws Exception {
-        Pair<Integer,List<SignGood>> sign = sign(signUserInfo.roleId(), signUserInfo.userId(), signUserInfo.token());
+        Pair<Integer,List<SignGood>> sign = sign(signUserInfo.getRoleId(), signUserInfo.getUserId(), signUserInfo.getToken());
         return sign;
 
     }

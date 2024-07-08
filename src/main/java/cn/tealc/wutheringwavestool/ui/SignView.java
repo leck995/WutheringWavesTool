@@ -47,9 +47,10 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
 
         goodsListview.setItems(viewModel.getGoodsList());
         goodsListview.setCellWidth(70);
-        goodsListview.setCellHeight(100);
+        goodsListview.setCellHeight(90);
         goodsListview.setCellFactory((GridView<SignGood> view) -> new SignGoodCell());
-
+        //goodsListview.setHorizontalCellSpacing(5.0);
+        goodsListview.setVerticalCellSpacing(5.0);
 
         logArea.textProperty().bind(viewModel.logsProperty());
     }
@@ -62,18 +63,25 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
         dialogPane.getButtonTypes().addAll(ButtonType.FINISH,ButtonType.CANCEL);
         Label userIdLabel = new Label("用户ID:");
         TextField userIdTextField = new TextField();
+        userIdTextField.setPromptText("库街区的用户ID");
         InputGroup inputGroup1 = new InputGroup(userIdLabel,userIdTextField);
         inputGroup1.setAlignment(Pos.CENTER);
         Label roleIdLabel = new Label("游戏ID:");
+
         TextField roleIdTextField = new TextField();
+        roleIdTextField.setPromptText("鸣潮的玩家ID");
         InputGroup inputGroup2 = new InputGroup(roleIdLabel,roleIdTextField);
         inputGroup2.setAlignment(Pos.CENTER);
 
         Label tokenLabel = new Label("Token:");
         TextField tokenTextField = new TextField();
-        InputGroup inputGroup3 = new InputGroup(tokenLabel,tokenTextField);
+        tokenTextField.setPromptText("库街区的登录Token");
+        InputGroup inputGroup3 = new InputGroup(tokenLabel, tokenTextField);
         inputGroup3.setAlignment(Pos.CENTER);
-        VBox parentVBox = new VBox(10.0,inputGroup1,inputGroup2,inputGroup3);
+
+        CheckBox mainCheckBox = new CheckBox("设为主账号");
+
+        VBox parentVBox = new VBox(10.0,inputGroup1,inputGroup2,inputGroup3,mainCheckBox);
 
         parentVBox.setAlignment(Pos.CENTER);
         dialogPane.setContent(parentVBox);
@@ -89,8 +97,9 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
                     String userId = userIdTextField.getText();
                     String roleId = roleIdTextField.getText();
                     String token = tokenTextField.getText();
+                    boolean selected = mainCheckBox.isSelected();
                     if (!userId.isEmpty() && !roleId.isEmpty() && !token.isEmpty()) {
-                        return new SignUserInfo(userId,roleId,token);
+                        return new SignUserInfo(userId,roleId,token,selected);
                     }
                     return null;
                 }
@@ -108,6 +117,8 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
             }
         });
     }
+
+
 
     @FXML
     void sign(ActionEvent event) {

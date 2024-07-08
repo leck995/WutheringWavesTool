@@ -37,7 +37,7 @@ public class SignGoodCell extends GridCell<SignGood> {
         StackPane stackPane=new StackPane(imageView,num,index,name);
         StackPane.setAlignment(num, Pos.BOTTOM_RIGHT);
         StackPane.setAlignment(index, Pos.TOP_LEFT);
-        stackPane.setPrefSize(70,100);
+        stackPane.setPrefSize(70,90);
         stackPane.setPadding(new Insets(3));
         stackPane.getStyleClass().add("goods");
         setGraphic(stackPane);

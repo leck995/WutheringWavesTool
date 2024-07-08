@@ -1,5 +1,9 @@
 .list-view{
-    -fx-background-color: transparent;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+    -fx-border-color: transparent;
+    -fx-padding: 10 0 0 10;
+    -fx-effect:dropshadow(three-pass-box, #ededed,2,0.7,0,0);
 }
 
 .list-view .list-cell{
@@ -15,16 +19,20 @@
     -fx-text-fill: -color-fg-subtle;
     -fx-font-size: 10;
 }
+.list-view .list-cell .delete-btn{
+    -fx-padding: 2;
+}
 
 
 
 .goods{
     -fx-border-color: white;
-    -fx-border-width: 2;
+    -fx-border-width: 3;
     -fx-border-radius: 5;
 }
 .goods .name{
-    -fx-background-color: #30303060;
+    -fx-background-color: #30303080;
+    -fx-background-radius: 5;
     -fx-text-fill: white;
     -fx-alignment: center;
     -fx-pref-width: 60;

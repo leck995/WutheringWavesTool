@@ -1,0 +1,63 @@
+.role{
+    -fx-background-color: #f7f9fc;
+}
+.role .daily-data{
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+    -fx-effect:dropshadow(three-pass-box, #ededed,2,0.7,0,0);
+    -fx-pref-width: 280;
+}
+.role .daily-data .data-label-1{
+    -fx-text-fill: #3d465a;
+    -fx-font-size: 16;
+    -fx-graphic-text-gap: 3;
+}
+.role .daily-data .data-label-2{
+    -fx-text-fill: #a3a3a3;
+    -fx-font-size: 12;
+}
+.role .daily-data .progress-bar > .bar{
+    -fx-background-color: #bcbcbc;
+    -fx-padding: 2px;
+}
+
+.role .role-data{
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+    -fx-effect:dropshadow(three-pass-box, #ededed,2,0.7,0,0);
+    -fx-pref-width: 280;
+}
+.role .role-data .data-label-1{
+    -fx-text-fill: #3d465a;
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+
+}
+.role .role-data .data-label-2{
+    -fx-text-fill: #a3a3a3;
+    -fx-font-size: 14;
+}
+.role .role-data .level{
+    -fx-text-fill: #6a6d75;
+    -fx-font-size: 20;
+    -fx-alignment: center;
+    -fx-font-weight: bold;
+}
+.role .box-data{
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+    -fx-effect:dropshadow(three-pass-box, #ededed,2,0.7,0,0);
+    -fx-pref-width: 280;
+}
+.role .box-data .data-label-1{
+    -fx-text-fill: #3d465a;
+    -fx-font-size: 16;
+    -fx-graphic-text-gap: 3;
+}
+.role .box-data .data-label-2{
+    -fx-text-fill: #a3a3a3;
+    -fx-font-size: 12;
+}

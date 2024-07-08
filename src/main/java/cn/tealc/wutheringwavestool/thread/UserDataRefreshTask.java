@@ -1,18 +1,18 @@
 package cn.tealc.wutheringwavestool.thread;
 
+import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
-import com.fasterxml.jackson.core.type.TypeReference;
+import cn.tealc.wutheringwavestool.model.user.RoleInfo;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
-import java.io.File;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.time.LocalDate;
-import java.util.List;
 
 /**
  * @program: WutheringWavesTool
@@ -20,45 +20,22 @@ import java.util.List;
  * @author: Leck
  * @create: 2024-07-06 14:24
  */
-public class SignTask extends Task<String> {
+public class UserDataRefreshTask extends Task<ResponseBody> {
+    private SignUserInfo signUserInfo;
 
-    @Override
-    protected String call() throws Exception {
-        File file=new File("signInfo.json");
-        if (file.exists()){
-            ObjectMapper mapper = new ObjectMapper();
-            List<SignUserInfo> signUserInfos = mapper.readValue(file, new TypeReference<List<SignUserInfo>>() {
-            });
-            StringBuilder sb=new StringBuilder();
-            for (int i = 0; i < signUserInfos.size(); i++) {
-                SignUserInfo user = signUserInfos.get(i);
-                if (i < 9){
-                    String sign = sign(user.getRoleId(), user.getUserId(), user.getToken());
-                    sb.append(String.format("当前用户ID:%s,签到状态：%s",user.getUserId(), sign));
-                    sb.append("\n");
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }else {
-                    sb.append(String.format("当前用户ID:%s,签到状态：签到账号数量超过最大限制",user.getUserId()));
-                }
-            }
-
-            sb.append("===签到完成===");
-            return sb.toString();
-        }else {
-            return "无相关配置，不启动签到";
-        }
+    public UserDataRefreshTask(SignUserInfo signUserInfo) {
+        this.signUserInfo = signUserInfo;
     }
 
-    private String sign(String roleId,String userId,String token){
-        LocalDate today = LocalDate.now();
-        int monthValue= today.getMonthValue();
-        String url=String.format("https://api.kurobbs.com/encourage/signIn/v2?gameId=%s&serverId=%s&roleId=%s&userId=%s&reqMonth=%02d"
-                ,"3","76402e5b20be2c39f095a152090afddc",roleId,userId,monthValue);
+    @Override
+    protected ResponseBody call() throws Exception {
+        ResponseBody sign = sign(signUserInfo.getToken());
+        return sign;
+    }
 
+    private ResponseBody sign(String token){
+
+        String url="https://api.kurobbs.com/gamer/widget/game3/refresh?type=1&sizeType=2";
         HttpClient client = HttpClient.newHttpClient();
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -84,17 +61,10 @@ public class SignTask extends Task<String> {
                     .POST(HttpRequest.BodyPublishers.noBody())
                     .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println(response.body());
             if (response.statusCode() == 200) {
-                if (response.body().contains("请求成功")){
-                    return "签到成功";
-                }else if (response.body().contains("请勿重复签到")){
-                    return "请勿重复签到";
-                }else {
-                    return "签到失败";
-                }
+                return null;
             }else {
-                return "签到失败";
+                return null;
             }
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);

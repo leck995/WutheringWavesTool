@@ -9,7 +9,11 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -42,6 +46,17 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
         if (file != null) {
             gameDirField.setText(file.getAbsolutePath());
 
+        }
+    }
+
+    @FXML
+    void toWeb(ActionEvent event) {
+        try {
+            Desktop.getDesktop().browse(new URI("https://github.com/leck995/WutheringWavesTool"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
+            throw new RuntimeException(e);
         }
     }
 
