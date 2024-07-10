@@ -2,7 +2,9 @@ package cn.tealc.wutheringwavestool.ui;
 
 import cn.tealc.wutheringwavestool.Config;
 import cn.tealc.wutheringwavestool.NotificationKey;
+import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
+import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
@@ -17,6 +19,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
+import de.saxsys.mvvmfx.internal.MvvmfxApplication;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -36,6 +39,7 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -63,6 +67,7 @@ public class HomeViewModel implements ViewModel {
     private SimpleStringProperty box2Text = new SimpleStringProperty();
     private SimpleStringProperty box3Text = new SimpleStringProperty();
     private SimpleStringProperty box4Text = new SimpleStringProperty();
+    private SimpleStringProperty gameTimeText=new SimpleStringProperty();
     private SimpleObjectProperty<Image> headImg = new SimpleObjectProperty<>();
     public HomeViewModel() {
         //getPoolInfo();
@@ -80,18 +85,10 @@ public class HomeViewModel implements ViewModel {
                     }else {
                         if (!list.isEmpty()){
                             userInfo=list.getFirst();
+                            Config.currentRoleId=userInfo.getRoleId();
                         }
                     }
-
-                    if (userInfo!=null){
-                        UserDataRefreshTask task=new UserDataRefreshTask(userInfo);
-                        task.setOnSucceeded(workerStateEvent -> {
-                            getDailyData();
-                            getRoleData();
-                            rolePaneVisible.set(true);
-                        });
-                        Thread.startVirtualThread(task);
-                    }
+                    updateRoleData();
 
                 }
             } catch (IOException e) {
@@ -102,6 +99,57 @@ public class HomeViewModel implements ViewModel {
                     new MessageInfo(MessageType.WARNING,"当前不存在用户信息，无法获取，请在签到界面添加用户信息"),false);
         }
 
+        updateGameTime();
+
+
+        MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_GAME_TIME_UPDATE,(s, objects) -> {
+            long playTime = (long) objects[0];
+            updateGameTime(playTime);
+
+        });
+
+
+    }
+
+    private void updateGameTime(double time){
+        List<GameTime> list = getGameTimes();
+        if (list !=null){
+            double sum = list.stream().mapToLong(GameTime::getDuration).sum() + time;
+            double minute = sum / 60000;
+            double hour = minute / 60;
+            gameTimeText.set(String.format("今日在线%02.0f小时%02.0f分钟",hour,minute));
+        }
+    }
+    private void updateGameTime(){
+        List<GameTime> list = getGameTimes();
+        if (list !=null){
+            double sum = list.stream().mapToLong(GameTime::getDuration).sum();
+            double minute = sum / 60000;
+            double hour = minute / 60;
+            gameTimeText.set(String.format("今日在线%02.0f小时%02.0f分钟",hour,minute));
+        }
+    }
+    private List<GameTime> getGameTimes() {
+        GameTimeDao gameTimeDao=new GameTimeDao();
+        LocalDate localDate = LocalDate.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String date = dateTimeFormatter.format(localDate);
+        List<GameTime> list = gameTimeDao.getTimeListByData(date);
+        return list;
+    }
+
+    public void updateRoleData(){
+        if (userInfo!=null){
+            UserDataRefreshTask task=new UserDataRefreshTask(userInfo);
+            task.setOnSucceeded(workerStateEvent -> {
+                getDailyData();
+                getRoleData();
+            });
+            Thread.startVirtualThread(task);
+        }else {
+            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                    new MessageInfo(MessageType.WARNING,"当前不存在用户信息，无法进行刷新，请在签到界面添加用户信息"),false);
+        }
     }
 
     private void getRoleData(){
@@ -125,6 +173,9 @@ public class HomeViewModel implements ViewModel {
                         box4Text.set(String.valueOf(boxInfo.getNum()));
                     }
                 }
+                rolePaneVisible.set(true);
+            }else{
+                rolePaneVisible.set(false);
             }
         });
         Thread.startVirtualThread(userInfoDataTask);
@@ -167,6 +218,9 @@ public class HomeViewModel implements ViewModel {
                 double cur=data.getBattlePassData().get(1).getCur();
                 double total=data.getBattlePassData().get(1).getTotal();
                 battlePassProgress.set(cur/total);
+                rolePaneVisible.set(true);
+            }else{
+                rolePaneVisible.set(false);
             }
         });
         Thread.startVirtualThread(userDailyDataTask);
@@ -432,5 +486,17 @@ public class HomeViewModel implements ViewModel {
 
     public SimpleBooleanProperty rolePaneVisibleProperty() {
         return rolePaneVisible;
+    }
+
+    public String getGameTimeText() {
+        return gameTimeText.get();
+    }
+
+    public SimpleStringProperty gameTimeTextProperty() {
+        return gameTimeText;
+    }
+
+    public void setGameTimeText(String gameTimeText) {
+        this.gameTimeText.set(gameTimeText);
     }
 }

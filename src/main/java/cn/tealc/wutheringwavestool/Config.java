@@ -18,9 +18,11 @@ import java.util.Map;
  * @create: 2024-07-03 00:37
  */
 public class Config {
-    public static final String version="1.1";
+    public static final String version="1.1.0";
+    public static final String appTitle="鸣潮助手";
     public static Setting setting;
     public static Map<String, String> headers = new HashMap<>();
+    public static String currentRoleId;
 
     static {
         ObjectMapper mapper=new ObjectMapper();

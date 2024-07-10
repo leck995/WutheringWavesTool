@@ -12,6 +12,12 @@ open module cn.tealc.wutheringwavestool {
     requires org.kordamp.ikonli.core;
     requires org.kordamp.ikonli.material2;
     requires org.controlsfx.controls;
+    requires jdk.crypto.cryptoki;
+    requires org.slf4j;
+    requires com.sun.jna.platform;
+    requires org.apache.commons.dbutils;
+    requires org.xerial.sqlitejdbc;
+    requires com.sun.jna;
 
 
     exports cn.tealc.wutheringwavestool;

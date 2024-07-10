@@ -8,10 +8,10 @@ package cn.tealc.wutheringwavestool;
  */
 public class NotificationKey {
     public static final String MESSAGE="MESSAGE";
-    public static final String SIGN_USER_DELETE="DELETE";
-    public static final String SIGN_USER_UPDATE="UPDATE";
+    public static final String SIGN_USER_DELETE="SIGN_USER_DELETE";
+    public static final String SIGN_USER_UPDATE="SIGN_USER_UPDATE";
 
-
+    public static final String HOME_GAME_TIME_UPDATE="HOME_GAME_TIME_UPDATE";
 
 
 

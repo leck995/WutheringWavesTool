@@ -8,110 +8,120 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <AnchorPane fx:id="root" prefHeight="600.0" prefWidth="1000.0" styleClass="role" stylesheets="@../css/Home.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.HomeView">
    <children>
-      <VBox fx:id="rolePane" layoutX="730.0" layoutY="10.0" spacing="15.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
+      <AnchorPane fx:id="rolePane" layoutX="708.0" layoutY="50.0" AnchorPane.bottomAnchor="120.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
          <children>
-            <Label layoutX="10.0" layoutY="105.0" styleClass="title-3" text="角色" />
-            <HBox alignment="CENTER_LEFT" spacing="15.0" styleClass="role-data">
+            <VBox layoutX="2.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <ImageView fx:id="headIV" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../image/icon.png" />
-                     </image>
-                  </ImageView>
-                  <VBox alignment="CENTER_LEFT" spacing="2.0">
+                  <Label layoutX="10.0" layoutY="105.0" styleClass="title-3" text="角色" />
+                  <HBox alignment="CENTER_LEFT" spacing="15.0" styleClass="role-data">
                      <children>
-                        <Label fx:id="roleNameLabel" styleClass="data-label-1" text="长离" />
-                        <Label fx:id="gameLifeLabel" styleClass="data-label-2" text="已游玩48天" />
-                     </children>
-                  </VBox>
-                  <Label fx:id="levelLabel" styleClass="level" text="LV.48" translateX="10.0" />
-               </children>
-            </HBox>
-            <Label styleClass="title-3" text="每日数据" />
-            <VBox styleClass="daily-data">
-               <children>
-                  <HBox spacing="20.0">
-                     <children>
-                        <HBox alignment="CENTER_LEFT">
+                        <ImageView fx:id="headIV" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../image/icon.png" />
+                           </image>
+                        </ImageView>
+                        <VBox alignment="CENTER_LEFT" spacing="2.0">
                            <children>
-                              <ImageView fx:id="energyIv" fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true" />
-                              <VBox alignment="CENTER">
-                                 <children>
-                                    <Label fx:id="energyLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="192/240" />
-                                    <Label fx:id="energyTimeLabel" styleClass="data-label-2" text="结晶波片" />
-                                 </children>
-                              </VBox>
+                              <Label fx:id="roleNameLabel" styleClass="data-label-1" text="长离" />
+                              <Label fx:id="gameLifeLabel" styleClass="data-label-2" text="已游玩48天" />
                            </children>
-                        </HBox>
-                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0">
-                           <children>
-                              <ImageView fx:id="livenessIV" fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true" />
-                              <VBox alignment="CENTER">
-                                 <children>
-                                    <Label fx:id="livenessLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="100" />
-                                    <Label styleClass="data-label-2" text="活跃度" />
-                                 </children>
-                              </VBox>
-                           </children>
-                        </HBox>
+                        </VBox>
+                        <Label fx:id="levelLabel" styleClass="level" text="LV.48" translateX="10.0" />
                      </children>
                   </HBox>
-                  <HBox layoutX="10.0" layoutY="10.0" spacing="20.0">
+                  <Label styleClass="title-3" text="每日数据" />
+                  <VBox styleClass="daily-data">
                      <children>
-                        <HBox alignment="CENTER_LEFT" spacing="5.0">
+                        <HBox spacing="20.0">
                            <children>
-                              <ImageView fx:id="battlePassIV" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
-                              <VBox alignment="CENTER_LEFT">
+                              <HBox alignment="CENTER_LEFT">
                                  <children>
-                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                    <ImageView fx:id="energyIv" fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true" />
+                                    <VBox alignment="CENTER">
                                        <children>
-                                          <Label fx:id="battlePassLevelLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="电台(LV.16)" />
-                                          <Label fx:id="battlePassNumLabel" contentDisplay="BOTTOM" layoutX="10.0" layoutY="10.0" styleClass="data-label-2" text="经验：1200/1200" />
+                                          <Label fx:id="energyLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="192/240" />
+                                          <Label fx:id="energyTimeLabel" styleClass="data-label-2" text="结晶波片" />
                                        </children>
-                                    </HBox>
-                                    <ProgressBar fx:id="battlePassProgress" prefWidth="200.0" progress="0.0" />
+                                    </VBox>
                                  </children>
-                              </VBox>
+                              </HBox>
+                              <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0">
+                                 <children>
+                                    <ImageView fx:id="livenessIV" fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true" />
+                                    <VBox alignment="CENTER">
+                                       <children>
+                                          <Label fx:id="livenessLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="100" />
+                                          <Label styleClass="data-label-2" text="活跃度" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
                            </children>
                         </HBox>
+                        <HBox layoutX="10.0" layoutY="10.0" spacing="20.0">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" spacing="5.0">
+                                 <children>
+                                    <ImageView fx:id="battlePassIV" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
+                                    <VBox alignment="CENTER_LEFT">
+                                       <children>
+                                          <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                             <children>
+                                                <Label fx:id="battlePassLevelLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="电台(LV.16)" />
+                                                <Label fx:id="battlePassNumLabel" contentDisplay="BOTTOM" layoutX="10.0" layoutY="10.0" styleClass="data-label-2" text="经验：1200/1200" />
+                                             </children>
+                                          </HBox>
+                                          <ProgressBar fx:id="battlePassProgress" prefWidth="200.0" progress="0.0" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+                  <Label layoutX="10.0" layoutY="105.0" styleClass="title-3" text="宝箱" />
+                  <HBox alignment="CENTER" spacing="10.0" styleClass="box-data">
+                     <children>
+                        <VBox alignment="CENTER" spacing="2.0">
+                           <children>
+                              <Label fx:id="box1Label" styleClass="data-label-1" text="251" />
+                              <Label styleClass="data-label-2" text="朴素奇藏" />
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" layoutX="10.0" layoutY="10.0" spacing="2.0">
+                           <children>
+                              <Label fx:id="box2Label" styleClass="data-label-1" text="251" />
+                              <Label styleClass="data-label-2" text="基准奇藏" />
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" layoutX="66.0" layoutY="10.0" spacing="2.0">
+                           <children>
+                              <Label fx:id="box3Label" styleClass="data-label-1" text="251" />
+                              <Label styleClass="data-label-2" text="精密奇藏" />
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER" layoutX="122.0" layoutY="10.0" spacing="2.0">
+                           <children>
+                              <Label fx:id="box4Label" styleClass="data-label-1" text="251" />
+                              <Label styleClass="data-label-2" text="辉光奇藏" />
+                           </children>
+                        </VBox>
                      </children>
                   </HBox>
                </children>
             </VBox>
-            <Label layoutX="10.0" layoutY="105.0" styleClass="title-3" text="宝箱" />
-            <HBox alignment="CENTER" spacing="10.0" styleClass="box-data">
-               <children>
-                  <VBox alignment="CENTER" spacing="2.0">
-                     <children>
-                        <Label fx:id="box1Label" styleClass="data-label-1" text="251" />
-                        <Label styleClass="data-label-2" text="朴素奇藏" />
-                     </children>
-                  </VBox>
-                  <VBox alignment="CENTER" layoutX="10.0" layoutY="10.0" spacing="2.0">
-                     <children>
-                        <Label fx:id="box2Label" styleClass="data-label-1" text="251" />
-                        <Label styleClass="data-label-2" text="基准奇藏" />
-                     </children>
-                  </VBox>
-                  <VBox alignment="CENTER" layoutX="66.0" layoutY="10.0" spacing="2.0">
-                     <children>
-                        <Label fx:id="box3Label" styleClass="data-label-1" text="251" />
-                        <Label styleClass="data-label-2" text="精密奇藏" />
-                     </children>
-                  </VBox>
-                  <VBox alignment="CENTER" layoutX="122.0" layoutY="10.0" spacing="2.0">
-                     <children>
-                        <Label fx:id="box4Label" styleClass="data-label-1" text="251" />
-                        <Label styleClass="data-label-2" text="辉光奇藏" />
-                     </children>
-                  </VBox>
-               </children>
-            </HBox>
+            <Button mnemonicParsing="false" onAction="#refreshRoleData" styleClass="button-circle" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <graphic>
+                  <FontIcon iconLiteral="mdmz-refresh" />
+               </graphic>
+            </Button>
          </children>
-      </VBox>
+      </AnchorPane>
       <HBox spacing="15.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="30.0">
          <children>
             <Button mnemonicParsing="false" onAction="#startUpdate" text="启动更新程序" />
@@ -120,5 +130,6 @@
       </HBox>
       <Label styleClass="title-2" text="主页" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
       <ImageView fx:id="roleIV" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
+      <Label fx:id="gameTimeLabel" styleClass="game-time" text="今天已经玩了%d小时" AnchorPane.bottomAnchor="75.0" AnchorPane.rightAnchor="30.0" />
    </children>
 </AnchorPane>

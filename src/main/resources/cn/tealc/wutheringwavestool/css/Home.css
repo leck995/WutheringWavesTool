@@ -1,3 +1,10 @@
+
+.game-time{
+    -fx-text-fill: #a3a3a3;
+    -fx-font-size: 12;
+}
+
+
 .role{
     -fx-background-color: #f7f9fc;
 }

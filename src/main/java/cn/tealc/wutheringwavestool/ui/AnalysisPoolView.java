@@ -103,7 +103,7 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
         pieChart.setData(viewModel.getPieChartData());
         pieChart.setAnimated(false);
         pieChart.setClockwise(false);
-
+        pieChart.setLabelsVisible(false);
         ssrListView.setItems(viewModel.getSsrList());
         ssrListView.setCellFactory(ssrDataListView -> new SsrCell());
 
