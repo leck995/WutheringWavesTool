@@ -1,5 +1,5 @@
 ## 简介
-一款鸣潮小工具，主要功能有获取角色信息，签到以及抽卡分析。
+鸣潮的一款小工具，主要功能有获取角色信息，实现库街区签到，游戏时长统计以及抽卡分析。
 
 ## 功能
 - [x] 查看获取角色基本信息；
@@ -20,6 +20,8 @@
 ![image.png](https://github.com/leck995/WutheringWavesTool/blob/master/temp/img03.png)
 ## 教程
 软件启动先在设置中设置鸣潮游戏目录（类似于“D:\Game\Wuthering Waves”）,这是最优先的一步
+#### 关于游戏时长统计
+在本软件不被关闭的前提下，可以自动统计鸣潮游玩时间。
 #### 关于签到
 签到需要手动添加:库街区ID、鸣潮ID以及库街区Token，Token获取请前往 [库街区](https://wiki.kurobbs.com/mc/home) ，登录后获取，具体获取Token请善用搜索引擎。
 

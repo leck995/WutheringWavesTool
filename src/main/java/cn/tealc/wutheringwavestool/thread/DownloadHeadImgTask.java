@@ -34,8 +34,13 @@ public class DownloadHeadImgTask extends Task<Boolean> {
             ObjectMapper mapper = new ObjectMapper();
             HashMap<String, String> map = mapper.readValue(uri.toURL(), new TypeReference<HashMap<String, String>>() {
             });
+            File dir=new File("assets/header/");
+            if (!dir.exists()){
+                dir.mkdirs();
+            }
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 File file = new File("assets/header/"+entry.getKey()+".png");
+
                 if(!file.exists()){
                     LOG.info("开始下载头像:{}",file.getName());
                     URL url = URI.create(entry.getValue()).toURL();
