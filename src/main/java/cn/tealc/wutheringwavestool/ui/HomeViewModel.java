@@ -1,8 +1,10 @@
 package cn.tealc.wutheringwavestool.ui;
 
 import cn.tealc.wutheringwavestool.Config;
+import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
+import cn.tealc.wutheringwavestool.jna.GameAppListener;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
@@ -102,7 +104,7 @@ public class HomeViewModel implements ViewModel {
                     new MessageInfo(MessageType.WARNING,"当前不存在用户信息，无法获取，请在签到界面添加用户信息"),false);
         }
 
-        updateGameTime();
+        updateGameTime(GameAppListener.getInstance().getDuration());
 
 
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_GAME_TIME_UPDATE,(s, objects) -> {
@@ -152,8 +154,7 @@ public class HomeViewModel implements ViewModel {
         LocalDate localDate = LocalDate.now();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String date = dateTimeFormatter.format(localDate);
-        List<GameTime> list = gameTimeDao.getTimeListByData(date);
-        return list;
+        return gameTimeDao.getTimeListByData(date);
     }
 
     public void updateRoleData(){

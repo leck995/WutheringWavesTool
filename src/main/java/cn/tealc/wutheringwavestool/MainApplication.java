@@ -35,8 +35,10 @@ public class MainApplication extends Application {
     private static final Logger LOG=LoggerFactory.getLogger(MainApplication.class);
     public static RoundStage window;
     private static WinNT.HANDLE gameAppListener;
-    private GameAppListener appListener;
+    public GameAppListener appListener;
     private static FXTrayIcon fxTrayIcon;
+
+
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -53,7 +55,7 @@ public class MainApplication extends Application {
         ViewTuple<MainView, MainViewModel> viewTuple = FluentViewLoader.fxmlView(MainView.class).load();
         roundStage.setContent(viewTuple.getView());
 
-        appListener = new GameAppListener();
+        appListener = GameAppListener.getInstance();
         gameAppListener = User32.INSTANCE.SetWinEventHook(0x0003, 0x0003, null, appListener, 0, 0, 0);
 
         roundStage.show();
@@ -68,7 +70,8 @@ public class MainApplication extends Application {
             @Override
             public void uncaughtException(Thread t, Throwable e) {
                 // 抛出栈信息
-                LOG.error("线程：{}，出现异常：{}",t.getName(),e.getMessage());
+                LOG.error("线程：{}，出现异常：{}",t.getName(),e.getMessage(),e);
+
             }
         });
     }

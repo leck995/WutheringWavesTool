@@ -26,10 +26,23 @@ import java.util.Date;
  */
 public class GameAppListener implements WinUser.WinEventProc{
     private final Logger LOG= LoggerFactory.getLogger(GameAppListener.class);
+    private static GameAppListener gameAppListener;
     private WinDef.HWND game;
     private boolean start=false;//标记游戏打开了
     private final User32 user32 = User32.INSTANCE;
     private long startGameTime;
+
+    private GameAppListener(){
+
+    }
+
+    public static GameAppListener getInstance(){
+        if (gameAppListener==null){
+            gameAppListener=new GameAppListener();
+        }
+        return gameAppListener;
+    }
+
     @Override
     public void callback(WinNT.HANDLE handle, WinDef.DWORD dword, WinDef.HWND hwnd, WinDef.LONG aLong, WinDef.LONG aLong1, WinDef.DWORD dword1, WinDef.DWORD dword2) {
         char[] buffer = new char[256];
@@ -71,5 +84,13 @@ public class GameAppListener implements WinUser.WinEventProc{
                 }
             }
         }
+    }
+
+    public long getDuration() {
+        if (start){
+            long endGameTime = System.currentTimeMillis(); //游戏结束时间
+            return endGameTime - startGameTime;
+        }
+        return 0;
     }
 }
