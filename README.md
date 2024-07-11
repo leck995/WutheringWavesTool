@@ -4,6 +4,7 @@
 ## 功能
 - [x] 查看获取角色基本信息；
 - [x] 查询每日进度，包括体力，活跃度，电台
+- [x] 游戏时间统计
 - [x] 查询宝箱获取数量
 - [x] 库街区鸣潮签到
 - [x] 抽卡分析
@@ -12,11 +13,11 @@
 - [ ] 挑战数据分析
 
 ## 运行截图
+![image.png](https://github.com/leck995/WutheringWavesTool/blob/master/temp/img01.png)
+
 ![image.png](https://github.com/leck995/WutheringWavesTool/blob/master/temp/img02.png)
 
 ![image.png](https://github.com/leck995/WutheringWavesTool/blob/master/temp/img03.png)
-
-![image.png](https://github.com/leck995/WutheringWavesTool/blob/master/temp/img01.png)
 ## 教程
 软件启动先在设置中设置鸣潮游戏目录（类似于“D:\Game\Wuthering Waves”）,这是最优先的一步
 #### 关于签到

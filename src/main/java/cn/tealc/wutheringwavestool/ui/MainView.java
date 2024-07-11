@@ -12,6 +12,8 @@ import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -24,6 +26,8 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
@@ -74,6 +78,8 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         titleBar.setIcon(icon);
         titleBar.setTitle("鸣潮助手");
         titleBar.setContent(root.getChildren().getFirst());
+        titleBar.setCloseEvent(event -> showExitDialog());
+
         titleBar.getStylesheets().add(MainApplication.class.getResource("/cn/tealc/wutheringwavestool/css/Default.css").toExternalForm());
         root.getChildren().add(titleBar);
         messagePane.toFront();
@@ -93,7 +99,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
 
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.MESSAGE,((s, objects) -> {
             if (messagePane.getChildren().size() > 7){
-                messagePane.getChildren().remove(0);
+                messagePane.getChildren().removeFirst();
             }
             MessageInfo info= (MessageInfo) objects[0];
             Message message = createMessage(info);
@@ -121,6 +127,37 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             }
         }));
     }
+
+
+    private void showExitDialog(){
+        JFXDialogLayout dialogLayout = new JFXDialogLayout();
+
+
+        Label title = new Label("关闭提示");
+        title.getStyleClass().add("title-2");
+        dialogLayout.setHeading(title);
+        Label tip=new Label("确认退出吗？");
+        dialogLayout.setBody(tip);
+
+        Button exitBtn=new Button("退出");
+        Button iconBtn=new Button("隐藏至托盘");
+        Button cancelBtn=new Button("取消");
+
+        dialogLayout.setActions(iconBtn,exitBtn,cancelBtn);
+        JFXDialog jfxDialog = new JFXDialog(titleBar,dialogLayout,JFXDialog.DialogTransition.CENTER);
+
+        exitBtn.setOnAction(event -> {
+            MainApplication.exit();
+        });
+        iconBtn.setOnAction(event -> {
+            MainApplication.window.hide();
+            jfxDialog.close();
+        });
+
+        cancelBtn.setOnAction(event -> jfxDialog.close());
+        jfxDialog.show();
+    }
+
     @FXML
     void toAnalysis(ActionEvent event) {
         ToggleButton toggleButton= (ToggleButton) event.getSource();

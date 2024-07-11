@@ -2,6 +2,8 @@
 
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -10,9 +12,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane fx:id="root" prefHeight="600.0" prefWidth="1000.0" styleClass="role" stylesheets="@../css/Home.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.HomeView">
+<AnchorPane fx:id="root" prefHeight="700.0" prefWidth="1200.0" styleClass="role" stylesheets="@../css/Home.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.HomeView">
    <children>
-      <AnchorPane fx:id="rolePane" layoutX="708.0" layoutY="50.0" AnchorPane.bottomAnchor="120.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
+      <AnchorPane fx:id="rolePane" layoutX="708.0" layoutY="50.0" AnchorPane.bottomAnchor="220.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
          <children>
             <VBox layoutX="2.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
@@ -122,14 +124,62 @@
             </Button>
          </children>
       </AnchorPane>
+      <VBox layoutX="710.0" layoutY="475.0" prefWidth="280.0" spacing="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="460.0">
+         <children>
+            <Label styleClass="title-3" text="时长" />
+            <HBox alignment="CENTER" spacing="10.0" styleClass="game-time">
+               <children>
+                  <FontIcon iconLiteral="mdal-desktop_mac" styleClass="icon" />
+                  <VBox alignment="CENTER">
+                     <children>
+                        <Label fx:id="gameTimeLabel" styleClass="detail" text="今天已在线%d小时" />
+                        <Label fx:id="gameTimeTipLabel" layoutX="93.0" layoutY="20.0" styleClass="tip" text="每天五分钟，轻轻松松" />
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
       <HBox spacing="15.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="30.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#startUpdate" text="启动更新程序" />
-            <Button mnemonicParsing="false" onAction="#startGame" styleClass="accent" text="启动游戏" />
+            <MenuButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" popupSide="TOP" text="浏览">
+               <items>
+                  <MenuItem mnemonicParsing="false" onAction="#toAlbum" text="截图目录">
+                     <graphic>
+                        <FontIcon iconLiteral="mdal-image" />
+                     </graphic>
+                  </MenuItem>
+                  <MenuItem mnemonicParsing="false" onAction="#toGameDir" text="安装目录">
+                     <graphic>
+                        <FontIcon iconLiteral="mdsmz-snippet_folder" />
+                     </graphic>
+                  </MenuItem>
+               </items>
+               <graphic>
+                  <FontIcon iconLiteral="mdsal-folder" />
+               </graphic>
+            </MenuButton>
+            <MenuButton mnemonicParsing="false" popupSide="TOP" text="Wiki">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#toWiki01" text="库街区" />
+                <MenuItem mnemonicParsing="false" onAction="#toWiki02" text="GameKee" />
+              </items>
+               <graphic>
+                  <FontIcon iconLiteral="mdal-book" />
+               </graphic>
+            </MenuButton>
+            <Button layoutX="122.0" layoutY="10.0" mnemonicParsing="false" onAction="#startUpdate" text="启动更新">
+               <graphic>
+                  <FontIcon iconLiteral="mdsal-cloud_download" />
+               </graphic>
+            </Button>
+            <Button mnemonicParsing="false" onAction="#startGame" styleClass="accent" text="启动游戏">
+               <graphic>
+                  <FontIcon iconLiteral="mdral-games" />
+               </graphic></Button>
          </children>
       </HBox>
       <Label styleClass="title-2" text="主页" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
       <ImageView fx:id="roleIV" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
-      <Label fx:id="gameTimeLabel" styleClass="game-time" text="今天已经玩了%d小时" AnchorPane.bottomAnchor="75.0" AnchorPane.rightAnchor="30.0" />
    </children>
 </AnchorPane>

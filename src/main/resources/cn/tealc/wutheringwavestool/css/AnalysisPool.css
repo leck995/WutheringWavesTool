@@ -12,7 +12,7 @@
 .default-color7.chart-pie { -fx-pie-color: #ff5700; }
 
 .ssr-label{
-    -fx-text-fill: #c1a301;
+    -fx-text-fill: #f1c614;
     -fx-font-size: 15;
 }
 .sr-label{
@@ -33,7 +33,7 @@
 }
 
 .left{
-    -fx-background-color:#f4f6f8;
+
     -fx-background-radius: 4px;
     -fx-padding: 10;
 
@@ -42,7 +42,7 @@
 
 .list-view{
     -fx-border-color: transparent;
-    -fx-background-color:#f4f6f8;
+
     -fx-background-radius: 4px;
     -fx-padding: 10;
 
@@ -130,7 +130,19 @@
 .select-listview .list-cell{
     -fx-pref-height: 40;
     -fx-font-size: 14;
+    -fx-padding: 5;
 }
-.select-listview .list-cell:selected{
-    -fx-text-fill: #0969da;
+.select-listview .list-cell:selected .label{
+    -fx-text-fill:#ffffff;
+    -fx-background-color: #0969da;
+}
+.select-listview .list-cell .label{
+    -fx-alignment: center;
+    -fx-pref-height: 40;
+    -fx-pref-width: 100;
+    -fx-font-size: 14;
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5;
+    -fx-padding: 3;
+    -fx-effect:dropshadow(three-pass-box, #ededed,2,0.7,0,0);
 }

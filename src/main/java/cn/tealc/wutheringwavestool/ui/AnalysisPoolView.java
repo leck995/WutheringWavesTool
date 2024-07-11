@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.ui;
 
 import cn.tealc.wutheringwavestool.model.analysis.SsrData;
+import cn.tealc.wutheringwavestool.ui.component.PoolNameCell;
 import cn.tealc.wutheringwavestool.ui.component.SsrCell;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -12,6 +13,7 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.stage.DirectoryChooser;
+import javafx.util.Callback;
 
 import java.io.File;
 import java.net.URL;
@@ -90,6 +92,7 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
 
 
         poolListview.setItems(viewModel.getPoolNameList());
+        poolListview.setCellFactory(stringListView -> new PoolNameCell());
         poolListview.getSelectionModel().selectedIndexProperty().addListener((observableValue, number, t1) -> {
             if (t1 != null && t1.intValue() >= 0 && !poolChange){
                 viewModel.changePool(t1.intValue());

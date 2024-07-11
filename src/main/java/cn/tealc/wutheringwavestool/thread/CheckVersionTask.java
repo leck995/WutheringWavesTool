@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.thread;
 
 import cn.tealc.wutheringwavestool.Config;
+import cn.tealc.wutheringwavestool.model.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
 
@@ -19,8 +20,11 @@ public class CheckVersionTask extends Task<Integer> {
         URL url= null;
         try {
             url = new URL(NET_URL);
-            Map<String, String> versionMap = objectMapper.readValue(url, Map.class);
-            String version=versionMap.get("tag_name");
+
+            Version versionInfo = objectMapper.readValue(url, Version.class);
+            //Map<String, String> versionMap = objectMapper.readValue(url, Map.class);
+
+            String version=versionInfo.getTag_name();
             double net = Double.parseDouble(version.replace(".",""));
             double now = Double.parseDouble(Config.version.replace(".",""));
             if (now < net){

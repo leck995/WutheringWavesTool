@@ -1,12 +1,17 @@
 package cn.tealc.wutheringwavestool.ui;
 
+import cn.tealc.wutheringwavestool.Config;
 import cn.tealc.wutheringwavestool.MainApplication;
+import cn.tealc.wutheringwavestool.NotificationKey;
+import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+import cn.tealc.wutheringwavestool.model.message.MessageType;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.platform.win32.WinUser;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
+import de.saxsys.mvvmfx.MvvmFX;
 import javafx.animation.RotateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,7 +26,11 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 
+import java.awt.*;
 import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -97,6 +106,8 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
     @FXML
     private Label gameTimeLabel;
+    @FXML
+    private Label gameTimeTipLabel;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -129,7 +140,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         box4Label.textProperty().bind(viewModel.box4TextProperty());
 
         gameTimeLabel.textProperty().bind(viewModel.gameTimeTextProperty());
-
+        gameTimeTipLabel.textProperty().bind(viewModel.gameTimeTipTextProperty());
         headIV.setImage(new Image(MainApplication.class.getResource("image/icon.png").toExternalForm(),60,60,true,true,true));
         Circle circle = new Circle(30,30,30);
         headIV.setClip(circle);
@@ -156,6 +167,51 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         transition.play();
         viewModel.updateRoleData();
     }
+    @FXML
+    void toWiki01(ActionEvent event) {
+        try {
+            Desktop.getDesktop().browse(new URI("https://wiki.kurobbs.com/mc/home"));
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
+    @FXML
+    void toWiki02(ActionEvent event) {
+        try {
+            Desktop.getDesktop().browse(new URI("https://www.gamekee.com/mc/"));
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    @FXML
+    void toAlbum(ActionEvent event) {
+        try {
+            File file=new File(Config.setting.getGameRootDir()+File.separator+"Wuthering Waves Game\\Client\\Saved\\ScreenShot");
+            if (file.exists()){
+                Desktop.getDesktop().open(file);
+            }else {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"截图保存目录不存在"));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @FXML
+    void toGameDir(ActionEvent event) {
+        try {
+            File file=new File(Config.setting.getGameRootDir());
+            if (file.exists()){
+                Desktop.getDesktop().open(file);
+            }else {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"未设置游戏安装目录，请前往设置进行设置"));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }

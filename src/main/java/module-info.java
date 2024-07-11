@@ -18,6 +18,7 @@ open module cn.tealc.wutheringwavestool {
     requires org.apache.commons.dbutils;
     requires org.xerial.sqlitejdbc;
     requires com.sun.jna;
+    requires com.dustinredmond.fxtrayicon;
 
 
     exports cn.tealc.wutheringwavestool;

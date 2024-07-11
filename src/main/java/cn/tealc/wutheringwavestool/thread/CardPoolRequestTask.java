@@ -6,9 +6,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -18,21 +16,19 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @program: WutheringWavesTool
- * @description:
+ * @description: 获取卡池数据
  * @author: Leck
  * @create: 2024-07-03 00:14
  */
-public class CardRequestTask extends Task<Map<String, List<CardInfo>>> {
+public class CardPoolRequestTask extends Task<Map<String, List<CardInfo>>> {
     private static final String REQUEST_URL="https://gmserver-api.aki-game2.com/gacha/record/query";
     private static final Map<String,String> typePool= new LinkedHashMap<>();
     private Map<String, String> params;
 
-    public CardRequestTask(Map<String, String> params,String gameRootDir) {
+    public CardPoolRequestTask(Map<String, String> params, String gameRootDir) {
         typePool.put("角色活动唤取","1");
         typePool.put("武器活动唤取","2");
         typePool.put("角色常驻唤取","3");
@@ -70,18 +66,24 @@ public class CardRequestTask extends Task<Map<String, List<CardInfo>>> {
                 }else {
                     map.put(entry.getKey(),list);
                 }
-
             }
         }
+
         return map;
     }
 
     private List<CardInfo> update(List<CardInfo> oldData,List<CardInfo> newData){
+        List<CardInfo> list = new ArrayList<>();
+        if (newData.isEmpty()){
+            return oldData;
+        }else if (oldData.isEmpty()){
+            return newData;
+        }
 
         CardInfo last = newData.getLast();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime newTime = LocalDateTime.parse(last.getTime(), formatter);
-        List<CardInfo> list = new ArrayList<>();
+
         for (int i = 0; i <oldData.size(); i++) {
             CardInfo first = oldData.get(i);
             LocalDateTime oldTime = LocalDateTime.parse(first.getTime(), formatter);

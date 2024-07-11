@@ -68,7 +68,10 @@ public class HomeViewModel implements ViewModel {
     private SimpleStringProperty box3Text = new SimpleStringProperty();
     private SimpleStringProperty box4Text = new SimpleStringProperty();
     private SimpleStringProperty gameTimeText=new SimpleStringProperty();
+    private SimpleStringProperty gameTimeTipText=new SimpleStringProperty();
     private SimpleObjectProperty<Image> headImg = new SimpleObjectProperty<>();
+
+    private final String[] gameTips={"今日还没有开始冒险","只是上去做个每日任务","等找完这个宝箱，我就休息","小肝不算肝","肝佬"};
     public HomeViewModel() {
         //getPoolInfo();
         getDailyData();
@@ -115,20 +118,35 @@ public class HomeViewModel implements ViewModel {
         List<GameTime> list = getGameTimes();
         if (list !=null){
             double sum = list.stream().mapToLong(GameTime::getDuration).sum() + time;
-            double minute = sum / 60000;
-            double hour = minute / 60;
-            gameTimeText.set(String.format("今日在线%02.0f小时%02.0f分钟",hour,minute));
+            updateGameTimeText(sum);
         }
     }
     private void updateGameTime(){
         List<GameTime> list = getGameTimes();
         if (list !=null){
             double sum = list.stream().mapToLong(GameTime::getDuration).sum();
-            double minute = sum / 60000;
-            double hour = minute / 60;
-            gameTimeText.set(String.format("今日在线%02.0f小时%02.0f分钟",hour,minute));
+            updateGameTimeText(sum);
         }
     }
+
+    private void updateGameTimeText(double sum) {
+        double minute = sum / 60000;
+        double hour = minute / 60;
+
+        if (hour==0 && minute == 0){
+            gameTimeTipText.set(gameTips[0]);
+        }else if (hour < 1 && minute < 15){
+            gameTimeTipText.set(gameTips[1]);
+        }else if (hour <= 2){
+            gameTimeTipText.set(gameTips[2]);
+        }else if (hour <= 5){
+            gameTimeTipText.set(gameTips[3]);
+        }else if (hour > 5){
+            gameTimeTipText.set(gameTips[4]);
+        }
+        gameTimeText.set(String.format("今日在线 %02.0f 小时 %02.0f 分钟",hour,minute));
+    }
+
     private List<GameTime> getGameTimes() {
         GameTimeDao gameTimeDao=new GameTimeDao();
         LocalDate localDate = LocalDate.now();
@@ -498,5 +516,13 @@ public class HomeViewModel implements ViewModel {
 
     public void setGameTimeText(String gameTimeText) {
         this.gameTimeText.set(gameTimeText);
+    }
+
+    public String getGameTimeTipText() {
+        return gameTimeTipText.get();
+    }
+
+    public SimpleStringProperty gameTimeTipTextProperty() {
+        return gameTimeTipText;
     }
 }

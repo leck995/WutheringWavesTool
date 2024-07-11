@@ -3,7 +3,14 @@ package cn.tealc.wutheringwavestool.ui.component;
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.controls.Tile;
 import cn.tealc.wutheringwavestool.Config;
+import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.model.analysis.SsrData;
+import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.wutheringwavestool.thread.DownloadHeadImgTask;
+import de.saxsys.mvvmfx.MvvmFX;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
@@ -17,6 +24,8 @@ import javafx.scene.shape.Circle;
 import javafx.scene.text.Font;
 
 import java.io.File;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -76,8 +85,27 @@ public class SsrCell extends ListCell<SsrData> {
     protected void updateItem(SsrData ssrData, boolean b) {
         super.updateItem(ssrData, b);
         if (!b){
+            File headFile=new File(String.format("assets/header/%s.png",ssrData.getName()));
+            if (headFile.exists()){
+                iv.setImage(new Image(headFile.toURI().toString(),60,60,true,true,true));
+            }else {
+                iv.setImage(null);
+                if (!DownloadHeadImgTask.hasUpdate){
+                    DownloadHeadImgTask task=new DownloadHeadImgTask();
+                    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
+                        @Override
+                        public void handle(WorkerStateEvent workerStateEvent) {
+                            if (task.getValue()){
+                                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                        new MessageInfo(MessageType.WARNING,"头像下载完毕，切换卡池即可查看"),false);
+                            }
+                        }
+                    });
+                    Thread.startVirtualThread(task);
+                }
 
-            String img = Config.headers.get(ssrData.getName());
+            }
+/*            String img = Config.headers.get(ssrData.getName());
             if (img!=null){
                 iv.setImage(new Image(img,60,60,true,true,true));
             }else {
@@ -88,7 +116,7 @@ public class SsrCell extends ListCell<SsrData> {
                     iv.setImage(null);
                 }
 
-            }
+            }*/
 
             name.setText(ssrData.getName());
             date.setText(ssrData.getDate());
@@ -113,4 +141,10 @@ public class SsrCell extends ListCell<SsrData> {
             setGraphic(null);
         }
     }
+
+    private void downLoadImage(){
+
+    }
+
+
 }

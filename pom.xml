@@ -6,7 +6,7 @@
 
     <groupId>cn.tealc</groupId>
     <artifactId>WutheringWavesTool</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.1.1</version>
     <name>WutheringWavesTool</name>
 
     <properties>
@@ -77,7 +77,7 @@
         </dependency>
         <dependency>
             <groupId>cn.tealc</groupId>
-            <artifactId>TeaFX</artifactId>
+            <artifactId>teafx</artifactId>
             <version>1.0</version>
         </dependency>
         <!--MVVM-->
@@ -125,7 +125,11 @@
             <artifactId>commons-dbutils</artifactId>
             <version>1.8.1</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.dustinredmond.fxtrayicon</groupId>
+            <artifactId>FXTrayIcon</artifactId>
+            <version>4.2.0</version>
+        </dependency>
     </dependencies>
 
     <build>

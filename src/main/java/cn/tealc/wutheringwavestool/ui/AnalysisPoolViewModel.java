@@ -7,7 +7,7 @@ import cn.tealc.wutheringwavestool.model.analysis.AnalysisData;
 import cn.tealc.wutheringwavestool.model.analysis.SsrData;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
-import cn.tealc.wutheringwavestool.thread.CardRequestTask;
+import cn.tealc.wutheringwavestool.thread.CardPoolRequestTask;
 import cn.tealc.wutheringwavestool.util.LogFileUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,8 +21,6 @@ import javafx.scene.chart.PieChart;
 
 import java.io.*;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * @program: WutheringWavesTool
@@ -82,7 +80,7 @@ public class AnalysisPoolViewModel implements ViewModel {
 
     public void refresh() {
         if (player != null && playerParams != null){
-            CardRequestTask task=new CardRequestTask(playerParams,Config.setting.getGameRootDir());
+            CardPoolRequestTask task=new CardPoolRequestTask(playerParams,Config.setting.getGameRootDir());
             task.setOnSucceeded(workerStateEvent -> {
                 data=task.getValue();
                 init();
@@ -90,9 +88,7 @@ public class AnalysisPoolViewModel implements ViewModel {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                         new MessageInfo(MessageType.SUCCESS,"抽卡数据已完成分析"));
             });
-            Thread thread=new Thread(task);
-            thread.setDaemon(true);
-            thread.start();
+            Thread.startVirtualThread(task);
             pieChartData.clear();
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                     new MessageInfo(MessageType.INFO,"正在获取数据，请稍候"));
@@ -100,9 +96,6 @@ public class AnalysisPoolViewModel implements ViewModel {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                     new MessageInfo(MessageType.WARNING,"角色不存在，请使用获取功能"));
         }
-
-
-
     }
 
 
@@ -114,7 +107,7 @@ public class AnalysisPoolViewModel implements ViewModel {
                 String url = LogFileUtil.getLogFileUrl(file);
                 if (url != null){
                     Map<String, String> params = LogFileUtil.getParamFromUrl(url);
-                    CardRequestTask task=new CardRequestTask(params,Config.setting.getGameRootDir());
+                    CardPoolRequestTask task=new CardPoolRequestTask(params,Config.setting.getGameRootDir());
                     task.setOnSucceeded(workerStateEvent -> {
                         data = task.getValue();
                         init();
@@ -128,9 +121,7 @@ public class AnalysisPoolViewModel implements ViewModel {
                         MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                                 new MessageInfo(MessageType.SUCCESS,"抽卡数据已完成分析"));
                     });
-                    Thread thread=new Thread(task);
-                    thread.setDaemon(true);
-                    thread.start();
+                    Thread.startVirtualThread(task);
                     pieChartData.clear();
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                             new MessageInfo(MessageType.INFO,"正在获取数据，请稍候"));
@@ -261,7 +252,7 @@ public class AnalysisPoolViewModel implements ViewModel {
         ssrList.setAll(analysis.getSsrDataList());
         //扇形图数据
         List<PieChart.Data> pieChartDataList=new ArrayList<>();
-        if (analysis.getSsrCount()!=0){
+/*        if (analysis.getSsrCount()!=0){
             pieChartDataList.add(new PieChart.Data("SSR",analysis.getSsrCount()));
         }
         if (analysis.getSrCount()!=0){
@@ -269,7 +260,10 @@ public class AnalysisPoolViewModel implements ViewModel {
         }
         if (analysis.getrCount()!=0){
             pieChartDataList.add(new PieChart.Data("R",analysis.getrCount()));
-        }
+        }*/
+        pieChartDataList.add(new PieChart.Data("SSR",analysis.getSsrCount()));
+        pieChartDataList.add(new PieChart.Data("SR",analysis.getSrCount()));
+        pieChartDataList.add(new PieChart.Data("R",analysis.getrCount()));
         pieChartData.setAll(pieChartDataList);
     }
 

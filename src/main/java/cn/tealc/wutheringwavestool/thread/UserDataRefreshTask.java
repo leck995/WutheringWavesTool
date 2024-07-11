@@ -44,10 +44,9 @@ public class UserDataRefreshTask extends Task<ResponseBody> {
         try {
             HttpRequest request = HttpRequestUtil.getRequest(url1,token);
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            LOG.info("刷新请求1,状态码:{}",response.statusCode());
             HttpRequest request2 = HttpRequestUtil.getRequest(url2,token);
             HttpResponse<String> response2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
-            LOG.info("刷新请求2,状态码:{}",response2.statusCode());
+            LOG.debug("刷新请求1,状态码:{},刷新请求2,状态码:{}",response.statusCode(),response2.statusCode());
             return null;
 
         } catch (IOException | InterruptedException e) {

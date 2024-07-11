@@ -35,7 +35,7 @@ public class GameAppListener implements WinUser.WinEventProc{
         char[] buffer = new char[256];
         user32.GetWindowText(hwnd, buffer, buffer.length);
         String title = Native.toString(buffer);
-        LOG.debug("当前前台窗口是:{}",title);
+        //LOG.debug("当前前台窗口是:{}",title);
         if (title.equals("鸣潮  ")){
             if (!start){
                 game=hwnd;
@@ -43,10 +43,12 @@ public class GameAppListener implements WinUser.WinEventProc{
                 startGameTime = System.currentTimeMillis();
                 LOG.info("检测到鸣潮已经启动");
             }
-        }else if (title.equals(Config.appTitle)){
-            long endGameTime = System.currentTimeMillis(); //游戏结束时间
-            long totalGameTime = endGameTime - startGameTime;//总共游玩时间
-            MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_GAME_TIME_UPDATE,totalGameTime);
+        }else if (title.equals(Config.appTitle)){ //进入到助手界面，刷新游戏时间
+            if (start){
+                long endGameTime = System.currentTimeMillis(); //游戏结束时间
+                long totalGameTime = endGameTime - startGameTime;//总共游玩时间
+                MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_GAME_TIME_UPDATE,totalGameTime);
+            }
         }else {
             if (start) {//当游戏已经启动，进入后台窗口时
                 if (!user32.IsWindow(game)){//窗口已经被关闭

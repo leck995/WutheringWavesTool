@@ -61,12 +61,3 @@
     -fx-background-color: #f7f9fc;
 }
 
-.title-bar{
-    -fx-background-color: #f7f9fc;
-    -fx-background-radius: 10;
-}
-
-.title-bar > .title-header{
-    -fx-background-color: #f7f9fc;
-    -fx-background-radius: 10 10 0 0;
-}

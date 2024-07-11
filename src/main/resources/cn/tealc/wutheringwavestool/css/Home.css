@@ -1,9 +1,23 @@
-
 .game-time{
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+    -fx-effect:dropshadow(three-pass-box, #ededed,2,0.7,0,0);
+    -fx-pref-width: 280;
+}
+
+.game-time .detail{
+    -fx-text-fill: #3d465a;
+    -fx-font-size: 16;
+    -fx-graphic-text-gap: 10;
+}
+.game-time .tip{
     -fx-text-fill: #a3a3a3;
     -fx-font-size: 12;
 }
-
+.game-time .icon{
+    -fx-icon-size:22;
+}
 
 .role{
     -fx-background-color: #f7f9fc;
