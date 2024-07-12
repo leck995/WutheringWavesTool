@@ -2,6 +2,7 @@ package cn.tealc.wutheringwavestool.thread;
 
 import cn.tealc.wutheringwavestool.model.CardInfo;
 import cn.tealc.wutheringwavestool.model.Message;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
@@ -24,7 +25,10 @@ import java.util.*;
  * @create: 2024-07-03 00:14
  */
 public class CardPoolRequestTask extends Task<Map<String, List<CardInfo>>> {
-    private static final String REQUEST_URL="https://gmserver-api.aki-game2.com/gacha/record/query";
+    private static final String cn_REQUEST_URL="https://gmserver-api.aki-game2.com/gacha/record/query";
+    private static final String oversea_REQUEST_URL="https://gmserver-api.aki-game2.net/gacha/record/query";
+    String REQUEST_URL = null;
+    String Country = null;
     private static final Map<String,String> typePool= new LinkedHashMap<>();
     private Map<String, String> params;
 
@@ -111,6 +115,7 @@ public class CardPoolRequestTask extends Task<Map<String, List<CardInfo>>> {
         HttpClient client = HttpClient.newHttpClient();
         ObjectMapper mapper = new ObjectMapper();
         String s = mapper.writeValueAsString(params);
+        Country_URL(params);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(REQUEST_URL))
                 .timeout(Duration.ofSeconds(20))
@@ -125,6 +130,32 @@ public class CardPoolRequestTask extends Task<Map<String, List<CardInfo>>> {
         }
     }
 
-
+    private String Country_URL(Map<String,String> params){
+        String playerId = params.get("playerId");
+        switch (playerId.charAt(0)) {
+            case '1':
+                REQUEST_URL = cn_REQUEST_URL;
+                Country = "国服";
+                break;
+            case '6':
+                REQUEST_URL = oversea_REQUEST_URL;
+                Country = "Eu";
+                break;
+            case '7':
+                REQUEST_URL = oversea_REQUEST_URL;
+                Country = "Asia";
+                break;
+            case '8':
+                REQUEST_URL = oversea_REQUEST_URL;
+                Country = " HMT (HK, MO, TW)";
+                break;
+            case '9':
+                REQUEST_URL = oversea_REQUEST_URL;
+                Country = "SEA";
+            default:
+                throw new IllegalArgumentException("Invalid playerId: " + playerId);
+        }
+        return REQUEST_URL;
+    }
 
 }
