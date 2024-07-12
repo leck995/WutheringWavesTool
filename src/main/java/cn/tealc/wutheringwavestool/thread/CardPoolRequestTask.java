@@ -2,7 +2,6 @@ package cn.tealc.wutheringwavestool.thread;
 
 import cn.tealc.wutheringwavestool.model.CardInfo;
 import cn.tealc.wutheringwavestool.model.Message;
-import cn.tealc.wutheringwavestool.model.game.Country;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
