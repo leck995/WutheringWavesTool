@@ -23,16 +23,18 @@ public class CheckVersionTask extends Task<Integer> {
 
             Version versionInfo = objectMapper.readValue(url, Version.class);
             //Map<String, String> versionMap = objectMapper.readValue(url, Map.class);
-
-            String version=versionInfo.getTag_name();
-            double net = Double.parseDouble(version.replace(".",""));
-            double now = Double.parseDouble(Config.version.replace(".",""));
-            if (now < net){
-                System.out.println("有新版本");
-                return 1;//有新版本
-            }else {
-                return 0;//无新版本
+            if (!versionInfo.isPrerelease()){
+                String version=versionInfo.getTag_name();
+                double net = Double.parseDouble(version.replace(".",""));
+                double now = Double.parseDouble(Config.version.replace(".",""));
+                if (now < net){
+                    System.out.println("有新版本");
+                    return 1;//有新版本
+                }else {
+                    return 0;//无新版本
+                }
             }
+            return 0;
         } catch (IOException e) {
             System.out.println("无法检测更新");
             return -1; //无法检测更新

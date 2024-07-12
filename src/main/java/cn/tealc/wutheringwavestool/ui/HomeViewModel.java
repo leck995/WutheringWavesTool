@@ -116,25 +116,24 @@ public class HomeViewModel implements ViewModel {
 
     }
 
-    private void updateGameTime(double time){
+    private void updateGameTime(long time){
         List<GameTime> list = getGameTimes();
         if (list !=null){
-            double sum = list.stream().mapToLong(GameTime::getDuration).sum() + time;
+            long sum = list.stream().mapToLong(GameTime::getDuration).sum() + time;
             updateGameTimeText(sum);
         }
     }
     private void updateGameTime(){
         List<GameTime> list = getGameTimes();
         if (list !=null){
-            double sum = list.stream().mapToLong(GameTime::getDuration).sum();
+            long sum = list.stream().mapToLong(GameTime::getDuration).sum();
             updateGameTimeText(sum);
         }
     }
 
-    private void updateGameTimeText(double sum) {
-        double minute = sum / 60000;
-        double hour = minute / 60;
-
+    private void updateGameTimeText(long sum) {
+        int hour = (int) (sum / (1000 * 60 * 60));
+        int minute = (int) ((sum % (1000 * 60 * 60)) / (1000 * 60));
         if (hour==0 && minute == 0){
             gameTimeTipText.set(gameTips[0]);
         }else if (hour < 1 && minute < 15){
@@ -143,10 +142,10 @@ public class HomeViewModel implements ViewModel {
             gameTimeTipText.set(gameTips[2]);
         }else if (hour <= 5){
             gameTimeTipText.set(gameTips[3]);
-        }else if (hour > 5){
+        }else {
             gameTimeTipText.set(gameTips[4]);
         }
-        gameTimeText.set(String.format("今日在线 %02.0f 小时 %02.0f 分钟",hour,minute));
+        gameTimeText.set(String.format("今日在线 %d 小时 %d 分钟",hour,minute));
     }
 
     private List<GameTime> getGameTimes() {

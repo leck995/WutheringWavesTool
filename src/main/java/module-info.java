@@ -3,7 +3,6 @@ open module cn.tealc.wutheringwavestool {
     requires javafx.fxml;
 
     requires org.kordamp.ikonli.javafx;
-    requires MaterialFX ;
     requires java.net.http;
     requires atlantafx.base;
     requires com.fasterxml.jackson.databind;
