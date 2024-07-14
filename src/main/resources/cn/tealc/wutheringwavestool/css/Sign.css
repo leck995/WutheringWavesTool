@@ -1,9 +1,9 @@
 .list-view{
-    -fx-background-color: #ffffff;
+    -fx-background-color: -color-bg-default;
     -fx-background-radius: 10;
     -fx-border-color: transparent;
     -fx-padding: 10 0 0 10;
-    -fx-effect:dropshadow(three-pass-box, #ededed,2,0.7,0,0);
+    -fx-effect:dropshadow(three-pass-box, -color-border-default,2,0.7,0,0);
 }
 
 .list-view .list-cell{
@@ -26,14 +26,15 @@
 
 
 .goods{
-    -fx-border-color: white;
+    -fx-border-color: -color-border-default;
     -fx-border-width: 3;
     -fx-border-radius: 5;
 }
 .goods .name{
-    -fx-background-color: #30303080;
+    -fx-background-color: -color-font-subtle;
+    -fx-opacity: 0.7;
     -fx-background-radius: 5;
-    -fx-text-fill: white;
+    -fx-text-fill: -color-font-default;
     -fx-alignment: center;
     -fx-pref-width: 60;
     -fx-pref-height: 20;
@@ -50,5 +51,6 @@
 
 .log,
 .log:focused{
+    -fx-background-color: -color-bg-overlay;
     -fx-background-insets: null;
 }

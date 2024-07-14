@@ -6,6 +6,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 
@@ -31,12 +32,22 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
 
     @FXML
     private CheckBox startWithAnalysisView;
+    @FXML
+    private ChoiceBox<String> fontFamilyChoiceBox;
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         gameDirField.textProperty().bindBidirectional(viewModel.gameDirProperty());
         startWithAnalysisView.selectedProperty().bindBidirectional(viewModel.startWithAnalysisProperty());
+        fontFamilyChoiceBox.setItems(viewModel.getFontFamilyList());
+
+        fontFamilyChoiceBox.valueProperty().addListener((observableValue, s, t1) -> {
+            if (t1 != null){
+                viewModel.setFontFamily(t1);
+            }
+        });
+
     }
     @FXML
     void setGameDir(ActionEvent event) {

@@ -10,6 +10,7 @@ import javafx.beans.property.SimpleStringProperty;
  * @create: 2024-07-03 00:38
  */
 public class Setting {
+    private SimpleBooleanProperty theme=new SimpleBooleanProperty(false);
     public SimpleStringProperty gameRootDir=new SimpleStringProperty();
     private SimpleBooleanProperty firstViewWithPoolAnalysis=new SimpleBooleanProperty(false);
 
@@ -35,5 +36,17 @@ public class Setting {
 
     public void setFirstViewWithPoolAnalysis(boolean firstViewWithPoolAnalysis) {
         this.firstViewWithPoolAnalysis.set(firstViewWithPoolAnalysis);
+    }
+
+    public boolean isTheme() {
+        return theme.get();
+    }
+
+    public SimpleBooleanProperty themeProperty() {
+        return theme;
+    }
+
+    public void setTheme(boolean theme) {
+        this.theme.set(theme);
     }
 }

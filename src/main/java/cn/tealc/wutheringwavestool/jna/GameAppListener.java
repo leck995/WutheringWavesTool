@@ -14,8 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 /**
@@ -68,19 +69,64 @@ public class GameAppListener implements WinUser.WinEventProc{
                     start=false;
                     long endGameTime = System.currentTimeMillis(); //游戏结束时间
                     long totalGameTime = endGameTime - startGameTime;//总共游玩时间
+
+                    //获取游戏开始时间日期
+                    Instant instant = Instant.ofEpochMilli(startGameTime);
+                    ZoneId zone = ZoneId.systemDefault();
+                    ZonedDateTime zdt = instant.atZone(zone);
+                    LocalDateTime startDateTime = zdt.toLocalDateTime();
+                    LocalDate startDate = zdt.toLocalDate();
+
+                    //获取结束日期
                     LocalDate localDate = LocalDate.now();
+
                     DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-                    GameTime gameTime=new GameTime();
-                    if (Config.currentRoleId != null){
-                        gameTime.setRoleId(Config.currentRoleId);
-                    }
-                    gameTime.setGameDate(dateTimeFormatter.format(localDate));
-                    gameTime.setStartTime(startGameTime);
-                    gameTime.setEndTime(endGameTime);
-                    gameTime.setDuration(totalGameTime);
                     GameTimeDao dao=new GameTimeDao();
-                    dao.addTime(gameTime);
-                    LOG.info("检测到鸣潮已经结束，保存时间{}",gameTime);
+
+
+
+                    if (startDate.isBefore(localDate)){ //跨天
+                        LocalDateTime endOfDay = startDate.plusDays(1).atStartOfDay();
+                        long millisecondsUntilEndOfDay = ChronoUnit.MILLIS.between(startDateTime, endOfDay);
+                        GameTime gameTime1=new GameTime();
+                        if (Config.currentRoleId != null){
+                            gameTime1.setRoleId(Config.currentRoleId);
+                        }
+                        gameTime1.setGameDate(dateTimeFormatter.format(startDate));
+                        gameTime1.setStartTime(startGameTime);
+                        gameTime1.setEndTime(startGameTime + millisecondsUntilEndOfDay);
+                        gameTime1.setDuration(millisecondsUntilEndOfDay);
+                        dao.addTime(gameTime1);
+                        LOG.info("检测到鸣潮已经结束且跨天，保存昨天时间{}",gameTime1);
+
+
+                        GameTime gameTime=new GameTime();
+                        if (Config.currentRoleId != null){
+                            gameTime.setRoleId(Config.currentRoleId);
+                        }
+                        gameTime.setGameDate(dateTimeFormatter.format(localDate));
+                        long todayMillis = totalGameTime - millisecondsUntilEndOfDay;
+                        gameTime.setStartTime(endGameTime-todayMillis);
+                        gameTime.setEndTime(endGameTime);
+                        gameTime.setDuration(todayMillis);
+
+                        dao.addTime(gameTime);
+                        LOG.info("检测到鸣潮已经结束且跨天，保存今天时间{}",gameTime);
+
+                    }else {
+                        GameTime gameTime=new GameTime();
+                        if (Config.currentRoleId != null){
+                            gameTime.setRoleId(Config.currentRoleId);
+                        }
+                        gameTime.setGameDate(dateTimeFormatter.format(localDate));
+                        gameTime.setStartTime(startGameTime);
+                        gameTime.setEndTime(endGameTime);
+                        gameTime.setDuration(totalGameTime);
+
+                        dao.addTime(gameTime);
+                        LOG.info("检测到鸣潮已经结束，保存时间{}",gameTime);
+                    }
+
                 }
             }
         }

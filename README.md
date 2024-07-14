@@ -8,12 +8,15 @@
 - [x] 查询宝箱获取数量
 - [x] 库街区鸣潮签到
 - [x] 抽卡分析(已支持国际服账号)
+- [x] 明暗色主题
 - [ ] 地图探索进度分析
 - [ ] 角色数据分析
 - [ ] 挑战数据分析
 
 ## 运行截图
 ![image.png](https://github.com/leck995/WutheringWavesTool/blob/master/temp/img01.png)
+
+![image.png](https://github.com/leck995/WutheringWavesTool/blob/master/temp/img04.png)
 
 ![image.png](https://github.com/leck995/WutheringWavesTool/blob/master/temp/img02.png)
 

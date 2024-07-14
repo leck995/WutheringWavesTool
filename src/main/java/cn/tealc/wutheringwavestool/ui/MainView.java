@@ -12,6 +12,8 @@ import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 
+import cn.tealc.wutheringwavestool.theme.PrimerDark;
+import cn.tealc.wutheringwavestool.theme.PrimerLight;
 import com.jfoenix.controls.JFXDialog;
 import com.jfoenix.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FluentViewLoader;
@@ -21,11 +23,13 @@ import de.saxsys.mvvmfx.ViewTuple;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
@@ -33,10 +37,13 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2AL;
+import org.kordamp.ikonli.material2.Material2MZ;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
 import org.kordamp.ikonli.material2.Material2OutlinedMZ;
 
@@ -79,6 +86,28 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         titleBar.setTitle("鸣潮助手");
         titleBar.setContent(root.getChildren().getFirst());
         titleBar.setCloseEvent(event -> showExitDialog());
+        FontIcon fontIcon;
+        if (Config.setting.isTheme()){
+            fontIcon = new FontIcon(Material2AL.BEDTIME);
+
+        }else {
+            fontIcon = new FontIcon(Material2MZ.WB_SUNNY);
+        }
+
+
+        ToggleButton skinBtn=new ToggleButton(null,fontIcon);
+        skinBtn.selectedProperty().bindBidirectional(Config.setting.themeProperty());
+        skinBtn.setOnAction(event -> {
+            if (skinBtn.isSelected()) {
+                fontIcon.setIconCode(Material2AL.BEDTIME);
+                Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
+            }else {
+                fontIcon.setIconCode(Material2MZ.WB_SUNNY);
+                Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
+            }
+        });
+
+        titleBar.getTitleBarRightPane().getChildren().add(1,skinBtn);
 
         titleBar.getStylesheets().add(MainApplication.class.getResource("/cn/tealc/wutheringwavestool/css/Default.css").toExternalForm());
         root.getChildren().add(titleBar);
@@ -98,34 +127,56 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         }
 
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.MESSAGE,((s, objects) -> {
-            if (messagePane.getChildren().size() > 7){
-                messagePane.getChildren().removeFirst();
-            }
-            MessageInfo info= (MessageInfo) objects[0];
-            Message message = createMessage(info);
-            message.setOnClose(e -> {
-                var out = Animations.slideOutRight(message, Duration.millis(250));
-                out.setOnFinished(f -> messagePane.getChildren().remove(message));
-                out.playFromStart();
-            });
-            Platform.runLater(() -> {
-                messagePane.getChildren().add(message);
-                message.setTranslateX(300);
-                Timeline timeline=new Timeline(new KeyFrame(Duration.millis(250),new KeyValue(message.translateXProperty(),0)));
-                timeline.play();
-            });
-            if (info.getAutoClose()){
-                Timeline fiveSecondsWonder = new Timeline(new KeyFrame(info.getShowTime(), new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent event) {
-                        var out = Animations.slideOutRight(message, Duration.millis(250));
-                        out.setOnFinished(f -> messagePane.getChildren().remove(message));
-                        out.playFromStart();
-                    }
-                }));
-                fiveSecondsWonder.play();
-            }
+            showMessage((MessageInfo) objects[0]);
         }));
+        MvvmFX.getNotificationCenter().subscribe(NotificationKey.DIALOG,((s, objects) -> {
+            showDialog((JFXDialogLayout) objects[0]);
+        }));
+
+    }
+
+
+    private void showDialog(JFXDialogLayout container){
+        JFXDialog dialog = new JFXDialog(titleBar,container,JFXDialog.DialogTransition.CENTER);
+        for (Node action : container.getActions()) {
+            Button button=(Button) action;
+            if (button.isCancelButton()){
+                button.setOnAction(event -> {
+                    dialog.close();
+                });
+
+            }
+        }
+        dialog.show();
+    }
+
+    private void showMessage(MessageInfo info){
+        if (messagePane.getChildren().size() > 7){
+            messagePane.getChildren().removeFirst();
+        }
+        Message message = createMessage(info);
+        message.setOnClose(e -> {
+            var out = Animations.slideOutRight(message, Duration.millis(250));
+            out.setOnFinished(f -> messagePane.getChildren().remove(message));
+            out.playFromStart();
+        });
+        Platform.runLater(() -> {
+            messagePane.getChildren().add(message);
+            message.setTranslateX(300);
+            Timeline timeline=new Timeline(new KeyFrame(Duration.millis(250),new KeyValue(message.translateXProperty(),0)));
+            timeline.play();
+        });
+        if (info.getAutoClose()){
+            Timeline fiveSecondsWonder = new Timeline(new KeyFrame(info.getShowTime(), new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent event) {
+                    var out = Animations.slideOutRight(message, Duration.millis(250));
+                    out.setOnFinished(f -> messagePane.getChildren().remove(message));
+                    out.playFromStart();
+                }
+            }));
+            fiveSecondsWonder.play();
+        }
     }
 
 

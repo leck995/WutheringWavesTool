@@ -1,9 +1,10 @@
 package cn.tealc.wutheringwavestool;
 
-import atlantafx.base.theme.PrimerLight;
 import cn.tealc.teafx.stage.RoundStage;
 import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
+import cn.tealc.wutheringwavestool.theme.PrimerDark;
+import cn.tealc.wutheringwavestool.theme.PrimerLight;
 import cn.tealc.wutheringwavestool.ui.AnalysisPoolView;
 import cn.tealc.wutheringwavestool.ui.AnalysisPoolViewModel;
 import cn.tealc.wutheringwavestool.ui.MainView;
@@ -24,10 +25,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2AL;
+import org.kordamp.ikonli.material2.Material2MZ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
@@ -38,19 +45,23 @@ public class MainApplication extends Application {
     public GameAppListener appListener;
     private static FXTrayIcon fxTrayIcon;
 
-
-
     @Override
     public void start(Stage stage) throws IOException {
         stage.close();
         JdbcUtils.init();
+        System.setProperty("prism.lcdtext", "false");
         RoundStage roundStage=new RoundStage();
         window=roundStage;
         roundStage.setWidth(1300.0);
         roundStage.setHeight(750.0);
         roundStage.setTitle("鸣潮助手");
         roundStage.getIcons().add(new Image(MainApplication.class.getResourceAsStream("image/icon.png")));
-        Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
+        initFont();
+        if (Config.setting.isTheme()){
+            Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
+        }else {
+            Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
+        }
 
         ViewTuple<MainView, MainViewModel> viewTuple = FluentViewLoader.fxmlView(MainView.class).load();
         roundStage.setContent(viewTuple.getView());
@@ -61,7 +72,24 @@ public class MainApplication extends Application {
         roundStage.show();
         createTrayIcon();
         initExceptionHandler();
+    }
 
+    private void initFont(){
+        boolean contains = Font.getFamilies().contains("Microsoft YaHei");
+        if (!contains){
+            LOG.info("默认字体不存在，加载内置字体");
+            Font.loadFont(
+                    MainApplication.class.getResourceAsStream("/cn/tealc/wutheringwavestool/font/HarmonyOS_Sans_SC_Regular.ttf"),
+                    12);
+            Font.loadFont(
+                    MainApplication.class.getResourceAsStream("/cn/tealc/wutheringwavestool/font/HarmonyOS_Sans_SC_Bold.ttf"),
+                    12);
+            window.getScene().getRoot().setStyle("-fx-font-family: \"HarmonyOS Sans SC\"");
+        }else {
+            window.getScene().getRoot().setStyle("-fx-font-family: \"Microsoft YaHei\"");
+            LOG.info("默认字体存在");
+        }
+        LOG.info("系统默认字体:{}",Font.getDefault().getFamily());
     }
 
     private void initExceptionHandler(){
@@ -76,18 +104,15 @@ public class MainApplication extends Application {
         });
     }
 
-    @Override
-    public void stop() throws Exception {
-        super.stop();
+
+
+
+    public static void exit(){
         if (gameAppListener != null) {
             User32.INSTANCE.UnhookWinEvent(gameAppListener);
         }
         JdbcUtils.exit();
         Config.save();
-    }
-
-
-    public static void exit(){
         window.close();
         System.exit(0);
     }

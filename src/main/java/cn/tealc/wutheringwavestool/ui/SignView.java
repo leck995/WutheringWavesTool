@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.ui;
 
 import atlantafx.base.layout.InputGroup;
+import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.model.sign.SignGood;
@@ -9,6 +10,8 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.ui.component.SignGoodCell;
 import cn.tealc.wutheringwavestool.ui.component.SignUserCell;
+import com.jfoenix.controls.JFXDialog;
+import com.jfoenix.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -21,8 +24,11 @@ import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import org.controlsfx.control.GridView;
 
+import javax.swing.text.Style;
 import java.net.URL;
 import java.util.ResourceBundle;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * @program: WutheringWavesTool
@@ -58,9 +64,6 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
 
     @FXML
     void addUser(ActionEvent event) {
-        Dialog<SignUserInfo> dialog = new Dialog<>();
-        DialogPane dialogPane = new DialogPane();
-        dialogPane.getButtonTypes().addAll(ButtonType.FINISH,ButtonType.CANCEL);
         Label userIdLabel = new Label("用户ID:");
         TextField userIdTextField = new TextField();
         userIdTextField.setPromptText("库街区的用户ID");
@@ -73,7 +76,7 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
         InputGroup inputGroup2 = new InputGroup(roleIdLabel,roleIdTextField);
         inputGroup2.setAlignment(Pos.CENTER);
 
-        Label tokenLabel = new Label("Token:");
+        Label tokenLabel = new Label("Token: ");
         TextField tokenTextField = new TextField();
         tokenTextField.setPromptText("库街区的登录Token");
         InputGroup inputGroup3 = new InputGroup(tokenLabel, tokenTextField);
@@ -84,38 +87,45 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
         VBox parentVBox = new VBox(10.0,inputGroup1,inputGroup2,inputGroup3,mainCheckBox);
 
         parentVBox.setAlignment(Pos.CENTER);
-        dialogPane.setContent(parentVBox);
-        dialogPane.setPrefSize(400,250);
 
-        dialog.setDialogPane(dialogPane);
-        dialog.setTitle("添加签到用户");
-        dialog.initOwner(MainApplication.window);
-        dialog.setResultConverter(new Callback<ButtonType, SignUserInfo>() {
-            @Override
-            public SignUserInfo call(ButtonType buttonType) {
-                if (buttonType == ButtonType.FINISH) {
-                    String userId = userIdTextField.getText();
-                    String roleId = roleIdTextField.getText();
-                    String token = tokenTextField.getText();
-                    boolean selected = mainCheckBox.isSelected();
-                    if (!userId.isEmpty() && !roleId.isEmpty() && !token.isEmpty()) {
-                        return new SignUserInfo(userId,roleId,token,selected);
-                    }
-                    return null;
+
+        Button saveBtn=new Button("保存");
+        saveBtn.getStyleClass().add(Styles.ACCENT);
+        Button cancelBtn=new Button("取消");
+        cancelBtn.setCancelButton(true);
+
+
+
+
+        saveBtn.setOnAction(event1 -> {
+            String userId = userIdTextField.getText();
+            String roleId = roleIdTextField.getText();
+            String token = tokenTextField.getText();
+            boolean selected = mainCheckBox.isSelected();
+            if (!userId.isEmpty() && !roleId.isEmpty() && !token.isEmpty()) {
+                boolean status = viewModel.addUser(new SignUserInfo(userId,roleId,token,selected));
+                if (status) {
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"成功添加用户"));
+                }else {
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"重复添加，请先删除原有用户再添加"));
                 }
-                return null;
             }
+
+            cancelBtn.fireEvent(event1); //这里是为了触发cancelBtn的事件，从而关闭窗口，属实另辟途径（自夸）
         });
+        Label title = new Label("添加签到用户");
+        title.getStyleClass().add(Styles.TITLE_2);
+        JFXDialogLayout dialogLayout=new JFXDialogLayout();
+        dialogLayout.setHeading(title);
+        dialogLayout.setBody(parentVBox);
+        dialogLayout.setActions(saveBtn,cancelBtn);
+        dialogLayout.setPrefSize(400,250);
 
 
-        dialog.showAndWait().ifPresent(user -> {
-            boolean status = viewModel.addUser(user);
-            if (status) {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"成功添加用户"));
-            }else {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"重复添加，请先删除原有用户再添加"));
-            }
-        });
+        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
+
+
+
     }
 
 

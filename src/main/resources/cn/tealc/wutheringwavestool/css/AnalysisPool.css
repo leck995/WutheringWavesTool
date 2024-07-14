@@ -68,7 +68,7 @@
 
 }
 .list-view:hover  > .virtual-flow > .scroll-bar:vertical .thumb {
-    -fx-background-color: #717171;
+    -fx-background-color: -color-hover-emphasis;
 
 }
 .list-view > .virtual-flow > .scroll-bar:horizontal .thumb{
@@ -80,15 +80,15 @@
 .role-pane{
     -fx-padding: 10;
     -fx-background-radius: 8;
-    -fx-border-color: white;
+    -fx-border-color: -color-border-default;
     -fx-border-radius: 8;
-    -fx-background-color: white;
+    -fx-background-color: -color-bg-default;
 }
 .role-pane .role-name{
     -fx-font-size: 17;
 }
 .role-pane .role-date{
-    -fx-text-fill: #787878;
+    -fx-text-fill: -color-font-subtle;
 }
 .role-pane .role-desc{
     -fx-font-size: 20;
@@ -97,12 +97,13 @@
     -fx-pref-width: 25;
 }
 
-/*.role-pane  .progress-bar > .bar{
-    -fx-background-color: #E3C139;
-}*/
+.role-pane  .progress-bar > .bar{
+    -fx-padding: 4px;
+}
 .role-pane  .progress-bar > .track{
     -fx-background-color: #dfdede;
 }
+
 
 /*.role-pane-1{
     -fx-background-color: #66cccc;
@@ -141,8 +142,8 @@
     -fx-pref-height: 40;
     -fx-pref-width: 100;
     -fx-font-size: 14;
-    -fx-background-color: #ffffff;
+    -fx-background-color:  -color-bg-default;
     -fx-background-radius: 5;
     -fx-padding: 3;
-    -fx-effect:dropshadow(three-pass-box, #ededed,2,0.7,0,0);
+    -fx-effect:dropshadow(three-pass-box, -color-border-muted,2,0.7,0,0);
 }

@@ -21,7 +21,6 @@ public class Config {
     public static final String version="1.1.2";
     public static final String appTitle="鸣潮助手";
     public static Setting setting;
-    public static Map<String, String> headers = new HashMap<>();
     public static String currentRoleId;
 
     static {
@@ -37,19 +36,6 @@ public class Config {
         if (setting == null){
             setting=new Setting();
         }
-
-        File headerFile = new File("assets/data/header.json");
-        if (headerFile.exists()){
-            try {
-                headers=mapper.readValue(headerFile, new TypeReference<HashMap<String, String>>() {});
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (headers == null){
-            headers=new HashMap<>();
-        }
-
     }
 
 
