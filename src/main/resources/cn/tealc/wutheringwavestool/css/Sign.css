@@ -1,16 +1,27 @@
 .list-view{
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: transparent;
     -fx-background-radius: 10;
     -fx-border-color: transparent;
-    -fx-padding: 10 0 0 10;
-    -fx-effect:dropshadow(three-pass-box, -color-border-default,2,0.7,0,0);
+    -fx-padding: 0;
+
 }
 
 .list-view .list-cell{
     -fx-background-color: transparent;
     -fx-border-color: transparent;
+    -fx-padding: 8 10 8 10;
+}
+.list-view .list-cell:filled .user{
+    -fx-background-color: -color-bg-default;
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+    -fx-effect:dropshadow(three-pass-box,-color-border-muted,2,0.7,0,0);
 }
 
+.list-view .list-cell:empty .user{
+    -fx-background-color: transparent;
+
+}
 .list-view .list-cell .user-label{
     -fx-font-size: 12;
 }

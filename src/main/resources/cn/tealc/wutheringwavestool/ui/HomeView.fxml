@@ -28,11 +28,15 @@
                         </ImageView>
                         <VBox alignment="CENTER_LEFT" spacing="2.0">
                            <children>
-                              <Label fx:id="roleNameLabel" styleClass="data-label-1" text="长离" />
-                              <Label fx:id="gameLifeLabel" styleClass="data-label-2" text="已游玩48天" />
+                              <Label fx:id="roleNameLabel" styleClass="data-label-1" text="长离长离长离长离长离长离" />
+                              <HBox alignment="CENTER_LEFT">
+                                 <children>
+                                    <Label fx:id="levelLabel" styleClass="level" text="LV.48" />
+                                    <Label fx:id="gameLifeLabel" alignment="CENTER_RIGHT" prefWidth="120.0" styleClass="data-label-2" text="已游玩48天" />
+                                 </children>
+                              </HBox>
                            </children>
                         </VBox>
-                        <Label fx:id="levelLabel" styleClass="level" text="LV.48" translateX="10.0" />
                      </children>
                   </HBox>
                   <Label styleClass="title-3" text="每日数据" />
@@ -40,7 +44,7 @@
                      <children>
                         <HBox spacing="20.0">
                            <children>
-                              <HBox alignment="CENTER_LEFT">
+                              <HBox alignment="CENTER_LEFT" spacing="5.0">
                                  <children>
                                     <ImageView fx:id="energyIv" fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true" />
                                     <VBox alignment="CENTER">
@@ -51,7 +55,7 @@
                                     </VBox>
                                  </children>
                               </HBox>
-                              <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0">
+                              <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="5.0">
                                  <children>
                                     <ImageView fx:id="livenessIV" fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true" />
                                     <VBox alignment="CENTER">
@@ -66,7 +70,7 @@
                         </HBox>
                         <HBox layoutX="10.0" layoutY="10.0" spacing="20.0">
                            <children>
-                              <HBox alignment="CENTER_LEFT" spacing="5.0">
+                              <HBox alignment="CENTER_LEFT" spacing="10.0">
                                  <children>
                                     <ImageView fx:id="battlePassIV" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
                                     <VBox alignment="CENTER_LEFT">
@@ -181,5 +185,6 @@
       </HBox>
       <Label styleClass="title-2" text="主页" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
       <ImageView fx:id="roleIV" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
+      <Label fx:id="hasSignLabel" styleClass="sign-label" text="今日尚未签到" AnchorPane.bottomAnchor="70.0" AnchorPane.rightAnchor="40.0" />
    </children>
 </AnchorPane>

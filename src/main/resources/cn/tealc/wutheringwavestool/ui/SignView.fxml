@@ -11,8 +11,8 @@
 <AnchorPane prefHeight="700.0" prefWidth="1000.0" stylesheets="@../css/Sign.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.SignView">
    <children>
       <Label styleClass="title-2" text="签到" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-      <ListView fx:id="signUserListview" prefHeight="200.0" prefWidth="240.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="20.0" />
-      <HBox spacing="10.0" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="280.0">
+      <ListView fx:id="signUserListview" prefHeight="200.0" prefWidth="260.0" AnchorPane.bottomAnchor="70.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="40.0" />
+      <HBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="40.0">
          <children>
             <Button mnemonicParsing="false" onAction="#addUser" text="添加账号" />
             <Button mnemonicParsing="false" onAction="#sign" styleClass="accent" text="签到" />

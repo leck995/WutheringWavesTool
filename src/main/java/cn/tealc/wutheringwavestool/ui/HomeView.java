@@ -1,10 +1,12 @@
 package cn.tealc.wutheringwavestool.ui;
 
+import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.Config;
 import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
+import com.jfoenix.controls.JFXDialogLayout;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
@@ -13,6 +15,7 @@ import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.MvvmFX;
 import javafx.animation.RotateTransition;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -108,6 +111,8 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     private Label gameTimeLabel;
     @FXML
     private Label gameTimeTipLabel;
+    @FXML
+    private Label hasSignLabel;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -141,6 +146,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
         gameTimeLabel.textProperty().bind(viewModel.gameTimeTextProperty());
         gameTimeTipLabel.textProperty().bind(viewModel.gameTimeTipTextProperty());
+        hasSignLabel.visibleProperty().bind(viewModel.hasSignProperty().isNotEqualTo(viewModel.rolePaneVisibleProperty()));
         headIV.setImage(new Image(MainApplication.class.getResource("image/icon.png").toExternalForm(),60,60,true,true,true));
         Circle circle = new Circle(30,30,30);
         headIV.setClip(circle);
@@ -151,7 +157,33 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
     @FXML
     void startGame(ActionEvent event) {
-        viewModel.startGame();
+        if (viewModel.isHasSign()){
+            viewModel.startGame();
+        }else {
+            JFXDialogLayout dialogLayout = new JFXDialogLayout();
+            Label title = new Label("签到提醒");
+            title.getStyleClass().add(Styles.TITLE_2);
+            dialogLayout.setHeading(title);
+            dialogLayout.setBody(new Label("检测到还没有签到，是否签到并启动游戏?"));
+
+            Button okBtn=new Button("签到并启动");
+            Button directBtn=new Button("启动");
+            Button cancelBtn=new Button("取消");
+
+            okBtn.setOnAction(event1 -> {
+                viewModel.signAndGame();
+            });
+            directBtn.setOnAction(event1 -> {
+                viewModel.startGame();
+            });
+
+            cancelBtn.setCancelButton(true);
+            dialogLayout.setActions(okBtn,directBtn,cancelBtn);
+
+            MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
+        }
+
+
     }
 
     @FXML

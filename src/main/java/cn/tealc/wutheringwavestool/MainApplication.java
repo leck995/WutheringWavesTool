@@ -50,6 +50,8 @@ public class MainApplication extends Application {
         stage.close();
         JdbcUtils.init();
         System.setProperty("prism.lcdtext", "false");
+       // System.setProperty("LcdFontSmoothing", "true");
+        System.setProperty("prism.text", "t2k");
         RoundStage roundStage=new RoundStage();
         window=roundStage;
         roundStage.setWidth(1300.0);

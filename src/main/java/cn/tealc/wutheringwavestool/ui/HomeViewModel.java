@@ -13,6 +13,7 @@ import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.model.user.BoxInfo;
 import cn.tealc.wutheringwavestool.model.user.RoleDailyData;
 import cn.tealc.wutheringwavestool.model.user.RoleInfo;
+import cn.tealc.wutheringwavestool.thread.SignTask;
 import cn.tealc.wutheringwavestool.thread.UserDailyDataTask;
 import cn.tealc.wutheringwavestool.thread.UserDataRefreshTask;
 import cn.tealc.wutheringwavestool.thread.UserInfoDataTask;
@@ -72,6 +73,7 @@ public class HomeViewModel implements ViewModel {
     private SimpleStringProperty gameTimeText=new SimpleStringProperty();
     private SimpleStringProperty gameTimeTipText=new SimpleStringProperty();
     private SimpleObjectProperty<Image> headImg = new SimpleObjectProperty<>();
+    private SimpleBooleanProperty hasSign=new SimpleBooleanProperty(false);
 
     private final String[] gameTips={"今日还没有开始冒险","只是上去做个每日任务","等找完这个宝箱，我就休息","小肝不算肝","肝佬"};
     public HomeViewModel() {
@@ -224,12 +226,8 @@ public class HomeViewModel implements ViewModel {
                         SimpleDateFormat formatter = new SimpleDateFormat("满: 明日HH:mm");
                         energyTimeText.set(formatter.format(date));
                     }
-
-
-
-
                 }
-
+                hasSign.set(data.isHasSignIn());
                 livenessText.set(String.valueOf(data.getLivenessData().getCur()));
                 battlePassLevelText.set(String.format("电台 LV.%02d",data.getBattlePassData().getFirst().getCur()));
                 battlePassNumText.set(String.format("经验:%d/%d",data.getBattlePassData().get(1).getCur(),data.getBattlePassData().get(1).getTotal()));
@@ -268,6 +266,12 @@ public class HomeViewModel implements ViewModel {
         }
 
     }
+
+    public void signAndGame(){
+        SignTask task=new SignTask();
+        Thread.startVirtualThread(task);
+        startGame();
+    }
     public void startGame(){
         String dir = Config.setting.gameRootDir.get();
         if (dir != null){
@@ -282,7 +286,6 @@ public class HomeViewModel implements ViewModel {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                         new MessageInfo(MessageType.WARNING,String.format("无法找到%s，请确保游戏目录正确",exe.getPath()),false));
             }
-
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                     new MessageInfo(MessageType.WARNING,"请在设置在先设置游戏目录"),false);
@@ -524,5 +527,17 @@ public class HomeViewModel implements ViewModel {
 
     public SimpleStringProperty gameTimeTipTextProperty() {
         return gameTimeTipText;
+    }
+
+    public boolean isHasSign() {
+        return hasSign.get();
+    }
+
+    public SimpleBooleanProperty hasSignProperty() {
+        return hasSign;
+    }
+
+    public void setHasSign(boolean hasSign) {
+        this.hasSign.set(hasSign);
     }
 }

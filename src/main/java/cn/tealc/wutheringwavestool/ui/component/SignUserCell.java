@@ -14,6 +14,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -52,9 +53,11 @@ public class SignUserCell extends ListCell<SignUserInfo> {
         });
 
         VBox vbox=new VBox(3.0,userId,roleId);
-        vbox.setAlignment(Pos.CENTER);
+        vbox.setAlignment(Pos.CENTER_LEFT);
 
         HBox hbox=new HBox(10.0,index,vbox,update,delete);
+        HBox.setHgrow(vbox, Priority.ALWAYS);
+        hbox.getStyleClass().add("user");
         hbox.setPadding(new Insets(5.0,5.0,5.0,5.0));
         hbox.setAlignment(Pos.CENTER_LEFT);
         setGraphic(hbox);
@@ -79,16 +82,6 @@ public class SignUserCell extends ListCell<SignUserInfo> {
     }
 
     private void delete(){
-/*        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setHeaderText(null);
-        alert.setContentText(String.format("确认删除用户ID: %s 的数据吗",getItem().getUserId()));
-        alert.initOwner(MainApplication.window);
-        alert.showAndWait().ifPresent(buttonType -> {
-            if (buttonType == ButtonType.OK){
-                MvvmFX.getNotificationCenter().publish(NotificationKey.SIGN_USER_DELETE,getItem());
-            }
-        });*/
-
         JFXDialogLayout dialogLayout = new JFXDialogLayout();
         Label title=new Label("确认");
         title.getStyleClass().add(Styles.TITLE_2);
@@ -149,7 +142,6 @@ public class SignUserCell extends ListCell<SignUserInfo> {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.SIGN_USER_UPDATE,getIndex(), new SignUserInfo(userId,roleId,token,selected));
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"修改成功"));
             }
-
             cancelBtn.fireEvent(event1); //这里是为了触发cancelBtn的事件，从而关闭窗口，属实另辟途径（自夸）
         });
         Label title = new Label("修改签到用户");
@@ -159,72 +151,8 @@ public class SignUserCell extends ListCell<SignUserInfo> {
         dialogLayout.setBody(parentVBox);
         dialogLayout.setActions(saveBtn,cancelBtn);
         dialogLayout.setPrefSize(400,250);
-
-
         MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
 
     }
 
-    private void update2(){
-
-        SignUserInfo item = getItem();
-        Dialog<SignUserInfo> dialog = new Dialog<>();
-        DialogPane dialogPane = new DialogPane();
-        dialogPane.getButtonTypes().addAll(ButtonType.FINISH,ButtonType.CANCEL);
-        Label userIdLabel = new Label("用户ID:");
-        TextField userIdTextField = new TextField(item.getUserId());
-        userIdTextField.setPromptText("库街区的用户ID");
-        InputGroup inputGroup1 = new InputGroup(userIdLabel,userIdTextField);
-        inputGroup1.setAlignment(Pos.CENTER);
-        Label roleIdLabel = new Label("游戏ID:");
-
-        TextField roleIdTextField = new TextField(item.getRoleId());
-        roleIdTextField.setPromptText("鸣潮的玩家ID");
-        InputGroup inputGroup2 = new InputGroup(roleIdLabel,roleIdTextField);
-        inputGroup2.setAlignment(Pos.CENTER);
-
-        Label tokenLabel = new Label("Token:");
-        TextField tokenTextField = new TextField(item.getToken());
-        tokenTextField.setPromptText("库街区的登录Token");
-        InputGroup inputGroup3 = new InputGroup(tokenLabel, tokenTextField);
-        inputGroup3.setAlignment(Pos.CENTER);
-
-        CheckBox mainCheckBox = new CheckBox("设为主账号");
-        mainCheckBox.setSelected(item.getMain());
-        VBox parentVBox = new VBox(10.0,inputGroup1,inputGroup2,inputGroup3,mainCheckBox);
-
-        parentVBox.setAlignment(Pos.CENTER);
-        dialogPane.setContent(parentVBox);
-        dialogPane.setPrefSize(400,250);
-
-        dialog.setDialogPane(dialogPane);
-        dialog.setTitle("修改签到用户");
-        dialog.initOwner(MainApplication.window);
-        dialog.setResultConverter(new Callback<ButtonType, SignUserInfo>() {
-            @Override
-            public SignUserInfo call(ButtonType buttonType) {
-                if (buttonType == ButtonType.FINISH) {
-                    String userId = userIdTextField.getText();
-                    String roleId = roleIdTextField.getText();
-                    String token = tokenTextField.getText();
-                    boolean selected = mainCheckBox.isSelected();
-                    if (!userId.isEmpty() && !roleId.isEmpty() && !token.isEmpty()) {
-                        return new SignUserInfo(userId,roleId,token,selected);
-                    }
-                    return null;
-                }
-                return null;
-            }
-        });
-
-
-        dialog.showAndWait().ifPresent(user -> {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.SIGN_USER_UPDATE,getIndex(),user);
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"修改成功"));
-
-        });
-
-
-
-    }
 }

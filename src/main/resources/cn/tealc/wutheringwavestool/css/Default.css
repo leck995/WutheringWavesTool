@@ -27,7 +27,7 @@
 
 .title-bar > .title-header > .right-header  .button:hover,
 .title-bar > .title-header > .right-header  .toggle-button:hover {
-    -fx-background-color:-color-bg-inset;
+    -fx-background-color:-color-hover-muted;
 }
 
 .title-bar > .title-header > .right-header  .button Region,
