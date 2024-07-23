@@ -8,6 +8,7 @@ import cn.tealc.wutheringwavestool.model.sign.SignGood;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.wutheringwavestool.model.sign.UserInfo;
 import cn.tealc.wutheringwavestool.ui.component.SignGoodCell;
 import cn.tealc.wutheringwavestool.ui.component.SignUserCell;
 import com.jfoenix.controls.JFXDialog;
@@ -40,7 +41,7 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
     @InjectViewModel
     private SignViewModel viewModel;
     @FXML
-    private ListView<SignUserInfo> signUserListview;
+    private ListView<UserInfo> signUserListview;
     @FXML
     private GridView<SignGood> goodsListview;
     @FXML
@@ -49,7 +50,7 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         signUserListview.setItems(viewModel.getUserInfoList());
-        signUserListview.setCellFactory((ListView<SignUserInfo> listView) -> new SignUserCell());
+        signUserListview.setCellFactory((ListView<UserInfo> listView) -> new SignUserCell());
 
         goodsListview.setItems(viewModel.getGoodsList());
         goodsListview.setCellWidth(70);
@@ -103,7 +104,7 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
             String token = tokenTextField.getText();
             boolean selected = mainCheckBox.isSelected();
             if (!userId.isEmpty() && !roleId.isEmpty() && !token.isEmpty()) {
-                boolean status = viewModel.addUser(new SignUserInfo(userId,roleId,token,selected));
+                boolean status = viewModel.addUser(new UserInfo(userId,roleId,token,selected,false));
                 if (status) {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"成功添加用户"));
                 }else {

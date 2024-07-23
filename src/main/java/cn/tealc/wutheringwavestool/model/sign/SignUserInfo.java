@@ -1,18 +1,20 @@
 package cn.tealc.wutheringwavestool.model.sign;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @program: WutheringWavesTool
  * @description:
  * @author: Leck
  * @create: 2024-07-06 20:19
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class SignUserInfo{
 
     private String userId;
     private String roleId;
     private String token;
     private Boolean isMain;
-
     public SignUserInfo() {
     }
 
@@ -50,10 +52,17 @@ public class SignUserInfo{
     public Boolean getMain() {
         return isMain;
     }
-
     public void setMain(Boolean main) {
         isMain = main;
     }
+    public void setIsMain(Boolean main) {
+        isMain = main;
+    }
+    public Boolean getIsMain() {
+        return isMain;
+    }
+
+
 
     @Override
     public String toString() {

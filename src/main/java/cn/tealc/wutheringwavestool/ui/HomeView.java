@@ -172,9 +172,11 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
             okBtn.setOnAction(event1 -> {
                 viewModel.signAndGame();
+                cancelBtn.fireEvent(event1);
             });
             directBtn.setOnAction(event1 -> {
                 viewModel.startGame();
+                cancelBtn.fireEvent(event1);
             });
 
             cancelBtn.setCancelButton(true);

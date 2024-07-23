@@ -4,12 +4,14 @@ import cn.tealc.wutheringwavestool.Config;
 import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
+import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
+import cn.tealc.wutheringwavestool.model.sign.UserInfo;
 import cn.tealc.wutheringwavestool.model.user.BoxInfo;
 import cn.tealc.wutheringwavestool.model.user.RoleDailyData;
 import cn.tealc.wutheringwavestool.model.user.RoleInfo;
@@ -79,32 +81,20 @@ public class HomeViewModel implements ViewModel {
     public HomeViewModel() {
         //getPoolInfo();
         getDailyData();
-        File signJson=new File("signInfo.json");
-        if (signJson.exists()) {
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                java.util.List<SignUserInfo> list = mapper.readValue(signJson, new TypeReference<List<SignUserInfo>>() {
-                });
-                if (!list.isEmpty()){
-                    List<SignUserInfo> temp = list.stream().filter(SignUserInfo::getMain).toList();
-                    if (!temp.isEmpty()){
-                        userInfo=temp.getFirst();
-                    }else {
-                        if (!list.isEmpty()){
-                            userInfo=list.getFirst();
-                            Config.currentRoleId=userInfo.getRoleId();
-                        }
-                    }
-                    updateRoleData();
 
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+        UserInfoDao dao=new UserInfoDao();
+        userInfo= dao.getMain();
+        if (userInfo != null) {
+            Config.currentRoleId=userInfo.getRoleId();
+            updateRoleData();
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING,"当前不存在用户信息，无法获取，请在签到界面添加用户信息"),false);
+                    new MessageInfo(MessageType.WARNING,"当前不存在主用户信息，无法获取，请在签到界面添加用户信息"),false);
         }
+
+
+
+
 
         updateGameTime(GameAppListener.getInstance().getDuration());
 
@@ -269,6 +259,7 @@ public class HomeViewModel implements ViewModel {
 
     public void signAndGame(){
         SignTask task=new SignTask();
+        task.setOnSucceeded(workerStateEvent -> hasSign.set(true));
         Thread.startVirtualThread(task);
         startGame();
     }

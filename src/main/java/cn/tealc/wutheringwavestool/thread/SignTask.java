@@ -1,6 +1,8 @@
 package cn.tealc.wutheringwavestool.thread;
 
+import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
+import cn.tealc.wutheringwavestool.model.sign.UserInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
@@ -24,33 +26,29 @@ public class SignTask extends Task<String> {
 
     @Override
     protected String call() throws Exception {
-        File file=new File("signInfo.json");
-        if (file.exists()){
-            ObjectMapper mapper = new ObjectMapper();
-            List<SignUserInfo> signUserInfos = mapper.readValue(file, new TypeReference<List<SignUserInfo>>() {
-            });
-            StringBuilder sb=new StringBuilder();
-            for (int i = 0; i < signUserInfos.size(); i++) {
-                SignUserInfo user = signUserInfos.get(i);
-                if (i < 9){
-                    String sign = sign(user.getRoleId(), user.getUserId(), user.getToken());
-                    sb.append(String.format("当前用户ID:%s,签到状态：%s",user.getUserId(), sign));
-                    sb.append("\n");
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
-                }else {
-                    sb.append(String.format("当前用户ID:%s,签到状态：签到账号数量超过最大限制",user.getUserId()));
-                }
-            }
 
-            sb.append("===签到完成===");
-            return sb.toString();
-        }else {
-            return "无相关配置，不启动签到";
+        UserInfoDao dao = new UserInfoDao();
+        List<UserInfo> userInfos = dao.getAll();
+        StringBuilder sb=new StringBuilder();
+        for (int i = 0; i < userInfos.size(); i++) {
+            UserInfo user = userInfos.get(i);
+            if (i < 9){
+                String sign = sign(user.getRoleId(), user.getUserId(), user.getToken());
+                sb.append(String.format("当前用户ID:%s,签到状态：%s",user.getUserId(), sign));
+                sb.append("\n");
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+            }else {
+                sb.append(String.format("当前用户ID:%s,签到状态：签到账号数量超过最大限制",user.getUserId()));
+            }
         }
+
+        sb.append("===签到完成===");
+        return sb.toString();
+
     }
 
     private String sign(String roleId,String userId,String token){

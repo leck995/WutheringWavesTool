@@ -7,6 +7,7 @@ import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
+import cn.tealc.wutheringwavestool.model.sign.UserInfo;
 import com.jfoenix.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.MvvmFX;
 import javafx.event.ActionEvent;
@@ -26,7 +27,7 @@ import org.kordamp.ikonli.material2.Material2AL;
  * @author: Leck
  * @create: 2024-07-07 21:19
  */
-public class SignUserCell extends ListCell<SignUserInfo> {
+public class SignUserCell extends ListCell<UserInfo> {
     private final Label userId=new Label();
     private final Label roleId=new Label();
     private final Label index=new Label();
@@ -64,7 +65,7 @@ public class SignUserCell extends ListCell<SignUserInfo> {
     }
 
     @Override
-    protected void updateItem(SignUserInfo signUserInfo, boolean b) {
+    protected void updateItem(UserInfo signUserInfo, boolean b) {
         super.updateItem(signUserInfo, b);
         if (!b){
             index.setText(String.valueOf(getIndex()+1));
@@ -139,7 +140,7 @@ public class SignUserCell extends ListCell<SignUserInfo> {
             String token = tokenTextField.getText();
             boolean selected = mainCheckBox.isSelected();
             if (!userId.isEmpty() && !roleId.isEmpty() && !token.isEmpty()) {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.SIGN_USER_UPDATE,getIndex(), new SignUserInfo(userId,roleId,token,selected));
+                MvvmFX.getNotificationCenter().publish(NotificationKey.SIGN_USER_UPDATE,getIndex(), new UserInfo(userId,roleId,token,selected,false));
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"修改成功"));
             }
             cancelBtn.fireEvent(event1); //这里是为了触发cancelBtn的事件，从而关闭窗口，属实另辟途径（自夸）

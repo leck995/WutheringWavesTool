@@ -52,6 +52,10 @@ public class MainApplication extends Application {
         System.setProperty("prism.lcdtext", "false");
        // System.setProperty("LcdFontSmoothing", "true");
         System.setProperty("prism.text", "t2k");
+
+        VersionUpdateUtil.update();
+
+
         RoundStage roundStage=new RoundStage();
         window=roundStage;
         roundStage.setWidth(1300.0);
@@ -64,6 +68,8 @@ public class MainApplication extends Application {
         }else {
             Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
         }
+
+
 
         ViewTuple<MainView, MainViewModel> viewTuple = FluentViewLoader.fxmlView(MainView.class).load();
         roundStage.setContent(viewTuple.getView());

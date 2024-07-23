@@ -88,8 +88,20 @@ public class JdbcUtils {
                       end_time BIGINT NOT NULL,
                       duration BIGINT NOT NULL);
                     """;
+
+            String createUserInfo="""
+                    CREATE TABLE IF NOT EXISTS user_info(
+                      id INTEGER PRIMARY KEY AUTOINCREMENT,
+                      user_id VARCHAR(20),
+                      role_id VARCHAR(20) UNIQUE,
+                      token VARCHAR(255),
+                      is_main BOOL DEFAULT false,
+                      last_sign_time INTEGER,
+                      is_web BOOL DEFAULT false);
+                    """;
             Statement st = con.createStatement();
             st.execute(createRoleList);
+            st.execute(createUserInfo);
             st.close();
             con.close();
         } catch (SQLException e) {

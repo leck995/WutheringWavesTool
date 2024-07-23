@@ -69,7 +69,6 @@
 }
 .list-view:hover  > .virtual-flow > .scroll-bar:vertical .thumb {
     -fx-background-color: -color-hover-emphasis;
-
 }
 .list-view > .virtual-flow > .scroll-bar:horizontal .thumb{
     -fx-background-color: transparent;
