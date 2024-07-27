@@ -8,7 +8,7 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.model.sign.UserInfo;
-import com.jfoenix.controls.JFXDialogLayout;
+import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.MvvmFX;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
