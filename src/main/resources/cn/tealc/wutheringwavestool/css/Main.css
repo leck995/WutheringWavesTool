@@ -29,6 +29,6 @@
 
 .split-pane .split-pane-divider,
 .split-pane > .split-pane-divider > .horizontal-grabber{
-    -fx-background-color: -color-bg-overlay;
+    -fx-background-color: transparent;
 }
 

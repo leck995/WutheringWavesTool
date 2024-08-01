@@ -62,6 +62,6 @@
 
 .log,
 .log:focused{
-    -fx-background-color: -color-bg-overlay;
+    -fx-background-color: transparent;
     -fx-background-insets: null;
 }

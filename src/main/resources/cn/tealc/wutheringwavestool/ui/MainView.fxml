@@ -34,6 +34,11 @@
                         <FontIcon iconLiteral="mdal-article" />
                      </graphic>
                   </ToggleButton>
+                  <ToggleButton alignment="CENTER_LEFT" layoutX="30.0" layoutY="104.0" mnemonicParsing="false" onAction="#toOwnRole" prefWidth="140.0" styleClass="analysis-btn" text="我的角色" toggleGroup="$navToggleGroup">
+                     <graphic>
+                        <FontIcon iconLiteral="mdal-article" />
+                     </graphic>
+                  </ToggleButton>
                   <Spacer VBox.vgrow="ALWAYS" />
                   <ToggleButton alignment="CENTER_LEFT" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" onAction="#toSetting" prefWidth="140.0" styleClass="setting-btn" text="设置" toggleGroup="$navToggleGroup">
                      <graphic>

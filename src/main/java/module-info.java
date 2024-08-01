@@ -18,11 +18,15 @@ open module cn.tealc.wutheringwavestool {
     requires org.xerial.sqlitejdbc;
     requires com.sun.jna;
     requires com.dustinredmond.fxtrayicon;
+    requires filters;
+    requires javafx.swing;
+    requires net.coobird.thumbnailator;
 
 
     exports cn.tealc.wutheringwavestool;
     exports cn.tealc.wutheringwavestool.model to com.fasterxml.jackson.databind;
-    exports cn.tealc.wutheringwavestool.model.user to com.fasterxml.jackson.databind;
+    exports cn.tealc.wutheringwavestool.model.roleData to com.fasterxml.jackson.databind;
+    exports cn.tealc.wutheringwavestool.model.roleData.user to com.fasterxml.jackson.databind;
 
     exports cn.tealc.wutheringwavestool.ui;
     exports cn.tealc.wutheringwavestool.model.analysis to com.fasterxml.jackson.databind;

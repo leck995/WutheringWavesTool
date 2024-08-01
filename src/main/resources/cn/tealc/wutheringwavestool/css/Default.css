@@ -4,7 +4,6 @@
 }
 .choice-box{}
 
-
 .title-bar{
     -fx-background-color: -color-bg-overlay;
     -fx-background-radius: 10;
@@ -19,6 +18,7 @@
     -fx-background-color: -color-bg-subtle;
     -fx-pref-width: 180;
 }
+
 .title-bar > .title-header > .left-header >  .title{
     -fx-font-size: 18;
     -fx-text-fill: -color-fg-muted;

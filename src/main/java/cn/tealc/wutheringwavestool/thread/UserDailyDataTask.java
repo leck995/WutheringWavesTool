@@ -1,14 +1,11 @@
 package cn.tealc.wutheringwavestool.thread;
 
 import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.wutheringwavestool.model.sign.SignGood;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
-import cn.tealc.wutheringwavestool.model.user.RoleDailyData;
-import com.fasterxml.jackson.core.type.TypeReference;
+import cn.tealc.wutheringwavestool.model.roleData.user.RoleDailyData;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
-import javafx.util.Pair;
 
 import java.io.IOException;
 import java.net.URI;
@@ -16,7 +13,6 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
-import java.util.List;
 
 /**
  * @program: WutheringWavesTool
@@ -24,7 +20,7 @@ import java.util.List;
  * @author: Leck
  * @create: 2024-07-06 14:24
  */
-public class UserDailyDataTask extends Task<ResponseBody> {
+public class UserDailyDataTask extends Task<ResponseBody<RoleDailyData>> {
     private SignUserInfo signUserInfo;
 
     public UserDailyDataTask(SignUserInfo signUserInfo) {
@@ -72,7 +68,7 @@ public class UserDailyDataTask extends Task<ResponseBody> {
                 JsonNode tree = mapper.readTree(response.body());
                 RoleDailyData data = mapper.readValue(tree.get("data").toString(), RoleDailyData.class);
 
-                ResponseBody responseBody = new ResponseBody();
+                ResponseBody<RoleDailyData> responseBody = new ResponseBody<>();
                 responseBody.setData(data);
                 responseBody.setCode(tree.get("code").asInt());
                 responseBody.setMsg(tree.get("msg").asText());

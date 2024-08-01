@@ -2,8 +2,7 @@ package cn.tealc.wutheringwavestool.thread;
 
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
-import cn.tealc.wutheringwavestool.model.user.RoleDailyData;
-import cn.tealc.wutheringwavestool.model.user.RoleInfo;
+import cn.tealc.wutheringwavestool.model.roleData.user.RoleInfo;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
@@ -21,7 +20,7 @@ import java.time.Duration;
  * @author: Leck
  * @create: 2024-07-06 14:24
  */
-public class UserInfoDataTask extends Task<ResponseBody> {
+public class UserInfoDataTask extends Task<ResponseBody<RoleInfo>> {
     private SignUserInfo signUserInfo;
 
     public UserInfoDataTask(SignUserInfo signUserInfo) {
@@ -69,7 +68,7 @@ public class UserInfoDataTask extends Task<ResponseBody> {
                 JsonNode tree = mapper.readTree(response.body());
                 RoleInfo data = mapper.readValue(tree.get("data").toString(), RoleInfo.class);
 
-                ResponseBody responseBody = new ResponseBody();
+                ResponseBody<RoleInfo> responseBody = new ResponseBody<>();
                 responseBody.setData(data);
                 responseBody.setCode(tree.get("code").asInt());
                 responseBody.setMsg(tree.get("msg").asText());

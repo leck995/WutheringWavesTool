@@ -12,7 +12,6 @@ import cn.tealc.wutheringwavestool.Config;
 import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
 
 import com.jfoenixN.controls.JFXDialog;
 import com.jfoenixN.controls.JFXDialogLayout;
@@ -20,6 +19,7 @@ import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewTuple;
+import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
@@ -36,10 +36,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
@@ -130,8 +127,25 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             showMessage((MessageInfo) objects[0]);
         }));
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.DIALOG,((s, objects) -> {
-            showDialog((JFXDialogLayout) objects[0]);
+            if (objects[0] instanceof JFXDialogLayout node){
+                showDialog(node);
+            }else {
+                Pane panes= (Pane) objects[0];
+                showDialog(panes);
+            }
+
         }));
+
+
+    /*    titleBar.setBackground(new Background(new BackgroundFill(Color.web("#e4dbdb"),null,null)));
+        MainBackgroundTask task = new MainBackgroundTask();
+        task.setOnSucceeded(workerStateEvent -> {
+            System.out.println(titleBar.getChildren().size());
+            Pane node = (Pane) titleBar.getChildren().getFirst();
+            node.setBackground(task.getValue());
+        });
+
+        Thread.startVirtualThread(task);*/
 
     }
 
@@ -144,9 +158,13 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
                 button.setOnAction(event -> {
                     dialog.close();
                 });
-
             }
         }
+        dialog.show();
+    }
+
+    private void showDialog(Pane pane){
+        JFXDialog dialog = new JFXDialog(titleBar,pane,JFXDialog.DialogTransition.CENTER);
         dialog.show();
     }
 
@@ -216,12 +234,23 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             ViewTuple<AnalysisPoolView, AnalysisPoolViewModel> viewTuple = FluentViewLoader.fxmlView(AnalysisPoolView.class).load();
 
             child.getChildren().setAll(viewTuple.getView());
+            Animations.slideInLeft(child,Duration.millis(300)).play();
         }else {
             toggleButton.setSelected(true);
         }
-
     }
+    @FXML
+    void toOwnRole(ActionEvent event) {
+        ToggleButton toggleButton= (ToggleButton) event.getSource();
+        if (toggleButton.isSelected()){
+            ViewTuple<OwnRoleView, OwnRoleViewModel> viewTuple = FluentViewLoader.fxmlView(OwnRoleView.class).load();
 
+            child.getChildren().setAll(viewTuple.getView());
+            Animations.slideInLeft(child,Duration.millis(300)).play();
+        }else {
+            toggleButton.setSelected(true);
+        }
+    }
     @FXML
     void toSign(ActionEvent event) {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
@@ -229,6 +258,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             ViewTuple<SignView, SignViewModel> viewTuple = FluentViewLoader.fxmlView(SignView.class).load();
 
             child.getChildren().setAll(viewTuple.getView());
+            Animations.slideInLeft(child,Duration.millis(300)).play();
         }else {
             toggleButton.setSelected(true);
         }
@@ -241,6 +271,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             ViewTuple<HomeView, HomeViewModel> viewTuple = FluentViewLoader.fxmlView(HomeView.class).load();
 
             child.getChildren().setAll(viewTuple.getView());
+            Animations.slideInLeft(child,Duration.millis(300)).play();
         }else {
             toggleButton.setSelected(true);
         }
@@ -253,6 +284,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             ViewTuple<SettingView, SettingViewModel> viewTuple = FluentViewLoader.fxmlView(SettingView.class).load();
 
             child.getChildren().setAll(viewTuple.getView());
+            Animations.slideInLeft(child,Duration.millis(300)).play();
         }else {
             toggleButton.setSelected(true);
         }

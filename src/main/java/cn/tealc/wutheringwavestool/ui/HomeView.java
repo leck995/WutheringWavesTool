@@ -2,10 +2,13 @@ package cn.tealc.wutheringwavestool.ui;
 
 import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.Config;
+import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.wutheringwavestool.thread.MainBackgroundTask;
+import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialogLayout;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
@@ -116,13 +119,20 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        File roleIVFile=new File("assets/image/home-role.png");
         roleIV.setPreserveRatio(true);
         roleIV.setSmooth(true);
         roleIV.fitWidthProperty().bind(root.widthProperty().multiply(0.7));
         roleIV.fitHeightProperty().bind(root.heightProperty().multiply(0.7));
-        roleIV.setImage(new Image(roleIVFile.toURI().toString(),true));
-
+        if (Config.setting.getHomeViewRole() != null){
+            File roleIVFile = LocalResourcesManager.homeRole();
+            if (roleIVFile.exists()){
+                roleIV.setImage(new Image(roleIVFile.toURI().toString(),true));
+            }else {
+                roleIV.setImage(new Image(FXResourcesLoader.load("image/role.png"),true));
+            }
+        }else {
+            roleIV.setImage(new Image(FXResourcesLoader.load("image/role.png"),true));
+        }
 
         energyTimeLabel.textProperty().bind(viewModel.energyTimeTextProperty());
         energyIv.setImage(new Image(MainApplication.class.getResource("image/energy.png").toExternalForm(),true));
@@ -147,10 +157,29 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         gameTimeLabel.textProperty().bind(viewModel.gameTimeTextProperty());
         gameTimeTipLabel.textProperty().bind(viewModel.gameTimeTipTextProperty());
         hasSignLabel.visibleProperty().bind(viewModel.hasSignProperty().isNotEqualTo(viewModel.rolePaneVisibleProperty()));
-        headIV.setImage(new Image(MainApplication.class.getResource("image/icon.png").toExternalForm(),60,60,true,true,true));
+
+
+        if (Config.setting.getHomeViewIcon() != null){
+            File roleIVFile = LocalResourcesManager.homeIcon();
+            if (roleIVFile.exists()){
+                headIV.setImage(new Image(roleIVFile.toURI().toString(),60,60,true,true,true));
+            }else {
+                headIV.setImage(new Image(FXResourcesLoader.load("image/icon.png"),60,60,true,true,true));
+            }
+        }else {
+            headIV.setImage(new Image(FXResourcesLoader.load("image/icon.png"),60,60,true,true,true));
+        }
+
         Circle circle = new Circle(30,30,30);
         headIV.setClip(circle);
 
+/*        MainBackgroundTask task = new MainBackgroundTask();
+        task.setOnSucceeded(workerStateEvent -> {
+
+            root.setBackground(task.getValue());
+        });
+
+        Thread.startVirtualThread(task);*/
     }
 
 

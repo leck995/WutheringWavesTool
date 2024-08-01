@@ -1,4 +1,4 @@
-package cn.tealc.wutheringwavestool.model.user;
+package cn.tealc.wutheringwavestool.model.roleData.user;
 
 import java.util.List;
 

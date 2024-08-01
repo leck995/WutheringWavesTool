@@ -2,20 +2,15 @@ package cn.tealc.wutheringwavestool.thread;
 
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
-import cn.tealc.wutheringwavestool.model.user.RoleInfo;
 import cn.tealc.wutheringwavestool.util.HttpRequestUtil;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
 
 /**
  * @program: WutheringWavesTool
@@ -23,7 +18,7 @@ import java.time.Duration;
  * @author: Leck
  * @create: 2024-07-06 14:24
  */
-public class UserDataRefreshTask extends Task<ResponseBody> {
+public class UserDataRefreshTask extends Task<ResponseBody<String>> {
     private static final Logger LOG= LoggerFactory.getLogger(UserDataRefreshTask.class);
     private SignUserInfo signUserInfo;
 

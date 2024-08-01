@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+
+<AnchorPane fx:id="root" prefHeight="700.0" prefWidth="1000.0" styleClass="own-role" stylesheets="@../css/OwnRole.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.OwnRoleView">
+   <children>
+      <Label styleClass="title-2" text="我的角色" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+      <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="70.0">
+         <content>
+            <FlowPane fx:id="roleFlowPane" hgap="10.0" prefHeight="200.0" prefWidth="200.0" vgap="10.0" />
+         </content>
+      </ScrollPane>
+   </children>
+</AnchorPane>

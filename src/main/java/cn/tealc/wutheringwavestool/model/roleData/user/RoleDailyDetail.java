@@ -1,4 +1,4 @@
-package cn.tealc.wutheringwavestool.model.user;
+package cn.tealc.wutheringwavestool.model.roleData.user;
 
 public class RoleDailyDetail {
         private String name;  

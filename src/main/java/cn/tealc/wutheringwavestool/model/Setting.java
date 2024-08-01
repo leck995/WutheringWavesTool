@@ -11,6 +11,9 @@ import javafx.beans.property.SimpleStringProperty;
  */
 public class Setting {
     private SimpleBooleanProperty theme=new SimpleBooleanProperty(false);
+    private SimpleStringProperty homeViewIcon=new SimpleStringProperty();
+    private SimpleStringProperty homeViewRole=new SimpleStringProperty();
+
     public SimpleStringProperty gameRootDir=new SimpleStringProperty();
     private SimpleBooleanProperty firstViewWithPoolAnalysis=new SimpleBooleanProperty(false);
 
@@ -48,5 +51,29 @@ public class Setting {
 
     public void setTheme(boolean theme) {
         this.theme.set(theme);
+    }
+
+    public String getHomeViewIcon() {
+        return homeViewIcon.get();
+    }
+
+    public SimpleStringProperty homeViewIconProperty() {
+        return homeViewIcon;
+    }
+
+    public void setHomeViewIcon(String homeViewIcon) {
+        this.homeViewIcon.set(homeViewIcon);
+    }
+
+    public String getHomeViewRole() {
+        return homeViewRole.get();
+    }
+
+    public SimpleStringProperty homeViewRoleProperty() {
+        return homeViewRole;
+    }
+
+    public void setHomeViewRole(String homeViewRole) {
+        this.homeViewRole.set(homeViewRole);
     }
 }

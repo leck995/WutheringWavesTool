@@ -1,7 +1,6 @@
 package cn.tealc.wutheringwavestool.ui;
 
 import cn.tealc.wutheringwavestool.Config;
-import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
@@ -11,20 +10,17 @@ import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
-import cn.tealc.wutheringwavestool.model.sign.UserInfo;
-import cn.tealc.wutheringwavestool.model.user.BoxInfo;
-import cn.tealc.wutheringwavestool.model.user.RoleDailyData;
-import cn.tealc.wutheringwavestool.model.user.RoleInfo;
+import cn.tealc.wutheringwavestool.model.roleData.user.BoxInfo;
+import cn.tealc.wutheringwavestool.model.roleData.user.RoleDailyData;
+import cn.tealc.wutheringwavestool.model.roleData.user.RoleInfo;
 import cn.tealc.wutheringwavestool.thread.SignTask;
 import cn.tealc.wutheringwavestool.thread.UserDailyDataTask;
 import cn.tealc.wutheringwavestool.thread.UserDataRefreshTask;
 import cn.tealc.wutheringwavestool.thread.UserInfoDataTask;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
-import de.saxsys.mvvmfx.internal.MvvmfxApplication;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -45,7 +41,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -165,9 +160,9 @@ public class HomeViewModel implements ViewModel {
     private void getRoleData(){
         UserInfoDataTask userInfoDataTask = new UserInfoDataTask(userInfo);
         userInfoDataTask.setOnSucceeded(workerStateEvent -> {
-            ResponseBody responseBody = userInfoDataTask.getValue();
+            ResponseBody<RoleInfo> responseBody = userInfoDataTask.getValue();
             if (responseBody != null && responseBody.getCode() == 200){
-                RoleInfo roleInfo= (RoleInfo) responseBody.getData();
+                RoleInfo roleInfo= responseBody.getData();
                 roleNameText.set(roleInfo.getName());
                 gameLifeText.set(String.format("已活跃%d天",roleInfo.getActiveDays()));
                 levelText.set(String.format("LV.%d",roleInfo.getLevel()));
@@ -196,9 +191,9 @@ public class HomeViewModel implements ViewModel {
     private void getDailyData(){
         UserDailyDataTask userDailyDataTask = new UserDailyDataTask(userInfo);
         userDailyDataTask.setOnSucceeded(workerStateEvent -> {
-            ResponseBody responseBody = userDailyDataTask.getValue();
+            ResponseBody<RoleDailyData> responseBody = userDailyDataTask.getValue();
             if (responseBody != null && responseBody.getCode() == 200){
-                RoleDailyData data= (RoleDailyData) responseBody.getData();
+                RoleDailyData data= responseBody.getData();
                 energyText.set(String.format("%d/%d",data.getEnergyData().getCur(),data.getEnergyData().getTotal()));
                 if (data.getEnergyData().getRefreshTimeStamp() == 0){
                     energyTimeText.set("体力已满");

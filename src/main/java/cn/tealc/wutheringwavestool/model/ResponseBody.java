@@ -6,11 +6,12 @@ package cn.tealc.wutheringwavestool.model;
  * @author: Leck
  * @create: 2024-07-08 15:42
  */
-public class ResponseBody {
+public class ResponseBody<T> {
     private Integer code;
     private String msg;
-    private Object data;
+    private T data;
     private Boolean success;
+
 
 
     public Integer getCode() {
@@ -29,11 +30,11 @@ public class ResponseBody {
         this.msg = msg;
     }
 
-    public Object getData() {
+    public T getData() {
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 

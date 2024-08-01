@@ -20,6 +20,7 @@ import java.util.List;
 public class VersionUpdateUtil {
     public static void update(){
         update01();
+        update02();
     }
 
 
@@ -51,5 +52,21 @@ public class VersionUpdateUtil {
                 throw new RuntimeException(e);
             }
         }
+    }
+    private static void update02(){
+        File file1=new File("assets/image/home-role.png");
+        if (file1.exists()){
+            file1.delete();
+        }
+        File file2=new File("assets/image/home-bg.png");
+        if (file2.exists()){
+            file2.delete();
+        }
+        File file3=new File("assets/image/icon.png");
+        if (file3.exists()){
+            file3.delete();
+        }
+
+
     }
 }
