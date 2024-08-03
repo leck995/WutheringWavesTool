@@ -1,8 +1,10 @@
 package cn.tealc.wutheringwavestool.ui;
 
 import cn.tealc.wutheringwavestool.NotificationKey;
+import cn.tealc.wutheringwavestool.dao.SignHistoryDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.sign.SignGood;
+import cn.tealc.wutheringwavestool.model.sign.SignRecord;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.model.sign.UserInfo;
 import cn.tealc.wutheringwavestool.thread.SignGoodsTask;
@@ -11,14 +13,15 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @program: WutheringWavesTool
@@ -28,36 +31,75 @@ import java.util.Objects;
  */
 public class SignViewModel implements ViewModel {
     private final ObservableList<UserInfo> userInfoList= FXCollections.observableArrayList();
+    private final SimpleIntegerProperty userIndex = new SimpleIntegerProperty(-1);
     private final ObservableList<SignGood> goodsList= FXCollections.observableArrayList();
     private final SimpleStringProperty logs=new SimpleStringProperty();
+    private final SimpleBooleanProperty isSign=new SimpleBooleanProperty(false);
+    private final ObservableList<SignRecord> signHistoryList= FXCollections.observableArrayList();
 
     public SignViewModel() {
         UserInfoDao dao=new UserInfoDao();
         List<UserInfo> userInfos = dao.getAll();
         userInfoList.setAll(userInfos);
-        getSignGoods();
+        UserInfo main = dao.getMain();
+        if (main != null) {
+            for (int i = 0; i < userInfoList.size(); i++) {
+                if (Objects.equals(userInfoList.get(i).getId(), main.getId())) {
+                    userIndex.set(i);
+                    break;
+                }
+            }
+            getSignGoods(main);
+            getSignHistory(main);
+        }
 
-        MvvmFX.getNotificationCenter().subscribe(NotificationKey.SIGN_USER_DELETE,((s, objects) -> {
-            UserInfo userInfo = (UserInfo) objects[0];
-            deleteUser(userInfo);
-        }));
-        MvvmFX.getNotificationCenter().subscribe(NotificationKey.SIGN_USER_UPDATE,((s, objects) -> {
-            int index = (int) objects[0];
-            UserInfo userInfo = (UserInfo) objects[1];
-            updateUser(index,userInfo);
+        userIndex.addListener((observableValue, number, t1) -> {
+            if (t1 != null) {
+                getSignGoods(userInfoList.get(t1.intValue()));
+
+            }
+        });
+
+
+    }
+
+    private void getSignHistory(UserInfo userInfo){
+        SignHistoryDao dao=new SignHistoryDao();
+        List<SignRecord> histories = dao.getHistoriesByRoleId(userInfo.getRoleId());
+
+
+        Map<String,SignRecord> map=new HashMap<>();
+        for (SignRecord history : histories) {
+            System.out.println(history.getGoodsName());
+            String key = history.getGoodsName();
+            if (!map.containsKey(key)) {
+                SignRecord record = new SignRecord();
+                record.setGoodsName(history.getGoodsName());
+                record.setGoodsNum(history.getGoodsNum());
+                record.setGoodsUrl(history.getGoodsUrl());
+                record.setType(history.getType());
+                map.put(key,record);
+            }else {
+                SignRecord record = map.get(key);
+                record.setGoodsNum(record.getGoodsNum()+history.getGoodsNum());
+            }
+        }
+        signHistoryList.setAll(map.values());
+        signHistoryList.sort(((o1, o2) -> {
+            if (o2.getGoodsName().equals("星声")){
+                return 1;
+            }else {
+                return Integer.compare(o2.getType(),o1.getType());
+            }
         }));
     }
 
-
-
-
-    private void getSignGoods(){
-        UserInfoDao dao=new UserInfoDao();
-        UserInfo main = dao.getMain();
-        if (main != null){
-            SignGoodsTask task=new SignGoodsTask(main);
+    private void getSignGoods(UserInfo userInfo){
+        if (userInfo != null){
+            SignGoodsTask task=new SignGoodsTask(userInfo);
             task.setOnSucceeded(workerStateEvent -> {
                 goodsList.setAll(task.getValue().getValue());
+                isSign.set(task.getValue().getKey());
             });
             Thread.startVirtualThread(task);
         }
@@ -74,73 +116,21 @@ public class SignViewModel implements ViewModel {
     public void sign(){
         SignTask task=new SignTask();
         task.setOnSucceeded(workerStateEvent -> {
-            System.out.println(task.getValue());
-            getSignGoods();
             logs.set(task.getValue());
+            getSignGoods(userInfoList.get(userIndex.get()));
+            getSignHistory(userInfoList.get(userIndex.get()));
 
         });
         Thread.startVirtualThread(task);
     }
 
-
-
-
-    public boolean addUser(UserInfo userInfo) {
-        UserInfoDao dao=new UserInfoDao();
-        UserInfo daoUserByRoleId = dao.getUserByRoleId(userInfo.getRoleId());
-        if (daoUserByRoleId == null){
-            if (userInfo.getMain()){
-                for (UserInfo oldMainUser : userInfoList) {
-                    if (oldMainUser.getMain()){
-                        oldMainUser.setMain(false);
-                        dao.updateUser(oldMainUser);
-                    }
-                }
-            }
-            dao.addUser(userInfo);
-            userInfoList.add(userInfo);
-            return true;
-        }else {
-            return false;
-        }
-    }
-    public boolean updateUser(int index,UserInfo userInfo) {
-        UserInfo oldUserInfo = userInfoList.get(index);
-        UserInfoDao dao=new UserInfoDao();
-        UserInfo daoUserByRoleId = dao.getUserByRoleId(userInfo.getRoleId());
-        if (daoUserByRoleId != null && Objects.equals(daoUserByRoleId.getId(), oldUserInfo.getId())){ //当roleid存在，且id是一个，允许更新
-            if (userInfo.getMain()){
-                for (UserInfo oldMainUser : userInfoList) {
-                    if (oldMainUser.getMain()){
-                        oldMainUser.setMain(false);
-                        dao.updateUser(oldMainUser);
-                    }
-                }
-            }
-            userInfo.setId(oldUserInfo.getId());
-            userInfo.setLastSignTime(oldUserInfo.getLastSignTime());
-            dao.updateUser(userInfo);
-
-            userInfoList.set(index,userInfo);
-            return true;
-
-        }
-
-        return false;
+    public int getUserIndex() {
+        return userIndex.get();
     }
 
-
-    public boolean deleteUser(UserInfo userInfo) {
-        UserInfoDao dao=new UserInfoDao();
-        int i = dao.deleteUser(userInfo.getId());
-        if (i > 0){
-            userInfoList.remove(userInfo);
-            return true;
-        }
-
-        return false;
+    public SimpleIntegerProperty userIndexProperty() {
+        return userIndex;
     }
-
 
     public ObservableList<UserInfo> getUserInfoList() {
         return userInfoList;
@@ -156,5 +146,17 @@ public class SignViewModel implements ViewModel {
 
     public SimpleStringProperty logsProperty() {
         return logs;
+    }
+
+    public boolean isIsSign() {
+        return isSign.get();
+    }
+
+    public SimpleBooleanProperty isSignProperty() {
+        return isSign;
+    }
+
+    public ObservableList<SignRecord> getSignHistoryList() {
+        return signHistoryList;
     }
 }

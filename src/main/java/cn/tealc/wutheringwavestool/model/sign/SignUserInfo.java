@@ -66,6 +66,6 @@ public class SignUserInfo{
 
     @Override
     public String toString() {
-        return String.format("用户ID: %s \n游戏ID: %s", userId, roleId);
+        return String.format("%s", roleId);
     }
 }

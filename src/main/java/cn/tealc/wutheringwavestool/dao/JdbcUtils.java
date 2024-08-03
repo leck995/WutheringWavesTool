@@ -20,53 +20,6 @@ public class JdbcUtils {
     }
 
 
-
-    /**
-     *@Description: 获取连接
-     *@Param:
-     *@return:
-     *@Author: Leck
-     *@date: 2022/6/30
-     */
-/*    public static Connection getConnection() throws SQLException
-    {
-        if (connection == null)
-            connection=DriverManager.getConnection(url);
-        return connection;
-    }*/
-
-
-    public static void close(Connection conn,Statement... sts) {
-        try {
-            for (Statement st : sts) {
-                if (st != null){
-                    st.close();
-                }
-            }
-            if (conn != null){
-                conn.close();
-            }
-        }catch (SQLException e){
-
-        }
-
-    }
-    public static void close(Connection conn, ResultSet rs,Statement... sts) {
-        try {
-            if (rs !=null){
-                rs.close();
-            }
-            for (Statement st : sts) {
-                if (st != null){
-                    st.close();
-                }
-            }
-        }catch (SQLException e){
-
-        }
-
-    }
-
     public static void exit(){
         try {
             if (connection != null) connection.close();
@@ -99,9 +52,21 @@ public class JdbcUtils {
                       last_sign_time INTEGER,
                       is_web BOOL DEFAULT false);
                     """;
+            String createSignHistory="""
+                    CREATE TABLE IF NOT EXISTS sign_history(
+                      id BIGINT PRIMARY KEY,
+                      goods_name VARCHAR(30),
+                      goods_num INTEGER,
+                      goods_url VARCHAR,
+                      sign_date VARCHAR(40),
+                      good_type INTEGER,
+                      role_id VARCHAR,
+                      user_id VARCHAR);
+                    """;
             Statement st = con.createStatement();
             st.execute(createRoleList);
             st.execute(createUserInfo);
+            st.execute(createSignHistory);
             st.close();
             con.close();
         } catch (SQLException e) {

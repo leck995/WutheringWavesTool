@@ -289,6 +289,31 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             toggleButton.setSelected(true);
         }
     }
+    @FXML
+    void toAccount(ActionEvent event) {
+        ToggleButton toggleButton= (ToggleButton) event.getSource();
+        if (toggleButton.isSelected()){
+            ViewTuple<AccountView, AccountViewModel> viewTuple = FluentViewLoader.fxmlView(AccountView.class).load();
+
+            child.getChildren().setAll(viewTuple.getView());
+            Animations.slideInLeft(child,Duration.millis(300)).play();
+        }else {
+            toggleButton.setSelected(true);
+        }
+    }
+
+    @FXML
+    void toGameTime(ActionEvent event) {
+        ToggleButton toggleButton= (ToggleButton) event.getSource();
+        if (toggleButton.isSelected()){
+            ViewTuple<GameTimeView, GameTimeViewModel> viewTuple = FluentViewLoader.fxmlView(GameTimeView.class).load();
+
+            child.getChildren().setAll(viewTuple.getView());
+            Animations.slideInLeft(child,Duration.millis(300)).play();
+        }else {
+            toggleButton.setSelected(true);
+        }
+    }
 
 
 

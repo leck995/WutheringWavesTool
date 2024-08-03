@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" styleClass="gametime" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.GameTimeView">
+   <children>
+      <Label styleClass="title-2" text="游玩时长" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <HBox alignment="CENTER_LEFT" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label text="账号: " />
+            <ComboBox prefWidth="180.0" />
+         </children>
+      </HBox>
+      <HBox layoutX="18.0" layoutY="88.0" spacing="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="70.0">
+         <children>
+            <AnchorPane prefHeight="150.0" prefWidth="300.0" styleClass="item">
+               <children>
+                  <Label styleClass="header" text="当前账号" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <Label styleClass="header" text="伊人" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <HBox spacing="10.0" styleClass="content" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+                     <children>
+                        <ImageView fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../image/icon.png" />
+                           </image>
+                        </ImageView>
+                        <VBox alignment="CENTER_LEFT" spacing="10.0">
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <Label text=" 72/78" />
+                                    <Pane HBox.hgrow="ALWAYS" />
+                                    <Label text="天数/总天数" />
+                                 </children>
+                              </HBox>
+                              <ProgressBar prefWidth="200.0" progress="0.68" />
+                              <Label text="今日已游玩3小时20分钟" />
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+               </padding>
+            </AnchorPane>
+            <AnchorPane prefHeight="150.0" prefWidth="300.0" styleClass="item">
+               <children>
+                  <Label styleClass="header" text="统计" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <Label styleClass="header" text="总时长" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                  <VBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="50.0" spacing="10.0" styleClass="content" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+                     <children>
+                        <Label layoutX="10.0" layoutY="10.0" text="当前账号：32.5小时" />
+                        <Label text="所有账号：64.4小时" />
+                        <ProgressBar prefWidth="260.0" progress="0.57" />
+                     </children>
+                  </VBox>
+               </children>
+               <padding>
+                  <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+               </padding>
+            </AnchorPane>
+         </children>
+      </HBox>
+      <LineChart fx:id="lineChart" legendSide="TOP" prefWidth="650.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0">
+        <xAxis>
+          <CategoryAxis side="BOTTOM" />
+        </xAxis>
+        <yAxis>
+          <NumberAxis label="分钟" side="LEFT" />
+        </yAxis>
+      </LineChart>
+   </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+   <stylesheets>
+      <URL value="@../css/GameTime.css" />
+      <URL value="@../css/dark.css" />
+   </stylesheets>
+</AnchorPane>

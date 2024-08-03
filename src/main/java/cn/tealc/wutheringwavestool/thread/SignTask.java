@@ -1,11 +1,18 @@
 package cn.tealc.wutheringwavestool.thread;
 
+import cn.tealc.wutheringwavestool.dao.SignHistoryDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.model.ResponseBody;
+import cn.tealc.wutheringwavestool.model.sign.SignRecord;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.model.sign.UserInfo;
+import cn.tealc.wutheringwavestool.util.HttpRequestUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -14,6 +21,7 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,9 +32,10 @@ import java.util.List;
  */
 public class SignTask extends Task<String> {
 
+    private static final Logger LOG= LoggerFactory.getLogger(SignTask.class);
+    private SignHistoryDao historyDao = new SignHistoryDao();
     @Override
     protected String call() throws Exception {
-
         UserInfoDao dao = new UserInfoDao();
         List<UserInfo> userInfos = dao.getAll();
         StringBuilder sb=new StringBuilder();
@@ -56,41 +65,21 @@ public class SignTask extends Task<String> {
         int monthValue= today.getMonthValue();
         String url=String.format("https://api.kurobbs.com/encourage/signIn/v2?gameId=%s&serverId=%s&roleId=%s&userId=%s&reqMonth=%02d"
                 ,"3","76402e5b20be2c39f095a152090afddc",roleId,userId,monthValue);
-
         HttpClient client = HttpClient.newHttpClient();
         try {
-            HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(url))
-                    .timeout(Duration.ofSeconds(20))
-                    .header("Content-Type", "application/x-www-form-urlencoded")
-                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0")
-                    .header("Accept", "application/json, text/plain, */*")
-                    .header("pragma", "no-cache")
-                    .header("cache-control", "no-cache")
-                    .header("sec-ch-ua", "\"Chromium\";v=\"124\", \"Android WebView\";v=\"124\", \"Not-A.Brand\";v=\"99\"")
-                    .header("source", "h5")
-                    .header("devcode", "111.181.85.154, Mozilla/5.0 (Linux; Android 14; 22081212C Build/UKQ1.230917.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/124.0.6367.179 Mobile Safari/537.36 Kuro/2.2.0 KuroGameBox/2.2.0")
-                    .header("token", token)
-                    .header("sec-ch-ua-platform", "\"Android\"")
-                    .header("origin", "https://web-static.kurobbs.com")
-                    .header("x-requested-with", "com.kurogame.kjq")
-                    .header("sec-fetch-site", "same-site")
-                    .header("sec-fetch-mode", "cors")
-                    .header("sec-fetch-dest", "empty")
-                    .header("accept-language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
-                    .header("priority", "u=1, i")
-                    .POST(HttpRequest.BodyPublishers.noBody())
-                    .build();
+            HttpRequest request = HttpRequestUtil.getRequest(url,token);
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println(response.body());
             if (response.statusCode() == 200) {
                 if (response.body().contains("请求成功")){
+                    updateHistory(roleId,userId,token);//获取更新签到记录
                     return "签到成功";
                 }else if (response.body().contains("请勿重复签到")){
+                    updateHistory(roleId,userId,token);//获取更新签到记录
                     return "请勿重复签到";
                 }else {
                     return "签到失败";
                 }
+
             }else {
                 return "签到失败";
             }
@@ -98,4 +87,32 @@ public class SignTask extends Task<String> {
             throw new RuntimeException(e);
         }
     }
+
+    private void updateHistory(String roleId,String userId,String token){
+        String url=String.format("https://api.kurobbs.com/encourage/signIn/queryRecordV2?gameId=%s&serverId=%s&roleId=%s&userId=%s"
+                ,"3","76402e5b20be2c39f095a152090afddc",roleId,userId);
+        HttpClient client = HttpClient.newHttpClient();
+        try {
+            HttpRequest request = HttpRequestUtil.getRequest(url,token);
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                LOG.debug("连接成功，添加签到历史记录");
+                ObjectMapper mapper = new ObjectMapper();
+                ResponseBody<List<SignRecord>> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<List<SignRecord>>>() {
+                });
+                if (responseBody.getSuccess()){
+                    for (SignRecord record : responseBody.getData()) {
+                        record.setRoleId(roleId);
+                        record.setUserId(userId);
+                        historyDao.addHistory(record);
+                    }
+                }
+            }else {
+               LOG.info("连接失败");
+            }
+        } catch (IOException | InterruptedException e) {
+            LOG.error("JSON异常",e);
+        }
+    }
+
 }

@@ -1,0 +1,27 @@
+.gametime{
+
+}
+
+.gametime .item{
+    -fx-background-color: -color-bg-default;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+    -fx-effect:dropshadow(three-pass-box, -color-border-muted,2,0.7,0,0);
+}
+
+.gametime .item .header{
+    -fx-font-size: 16;
+    -fx-text-fill: -color-font-muted;
+}
+
+.gametime .item .content .label{
+    -fx-font-size: 16;
+    -fx-text-fill: -color-font-muted;
+}
+
+.gametime .chart{
+    -fx-background-color: -color-bg-default;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+    -fx-effect:dropshadow(three-pass-box, -color-border-muted,2,0.7,0,0);
+}

@@ -41,6 +41,26 @@ public class GameTimeDao {
             return null;
         }
     }
+    public List<GameTime> getTimeListByRoleId(String roleId){
+        QueryRunner qr=new QueryRunner();
+        String sql="SELECT * FROM game_time WHERE role_id=?";
+        try {
+            return qr.query(con,sql,new BeanListHandler<>(GameTime.class,getRowProcessor()),roleId);
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(),e);
+            return null;
+        }
+    }
+    public List<GameTime> getAllTime(){
+        QueryRunner qr=new QueryRunner();
+        String sql="SELECT * FROM game_time";
+        try {
+            return qr.query(con,sql,new BeanListHandler<>(GameTime.class,getRowProcessor()));
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(),e);
+            return null;
+        }
+    }
 
     public int addTime(GameTime gameTime){
         String sql="INSERT OR IGNORE INTO game_time (role_id,game_date,start_time,end_time,duration) VALUES (?,?,?,?,?)";

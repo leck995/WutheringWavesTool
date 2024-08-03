@@ -142,9 +142,6 @@ public class SsrCell extends ListCell<SsrData> {
         }
     }
 
-    private void downLoadImage(){
-
-    }
 
 
 }

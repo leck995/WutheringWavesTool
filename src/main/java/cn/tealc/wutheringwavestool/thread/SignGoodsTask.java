@@ -25,7 +25,7 @@ import java.util.List;
  * @author: Leck
  * @create: 2024-07-06 14:24
  */
-public class SignGoodsTask extends Task<Pair<Integer,List<SignGood>>> {
+public class SignGoodsTask extends Task<Pair<Boolean,List<SignGood>>> {
     private SignUserInfo signUserInfo;
 
     public SignGoodsTask(SignUserInfo signUserInfo) {
@@ -33,13 +33,13 @@ public class SignGoodsTask extends Task<Pair<Integer,List<SignGood>>> {
     }
 
     @Override
-    protected Pair<Integer,List<SignGood>> call() throws Exception {
-        Pair<Integer,List<SignGood>> sign = sign(signUserInfo.getRoleId(), signUserInfo.getUserId(), signUserInfo.getToken());
+    protected Pair<Boolean,List<SignGood>> call() throws Exception {
+        Pair<Boolean,List<SignGood>> sign = sign(signUserInfo.getRoleId(), signUserInfo.getUserId(), signUserInfo.getToken());
         return sign;
 
     }
 
-    private Pair<Integer,List<SignGood>> sign(String roleId,String userId,String token){
+    private Pair<Boolean,List<SignGood>> sign(String roleId,String userId,String token){
 
         String url=String.format("https://api.kurobbs.com/encourage/signIn/initSignInV2?gameId=%s&serverId=%s&roleId=%s&userId=%s"
                 ,"3","76402e5b20be2c39f095a152090afddc",roleId,userId);
@@ -78,8 +78,8 @@ public class SignGoodsTask extends Task<Pair<Integer,List<SignGood>>> {
                 for (int i = 0; i < signGoods.size(); i++) {
                     signGoods.get(i).setSign(i < num);
                 }
-
-                return new Pair<>(num, signGoods);
+                Boolean isSign = tree.get("data").get("isSigIn").asBoolean();
+                return new Pair<>(isSign, signGoods);
             }else {
                 return null;
             }

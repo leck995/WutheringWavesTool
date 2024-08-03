@@ -26,7 +26,7 @@
                   </ToggleButton>
                   <ToggleButton fx:id="signBtn" alignment="CENTER_LEFT" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" onAction="#toSign" prefWidth="140.0" styleClass="sign-btn" text="签到" toggleGroup="$navToggleGroup">
                      <graphic>
-                        <FontIcon iconLiteral="mdal-account_box" />
+                        <FontIcon iconLiteral="mdral-beenhere" />
                      </graphic>
                   </ToggleButton>
                   <ToggleButton fx:id="analysisBtn" alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#toAnalysis" prefWidth="140.0" styleClass="analysis-btn" text="抽卡分析" toggleGroup="$navToggleGroup">
@@ -34,12 +34,22 @@
                         <FontIcon iconLiteral="mdal-article" />
                      </graphic>
                   </ToggleButton>
+                  <ToggleButton alignment="CENTER_LEFT" layoutX="30.0" layoutY="718.0" mnemonicParsing="false" onAction="#toGameTime" prefWidth="140.0" styleClass="setting-btn" text="游玩统计" toggleGroup="$navToggleGroup">
+                     <graphic>
+                        <FontIcon iconLiteral="mdal-broken_image" />
+                     </graphic>
+                  </ToggleButton>
                   <ToggleButton alignment="CENTER_LEFT" layoutX="30.0" layoutY="104.0" mnemonicParsing="false" onAction="#toOwnRole" prefWidth="140.0" styleClass="analysis-btn" text="我的角色" toggleGroup="$navToggleGroup">
                      <graphic>
-                        <FontIcon iconLiteral="mdal-article" />
+                        <FontIcon iconLiteral="mdmz-person" />
                      </graphic>
                   </ToggleButton>
                   <Spacer VBox.vgrow="ALWAYS" />
+                  <ToggleButton alignment="CENTER_LEFT" layoutX="30.0" layoutY="718.0" mnemonicParsing="false" onAction="#toAccount" prefWidth="140.0" styleClass="setting-btn" text="账号" toggleGroup="$navToggleGroup">
+                     <graphic>
+                        <FontIcon iconLiteral="mdal-account_box" />
+                     </graphic>
+                  </ToggleButton>
                   <ToggleButton alignment="CENTER_LEFT" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" onAction="#toSetting" prefWidth="140.0" styleClass="setting-btn" text="设置" toggleGroup="$navToggleGroup">
                      <graphic>
                         <FontIcon iconLiteral="mdmz-settings" />

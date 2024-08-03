@@ -1,47 +1,15 @@
-.list-view{
-    -fx-background-color: transparent;
-    -fx-background-radius: 10;
-    -fx-border-color: transparent;
-    -fx-padding: 0;
-
-}
-
-.list-view .list-cell{
-    -fx-background-color: transparent;
-    -fx-border-color: transparent;
-    -fx-padding: 8 10 8 10;
-}
-.list-view .list-cell:filled .user{
-    -fx-background-color: -color-bg-default;
-    -fx-background-radius: 10;
-    -fx-padding: 10;
-    -fx-effect:dropshadow(three-pass-box,-color-border-muted,2,0.7,0,0);
-}
-
-.list-view .list-cell:empty .user{
-    -fx-background-color: transparent;
-
-}
-.list-view .list-cell .user-label{
-    -fx-font-size: 12;
-}
-
-.list-view .list-cell .role-label{
-    -fx-text-fill: -color-fg-subtle;
-    -fx-font-size: 10;
-}
-.list-view .list-cell .delete-btn{
-    -fx-padding: 2;
-}
 
 
-
-.goods{
-    -fx-border-color: -color-border-default;
+.sign .goods{
+   /* -fx-border-color: -color-border-default;
     -fx-border-width: 3;
-    -fx-border-radius: 5;
+    -fx-border-radius: 5;*/
+    -fx-background-color: -color-bg-default;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+    -fx-effect:dropshadow(three-pass-box, -color-border-muted,2,0.7,0,0);
 }
-.goods .name{
+.sign .goods .name{
     -fx-background-color: -color-font-subtle;
     -fx-opacity: 0.7;
     -fx-background-radius: 5;
@@ -51,17 +19,43 @@
     -fx-pref-height: 20;
     -fx-font-size: 16;
 }
-.goods .index{
+.sign .goods .index{
 
 }
 
-.goods .num{
+.sign .goods .num{
     -fx-text-fill: -color-fg-subtle;
     -fx-font-size: 10;
 }
 
-.log,
-.log:focused{
+.sign > .log,
+.sign > .log:focused{
     -fx-background-color: transparent;
     -fx-background-insets: null;
 }
+
+.sign > .history{
+   /* -fx-background-color: -color-bg-default;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+    -fx-effect:dropshadow(three-pass-box, -color-border-muted,2,0.7,0,0);*/
+}
+.sign > .history > .list-view{
+    -fx-background-color: transparent;
+    -fx-background-radius: 10;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+
+}
+
+.sign > .history > .list-view .list-cell{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 8 10 8 10;
+}
+
+.sign > .history > .list-view .list-cell .label{
+    -fx-font-size: 12;
+}
+
+

@@ -20,13 +20,13 @@ import java.net.URI;
  */
 public class LocalResourcesManager {
     private static final Logger LOG= LoggerFactory.getLogger(LocalResourcesManager.class);
-    public static final String BUFFER_DIR_TEMPLATE="assets/buffer/%s";
+    public static final String BUFFER_DIR_TEMPLATE="assets/cache/%s";
     public static final String HOME_ICON_DIR_TEMPLATE="assets/image/icon/%s.%s";
     public static final String HOME_ROLE_DIR_TEMPLATE="assets/image/role/%s.%s";
     public static final String HOME_ICON_DIR_TEMPLATE_2="assets/image/icon/%s";
     public static final String HOME_ROLE_DIR_TEMPLATE_2="assets/image/role/%s";
     static {
-        File dir=new File("assets/buffer/");
+        File dir=new File("assets/cache/");
         if (!dir.exists()) {
             boolean buffer = dir.mkdirs();
             if (!buffer){
@@ -75,7 +75,7 @@ public class LocalResourcesManager {
             return new Image(file.toURI().toString(),width,height,preserveRatio,smooth);
         }else { //无缓存，获取并保存
             LOG.debug("{}无缓存，获取并保存",file);
-            Image image=new Image(url,width,height,preserveRatio,smooth,true);
+            Image image=new Image(url,true);
             saveImage(image,file);
             return image;
         }

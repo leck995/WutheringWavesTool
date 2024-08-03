@@ -41,7 +41,6 @@ public class OwnRoleViewModel implements ViewModel {
 
             });
             Thread.startVirtualThread(task);
-
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                     new MessageInfo(MessageType.WARNING,"当前不存在主用户信息，无法获取，请在签到界面添加用户信息"),false);

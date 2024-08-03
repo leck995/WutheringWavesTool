@@ -5,11 +5,14 @@ import cn.tealc.teafx.theme.PrimerDark;
 import cn.tealc.teafx.theme.PrimerLight;
 import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
+import cn.tealc.wutheringwavestool.jna.GlobalKeyListener;
 import cn.tealc.wutheringwavestool.ui.AnalysisPoolView;
 import cn.tealc.wutheringwavestool.ui.AnalysisPoolViewModel;
 import cn.tealc.wutheringwavestool.ui.MainView;
 import cn.tealc.wutheringwavestool.ui.MainViewModel;
 import com.dustinredmond.fxtrayicon.FXTrayIcon;
+import com.github.kwhat.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.NativeHookException;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
@@ -80,6 +83,7 @@ public class MainApplication extends Application {
         roundStage.show();
         createTrayIcon();
         initExceptionHandler();
+
     }
 
     private void initFont(){
@@ -113,7 +117,14 @@ public class MainApplication extends Application {
     }
 
 
-
+    public void initKeyHook(){
+        try {
+            GlobalScreen.registerNativeHook();
+        } catch (NativeHookException e) {
+            throw new RuntimeException(e);
+        }
+        GlobalScreen.addNativeKeyListener(new GlobalKeyListener());
+    }
 
     public static void exit(){
         if (gameAppListener != null) {

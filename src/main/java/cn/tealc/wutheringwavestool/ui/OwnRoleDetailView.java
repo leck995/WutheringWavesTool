@@ -246,6 +246,7 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
                 cost.setText(String.valueOf(pair.getKey().getCost()));
                 attrIV.setImage(LocalResourcesManager.imageBuffer(pair.getKey().getFetterDetail().getIconUrl()));
 
+
                 switch (pair.getKey().getQuality()){
                     case 5 -> root.getStyleClass().add("ssr");
                     case 4 -> root.getStyleClass().add("sr");
