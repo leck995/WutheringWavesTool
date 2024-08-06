@@ -21,7 +21,6 @@ open module cn.tealc.wutheringwavestool {
     requires filters;
     requires javafx.swing;
     requires net.coobird.thumbnailator;
-    requires org.bytedeco.tesseract;
     requires com.github.kwhat.jnativehook;
 
 

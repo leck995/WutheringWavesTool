@@ -14,7 +14,10 @@ public class UserInfo extends SignUserInfo{
     private Integer id;
     private Long lastSignTime;
     private Boolean isWeb;//标志该Token时web的还是app的
-
+    private String roleName;
+    private String roleUrl;
+    private Integer register_days;
+    //private Integer
     public UserInfo() {
     }
 

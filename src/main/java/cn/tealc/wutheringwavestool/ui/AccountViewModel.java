@@ -29,15 +29,6 @@ public class AccountViewModel implements ViewModel {
         accountList.setAll(userInfos);
         getSignGoods();
 
-        MvvmFX.getNotificationCenter().subscribe(NotificationKey.SIGN_USER_DELETE,((s, objects) -> {
-            UserInfo userInfo = (UserInfo) objects[0];
-            deleteUser(userInfo);
-        }));
-        MvvmFX.getNotificationCenter().subscribe(NotificationKey.SIGN_USER_UPDATE,((s, objects) -> {
-            int index = (int) objects[0];
-            UserInfo userInfo = (UserInfo) objects[1];
-            updateUser(index,userInfo);
-        }));
     }
 
 
@@ -69,7 +60,8 @@ public class AccountViewModel implements ViewModel {
                     }
                 }
             }
-            dao.addUser(userInfo);
+            int id = dao.addUser(userInfo);
+            userInfo.setId(id);
             accountList.add(userInfo);
             return true;
         }else {
@@ -100,14 +92,13 @@ public class AccountViewModel implements ViewModel {
         return false;
     }
     
-    public boolean deleteUser(UserInfo userInfo) {
+    public boolean deleteUser(int index,UserInfo userInfo) {
         UserInfoDao dao=new UserInfoDao();
         int i = dao.deleteUser(userInfo.getId());
         if (i > 0){
-            accountList.remove(userInfo);
+            accountList.remove(index);
             return true;
         }
-
         return false;
     }
 

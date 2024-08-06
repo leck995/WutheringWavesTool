@@ -77,7 +77,7 @@
     -fx-background-color: -color-bg-default;
     -fx-background-radius: 5;
     -fx-padding: 10;
-
+    -fx-effect:dropshadow(three-pass-box, -color-border-muted,2,0.7,0,0);
     -fx-pref-width: 280;
 }
 .role .box-data .data-label-1{

@@ -3,6 +3,8 @@ package cn.tealc.wutheringwavestool.ui;
 import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.SignHistoryDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.sign.SignGood;
 import cn.tealc.wutheringwavestool.model.sign.SignRecord;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
@@ -51,6 +53,9 @@ public class SignViewModel implements ViewModel {
             }
             getSignGoods(main);
             getSignHistory(main);
+        }else {
+            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                    new MessageInfo(MessageType.WARNING,"当前不存在主用户信息，无法获取，请在账号界面添加用户信息"),false);
         }
 
         userIndex.addListener((observableValue, number, t1) -> {
@@ -70,7 +75,6 @@ public class SignViewModel implements ViewModel {
 
         Map<String,SignRecord> map=new HashMap<>();
         for (SignRecord history : histories) {
-            System.out.println(history.getGoodsName());
             String key = history.getGoodsName();
             if (!map.containsKey(key)) {
                 SignRecord record = new SignRecord();
@@ -98,8 +102,14 @@ public class SignViewModel implements ViewModel {
         if (userInfo != null){
             SignGoodsTask task=new SignGoodsTask(userInfo);
             task.setOnSucceeded(workerStateEvent -> {
-                goodsList.setAll(task.getValue().getValue());
-                isSign.set(task.getValue().getKey());
+                if (task.getValue() != null){
+                    goodsList.setAll(task.getValue().getValue());
+                    isSign.set(task.getValue().getKey());
+                }else {
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                            new MessageInfo(MessageType.WARNING,"获取签到信息出现错误"),false);
+                }
+
             });
             Thread.startVirtualThread(task);
         }

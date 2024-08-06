@@ -1,6 +1,8 @@
 package cn.tealc.wutheringwavestool.jna;
 
 import cn.tealc.wutheringwavestool.Config;
+import cn.tealc.wutheringwavestool.Main;
+import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
@@ -65,7 +67,10 @@ public class GameAppListener implements WinUser.WinEventProc{
                 save();
             }
         }else {
-            if (start) {//当游戏已经启动，进入后台窗口时
+            if (start){ //只要游戏启动过，start必为true,所以不用处理其他情况
+                long endGameTime = System.currentTimeMillis(); //游戏结束时间
+                long totalGameTime = endGameTime - startGameTime;//总共游玩时间
+                MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_GAME_TIME_UPDATE,totalGameTime);
                 save();
             }
         }
@@ -138,6 +143,12 @@ public class GameAppListener implements WinUser.WinEventProc{
 
                 dao.addTime(gameTime);
                 LOG.info("检测到鸣潮已经结束，保存时间{}",gameTime);
+            }
+
+
+            //判断是否开启自动退出，退出即结束程序
+            if (Config.setting.isExitWhenGameOver()){
+                MainApplication.exit();
             }
 
         }

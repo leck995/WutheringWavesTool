@@ -18,11 +18,15 @@ import javafx.scene.text.Font;
 public class SettingViewModel implements ViewModel {
     private SimpleStringProperty gameDir = new SimpleStringProperty();
     private SimpleBooleanProperty startWithAnalysis = new SimpleBooleanProperty();
+    private SimpleBooleanProperty exitWhenGameOver = new SimpleBooleanProperty();
+    private SimpleBooleanProperty hideWhenGameStart = new SimpleBooleanProperty();
     private ObservableList<String> fontFamilyList= FXCollections.observableArrayList();
 
     public SettingViewModel() {
         gameDir.bindBidirectional(Config.setting.gameRootDirProperty());
         startWithAnalysis.bindBidirectional(Config.setting.firstViewWithPoolAnalysisProperty());
+        exitWhenGameOver.bindBidirectional(Config.setting.exitWhenGameOverProperty());
+        hideWhenGameStart.bindBidirectional(Config.setting.hideWhenGameStartProperty());
         fontFamilyList.setAll(Font.getFamilies());
 
     }
@@ -54,5 +58,25 @@ public class SettingViewModel implements ViewModel {
 
     public ObservableList<String> getFontFamilyList() {
         return fontFamilyList;
+    }
+
+    public boolean isExitWhenGameOver() {
+        return exitWhenGameOver.get();
+    }
+
+    public SimpleBooleanProperty exitWhenGameOverProperty() {
+        return exitWhenGameOver;
+    }
+
+    public void setExitWhenGameOver(boolean exitWhenGameOver) {
+        this.exitWhenGameOver.set(exitWhenGameOver);
+    }
+
+    public boolean isHideWhenGameStart() {
+        return hideWhenGameStart.get();
+    }
+
+    public SimpleBooleanProperty hideWhenGameStartProperty() {
+        return hideWhenGameStart;
     }
 }

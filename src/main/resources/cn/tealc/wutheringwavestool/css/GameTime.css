@@ -25,3 +25,10 @@
     -fx-padding: 10;
     -fx-effect:dropshadow(three-pass-box, -color-border-muted,2,0.7,0,0);
 }
+
+.gametime  .progress-bar > .bar{
+    -fx-padding: 4px;
+}
+.gametime  .progress-bar > .track{
+    -fx-background-color: #dfdede;
+}

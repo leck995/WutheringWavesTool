@@ -1,11 +1,14 @@
 package cn.tealc.wutheringwavestool.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @program: WutheringWavesTool
  * @description:
  * @author: Leck
  * @create: 2024-07-08 15:42
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ResponseBody<T> {
     private Integer code;
     private String msg;
@@ -13,6 +16,20 @@ public class ResponseBody<T> {
     private Boolean success;
 
 
+    public ResponseBody() {
+    }
+
+    public ResponseBody(Integer code, String msg) {
+        this.code = code;
+        this.msg = msg;
+        this.success = false;
+    }
+
+    public ResponseBody(Integer code, String msg, Boolean success) {
+        this.code = code;
+        this.msg = msg;
+        this.success = success;
+    }
 
     public Integer getCode() {
         return code;

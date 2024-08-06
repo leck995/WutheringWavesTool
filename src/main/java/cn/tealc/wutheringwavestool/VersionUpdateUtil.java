@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool;
 
+import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.model.sign.UserInfo;
@@ -8,12 +9,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Date;
 import java.util.List;
 
 /**
  * @program: WutheringWavesTool
- * @description: 版本变更操作
+ * @description: 版本变更操作,每个版本保存3个月，后续移除
  * @author: Leck
  * @create: 2024-07-16 22:15
  */
@@ -24,6 +29,7 @@ public class VersionUpdateUtil {
     }
 
 
+    /*1.3版本*/
     private static void update01(){
         File signJson=new File("signInfo.json");
         if (signJson.exists()){
@@ -53,6 +59,8 @@ public class VersionUpdateUtil {
             }
         }
     }
+
+    /*1.4版本*/
     private static void update02(){
         File file1=new File("assets/image/home-role.png");
         if (file1.exists()){
@@ -65,6 +73,21 @@ public class VersionUpdateUtil {
         File file3=new File("assets/image/icon.png");
         if (file3.exists()){
             file3.delete();
+        }
+
+
+        Connection connection = JdbcUtils.getConnection();
+        try {
+            Statement st = connection.createStatement();
+            String checkSql="select count(*) from sqlite_master where name='user_info' and sql like '%has_info%'";
+            ResultSet resultSet = st.executeQuery(checkSql);
+            int anInt = resultSet.getInt(1);
+            if (anInt == 0){
+                st.execute("ALTER table user_info ADD  has_info BOOL DEFAULT 0");
+            }
+            resultSet.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
 
 

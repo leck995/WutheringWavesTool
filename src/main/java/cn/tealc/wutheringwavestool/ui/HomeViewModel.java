@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.ui;
 
 import cn.tealc.wutheringwavestool.Config;
+import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
@@ -26,6 +27,8 @@ import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.image.Image;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 import java.awt.*;
@@ -51,6 +54,7 @@ import java.util.List;
  * @create: 2024-07-03 19:57
  */
 public class HomeViewModel implements ViewModel {
+    private static final Logger LOG= LoggerFactory.getLogger(HomeViewModel.class);
     private SignUserInfo userInfo;
     private SimpleStringProperty energyText = new SimpleStringProperty();
     private SimpleStringProperty energyTimeText = new SimpleStringProperty();
@@ -84,7 +88,7 @@ public class HomeViewModel implements ViewModel {
             updateRoleData();
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING,"当前不存在主用户信息，无法获取，请在签到界面添加用户信息"),false);
+                    new MessageInfo(MessageType.WARNING,"当前不存在主用户信息，无法获取，请在账号界面添加用户信息"),false);
         }
 
 
@@ -97,7 +101,6 @@ public class HomeViewModel implements ViewModel {
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_GAME_TIME_UPDATE,(s, objects) -> {
             long playTime = (long) objects[0];
             updateGameTime(playTime);
-
         });
 
 
@@ -153,7 +156,7 @@ public class HomeViewModel implements ViewModel {
             Thread.startVirtualThread(task);
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING,"当前不存在用户信息，无法进行刷新，请在签到界面添加用户信息"),false);
+                    new MessageInfo(MessageType.WARNING,"当前不存在用户信息，无法进行刷新，请在账号界面添加用户信息"),false);
         }
     }
 
@@ -161,7 +164,7 @@ public class HomeViewModel implements ViewModel {
         UserInfoDataTask userInfoDataTask = new UserInfoDataTask(userInfo);
         userInfoDataTask.setOnSucceeded(workerStateEvent -> {
             ResponseBody<RoleInfo> responseBody = userInfoDataTask.getValue();
-            if (responseBody != null && responseBody.getCode() == 200){
+            if (responseBody.getCode() == 200){
                 RoleInfo roleInfo= responseBody.getData();
                 roleNameText.set(roleInfo.getName());
                 gameLifeText.set(String.format("已活跃%d天",roleInfo.getActiveDays()));
@@ -181,6 +184,8 @@ public class HomeViewModel implements ViewModel {
                 rolePaneVisible.set(true);
             }else{
                 rolePaneVisible.set(false);
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                        new MessageInfo(MessageType.WARNING,responseBody.getMsg()),false);
             }
         });
         Thread.startVirtualThread(userInfoDataTask);
@@ -265,8 +270,12 @@ public class HomeViewModel implements ViewModel {
             if (exe.exists()){
                 try {
                     Desktop.getDesktop().open(exe);
+                    if (Config.setting.isHideWhenGameStart()){
+                        MainApplication.window.hide();
+                    }
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    LOG.info("启动游戏错误",e);
+                    MainApplication.window.show();
                 }
             }else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,

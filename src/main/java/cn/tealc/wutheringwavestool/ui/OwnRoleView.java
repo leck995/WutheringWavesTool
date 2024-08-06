@@ -9,6 +9,7 @@ import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.roleData.Role;
+import cn.tealc.wutheringwavestool.thread.role.GameRoleDetailTask;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.*;
 import javafx.animation.Animation;
@@ -123,22 +124,30 @@ public class OwnRoleView implements FxmlView<OwnRoleViewModel>, Initializable {
             main.getItems().addAll(menuItem01,menuItem02,menuItem03);
 
             menuItem01.setOnAction(event -> {
-                String fielname = LocalResourcesManager.addHomeIcon(role.getRoleName(), role.getRoleIconUrl());
-                Config.setting.setHomeViewIcon(fielname);
+                String filename = LocalResourcesManager.addHomeIcon(role.getRoleName(), role.getRoleIconUrl());
+                Config.setting.setHomeViewIcon(filename);
             });
             menuItem02.setOnAction(event -> {
-                String fielname = LocalResourcesManager.addHomeRole(role.getRoleName(), role.getRolePicUrl());
-                Config.setting.setHomeViewRole(fielname);
+                String filename = LocalResourcesManager.addHomeRole(role.getRoleName(), role.getRolePicUrl());
+                Config.setting.setHomeViewRole(filename);
             });
             menuItem03.setOnAction(event -> {
-                String fielname1 = LocalResourcesManager.addHomeRole(role.getRoleName(), role.getRolePicUrl());
-                Config.setting.setHomeViewRole(fielname1);
-                String fielname2 = LocalResourcesManager.addHomeIcon(role.getRoleName(), role.getRoleIconUrl());
-                Config.setting.setHomeViewIcon(fielname2);
+                String filename1 = LocalResourcesManager.addHomeRole(role.getRoleName(), role.getRolePicUrl());
+                Config.setting.setHomeViewRole(filename1);
+                String filename2 = LocalResourcesManager.addHomeIcon(role.getRoleName(), role.getRoleIconUrl());
+                Config.setting.setHomeViewIcon(filename2);
             });
 
+            Menu other= new Menu("其他");
+            MenuItem saveImageToPoolCard =new MenuItem("应用至抽卡分析");
+
+            saveImageToPoolCard.setOnAction(event -> {
+                viewModel.saveRoleIconToPoolCard(role.getRoleId());
+            });
+
+            other.getItems().add(saveImageToPoolCard);
             ContextMenu contextMenu=new ContextMenu();
-            contextMenu.getItems().add(main);
+            contextMenu.getItems().addAll(main,other);
             contextMenu.show(item,contextMenuEvent.getScreenX(),contextMenuEvent.getScreenY());
         });
 

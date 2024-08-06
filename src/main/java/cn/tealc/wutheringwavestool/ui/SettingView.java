@@ -33,6 +33,10 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
     @FXML
     private CheckBox startWithAnalysisView;
     @FXML
+    private CheckBox exitWhenGameOver;
+    @FXML
+    private CheckBox hideWhenGameStart;
+    @FXML
     private ChoiceBox<String> fontFamilyChoiceBox;
 
 
@@ -40,6 +44,8 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         gameDirField.textProperty().bindBidirectional(viewModel.gameDirProperty());
         startWithAnalysisView.selectedProperty().bindBidirectional(viewModel.startWithAnalysisProperty());
+        hideWhenGameStart.selectedProperty().bindBidirectional(viewModel.hideWhenGameStartProperty());
+        exitWhenGameOver.selectedProperty().bindBidirectional(viewModel.exitWhenGameOverProperty());
         fontFamilyChoiceBox.setItems(viewModel.getFontFamilyList());
 
         fontFamilyChoiceBox.valueProperty().addListener((observableValue, s, t1) -> {

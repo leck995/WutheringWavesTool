@@ -144,6 +144,9 @@
             </HBox>
          </children>
       </VBox>
+      <Label styleClass="title-2" text="主页" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+      <ImageView fx:id="roleIV" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
+      <Label fx:id="hasSignLabel" styleClass="sign-label" text="今日尚未签到" AnchorPane.bottomAnchor="70.0" AnchorPane.rightAnchor="40.0" />
       <HBox spacing="15.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="30.0">
          <children>
             <MenuButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" popupSide="TOP" text="浏览">
@@ -183,8 +186,5 @@
                </graphic></Button>
          </children>
       </HBox>
-      <Label styleClass="title-2" text="主页" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-      <ImageView fx:id="roleIV" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
-      <Label fx:id="hasSignLabel" styleClass="sign-label" text="今日尚未签到" AnchorPane.bottomAnchor="70.0" AnchorPane.rightAnchor="40.0" />
    </children>
 </AnchorPane>

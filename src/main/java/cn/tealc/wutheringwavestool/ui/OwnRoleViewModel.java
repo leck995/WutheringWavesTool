@@ -6,15 +6,25 @@ import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.roleData.Role;
+import cn.tealc.wutheringwavestool.model.roleData.RoleDetail;
 import cn.tealc.wutheringwavestool.model.sign.UserInfo;
 import cn.tealc.wutheringwavestool.thread.role.GameRoleDataTask;
+import cn.tealc.wutheringwavestool.thread.role.GameRoleDetailTask;
+import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
 import de.saxsys.mvvmfx.ViewTuple;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.image.Image;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -24,6 +34,7 @@ import java.util.List;
  * @create: 2024-07-29 22:14
  */
 public class OwnRoleViewModel implements ViewModel {
+    private static final Logger LOG= LoggerFactory.getLogger(OwnRoleViewModel.class);
     private final ObservableList<Role> roleList= FXCollections.observableArrayList();
 
     private UserInfo userInfo;
@@ -43,7 +54,7 @@ public class OwnRoleViewModel implements ViewModel {
             Thread.startVirtualThread(task);
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING,"当前不存在主用户信息，无法获取，请在签到界面添加用户信息"),false);
+                    new MessageInfo(MessageType.WARNING,"当前不存在主用户信息，无法获取，请在账号界面添加用户信息"),false);
         }
 
     }
@@ -58,6 +69,31 @@ public class OwnRoleViewModel implements ViewModel {
 
     }
 
+    public void saveRoleIconToPoolCard(int id){
+        GameRoleDetailTask task=new GameRoleDetailTask(userInfo,id);
+        task.setOnSucceeded(workerStateEvent -> {
+            ResponseBody<RoleDetail> value = task.getValue();
+            if (value.getSuccess()){
+                RoleDetail roleDetail = value.getData();
+                String weaponIcon = roleDetail.getWeaponData().getWeapon().getWeaponIcon();
+                String roleIconUrl = roleDetail.getRole().getRoleIconUrl();
+                try {
+                    Image image1 = LocalResourcesManager.imageBuffer(roleIconUrl);
+                    File file1=new File("assets/header/%s.png",roleDetail.getRole().getRoleName());
+                    ImageIO.write(SwingFXUtils.fromFXImage(image1,null),"png",file1);
+
+                    Image image2 = LocalResourcesManager.imageBuffer(weaponIcon);
+                    File file2=new File("assets/header/%s.png",roleDetail.getWeaponData().getWeapon().getWeaponName());
+                    ImageIO.write(SwingFXUtils.fromFXImage(image2,null),"png",file2);
+                } catch (IOException e) {
+                    LOG.error("写入图片错误",e);
+                }
+
+            }
+        });
+
+
+    }
 
     public ObservableList<Role> getRoleList() {
         return roleList;

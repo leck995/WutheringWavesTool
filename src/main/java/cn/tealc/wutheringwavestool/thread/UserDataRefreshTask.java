@@ -27,11 +27,11 @@ public class UserDataRefreshTask extends Task<ResponseBody<String>> {
     }
 
     @Override
-    protected ResponseBody call() throws Exception {
+    protected ResponseBody<String> call() throws Exception {
         return sign(signUserInfo.getRoleId(),signUserInfo.getToken());
     }
 
-    private ResponseBody sign(String roleId,String token){
+    private ResponseBody<String> sign(String roleId,String token){
         String url1="https://api.kurobbs.com/gamer/widget/game3/refresh?type=1&sizeType=2";
         String url2=String.format(
                 "https://api.kurobbs.com/gamer/roleBox/aki/refreshData?gameId=3&serverId=76402e5b20be2c39f095a152090afddc&roleId=%s",roleId);
@@ -43,9 +43,9 @@ public class UserDataRefreshTask extends Task<ResponseBody<String>> {
             HttpResponse<String> response2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
             LOG.debug("刷新请求1,状态码:{},刷新请求2,状态码:{}",response.statusCode(),response2.statusCode());
             return null;
-
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            LOG.error("错误",e);
+            return new ResponseBody<>(1,"连接或解析错误");
         }
     }
 }

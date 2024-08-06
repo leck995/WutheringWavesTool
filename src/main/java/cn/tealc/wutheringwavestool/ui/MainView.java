@@ -37,6 +37,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import javafx.scene.shape.Circle;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
@@ -76,9 +77,11 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
         titleBar=new TitleBar(MainApplication.window, TitleBarStyle.ALL);
-        ImageView icon = new ImageView(new Image(MainApplication.class.getResourceAsStream("image/icon.png"),30,30,true,true));
-        icon.setFitHeight(30);
-        icon.setFitWidth(30);
+        ImageView icon = new ImageView(new Image(MainApplication.class.getResourceAsStream("image/icon.png"),36,36,true,true));
+        icon.setFitHeight(36);
+        icon.setFitWidth(36);
+        Circle circle = new Circle(18,18,18);
+        icon.setClip(circle);
         titleBar.setIcon(icon);
         titleBar.setTitle("鸣潮助手");
         titleBar.setContent(root.getChildren().getFirst());
@@ -110,7 +113,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         root.getChildren().add(titleBar);
         messagePane.toFront();
         AnchorPaneUtil.setPosition(titleBar,0);
-
+        AnchorPaneUtil.setPosition(messagePane,60.0,10.0,null,null);
 
         if (Config.setting.isFirstViewWithPoolAnalysis()){
             ViewTuple<AnalysisPoolView, AnalysisPoolViewModel> viewTuple = FluentViewLoader.fxmlView(AnalysisPoolView.class).load();
@@ -133,7 +136,6 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
                 Pane panes= (Pane) objects[0];
                 showDialog(panes);
             }
-
         }));
 
 
@@ -153,11 +155,12 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     private void showDialog(JFXDialogLayout container){
         JFXDialog dialog = new JFXDialog(titleBar,container,JFXDialog.DialogTransition.CENTER);
         for (Node action : container.getActions()) {
-            Button button=(Button) action;
-            if (button.isCancelButton()){
-                button.setOnAction(event -> {
-                    dialog.close();
-                });
+            if (action instanceof Button button) {
+                if (button.isCancelButton()){
+                    button.setOnAction(event -> {
+                        dialog.close();
+                    });
+                }
             }
         }
         dialog.show();

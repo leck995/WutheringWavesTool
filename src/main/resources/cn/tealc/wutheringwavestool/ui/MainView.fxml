@@ -63,6 +63,6 @@
             <StackPane fx:id="child" prefHeight="150.0" prefWidth="200.0" />
          </items>
       </SplitPane>
-      <VBox fx:id="messagePane" spacing="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+      <VBox fx:id="messagePane" spacing="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0" />
    </children>
 </AnchorPane>
