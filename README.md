@@ -16,15 +16,15 @@
 - [ ] 挑战数据分析
 
 ## 运行截图
-![image.png](https://github.com/leck995/WutheringWavesTool/blob/master/temp/01.png)
+![image.png](https://github.com/leck995/WutheringWavesTool/blob/new-ui/temp/01.png)
 
-![image.png](https://github.com/leck995/WutheringWavesTool/blob/master/temp/img02.png)
+![image.png](https://github.com/leck995/WutheringWavesTool/blob/new-ui/temp/02.png)
 
-![image.png](https://github.com/leck995/WutheringWavesTool/blob/master/temp/img03.png)
+![image.png](https://github.com/leck995/WutheringWavesTool/blob/new-ui/temp/03.png)
 
-![image.png](https://github.com/leck995/WutheringWavesTool/blob/master/temp/img04.png)
+![image.png](https://github.com/leck995/WutheringWavesTool/blob/new-ui/temp/04.png)
 
-![image.png](https://github.com/leck995/WutheringWavesTool/blob/master/temp/img05.png)
+![image.png](https://github.com/leck995/WutheringWavesTool/blob/new-ui/temp/05.png)
 ## 教程
 软件启动先在设置中设置鸣潮游戏目录（类似于“D:\Game\Wuthering Waves”）,这是最优先的一步。
 
