@@ -2,7 +2,7 @@
 
 
 
-.default-color0.chart-pie { -fx-pie-color: #ffd000; }
+.default-color0.chart-pie { -fx-pie-color: #f1d358; }
 .default-color1.chart-pie { -fx-pie-color: #C48FD8; }
 .default-color2.chart-pie { -fx-pie-color: #22bad9; }
 .default-color3.chart-pie { -fx-pie-color: #0181e2; }
@@ -12,11 +12,11 @@
 .default-color7.chart-pie { -fx-pie-color: #ff5700; }
 
 .ssr-label{
-    -fx-text-fill: #f1c614;
+    -fx-text-fill: #f1d358;
     -fx-font-size: 15;
 }
 .sr-label{
-    -fx-text-fill: #C48FD8;
+    -fx-text-fill: #d694ef;
     -fx-font-size: 15;
 }
 .r-label{
@@ -33,10 +33,8 @@
 }
 
 .left{
-
-    -fx-background-radius: 4px;
+    -fx-background-radius: 8px;
     -fx-padding: 10;
-
 }
 
 
@@ -81,7 +79,7 @@
     -fx-background-radius: 8;
     -fx-border-color: -color-border-default;
     -fx-border-radius: 8;
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default-60;
 }
 .role-pane .role-name{
     -fx-font-size: 17;
@@ -141,8 +139,8 @@
     -fx-pref-height: 40;
     -fx-pref-width: 100;
     -fx-font-size: 14;
-    -fx-background-color:  -color-bg-default;
+    -fx-background-color:  -color-bg-default-60;
     -fx-background-radius: 5;
     -fx-padding: 3;
-    -fx-effect:dropshadow(three-pass-box, -color-border-muted,2,0.7,0,0);
+  /*  -fx-effect:dropshadow(three-pass-box, -color-border-muted,2,0.7,0,0);*/
 }

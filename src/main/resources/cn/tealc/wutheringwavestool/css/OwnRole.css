@@ -1,0 +1,44 @@
+.own-role{
+    -color-bg-default-60: #ffffff60;
+    -color-bg-default-40: #ffffff40;
+}
+
+.own-role .role-cell{
+    -fx-background-color: -color-bg-default-60;
+    -fx-background-radius: 5;
+    -fx-padding: 0 0 2 0;
+   /* -fx-effect:dropshadow(three-pass-box, -color-border-muted,2,0.7,0,0);*/
+}
+.own-role .role-cell:hover{
+    -fx-background-color: -color-bg-default-40;
+}
+.own-role .role-cell > VBox{
+    -fx-padding: 0 0 8 0; /*与role对应*/
+    -fx-spacing: 2;
+
+}
+.own-role .role-cell > VBox > .name{
+    -fx-font-size: 16;
+    -fx-text-fill: -color-font-muted;
+    -fx-font-weight: bold;
+
+}
+.own-role .role-cell > VBox > .level{
+    -fx-font-size: 12;
+    -fx-text-fill: -color-font-subtle;
+
+}
+
+
+.own-role .back-btn{
+    -fx-border-color: transparent;
+    -fx-background-color: transparent;
+    -fx-translate-x: 10;
+    -fx-translate-y: 13;
+    -fx-padding: 2 5 2 5;
+}
+
+.own-role .back-btn:hover{
+    -fx-border-color: -color-border-subtle;
+    -fx-border-radius: 2;
+}

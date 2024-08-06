@@ -32,7 +32,7 @@
             </StackPane>
             <StackPane layoutY="200.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="160.0">
                <children>
-                  <HBox fx:id="children" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="100.0">
+                  <HBox fx:id="children" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="100.0">
                      <children>
                         <VBox alignment="CENTER" maxHeight="600.0" maxWidth="400.0" spacing="10.0" styleClass="left">
                            <children>

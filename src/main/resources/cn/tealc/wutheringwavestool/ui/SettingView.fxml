@@ -1,54 +1,74 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import atlantafx.base.layout.InputGroup?>
+<?import atlantafx.base.controls.ToggleSwitch?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.SettingView">
+<AnchorPane prefHeight="800.0" prefWidth="1200.0" styleClass="setting" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.SettingView">
    <children>
       <Button mnemonicParsing="false" onAction="#toWeb" styleClass="accent" text="前往更新" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-      <Label styleClass="title-2" text="设置" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-      <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
-         <children>
-            <GridPane alignment="CENTER" hgap="5.0" maxHeight="160.0" maxWidth="450.0" vgap="5.0">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-              </rowConstraints>
+      <Label styleClass="title-2" text="设置" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0" />
+      <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0" />
+      <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="65.0">
+         <content>
+            <HBox prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Label text="启动页：" GridPane.halignment="RIGHT" />
-                  <CheckBox fx:id="startWithAnalysisView" mnemonicParsing="false" text="抽卡分析" GridPane.columnIndex="1" GridPane.halignment="LEFT" />
-                  <Label layoutX="177.0" layoutY="11.0" text="自动退出：" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-                  <CheckBox fx:id="exitWhenGameOver" layoutX="238.0" layoutY="10.0" mnemonicParsing="false" text="游戏关闭时自动退出程序" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                  <Label layoutX="163.0" layoutY="48.0" text="隐藏程序：" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-                  <CheckBox fx:id="hideWhenGameStart" layoutX="238.0" layoutY="47.0" mnemonicParsing="false" text="游戏启动时隐藏程序至托盘" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                  <Label text="游戏根目录：" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
-                  <InputGroup alignment="CENTER_LEFT" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3">
+                  <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="left" HBox.hgrow="ALWAYS">
                      <children>
-                        <TextField fx:id="gameDirField" prefWidth="150.0" />
-                        <Button mnemonicParsing="false" onAction="#setGameDir" text="选择" />
+                        <Label layoutX="10.0" layoutY="64.0" styleClass="title-4" text="鸣潮安装目录" />
+                        <StackPane maxWidth="350.0" styleClass="input-group">
+                           <children>
+                              <TextField fx:id="gameDirField" prefWidth="250.0" />
+                              <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setGameDir" StackPane.alignment="CENTER_RIGHT">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdoal-folder" />
+                                 </graphic>
+                              </Button>
+                           </children>
+                        </StackPane>
+                        <Label styleClass="title-3" text="基础设置" />
+                        <Label styleClass="title-4" text="启动页" />
+                        <CheckBox fx:id="startWithAnalysisView" mnemonicParsing="false" text="抽卡分析" />
+                        <Label layoutX="10.0" layoutY="346.0" styleClass="title-4" text="自定义背景(16:9最佳)" />
+                        <ToggleSwitch fx:id="diyBgSwitch" labelPosition="RIGHT" layoutX="10.0" layoutY="341.0" text="开启" />
+                        <StackPane fx:id="diyBgInputGroup" layoutX="10.0" layoutY="39.0" maxWidth="350.0" styleClass="input-group">
+                           <children>
+                              <TextField fx:id="diyBgField" prefWidth="250.0" />
+                              <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setBgFile" StackPane.alignment="CENTER_RIGHT">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdoal-image" />
+                                 </graphic>
+                              </Button>
+                           </children>
+                        </StackPane>
+                        <Label layoutX="10.0" layoutY="84.0" styleClass="title-3" text="游戏行为" />
+                        <Label styleClass="title-4" text="游戏启动时隐藏程序至托盘" />
+                        <ToggleSwitch fx:id="hideWhenGameStart" labelPosition="RIGHT" text="开启" />
+                        <Label styleClass="title-4" text="游戏关闭时自动退出程序" />
+                        <ToggleSwitch fx:id="exitWhenGameOver" labelPosition="RIGHT" text="开启" />
                      </children>
-                  </InputGroup>
-                  <Label layoutX="149.0" layoutY="51.0" text="游戏根目录：" visible="false" GridPane.halignment="RIGHT" GridPane.rowIndex="4" />
-                  <ChoiceBox fx:id="fontFamilyChoiceBox" prefWidth="150.0" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                  </VBox>
+                  <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS" />
                </children>
-            </GridPane>
-         </children>
-      </StackPane>
+            </HBox>
+         </content>
+      </ScrollPane>
    </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+   <stylesheets>
+      <URL value="@../css/dark.css" />
+      <URL value="@../css/Setting.css" />
+   </stylesheets>
 </AnchorPane>

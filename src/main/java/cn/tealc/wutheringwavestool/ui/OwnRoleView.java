@@ -52,7 +52,9 @@ public class OwnRoleView implements FxmlView<OwnRoleViewModel>, Initializable {
     @InjectViewModel
     private OwnRoleViewModel viewModel;
     @FXML
-    private AnchorPane root;
+    private StackPane root;
+    @FXML
+    private AnchorPane child;
     @FXML
     private FlowPane roleFlowPane;
 
@@ -168,17 +170,23 @@ public class OwnRoleView implements FxmlView<OwnRoleViewModel>, Initializable {
 
                     Button backBtn=new Button("返回", new FontIcon(Material2AL.EXIT_TO_APP));
                     backBtn.getStyleClass().add("back-btn");
+
                     Parent view = viewTuple.getView();
                     StackPane stackPane=new StackPane(view,backBtn);
                     StackPane.setAlignment(backBtn,Pos.TOP_LEFT);
                     backBtn.setOnAction(event -> {
                         Timeline timeline = Animations.slideOutRight(stackPane, Duration.millis(300));
-                        timeline.setOnFinished(event1 -> root.getChildren().removeLast());
+                        timeline.setOnFinished(event1 -> {
+                            root.getChildren().removeLast();
+                            child.setVisible(true);
+                        });
                         timeline.play();
+
                     });
                     root.getChildren().add(stackPane);
-                    AnchorPaneUtil.setPosition(stackPane,0);
-                    Timeline timeline = Animations.slideInLeft(root, Duration.millis(300));
+
+                    child.setVisible(false);
+                    Timeline timeline = Animations.slideInRight(root, Duration.millis(300));
                     timeline.play();
                 }else {
                     LOG.error("出错了，角色数量与图片不一致,无法进入详情界面");

@@ -3,16 +3,14 @@ package cn.tealc.wutheringwavestool.ui;
 import atlantafx.base.controls.Message;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
-import cn.tealc.teafx.controls.TitleBar;
-import cn.tealc.teafx.enums.TitleBarStyle;
-import cn.tealc.teafx.theme.PrimerDark;
-import cn.tealc.teafx.theme.PrimerLight;
-import cn.tealc.teafx.utils.AnchorPaneUtil;
 import cn.tealc.wutheringwavestool.Config;
+import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 
+import cn.tealc.wutheringwavestool.thread.MainBackgroundTask;
+import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialog;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FluentViewLoader;
@@ -23,29 +21,28 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
 import javafx.animation.Timeline;
-import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.material2.Material2AL;
-import org.kordamp.ikonli.material2.Material2MZ;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
 import org.kordamp.ikonli.material2.Material2OutlinedMZ;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.Objects;
 import java.util.ResourceBundle;
 
 /**
@@ -55,14 +52,20 @@ import java.util.ResourceBundle;
  * @create: 2024-07-03 18:59
  */
 public class MainView implements Initializable,FxmlView<MainViewModel> {
+    private static final Logger LOG= LoggerFactory.getLogger(MainView.class);
     @FXML
     private StackPane child;
-
+    @FXML
+    private Button minBtn;
+    @FXML
+    private Button maxBtn;
+    @FXML
+    private Button closeBtn;
     @FXML
     private ToggleGroup navToggleGroup;
 
     @FXML
-    private AnchorPane root;
+    private StackPane root;
 
     @FXML
     private VBox messagePane;
@@ -71,25 +74,26 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     @FXML
     private ToggleButton homeBtn;
 
-    private TitleBar titleBar;
 
+    private GaussianBlur bgGaussianBlur;
+    @FXML
+    private Pane bgPane;
+    @FXML
+    private Pane bgPane02;
+    @FXML
+    private ToggleButton navBtn;
+    @FXML
+    private VBox nav;
+    @FXML
+    private Region navBg;
+    @FXML
+    private ImageView icon;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
-        titleBar=new TitleBar(MainApplication.window, TitleBarStyle.ALL);
-        ImageView icon = new ImageView(new Image(MainApplication.class.getResourceAsStream("image/icon.png"),36,36,true,true));
-        icon.setFitHeight(36);
-        icon.setFitWidth(36);
-        Circle circle = new Circle(18,18,18);
-        icon.setClip(circle);
-        titleBar.setIcon(icon);
-        titleBar.setTitle("鸣潮助手");
-        titleBar.setContent(root.getChildren().getFirst());
-        titleBar.setCloseEvent(event -> showExitDialog());
-        FontIcon fontIcon;
+ /*       FontIcon fontIcon;
         if (Config.setting.isTheme()){
             fontIcon = new FontIcon(Material2AL.BEDTIME);
-
         }else {
             fontIcon = new FontIcon(Material2MZ.WB_SUNNY);
         }
@@ -105,26 +109,87 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
                 fontIcon.setIconCode(Material2MZ.WB_SUNNY);
                 Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
             }
+        });*/
+
+        Circle circle=new Circle(18,18,18);
+        icon.setClip(circle);
+        icon.setImage(new Image(FXResourcesLoader.load("image/icon.png"),45,45,true,true));
+
+
+        navBtn.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+            if (t1){
+                for (Toggle toggle : navToggleGroup.getToggles()) {
+                    ToggleButton toggleButton = (ToggleButton) toggle;
+                    toggleButton.getStyleClass().add("icon-only");
+                }
+            }else {
+                for (Toggle toggle : navToggleGroup.getToggles()) {
+                    ToggleButton toggleButton = (ToggleButton) toggle;
+                    toggleButton.getStyleClass().remove("icon-only");
+                }
+            }
         });
 
-        titleBar.getTitleBarRightPane().getChildren().add(1,skinBtn);
+        navBtn.setSelected(true);
 
-        titleBar.getStylesheets().add(MainApplication.class.getResource("/cn/tealc/wutheringwavestool/css/Default.css").toExternalForm());
-        root.getChildren().add(titleBar);
-        messagePane.toFront();
-        AnchorPaneUtil.setPosition(titleBar,0);
-        AnchorPaneUtil.setPosition(messagePane,60.0,10.0,null,null);
 
         if (Config.setting.isFirstViewWithPoolAnalysis()){
             ViewTuple<AnalysisPoolView, AnalysisPoolViewModel> viewTuple = FluentViewLoader.fxmlView(AnalysisPoolView.class).load();
             child.getChildren().setAll(viewTuple.getView());
-
             navToggleGroup.selectToggle(analysisBtn);
         }else {
             ViewTuple<HomeView, HomeViewModel> viewTuple = FluentViewLoader.fxmlView(HomeView.class).load();
             child.getChildren().setAll(viewTuple.getView());
 
         }
+
+        Rectangle rectangle = new Rectangle();
+        rectangle.widthProperty().bind(bgPane.widthProperty());
+        rectangle.heightProperty().bind(bgPane.heightProperty());
+        rectangle.setArcWidth(10);
+        rectangle.setArcHeight(10);
+        bgPane.setClip(rectangle);
+        bgPane02.visibleProperty().bind(bgPane.visibleProperty().not());
+/*        Image image=null;
+        if(Config.setting.isDiyHomeBg()){
+            image= LocalResourcesManager.getHomeBg(Config.setting.getDiyHomeBgName());
+            if (image == null){
+                image = new Image(FXResourcesLoader.load("image/bg.png"));
+                Config.setting.setDiyHomeBg(false);
+                Config.setting.setDiyHomeBgName(null);
+                LOG.warn("自定义壁纸出现问题，取消自定义");
+            }
+        }else {
+            image = new Image(FXResourcesLoader.load("image/bg.png"));
+        }
+        bgPane.setBackground(
+                new Background(
+                        new BackgroundImage(
+                                image,
+                                BackgroundRepeat.NO_REPEAT,
+                                BackgroundRepeat.NO_REPEAT,
+                                BackgroundPosition.CENTER,
+                                new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, true, true))));
+
+        Rectangle rectangle = new Rectangle();
+        rectangle.widthProperty().bind(bgPane.widthProperty());
+        rectangle.heightProperty().bind(bgPane.heightProperty());
+        rectangle.setArcWidth(10);
+        rectangle.setArcHeight(10);
+        bgPane.setClip(rectangle);
+
+
+
+        //bgPane02用于显示高斯模糊的背景
+        bgPane02.visibleProperty().bind(bgPane.visibleProperty().not());
+        MainBackgroundTask task = new MainBackgroundTask(image);
+        task.setOnSucceeded(workerStateEvent -> {
+            bgPane02.setBackground(task.getValue());
+        });
+
+        Thread.startVirtualThread(task);*/
+
+        updateBg();
 
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.MESSAGE,((s, objects) -> {
             showMessage((MessageInfo) objects[0]);
@@ -137,23 +202,45 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
                 showDialog(panes);
             }
         }));
-
-
-    /*    titleBar.setBackground(new Background(new BackgroundFill(Color.web("#e4dbdb"),null,null)));
-        MainBackgroundTask task = new MainBackgroundTask();
-        task.setOnSucceeded(workerStateEvent -> {
-            System.out.println(titleBar.getChildren().size());
-            Pane node = (Pane) titleBar.getChildren().getFirst();
-            node.setBackground(task.getValue());
-        });
-
-        Thread.startVirtualThread(task);*/
-
+        MvvmFX.getNotificationCenter().subscribe(NotificationKey.CHANGE_BG,((s, objects) -> {
+            updateBg();
+        }));
     }
 
 
+    private void updateBg(){
+        Image image=null;
+        if(Config.setting.isDiyHomeBg()){
+            image= LocalResourcesManager.getHomeBg(Config.setting.getDiyHomeBgName());
+            if (image == null){
+                image = new Image(FXResourcesLoader.load("image/bg.png"));
+                Config.setting.setDiyHomeBg(false);
+                Config.setting.setDiyHomeBgName(null);
+                LOG.warn("自定义壁纸出现问题，取消自定义");
+            }
+        }else {
+            image = new Image(FXResourcesLoader.load("image/bg.png"));
+        }
+        bgPane.setBackground(
+                new Background(
+                        new BackgroundImage(
+                                image,
+                                BackgroundRepeat.NO_REPEAT,
+                                BackgroundRepeat.NO_REPEAT,
+                                BackgroundPosition.CENTER,
+                                new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, true, true))));
+
+        //bgPane02用于显示高斯模糊的背景
+        MainBackgroundTask task = new MainBackgroundTask(image);
+        task.setOnSucceeded(workerStateEvent -> {
+            bgPane02.setBackground(task.getValue());
+        });
+
+        Thread.startVirtualThread(task);
+    }
+
     private void showDialog(JFXDialogLayout container){
-        JFXDialog dialog = new JFXDialog(titleBar,container,JFXDialog.DialogTransition.CENTER);
+        JFXDialog dialog = new JFXDialog(root,container,JFXDialog.DialogTransition.CENTER);
         for (Node action : container.getActions()) {
             if (action instanceof Button button) {
                 if (button.isCancelButton()){
@@ -167,7 +254,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     }
 
     private void showDialog(Pane pane){
-        JFXDialog dialog = new JFXDialog(titleBar,pane,JFXDialog.DialogTransition.CENTER);
+        JFXDialog dialog = new JFXDialog(root,pane,JFXDialog.DialogTransition.CENTER);
         dialog.show();
     }
 
@@ -201,10 +288,8 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     }
 
 
-    private void showExitDialog(){
+    public void showExitDialog(){
         JFXDialogLayout dialogLayout = new JFXDialogLayout();
-
-
         Label title = new Label("关闭提示");
         title.getStyleClass().add("title-2");
         dialogLayout.setHeading(title);
@@ -216,7 +301,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         Button cancelBtn=new Button("取消");
 
         dialogLayout.setActions(iconBtn,exitBtn,cancelBtn);
-        JFXDialog jfxDialog = new JFXDialog(titleBar,dialogLayout,JFXDialog.DialogTransition.CENTER);
+        JFXDialog jfxDialog = new JFXDialog(root,dialogLayout,JFXDialog.DialogTransition.CENTER);
 
         exitBtn.setOnAction(event -> {
             MainApplication.exit();
@@ -230,6 +315,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         jfxDialog.show();
     }
 
+
     @FXML
     void toAnalysis(ActionEvent event) {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
@@ -237,7 +323,8 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             ViewTuple<AnalysisPoolView, AnalysisPoolViewModel> viewTuple = FluentViewLoader.fxmlView(AnalysisPoolView.class).load();
 
             child.getChildren().setAll(viewTuple.getView());
-            Animations.slideInLeft(child,Duration.millis(300)).play();
+            startNavAnim();
+            bgPane.setVisible(false);
         }else {
             toggleButton.setSelected(true);
         }
@@ -249,7 +336,8 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             ViewTuple<OwnRoleView, OwnRoleViewModel> viewTuple = FluentViewLoader.fxmlView(OwnRoleView.class).load();
 
             child.getChildren().setAll(viewTuple.getView());
-            Animations.slideInLeft(child,Duration.millis(300)).play();
+            startNavAnim();
+            bgPane.setVisible(false);
         }else {
             toggleButton.setSelected(true);
         }
@@ -259,9 +347,9 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
             ViewTuple<SignView, SignViewModel> viewTuple = FluentViewLoader.fxmlView(SignView.class).load();
-
+            bgPane.setVisible(false);
             child.getChildren().setAll(viewTuple.getView());
-            Animations.slideInLeft(child,Duration.millis(300)).play();
+            startNavAnim();
         }else {
             toggleButton.setSelected(true);
         }
@@ -272,9 +360,9 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
             ViewTuple<HomeView, HomeViewModel> viewTuple = FluentViewLoader.fxmlView(HomeView.class).load();
-
+            bgPane.setVisible(true);
             child.getChildren().setAll(viewTuple.getView());
-            Animations.slideInLeft(child,Duration.millis(300)).play();
+            startNavAnim();
         }else {
             toggleButton.setSelected(true);
         }
@@ -285,9 +373,9 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
             ViewTuple<SettingView, SettingViewModel> viewTuple = FluentViewLoader.fxmlView(SettingView.class).load();
-
+            bgPane.setVisible(false);
             child.getChildren().setAll(viewTuple.getView());
-            Animations.slideInLeft(child,Duration.millis(300)).play();
+            startNavAnim();
         }else {
             toggleButton.setSelected(true);
         }
@@ -297,9 +385,9 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
             ViewTuple<AccountView, AccountViewModel> viewTuple = FluentViewLoader.fxmlView(AccountView.class).load();
-
+            bgPane.setVisible(false);
             child.getChildren().setAll(viewTuple.getView());
-            Animations.slideInLeft(child,Duration.millis(300)).play();
+            startNavAnim();
         }else {
             toggleButton.setSelected(true);
         }
@@ -310,15 +398,36 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
             ViewTuple<GameTimeView, GameTimeViewModel> viewTuple = FluentViewLoader.fxmlView(GameTimeView.class).load();
-
+            bgPane.setVisible(false);
             child.getChildren().setAll(viewTuple.getView());
-            Animations.slideInLeft(child,Duration.millis(300)).play();
+            startNavAnim();
         }else {
             toggleButton.setSelected(true);
         }
     }
 
 
+
+    private void startChangeAnim(){
+        Animations.slideInLeft(child,Duration.millis(300)).play();
+        var t = new Timeline(
+                new KeyFrame(Duration.millis(300),
+                        new KeyValue(bgPane.scaleXProperty(), 1.2),
+                        new KeyValue(bgPane.scaleYProperty(), 1.2),
+                        new KeyValue(bgPane.scaleZProperty(), 1.2)
+                ));
+        t.play();
+    }
+    private void startBackAnim(){
+        Animations.slideInLeft(child,Duration.millis(300)).play();
+        var t = new Timeline(
+                new KeyFrame(Duration.millis(300),
+                        new KeyValue(bgPane.scaleXProperty(), 1.2),
+                        new KeyValue(bgPane.scaleYProperty(), 1.2),
+                        new KeyValue(bgPane.scaleZProperty(), 1.2)
+                ));
+        t.play();
+    }
 
     private Message createMessage(MessageInfo messageInfo){
         Message message = null;
@@ -360,5 +469,42 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         message.setPrefSize(300.0,60.0);
         message.setMaxSize(300.0,80.0);
         return message;
+    }
+
+    public void startNavAnim() {
+
+        var t = new Timeline(
+                new KeyFrame(Duration.ZERO,
+                        new KeyValue(child.scaleXProperty(), 0.9, Animations.EASE),
+                        new KeyValue(child.scaleYProperty(), 0.9, Animations.EASE)
+                ),
+                new KeyFrame(Duration.millis(300),
+                        new KeyValue(child.scaleXProperty(), 1, Animations.EASE),
+                        new KeyValue(child.scaleYProperty(), 1, Animations.EASE)
+                )
+        );
+
+        t.statusProperty().addListener((obs, old, val) -> {
+            if (val == Animation.Status.STOPPED) {
+                child.setScaleX(1);
+                child.setScaleY(1);
+            }
+        });
+        
+        t.play();
+    }
+
+
+
+    public Button getMinBtn() {
+        return minBtn;
+    }
+
+    public Button getMaxBtn() {
+        return maxBtn;
+    }
+
+    public Button getCloseBtn() {
+        return closeBtn;
     }
 }

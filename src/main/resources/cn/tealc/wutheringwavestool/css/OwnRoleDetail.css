@@ -1,5 +1,7 @@
 .role-detail{
-    -fx-background-color: -color-bg-overlay;
+    -color-bg-default-60: #ffffff60;
+    -color-bg-default-40: #ffffff40;
+    -color-bg-default-30: #ffffff30;
 }
 
 .role-detail .role{
@@ -76,10 +78,10 @@
 }
 
 .role-detail .phantom{
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default-30;
     -fx-background-radius: 5;
     -fx-border-color: transparent;
-    -fx-effect:dropshadow(three-pass-box, -color-border-muted,2,0.7,0,0);
+
 }
 .role-detail .phantom > .phantom-title{
     -fx-font-size: 25;
@@ -158,7 +160,7 @@
 
 .role-detail .role-list-view .list-cell:hover > .role-detail-cell,
 .role-detail .role-list-view .list-cell:selected > .role-detail-cell{
-    -fx-background-color: -color-hover-muted;
+    -fx-background-color: -color-bg-default-40;
 }
 
 .role-detail .role-list-view .list-cell > .role-detail-cell .role-name{
@@ -179,5 +181,5 @@
     -fx-background-insets: 1;
 }
 .role-detail .role-list-view:hover .scroll-bar:vertical .thumb{
-    -fx-background-color: -color-hover-muted;
+    -fx-background-color: -color-bg-default-30;
 }

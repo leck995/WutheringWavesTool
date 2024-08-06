@@ -10,42 +10,44 @@ import javafx.scene.layout.BackgroundPosition;
 import javafx.scene.layout.BackgroundRepeat;
 import javafx.scene.layout.BackgroundSize;
 import net.coobird.thumbnailator.Thumbnails;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
+import java.io.IOException;
 
 /**
- * @program: AsmrPlayer-web
  * @description: 处理传递过来的Image,进行高斯模糊和对比度调整
  * @author: Leck
  * @create: 2024-01-29 16:16
  */
 public class MainBackgroundTask extends Task<Background> {
-    private final GaussianFilter gaussianFilter;
-    private final ContrastFilter contrastFilter;
+    private static final Logger LOG= LoggerFactory.getLogger(MainBackgroundTask.class);
+    private GaussianFilter gaussianFilter;
+    private ContrastFilter contrastFilter;
 
+    private Image image;
 
-
-    public MainBackgroundTask() {
-        gaussianFilter = new GaussianFilter(25);
+    public MainBackgroundTask(Image image) {
+        this.image = image;
+        gaussianFilter = new GaussianFilter(22);
         contrastFilter = new ContrastFilter();
-        contrastFilter.setBrightness(0.45f);
+        //contrastFilter.setBrightness(1.1f);
+        contrastFilter.setContrast(1.1f);
     }
 
     @Override
-    protected Background call() throws Exception {
-
-        File roleIVFile=new File("assets/image/icon.png");
-        Image image=new Image(roleIVFile.toURI().toString(),100,100,false,false);
-
-        BufferedImage bufferedImage = Thumbnails
-                .of(SwingFXUtils.fromFXImage(image,null))
-                .sourceRegion(40,40,80,80)
-                .width(100)
-                .asBufferedImage();
-
+    protected Background call(){
+        BufferedImage bufferedImage = null;
+        try {
+            bufferedImage = Thumbnails
+                    .of(SwingFXUtils.fromFXImage(image,null))
+                    .size(128,72)
+                    .asBufferedImage();
+        } catch (IOException e) {
+            LOG.error("Error", e);
+        }
 
         BufferedImage filter = gaussianFilter.filter(bufferedImage, null);
         filter=contrastFilter.filter(filter,null);

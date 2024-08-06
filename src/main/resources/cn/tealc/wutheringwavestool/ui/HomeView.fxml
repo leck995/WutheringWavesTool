@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
@@ -12,14 +13,14 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane fx:id="root" prefHeight="700.0" prefWidth="1200.0" styleClass="role" stylesheets="@../css/Home.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.HomeView">
+<AnchorPane fx:id="root" prefHeight="700.0" prefWidth="1200.0" stylesheets="@../css/Home.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.HomeView">
    <children>
       <AnchorPane fx:id="rolePane" layoutX="708.0" layoutY="50.0" AnchorPane.bottomAnchor="220.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
          <children>
             <VBox layoutX="2.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <Label layoutX="10.0" layoutY="105.0" styleClass="title-3" text="角色" />
-                  <HBox alignment="CENTER_LEFT" spacing="15.0" styleClass="role-data">
+                  <HBox fx:id="rolePane2" alignment="CENTER_LEFT" spacing="15.0" styleClass="role-data">
                      <children>
                         <ImageView fx:id="headIV" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
                            <image>
@@ -121,10 +122,14 @@
                   </HBox>
                </children>
             </VBox>
-            <Button mnemonicParsing="false" onAction="#refreshRoleData" styleClass="button-circle" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <Button mnemonicParsing="false" onAction="#refreshRoleData" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <graphic>
                   <FontIcon iconLiteral="mdmz-refresh" />
                </graphic>
+               <styleClass>
+                  <String fx:value="button-circle" />
+                  <String fx:value="refresh-btn" />
+               </styleClass>
             </Button>
          </children>
       </AnchorPane>
@@ -149,7 +154,7 @@
       <Label fx:id="hasSignLabel" styleClass="sign-label" text="今日尚未签到" AnchorPane.bottomAnchor="70.0" AnchorPane.rightAnchor="40.0" />
       <HBox spacing="15.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="30.0">
          <children>
-            <MenuButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" popupSide="TOP" text="浏览">
+            <MenuButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" popupSide="TOP" styleClass="func-btn" text="浏览">
                <items>
                   <MenuItem mnemonicParsing="false" onAction="#toAlbum" text="截图目录">
                      <graphic>
@@ -166,7 +171,7 @@
                   <FontIcon iconLiteral="mdsal-folder" />
                </graphic>
             </MenuButton>
-            <MenuButton mnemonicParsing="false" popupSide="TOP" text="Wiki">
+            <MenuButton mnemonicParsing="false" popupSide="TOP" styleClass="func-btn" text="Wiki">
               <items>
                 <MenuItem mnemonicParsing="false" onAction="#toWiki01" text="库街区" />
                 <MenuItem mnemonicParsing="false" onAction="#toWiki02" text="GameKee" />
@@ -175,16 +180,24 @@
                   <FontIcon iconLiteral="mdal-book" />
                </graphic>
             </MenuButton>
-            <Button layoutX="122.0" layoutY="10.0" mnemonicParsing="false" onAction="#startUpdate" text="启动更新">
+            <Button layoutX="122.0" layoutY="10.0" mnemonicParsing="false" onAction="#startUpdate" styleClass="func-btn" text="启动更新">
                <graphic>
                   <FontIcon iconLiteral="mdsal-cloud_download" />
                </graphic>
             </Button>
-            <Button mnemonicParsing="false" onAction="#startGame" styleClass="accent" text="启动游戏">
+            <Button mnemonicParsing="false" onAction="#startGame" text="启动游戏">
                <graphic>
                   <FontIcon iconLiteral="mdral-games" />
-               </graphic></Button>
+               </graphic>
+               <styleClass>
+                  <String fx:value="accent" />
+                  <String fx:value="start-btn" />
+               </styleClass></Button>
          </children>
       </HBox>
    </children>
+   <styleClass>
+      <String fx:value="role" />
+      <String fx:value="home" />
+   </styleClass>
 </AnchorPane>

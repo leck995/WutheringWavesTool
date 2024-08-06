@@ -1,13 +1,14 @@
-
-
+.sign{
+    -color-bg-default-50: #ffffff50;
+}
 .sign .goods{
    /* -fx-border-color: -color-border-default;
     -fx-border-width: 3;
     -fx-border-radius: 5;*/
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default-50;
     -fx-background-radius: 5;
-    -fx-padding: 10;
-    -fx-effect:dropshadow(three-pass-box, -color-border-muted,2,0.7,0,0);
+    -fx-padding: 5;
+
 }
 .sign .goods .name{
     -fx-background-color: -color-font-subtle;

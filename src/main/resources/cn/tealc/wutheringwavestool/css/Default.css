@@ -2,55 +2,36 @@
 .text{
     -fx-font-smoothing-type: gray;
 }
-.choice-box{}
 
-.title-bar{
-    -fx-background-color: -color-bg-overlay;
-    -fx-background-radius: 10;
-}
 
-.title-bar > .title-header{
-    -fx-background-color: -color-bg-overlay;
-    -fx-background-radius: 10 10 0 0;
+.combo-box-base{
+    -fx-background-radius: 20;
+    -fx-padding: 0 5 0 5;
+    -fx-background-color: -color-bg-default-60;
 }
-.title-bar > .title-header > .left-header{
-    -fx-background-radius: 10 0 0 0;
-    -fx-background-color: -color-bg-subtle;
-    -fx-pref-width: 180;
+.combo-box-base:showing{
+    -fx-background-radius: 20 20 0 0;
+
+}
+.combo-box > .list-cell {
+    -fx-background: transparent;
 }
 
-.title-bar > .title-header > .left-header >  .title{
-    -fx-font-size: 18;
-    -fx-text-fill: -color-fg-muted;
-    -fx-font-weight: bold;
+.combo-box-popup > .list-view {
+    -fx-background-color: -color-bg-default-60;
+    -fx-background-insets: null;
+    -fx-border-color: transparent;
+
+}
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
+    -fx-background-color: -color-bg-default-40;
+    -fx-border-color: transparent;
+}
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:hover {
+    -fx-opacity: 0.8;
 }
 
-.title-bar > .title-header > .right-header  .button:hover,
-.title-bar > .title-header > .right-header  .toggle-button:hover {
-    -fx-background-color:-color-hover-muted;
-}
 
-.title-bar > .title-header > .right-header  .button Region,
-.title-bar > .title-header > .right-header  .toggle-button Region{
-    -fx-background-color: -color-fg-muted;
-    -fx-pref-width: 14;
-    -fx-pref-height: 14;
-    -fx-max-width: 14;
-    -fx-max-height: 14;
-}
-
-.title-bar > .title-header > .right-header  .button .ikonli-font-icon,
-.title-bar > .title-header > .right-header  .toggle-button .ikonli-font-icon{
-    -fx-icon-color:-color-fg-muted;
-}
-.title-bar > .title-header > .right-header  .min-btn Region{
-    -fx-background-color:-color-fg-muted;
-    -fx-pref-height: 2;
-    -fx-max-height: 2;
-}
-.title-bar > .title-header > .right-header  .full-btn{
-    visibility: hidden;
-}
 .jfx-dialog > StackPane{
     -fx-background-color: transparent;
 }
@@ -62,34 +43,6 @@
     -fx-background-color: -color-bg-default;
 }
 
-.jfx-dialog-layout > .jfx-layout-heading {
-    -fx-alignment: center-left;
-    -fx-font-weight: BOLD;
-    -fx-padding: 24 24 20 24;
-    -fx-background-radius: 10 10 0 0;
-    -fx-background-color: -color-bg-default;
-}
-
-.jfx-dialog-layout > .jfx-layout-actions {
-    -fx-alignment: center-right;
-    -fx-hgap: 8;
-    -fx-padding: 8 8 8 8;
-    -fx-background-radius: 0 0 10 10;
-    -fx-background-color: -color-bg-default;
-}
-
-.jfx-dialog-layout > .jfx-layout-actions .jfx-button {
-    -fx-pref-height: 36;
-    -fx-max-height: 36;
-    -fx-min-width: 64;
-    -fx-padding: 8;
-}
-
-.jfx-dialog-layout > .jfx-layout-body {
-    -fx-alignment: center-left;
-    -fx-padding: 0 24 24 24;
-    -fx-pref-width: 400;
-}
 
 /*
 .jfx-dialog-layout > .jfx-layout-body .label {

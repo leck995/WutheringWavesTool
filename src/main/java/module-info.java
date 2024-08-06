@@ -22,7 +22,7 @@ open module cn.tealc.wutheringwavestool {
     requires javafx.swing;
     requires net.coobird.thumbnailator;
     requires com.github.kwhat.jnativehook;
-
+    requires nfx.core;
 
     exports cn.tealc.wutheringwavestool;
     exports cn.tealc.wutheringwavestool.model to com.fasterxml.jackson.databind;

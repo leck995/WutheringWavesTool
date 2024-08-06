@@ -7,18 +7,12 @@ import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
-import cn.tealc.wutheringwavestool.thread.MainBackgroundTask;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialogLayout;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef;
-import com.sun.jna.platform.win32.WinNT;
-import com.sun.jna.platform.win32.WinUser;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.MvvmFX;
 import javafx.animation.RotateTransition;
-import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -117,23 +111,9 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @FXML
     private Label hasSignLabel;
 
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        roleIV.setPreserveRatio(true);
-        roleIV.setSmooth(true);
-        roleIV.fitWidthProperty().bind(root.widthProperty().multiply(0.7));
-        roleIV.fitHeightProperty().bind(root.heightProperty().multiply(0.7));
-        if (Config.setting.getHomeViewRole() != null){
-            File roleIVFile = LocalResourcesManager.homeRole();
-            if (roleIVFile.exists()){
-                roleIV.setImage(new Image(roleIVFile.toURI().toString(),true));
-            }else {
-                roleIV.setImage(new Image(FXResourcesLoader.load("image/role.png"),true));
-            }
-        }else {
-            roleIV.setImage(new Image(FXResourcesLoader.load("image/role.png"),true));
-        }
-
         energyTimeLabel.textProperty().bind(viewModel.energyTimeTextProperty());
         energyIv.setImage(new Image(MainApplication.class.getResource("image/energy.png").toExternalForm(),true));
         energyLabel.textProperty().bind(viewModel.energyTextProperty());
@@ -180,6 +160,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         });
 
         Thread.startVirtualThread(task);*/
+
     }
 
 

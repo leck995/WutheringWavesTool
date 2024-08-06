@@ -1,68 +1,128 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import atlantafx.base.controls.Spacer?>
+<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane fx:id="root" prefHeight="750.0" prefWidth="1250.0" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.MainView">
+<StackPane fx:id="root" styleClass="main" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.MainView">
    <children>
-      <SplitPane dividerPositions="0.15" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-         <items>
-            <VBox alignment="CENTER" maxWidth="180.0" minWidth="180.0" prefHeight="200.0" prefWidth="180.0" spacing="10.0" styleClass="main-nav" SplitPane.resizableWithParent="false">
+      <Pane fx:id="bgPane" prefHeight="200.0" prefWidth="200.0" />
+      <Pane fx:id="bgPane02" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" />
+      <AnchorPane prefHeight="750.0" prefWidth="1250.0">
+         <children>
+            <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="200.0" spacing="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <ToggleButton fx:id="homeBtn" alignment="CENTER_LEFT" mnemonicParsing="false" onAction="#toMain" prefWidth="140.0" selected="true" styleClass="home-btn" text="主页">
-                     <toggleGroup>
-                        <ToggleGroup fx:id="navToggleGroup" />
-                     </toggleGroup>
+                  <Button fx:id="minBtn" mnemonicParsing="false" styleClass="hit-btn">
                      <graphic>
-                        <FontIcon iconLiteral="mdral-home" />
+                        <SVGPath content="M1 7L1 8L14 8L14 7Z" styleClass="shape" />
                      </graphic>
-                  </ToggleButton>
-                  <ToggleButton fx:id="signBtn" alignment="CENTER_LEFT" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" onAction="#toSign" prefWidth="140.0" styleClass="sign-btn" text="签到" toggleGroup="$navToggleGroup">
+                  </Button>
+                  <Button fx:id="maxBtn" mnemonicParsing="false" styleClass="hit-btn">
                      <graphic>
-                        <FontIcon iconLiteral="mdral-beenhere" />
+                        <SVGPath content="M2.5 2 A 0.50005 0.50005 0 0 0 2 2.5L2 13.5 A 0.50005 0.50005 0 0 0 2.5 14L13.5 14 A 0.50005 0.50005 0 0 0 14 13.5L14 2.5 A 0.50005 0.50005 0 0 0 13.5 2L2.5 2 z M 3 3L13 3L13 13L3 13L3 3 z" styleClass="shape" />
                      </graphic>
-                  </ToggleButton>
-                  <ToggleButton fx:id="analysisBtn" alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#toAnalysis" prefWidth="140.0" styleClass="analysis-btn" text="抽卡分析" toggleGroup="$navToggleGroup">
+                  </Button>
+                  <Button fx:id="closeBtn" mnemonicParsing="false">
+                     <styleClass>
+                        <String fx:value="hit-btn" />
+                        <String fx:value="hit-close" />
+                     </styleClass>
                      <graphic>
-                        <FontIcon iconLiteral="mdal-article" />
+                        <SVGPath content="M3.726563 3.023438L3.023438 3.726563L7.292969 8L3.023438 12.269531L3.726563 12.980469L8 8.707031L12.269531 12.980469L12.980469 12.269531L8.707031 8L12.980469 3.726563L12.269531 3.023438L8 7.292969Z" styleClass="shape" />
                      </graphic>
-                  </ToggleButton>
-                  <ToggleButton alignment="CENTER_LEFT" layoutX="30.0" layoutY="718.0" mnemonicParsing="false" onAction="#toGameTime" prefWidth="140.0" styleClass="setting-btn" text="游玩统计" toggleGroup="$navToggleGroup">
-                     <graphic>
-                        <FontIcon iconLiteral="mdal-broken_image" />
-                     </graphic>
-                  </ToggleButton>
-                  <ToggleButton alignment="CENTER_LEFT" layoutX="30.0" layoutY="104.0" mnemonicParsing="false" onAction="#toOwnRole" prefWidth="140.0" styleClass="analysis-btn" text="我的角色" toggleGroup="$navToggleGroup">
-                     <graphic>
-                        <FontIcon iconLiteral="mdmz-person" />
-                     </graphic>
-                  </ToggleButton>
-                  <Spacer VBox.vgrow="ALWAYS" />
-                  <ToggleButton alignment="CENTER_LEFT" layoutX="30.0" layoutY="718.0" mnemonicParsing="false" onAction="#toAccount" prefWidth="140.0" styleClass="setting-btn" text="账号" toggleGroup="$navToggleGroup">
-                     <graphic>
-                        <FontIcon iconLiteral="mdal-account_box" />
-                     </graphic>
-                  </ToggleButton>
-                  <ToggleButton alignment="CENTER_LEFT" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" onAction="#toSetting" prefWidth="140.0" styleClass="setting-btn" text="设置" toggleGroup="$navToggleGroup">
-                     <graphic>
-                        <FontIcon iconLiteral="mdmz-settings" />
-                     </graphic>
-                  </ToggleButton>
+                  </Button>
                </children>
-               <padding>
-                  <Insets bottom="10.0" top="10.0" />
-               </padding>
-            </VBox>
-            <StackPane fx:id="child" prefHeight="150.0" prefWidth="200.0" />
-         </items>
-      </SplitPane>
-      <VBox fx:id="messagePane" spacing="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0" />
+            </HBox>
+            <HBox alignment="CENTER_LEFT" prefHeight="50.0" spacing="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <ImageView fx:id="icon" fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../image/icon.png" />
+                     </image>
+                  </ImageView>
+                  <Label styleClass="title" text="鸣潮助手" />
+               </children>
+            </HBox>
+            <HBox layoutY="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+               <children>
+                  <StackPane>
+                     <children>
+                        <Region fx:id="navBg" styleClass="nav-bg" />
+                        <VBox fx:id="nav" alignment="CENTER_LEFT" spacing="10.0" styleClass="main-nav">
+                           <children>
+                              <ToggleButton fx:id="navBtn" contentDisplay="GRAPHIC_ONLY" ellipsisString="" layoutX="15.0" layoutY="20.0" mnemonicParsing="false" prefWidth="140.0" selected="true" styleClass="nav-btn" text="菜单">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdral-format_list_bulleted" />
+                                 </graphic>
+                              </ToggleButton>
+                              <ToggleButton fx:id="homeBtn" contentDisplay="GRAPHIC_ONLY" ellipsisString="" mnemonicParsing="false" onAction="#toMain" prefWidth="140.0" styleClass="icon-only" text="主页" textOverrun="CLIP">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="navToggleGroup" />
+                                 </toggleGroup>
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdral-home" styleClass="hit-btn" />
+                                 </graphic>
+                              </ToggleButton>
+                              <ToggleButton fx:id="signBtn" alignment="CENTER_LEFT" ellipsisString="" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" onAction="#toSign" prefWidth="140.0" styleClass="icon-only" text="签到" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdral-beenhere" />
+                                 </graphic>
+                              </ToggleButton>
+                              <ToggleButton fx:id="analysisBtn" alignment="CENTER_LEFT" ellipsisString="" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#toAnalysis" prefWidth="140.0" styleClass="icon-only" text="抽卡分析" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdal-article" />
+                                 </graphic>
+                              </ToggleButton>
+                              <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="30.0" layoutY="718.0" mnemonicParsing="false" onAction="#toGameTime" prefWidth="140.0" styleClass="icon-only" text="游玩统计" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdal-broken_image" />
+                                 </graphic>
+                              </ToggleButton>
+                              <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="30.0" layoutY="104.0" mnemonicParsing="false" onAction="#toOwnRole" prefWidth="140.0" styleClass="icon-only" text="我的角色" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdmz-person" />
+                                 </graphic>
+                              </ToggleButton>
+                              <Spacer VBox.vgrow="ALWAYS" />
+                              <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="30.0" layoutY="718.0" mnemonicParsing="false" onAction="#toAccount" prefWidth="140.0" styleClass="icon-only" text="账号" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdal-account_box" />
+                                 </graphic>
+                              </ToggleButton>
+                              <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" onAction="#toSetting" prefWidth="140.0" styleClass="icon-only" text="设置" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdmz-settings" />
+                                 </graphic>
+                              </ToggleButton>
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </StackPane>
+                  <StackPane fx:id="child" prefHeight="150.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                     <HBox.margin>
+                        <Insets left="20.0" />
+                     </HBox.margin></StackPane>
+               </children>
+            </HBox>
+            <VBox fx:id="messagePane" spacing="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0" />
+         </children>
+      </AnchorPane>
    </children>
-</AnchorPane>
+</StackPane>

@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.util;
 
 import cn.tealc.wutheringwavestool.Config;
+import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import org.slf4j.Logger;
@@ -25,6 +26,8 @@ public class LocalResourcesManager {
     public static final String HOME_ROLE_DIR_TEMPLATE="assets/image/role/%s.%s";
     public static final String HOME_ICON_DIR_TEMPLATE_2="assets/image/icon/%s";
     public static final String HOME_ROLE_DIR_TEMPLATE_2="assets/image/role/%s";
+    public static final String HOME_BG_TEMPLATE="assets/image/bg/%s";
+
     static {
         File dir=new File("assets/cache/");
         if (!dir.exists()) {
@@ -52,6 +55,15 @@ public class LocalResourcesManager {
                 LOG.error("无法创建Role目录");
             }else {
                 LOG.info("成功创建Role目录");
+            }
+        }
+        File dir4=new File("assets/image/bg");
+        if (!dir4.exists()) {
+            boolean buffer = dir4.mkdirs();
+            if (!buffer){
+                LOG.error("无法创建BG目录");
+            }else {
+                LOG.info("成功创建BG目录");
             }
         }
     }
@@ -112,12 +124,29 @@ public class LocalResourcesManager {
     }
 
 
+    /**
+     * @description:
+     * @param:	url
+     * @return  javafx.scene.image.Image
+     * @date:   2024/8/7
+     */
+    public static Image getHomeBg(String filename){
+        File file=new File(String.format(HOME_BG_TEMPLATE,filename));
+        if (file.exists()){
 
-    private static String getName(String url){
+            return new Image(file.toURI().toString(),2560,1440,true,true,false);
+        }else {
+            return null;
+        }
+    }
+
+
+
+    public static String getName(String url){
         int index=url.lastIndexOf("/");
         return url.substring(index+1);
     }
-    private static String getSuffix(String url){
+    public static String getSuffix(String url){
         int index=url.lastIndexOf(".");
         return url.substring(index+1);
     }

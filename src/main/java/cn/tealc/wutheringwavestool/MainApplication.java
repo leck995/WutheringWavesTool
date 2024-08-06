@@ -43,66 +43,41 @@ import java.io.UnsupportedEncodingException;
 
 public class MainApplication extends Application {
     private static final Logger LOG=LoggerFactory.getLogger(MainApplication.class);
-    public static RoundStage window;
+    public static MainWindow window;
     private static WinNT.HANDLE gameAppListener;
     public GameAppListener appListener;
     private static FXTrayIcon fxTrayIcon;
-
     @Override
     public void start(Stage stage) throws IOException {
-        stage.close();
         JdbcUtils.init();
         System.setProperty("prism.lcdtext", "false");
-       // System.setProperty("LcdFontSmoothing", "true");
+        // System.setProperty("LcdFontSmoothing", "true");
         System.setProperty("prism.text", "t2k");
 
         VersionUpdateUtil.update();
 
+        window = new MainWindow();
+        window.show();
 
-        RoundStage roundStage=new RoundStage();
-        window=roundStage;
-        roundStage.setWidth(1300.0);
-        roundStage.setHeight(750.0);
-        roundStage.setTitle("鸣潮助手");
-        roundStage.getIcons().add(new Image(MainApplication.class.getResourceAsStream("image/icon.png")));
-        initFont();
+        //initFont();
         if (Config.setting.isTheme()){
-            Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
+            //Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
         }else {
-            Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
+            //Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
         }
 
-
-
-        ViewTuple<MainView, MainViewModel> viewTuple = FluentViewLoader.fxmlView(MainView.class).load();
-        roundStage.setContent(viewTuple.getView());
+        Application.setUserAgentStylesheet(FXResourcesLoader.load("css/light.css"));
 
         appListener = GameAppListener.getInstance();
         gameAppListener = User32.INSTANCE.SetWinEventHook(0x0003, 0x0003, null, appListener, 0, 0, 0);
 
-        roundStage.show();
-        createTrayIcon();
+        //createTrayIcon();
         initExceptionHandler();
 
+
     }
 
-    private void initFont(){
-        boolean contains = Font.getFamilies().contains("Microsoft YaHei");
-        if (!contains){
-            LOG.info("默认字体不存在，加载内置字体");
-            Font.loadFont(
-                    MainApplication.class.getResourceAsStream("/cn/tealc/wutheringwavestool/font/HarmonyOS_Sans_SC_Regular.ttf"),
-                    12);
-            Font.loadFont(
-                    MainApplication.class.getResourceAsStream("/cn/tealc/wutheringwavestool/font/HarmonyOS_Sans_SC_Bold.ttf"),
-                    12);
-            window.getScene().getRoot().setStyle("-fx-font-family: \"HarmonyOS Sans SC\"");
-        }else {
-            window.getScene().getRoot().setStyle("-fx-font-family: \"Microsoft YaHei\"");
-            LOG.info("默认字体存在");
-        }
-        LOG.info("系统默认字体:{}",Font.getDefault().getFamily());
-    }
+
 
     private void initExceptionHandler(){
         // 捕捉未处理的异常
@@ -135,11 +110,10 @@ public class MainApplication extends Application {
         window.close();
         System.exit(0);
     }
+
     public static void main(String[] args) {
         launch();
     }
-
-
 
     private void createTrayIcon() throws UnsupportedEncodingException {
         MenuItem recovery=new MenuItem("还原");

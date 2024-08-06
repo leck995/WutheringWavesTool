@@ -1,12 +1,12 @@
 .gametime{
-
+    -color-bg-default-90: #ffffff40;
 }
 
 .gametime .item{
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default-90;
     -fx-background-radius: 5;
     -fx-padding: 10;
-    -fx-effect:dropshadow(three-pass-box, -color-border-muted,2,0.7,0,0);
+
 }
 
 .gametime .item .header{
@@ -20,12 +20,13 @@
 }
 
 .gametime .chart{
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default-90;
     -fx-background-radius: 5;
     -fx-padding: 10;
-    -fx-effect:dropshadow(three-pass-box, -color-border-muted,2,0.7,0,0);
 }
-
+.gametime .chart > .chart-content > .chart-plot-background {
+    -fx-background-color: transparent;
+}
 .gametime  .progress-bar > .bar{
     -fx-padding: 4px;
 }
