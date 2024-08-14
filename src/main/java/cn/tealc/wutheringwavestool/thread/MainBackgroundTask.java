@@ -31,9 +31,9 @@ public class MainBackgroundTask extends Task<Background> {
 
     public MainBackgroundTask(Image image) {
         this.image = image;
-        gaussianFilter = new GaussianFilter(22);
+        gaussianFilter = new GaussianFilter(16);
         contrastFilter = new ContrastFilter();
-        //contrastFilter.setBrightness(1.1f);
+        //contrastFilter.setBrightness(0.9f);
         contrastFilter.setContrast(1.1f);
     }
 

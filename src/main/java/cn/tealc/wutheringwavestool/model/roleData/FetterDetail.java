@@ -1,11 +1,14 @@
 package cn.tealc.wutheringwavestool.model.roleData;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @program: WutheringWavesTool
  * @description: 声骸技能
  * @author: Leck
  * @create: 2024-07-30 16:18
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class FetterDetail {
     private int groupId;
     private String name;

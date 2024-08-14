@@ -1,11 +1,14 @@
 package cn.tealc.wutheringwavestool.model.roleData;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @program: WutheringWavesTool
  * @description:
  * @author: Leck
  * @create: 2024-07-30 16:28
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Skill {
     private int id;
     private String type;

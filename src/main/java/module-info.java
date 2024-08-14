@@ -10,7 +10,6 @@ open module cn.tealc.wutheringwavestool {
     requires cn.tealc.teafx ;
     requires org.kordamp.ikonli.core;
     requires org.kordamp.ikonli.material2;
-    requires org.controlsfx.controls;
     requires jdk.crypto.cryptoki;
     requires org.slf4j;
     requires com.sun.jna.platform;

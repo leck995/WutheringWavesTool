@@ -1,7 +1,9 @@
 package cn.tealc.wutheringwavestool.ui;
 
+import cn.tealc.teafx.utils.AnchorPaneUtil;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.model.roleData.Phantom;
+import cn.tealc.wutheringwavestool.model.roleData.PhoantomMainProps;
 import cn.tealc.wutheringwavestool.model.roleData.Role;
 import cn.tealc.wutheringwavestool.ui.component.OwnRoleDetailCell;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
@@ -9,6 +11,7 @@ import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.Initialize;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.beans.binding.Bindings;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -20,11 +23,10 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.TextAlignment;
 import javafx.util.Callback;
 import javafx.util.Pair;
 
@@ -116,12 +118,10 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
     private Pane roleBgPane;
     @FXML
     private StackPane weaponBgPane;
-
     @FXML
-    private Label phantomCost;
+    private VBox phantomListGroup;
 
-    @FXML
-    private ListView<Pair<Phantom, Image>> phantomListView;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         roleImageView.setSmooth(true);
@@ -198,9 +198,7 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
         chain04.visibleProperty().bind(viewModel.chainImgVisible04Property());
         chain05.visibleProperty().bind(viewModel.chainImgVisible05Property());
         chain06.visibleProperty().bind(viewModel.chainImgVisible06Property());
-
         roleBgPane.backgroundProperty().bind(viewModel.roleBgProperty());
-
         roleListview.setItems(viewModel.getRolePairList());
         roleListview.setCellFactory(pairListView -> new OwnRoleDetailCell());
         roleListview.getSelectionModel().selectedIndexProperty().addListener((observableValue, number, t1) -> {
@@ -210,55 +208,101 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
         });
 
 
-        phantomCost.textProperty().bind(viewModel.phantomCostProperty());
-        phantomListView.setItems(viewModel.getPhantomList());
-        phantomListView.setCellFactory(phantomListView1 -> new PhantomCell());
+
+        viewModel.getPhantomList().addListener((ListChangeListener<? super Pair<Phantom, Image>>) change -> {
+            phantomListGroup.getChildren().clear();
+            for (Pair<Phantom, Image> phantomImagePair : change.getList()) {
+                phantomListGroup.getChildren().add(new PhantomItem(phantomImagePair));
+            }
+        });
+
 
     }
 
 
-
-    class PhantomCell extends ListCell<Pair<Phantom, Image>>{
+    class PhantomItem extends AnchorPane{
         private ImageView iv=new ImageView();
-        private Label cost=new Label();
-        private StackPane root=new StackPane();
+        private Label level=new Label();
+        private StackPane left=new StackPane();
         private ImageView attrIV=new ImageView();
 
-        public PhantomCell() {
+        public PhantomItem(Pair<Phantom, Image> pair) {
+            Phantom phantom = pair.getKey();
+
             iv.setFitHeight(65);
             iv.setFitWidth(65);
             attrIV.setFitHeight(20);
             attrIV.setFitWidth(20);
-            cost.getStyleClass().add("cost");
-            root.getChildren().addAll(iv,attrIV,cost);
-            StackPane.setAlignment(attrIV, Pos.TOP_RIGHT);
-            StackPane.setAlignment(cost, Pos.BOTTOM_LEFT);
-            root.setVisible(false);
-            root.getStyleClass().add("phantom-detail-cell");
-            setGraphic(root);
-        }
-
-        @Override
-        protected void updateItem(Pair<Phantom, Image> pair, boolean b) {
-            super.updateItem(pair, b);
-            if (!b){
-                iv.setImage(pair.getValue());
-                cost.setText(String.valueOf(pair.getKey().getCost()));
-                attrIV.setImage(LocalResourcesManager.imageBuffer(pair.getKey().getFetterDetail().getIconUrl()));
+            level.getStyleClass().add("cost");
+            left.getChildren().addAll(iv,attrIV,level);
+            StackPane.setAlignment(attrIV, Pos.TOP_LEFT);
+            StackPane.setAlignment(level, Pos.BOTTOM_RIGHT);
+            //root.getStyleClass().add("phantom-detail-cell");
+            iv.setImage(pair.getValue());
+            level.setText(String.valueOf(phantom.getLevel()));
+            attrIV.setImage(LocalResourcesManager.imageBuffer(pair.getKey().getFetterDetail().getIconUrl()));
 
 
-                switch (pair.getKey().getQuality()){
-                    case 5 -> root.getStyleClass().add("ssr");
-                    case 4 -> root.getStyleClass().add("sr");
-                    default -> root.getStyleClass().add("r");
-                }
-
-                root.setVisible(true);
-
-
-            }else {
-                root.setVisible(false);
+            switch (pair.getKey().getQuality()){
+                case 5 -> left.getStyleClass().add("ssr");
+                case 4 -> left.getStyleClass().add("sr");
+                default -> left.getStyleClass().add("r");
             }
+
+
+            GridPane right=new GridPane(3,3);
+
+            right.setHgap(40.0);
+            right.setVgap(5.0);
+
+
+
+     /*       Label cost=new Label("COST");
+            Label cost2=new Label(String.valueOf(phantom.getCost()));
+            cost.getStyleClass().add("cost1");
+            cost2.getStyleClass().add("cost2");
+            HBox costBox=new HBox(cost,cost2);
+            costBox.setSpacing(20);
+            right.add(costBox,0,2);*/
+
+
+            for (int i = 0; i < phantom.getMainProps().size(); i++) {
+                PhoantomMainProps prop = phantom.getMainProps().get(i);
+                Label label1=new Label(prop.getAttributeName());
+                Label label2=new Label(prop.getAttributeValue());
+                label1.getStyleClass().add("main-prop1");
+                label2.getStyleClass().add("main-prop2");
+                HBox hbox=new HBox(label1,label2);
+                hbox.setSpacing(20);
+                right.add(hbox,0,i);
+            }
+
+
+            if (phantom.getSubProps() != null){
+                for (int i = 0; i < phantom.getSubProps().size(); i++) {
+                    PhoantomMainProps prop = phantom.getSubProps().get(i);
+                    Label label1=new Label(prop.getAttributeName());
+                    Label label2=new Label(prop.getAttributeValue());
+                    label1.setPrefWidth(120);
+                    label1.getStyleClass().add("sub-prop1");
+                    label2.getStyleClass().add("sub-prop2");
+                    HBox hbox=new HBox(label1,label2);
+                    hbox.setSpacing(20);
+                    if (i < 3){
+                        right.add(hbox,1,i);
+                    } else {
+                        right.add(hbox,2,i-3);
+                    }
+                }
+            }
+
+            left.getStyleClass().add("left");
+            right.getStyleClass().add("right");
+            getChildren().addAll(left,right);
+            AnchorPaneUtil.setPosition(left,0.0,null,0.0,0.0);
+            AnchorPaneUtil.setPosition(right,0.0,0.0,0.0,85.0);
+            getStyleClass().add("phantom");
         }
     }
+
 }

@@ -1,5 +1,7 @@
 package cn.tealc.wutheringwavestool.model.roleData.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
 
 /**
@@ -8,6 +10,7 @@ import java.util.List;
  * @author: Leck
  * @create: 2024-07-08 17:30
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RoleInfo {
     private String name;
     private long id;
@@ -26,6 +29,7 @@ public class RoleInfo {
     private int bigCount;
     private int smallCount;
     private int achievementCount;
+    private int achievementStar;
     private List<BoxInfo> boxList;
     private boolean showToGuest;
 
@@ -179,5 +183,13 @@ public class RoleInfo {
 
     public void setShowToGuest(boolean showToGuest) {
         this.showToGuest = showToGuest;
+    }
+
+    public int getAchievementStar() {
+        return achievementStar;
+    }
+
+    public void setAchievementStar(int achievementStar) {
+        this.achievementStar = achievementStar;
     }
 }

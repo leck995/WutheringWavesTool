@@ -1,14 +1,18 @@
 package cn.tealc.wutheringwavestool.model.roleData;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @program: WutheringWavesTool
  * @description:
  * @author: Leck
  * @create: 2024-07-29 21:45
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Role {
     private int roleId;
     private int level;
+    private int breach;
     private String roleName;
     private String roleIconUrl;
     private String rolePicUrl;
@@ -114,5 +118,13 @@ public class Role {
 
     public void setMapRoleId(Integer mapRoleId) {
         this.mapRoleId = mapRoleId;
+    }
+
+    public int getBreach() {
+        return breach;
+    }
+
+    public void setBreach(int breach) {
+        this.breach = breach;
     }
 }

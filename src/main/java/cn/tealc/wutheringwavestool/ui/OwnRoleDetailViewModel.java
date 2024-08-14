@@ -183,8 +183,7 @@ public class OwnRoleDetailViewModel implements ViewModel {
                 phantomList.clear();
 
                 if (equipPhantomList != null){
-                    for (int i = equipPhantomList.size()-1; i >= 0; i--) {
-                        Phantom phantom = equipPhantomList.get(i);
+                    for (Phantom phantom : equipPhantomList) {
                         if (phantom != null){
                             phantomList.add(new Pair<>(phantom,LocalResourcesManager.imageBuffer(phantom.getPhantomProp().getIconUrl(), 65, 65, true, true)));
                         }

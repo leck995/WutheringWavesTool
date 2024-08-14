@@ -15,7 +15,6 @@
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
@@ -46,6 +45,7 @@
             <artifactId>atlantafx-base</artifactId>
             <version>2.0.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-api</artifactId>
@@ -58,16 +58,13 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>2.16.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.controlsfx</groupId>
-            <artifactId>controlsfx</artifactId>
-            <version>11.2.1</version>
-        </dependency>
+
         <dependency>
             <groupId>cn.tealc</groupId>
             <artifactId>teafx</artifactId>
@@ -79,11 +76,13 @@
             <artifactId>mvvmfx</artifactId>
             <version>1.9.0-SNAPSHOT</version>
         </dependency>
+
         <dependency>
             <groupId>eu.lestard</groupId>
             <artifactId>doc-annotations</artifactId>
             <version>0.3</version>
         </dependency>
+
         <dependency>
             <groupId>net.jodah</groupId>
             <artifactId>typetools</artifactId>
@@ -119,6 +118,7 @@
             <artifactId>commons-dbutils</artifactId>
             <version>1.8.1</version>
         </dependency>
+
         <dependency>
             <groupId>com.dustinredmond.fxtrayicon</groupId>
             <artifactId>FXTrayIcon</artifactId>
@@ -133,15 +133,6 @@
             <groupId>net.coobird</groupId>
             <artifactId>thumbnailator</artifactId>
             <version>0.4.20</version>
-            <!--         <scope>system</scope>
-                     <systemPath>${basedir}/libs/thumbnailator-0.4.20.jar</systemPath>-->
-        </dependency>
-
-        <dependency>
-            <groupId>org.bytedeco</groupId>
-            <artifactId>tesseract-platform</artifactId>
-            <version>5.3.4-1.5.10</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>
@@ -150,13 +141,7 @@
             <version>2.2.2</version>
         </dependency>
 
-   <!--     <dependency>
-            <groupId>xss.it.nfx</groupId>
-            <artifactId>nfx.core</artifactId>
-            <version>1.0.0</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/libs/nfx-core-1.0.0.jar</systemPath>
-        </dependency>-->
+        <!--/libs下自己导入maven-->
         <dependency>
             <groupId>xss.it.nfx</groupId>
             <artifactId>nfx-core</artifactId>
@@ -210,7 +195,6 @@
                             <mainClass>cn.tealc.wutheringwavestool/cn.tealc.wutheringwavestool.MainApplication
                             </mainClass>
                             <launcher>app</launcher>
-                            <jlinkZipName>app</jlinkZipName>
                             <jlinkImageName>app</jlinkImageName>
                             <noManPages>true</noManPages>
                             <stripDebug>true</stripDebug>

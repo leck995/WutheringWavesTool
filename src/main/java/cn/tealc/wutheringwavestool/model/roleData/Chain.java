@@ -1,11 +1,14 @@
 package cn.tealc.wutheringwavestool.model.roleData;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @program: WutheringWavesTool
  * @description: 共鸣链
  * @author: Leck
  * @create: 2024-07-30 16:11
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Chain {
     private String name;
     private int order;

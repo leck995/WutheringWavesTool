@@ -22,6 +22,7 @@
    <children>
       <Pane fx:id="bgPane" prefHeight="200.0" prefWidth="200.0" />
       <Pane fx:id="bgPane02" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" />
+      <Pane fx:id="bgPane03" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #d6d2d250;" visible="false" />
       <AnchorPane prefHeight="750.0" prefWidth="1250.0">
          <children>
             <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="200.0" spacing="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">

@@ -13,23 +13,25 @@
 
 .ssr-label{
     -fx-text-fill: #f1d358;
-    -fx-font-size: 15;
+    -fx-font-size: 16;
 }
 .sr-label{
-    -fx-text-fill: #d694ef;
-    -fx-font-size: 15;
+    -fx-text-fill: #933fb1;
+    -fx-font-size: 16;
 }
 .r-label{
-    -fx-text-fill: #22bad9;
-    -fx-font-size: 15;
+    -fx-text-fill: #04b6c6;
+    -fx-font-size: 16;
 }
 .total-label{
-    -fx-text-fill: #22bad9;
-    -fx-font-size: 16;
+    -fx-text-fill: #ff6666;
+    -fx-font-size: 18;
+
 }
 .current-label{
     -fx-text-fill: #ff6666;
-    -fx-font-size: 16;
+    -fx-font-size: 18;
+
 }
 
 .left{

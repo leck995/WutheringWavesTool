@@ -1,11 +1,14 @@
 package cn.tealc.wutheringwavestool.model.roleData;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @program: WutheringWavesTool
- * @description:
+ * @description: 声骸基本信息，不涉及词条
  * @author: Leck
  * @create: 2024-07-30 16:20
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class PhantomProp {
     private int phantomPropId;
     private String name;

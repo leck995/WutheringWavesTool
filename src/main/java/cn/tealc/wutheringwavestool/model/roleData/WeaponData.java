@@ -1,14 +1,18 @@
 package cn.tealc.wutheringwavestool.model.roleData;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 /**
  * @program: WutheringWavesTool
  * @description: 角色武器数据，包括等级
  * @author: Leck
  * @create: 2024-07-30 16:15
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class WeaponData {
     private Weapon weapon;
     private int level;
+    private int breach;
     private int resonLevel;
 
     public Weapon getWeapon() {

@@ -1,5 +1,7 @@
 package cn.tealc.wutheringwavestool.model.roleData.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
 
 /**
@@ -8,6 +10,7 @@ import java.util.List;
  * @author: Leck
  * @create: 2024-07-08 05:06
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RoleDailyData {
     private int gameId;
     private int userId;

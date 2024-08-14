@@ -81,6 +81,8 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     @FXML
     private Pane bgPane02;
     @FXML
+    private Pane bgPane03;
+    @FXML
     private ToggleButton navBtn;
     @FXML
     private VBox nav;
@@ -150,47 +152,9 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         rectangle.setArcHeight(10);
         bgPane.setClip(rectangle);
         bgPane02.visibleProperty().bind(bgPane.visibleProperty().not());
-/*        Image image=null;
-        if(Config.setting.isDiyHomeBg()){
-            image= LocalResourcesManager.getHomeBg(Config.setting.getDiyHomeBgName());
-            if (image == null){
-                image = new Image(FXResourcesLoader.load("image/bg.png"));
-                Config.setting.setDiyHomeBg(false);
-                Config.setting.setDiyHomeBgName(null);
-                LOG.warn("自定义壁纸出现问题，取消自定义");
-            }
-        }else {
-            image = new Image(FXResourcesLoader.load("image/bg.png"));
-        }
-        bgPane.setBackground(
-                new Background(
-                        new BackgroundImage(
-                                image,
-                                BackgroundRepeat.NO_REPEAT,
-                                BackgroundRepeat.NO_REPEAT,
-                                BackgroundPosition.CENTER,
-                                new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, true, true))));
-
-        Rectangle rectangle = new Rectangle();
-        rectangle.widthProperty().bind(bgPane.widthProperty());
-        rectangle.heightProperty().bind(bgPane.heightProperty());
-        rectangle.setArcWidth(10);
-        rectangle.setArcHeight(10);
-        bgPane.setClip(rectangle);
-
-
-
-        //bgPane02用于显示高斯模糊的背景
-        bgPane02.visibleProperty().bind(bgPane.visibleProperty().not());
-        MainBackgroundTask task = new MainBackgroundTask(image);
-        task.setOnSucceeded(workerStateEvent -> {
-            bgPane02.setBackground(task.getValue());
-        });
-
-        Thread.startVirtualThread(task);*/
+        bgPane03.visibleProperty().bind(bgPane.visibleProperty().not());
 
         updateBg();
-
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.MESSAGE,((s, objects) -> {
             showMessage((MessageInfo) objects[0]);
         }));

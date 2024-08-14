@@ -1,5 +1,9 @@
 package cn.tealc.wutheringwavestool.model.roleData.user;
 
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class BoxInfo {
         private String boxName;  
         private int num;  

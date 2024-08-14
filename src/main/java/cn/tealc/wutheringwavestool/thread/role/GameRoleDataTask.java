@@ -67,12 +67,12 @@ public class GameRoleDataTask extends Task<ResponseBody<List<Role>>> {
                 responseBody.setCode(response.statusCode());
                 responseBody.setSuccess(false);
                 responseBody.setMsg("连接失败，无法获取数据");
-
             }
             return responseBody;
 
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            LOG.error("错误",e);
+            return new ResponseBody<>(1,"角色数据获取错误");
         }
     }
 }

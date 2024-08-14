@@ -48,6 +48,9 @@ public class OwnRoleViewModel implements ViewModel {
                 if (responseBody.getSuccess()){
                     List<Role> list=responseBody.getData();
                     roleList.setAll(list);
+                }else {
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                            new MessageInfo(MessageType.WARNING,responseBody.getMsg()),false);
                 }
 
             });

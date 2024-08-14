@@ -1,5 +1,7 @@
 package cn.tealc.wutheringwavestool.model.roleData;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.util.List;
 
 /**
@@ -8,6 +10,7 @@ import java.util.List;
  * @author: Leck
  * @create: 2024-07-30 16:31
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class RoleDetail {
     private Role role;
     private int level;

@@ -71,7 +71,7 @@ public class MainApplication extends Application {
         appListener = GameAppListener.getInstance();
         gameAppListener = User32.INSTANCE.SetWinEventHook(0x0003, 0x0003, null, appListener, 0, 0, 0);
 
-        //createTrayIcon();
+        createTrayIcon();
         initExceptionHandler();
 
 
@@ -115,7 +115,7 @@ public class MainApplication extends Application {
         launch();
     }
 
-    private void createTrayIcon() throws UnsupportedEncodingException {
+    private void createTrayIcon() {
         MenuItem recovery=new MenuItem("还原");
         recovery.setOnAction(event -> {
             Platform.runLater(()->{

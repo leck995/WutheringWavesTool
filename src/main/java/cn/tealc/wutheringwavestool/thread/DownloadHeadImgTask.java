@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class DownloadHeadImgTask extends Task<Boolean> {
     private static final Logger LOG= LoggerFactory.getLogger(DownloadHeadImgTask.class);
-    private static final String HEAD_JSON_URL="https://raw.githubusercontent.com/leck995/WutheringWavesTool/master/assets/data/header.json";
+    private static final String HEAD_JSON_URL="https://raw.githubusercontent.com/leck995/WutheringWavesTool/new-ui/assets/data/header.json";
     public static boolean hasUpdate=false; //标记程序生命周期内是否已经更新过，更新过不再更新
 
     @Override
