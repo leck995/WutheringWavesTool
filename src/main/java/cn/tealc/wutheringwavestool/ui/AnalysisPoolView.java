@@ -223,7 +223,7 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
                                 iv.setImage(new Image(headFile1.toURI().toString(), 70, 70, true, true, true));
                             }
                             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                                    new MessageInfo(MessageType.INFO, "新头像下载完毕,如果仍缺少头像，可联系开发者"), false);
+                                    new MessageInfo(MessageType.SUCCESS, "新头像下载完毕,如果仍缺少头像，可联系开发者"), false);
                         }
                     });
                     Thread.startVirtualThread(task);
@@ -300,7 +300,7 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
                         if (task.getValue()){
                             ssrListView.refresh();
                             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                                    new MessageInfo(MessageType.INFO,"新头像下载完毕，如果仍缺少头像，可联系开发者"),false);
+                                    new MessageInfo(MessageType.SUCCESS,"新头像下载完毕，如果仍缺少头像，可联系开发者"),false);
                         }
                     });
                     Thread.startVirtualThread(task);
