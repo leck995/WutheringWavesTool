@@ -79,6 +79,11 @@ public class MainApplication extends Application {
 
 
 
+    private void initPreConfig(){
+
+    }
+
+
     private void initExceptionHandler(){
         // 捕捉未处理的异常
         Thread.setDefaultUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {

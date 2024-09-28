@@ -9,6 +9,8 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
@@ -17,8 +19,7 @@
 
 <AnchorPane prefHeight="800.0" prefWidth="1200.0" styleClass="setting" stylesheets="@../css/Setting.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.SettingView">
    <children>
-      <Button mnemonicParsing="false" onAction="#toWeb" styleClass="accent" text="前往更新" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
-      <Label styleClass="title-2" text="设置" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0" />
+      <Label styleClass="title-1" text="设置" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0" />
       <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0" />
       <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="65.0">
          <content>
@@ -69,7 +70,52 @@
                         <ToggleSwitch fx:id="exitWhenGameOver" labelPosition="RIGHT" text="开启" />
                      </children>
                   </VBox>
-                  <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS" />
+                  <VBox maxWidth="350.0" prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="right" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label styleClass="title-2" text="关于" />
+                        <AnchorPane>
+                           <children>
+                              <StackPane AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                 <children>
+                                    <ImageView fx:id="appIconIv" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../image/icon.png" />
+                                       </image>
+                                    </ImageView>
+                                 </children>
+                              </StackPane>
+                              <VBox layoutX="120.0" layoutY="20.0" spacing="5.0" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="20.0">
+                                 <children>
+                                    <Label fx:id="appName" styleClass="title-4" text="WutheringWavesTool" />
+                                    <Label fx:id="appVersion" text="1.4.1" />
+                                    <Label fx:id="appAuthor" text="Leck" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </AnchorPane>
+                        <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#toWeb" prefWidth="150.0" styleClass="func-btn" text="前往更新">
+                           <graphic>
+                              <FontIcon iconLiteral="anto-github" />
+                           </graphic>
+                        </Button>
+                        <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#toIssues" prefWidth="150.0" styleClass="func-btn" text="提交Issues">
+                           <graphic>
+                              <FontIcon iconLiteral="anto-github" />
+                           </graphic>
+                        </Button>
+                        <Label layoutX="10.0" layoutY="293.0" styleClass="title-3" text="交流" />
+                        <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="138.0" mnemonicParsing="false" onAction="#toQQGroup" prefWidth="150.0" styleClass="func-btn" text="群(234294078)">
+                           <graphic>
+                              <FontIcon iconLiteral="anto-qq" />
+                           </graphic>
+                        </Button>
+                        <Label layoutX="10.0" layoutY="10.0" styleClass="title-3" text="赞助" />
+                        <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="173.0" mnemonicParsing="false" onAction="#toSupport" prefWidth="150.0" styleClass="func-btn" text="请作者喝杯咖啡">
+                           <graphic>
+                              <FontIcon iconLiteral="antf-pay-circle" />
+                           </graphic>
+                        </Button>
+                     </children></VBox>
                </children>
             </HBox>
          </content>

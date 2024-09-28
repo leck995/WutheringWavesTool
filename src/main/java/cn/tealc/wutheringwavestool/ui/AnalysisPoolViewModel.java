@@ -230,7 +230,10 @@ public class AnalysisPoolViewModel implements ViewModel {
                 list.add(analysis(entry.getKey(),entry.getValue().stream().toList()));
             }
             analysisDataList.setAll(list);
-            updatePoolDate(analysisDataList.getFirst());
+            Platform.runLater(()->{
+                updatePoolDate(analysisDataList.getFirst());
+            });
+
             publish("update");
         });
 

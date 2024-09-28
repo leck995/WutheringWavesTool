@@ -416,7 +416,8 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
                 message = new Message(
                         "Info",
                         messageInfo.getMessage(),
-                        new FontIcon(Material2OutlinedAL.HELP_OUTLINE)
+
+                        new FontIcon(Material2OutlinedMZ.TURNED_IN_NOT)
                 );
                 message.getStyleClass().add(Styles.ACCENT);
             }

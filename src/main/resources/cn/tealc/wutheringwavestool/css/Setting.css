@@ -43,3 +43,12 @@
 .setting .left > .input-group > .button:hover .ikonli-font-icon{
     -fx-icon-color: -color-accent-emphasis;
 }
+
+
+
+.setting .right{
+
+}
+.setting .right .func-btn{
+    -fx-background-color: -color-bg-default-60;
+}

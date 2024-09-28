@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.ui;
 
+import atlantafx.base.controls.Spacer;
 import atlantafx.base.controls.ToggleSwitch;
 import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.model.analysis.SsrData;
@@ -7,11 +8,9 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.DownloadHeadImgTask;
 import cn.tealc.wutheringwavestool.ui.component.PoolNameCell;
-import cn.tealc.wutheringwavestool.ui.component.SsrCell;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.MvvmFX;
-import de.saxsys.mvvmfx.utils.notifications.NotificationObserver;
 import javafx.collections.ListChangeListener;
 import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
@@ -24,11 +23,12 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.stage.DirectoryChooser;
-import javafx.util.Callback;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
 
 import java.io.File;
 import java.net.URL;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolViewModel> {
@@ -216,13 +216,14 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
                 iv.setImage(null);
                 if (!DownloadHeadImgTask.hasUpdate){
                     DownloadHeadImgTask task=new DownloadHeadImgTask();
-                    task.setOnSucceeded(new EventHandler<WorkerStateEvent>() {
-                        @Override
-                        public void handle(WorkerStateEvent workerStateEvent) {
-                            if (task.getValue()){
-                                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                                        new MessageInfo(MessageType.WARNING,"头像下载完毕，切换卡池即可查看"),false);
+                    task.setOnSucceeded(workerStateEvent -> {
+                        if (task.getValue()) {
+                            File headFile1 = new File(String.format("assets/header/%s.png", ssrData.getName()));
+                            if (headFile1.exists()) {
+                                iv.setImage(new Image(headFile1.toURI().toString(), 70, 70, true, true, true));
                             }
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                    new MessageInfo(MessageType.INFO, "新头像下载完毕,如果仍缺少头像，可联系开发者"), false);
                         }
                     });
                     Thread.startVirtualThread(task);
@@ -235,5 +236,95 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
         }
     }
 
+    class SsrCell extends ListCell<SsrData> {
+        public static final String[] COLORS= {"#66cccc","#ff99cc","#1a7f37","#66cc99","#99cc00","#cccccc"};
+        private final HBox root;
+        private ImageView iv;
+        private Label name;
+        private Label date;
+        private Label count;
+        private ProgressBar progressBar;
+        private Label desc;
+
+        public SsrCell() {
+            iv = new ImageView();
+            iv.setFitHeight(60);
+            iv.setFitWidth(60);
+            iv.setSmooth(true);
+            Circle circle = new Circle(30,30,30);
+            iv.setClip(circle);
+
+            name = new Label();
+            name.getStyleClass().add("role-name");
+            date=new Label();
+            date.getStyleClass().add("role-date");
+            Spacer spacer=new Spacer();
+            HBox top = new HBox(5.0,name,spacer,date);
+            top.setAlignment(Pos.CENTER_LEFT);
+
+            count=new Label();
+            count.getStyleClass().add("role-date");
+            progressBar = new ProgressBar();
+            progressBar.setProgress(0);
+            progressBar.setPrefWidth(200);
+            HBox progressHBox = new HBox(5.0,progressBar,count);
+            progressHBox.setAlignment(Pos.CENTER);
+            VBox parent = new VBox(5.0,top,progressHBox);
+            parent.setAlignment(Pos.CENTER_LEFT);
+
+            desc=new Label();
+            desc.getStyleClass().add("role-desc");
+            root = new HBox(15.0,iv,parent,desc);
+            root.setAlignment(Pos.CENTER_LEFT);
+            Random random=new Random();
+            int i = random.nextInt(5)+1;
+            root.getStyleClass().addAll("role-pane",String.format("role-pane-%d",i));
+
+
+        }
+
+        @Override
+        protected void updateItem(SsrData ssrData, boolean b) {
+            super.updateItem(ssrData, b);
+            if (!b){
+                File headFile=new File(String.format("assets/header/%s.png",ssrData.getName()));
+                if (headFile.exists()){
+                    iv.setImage(new Image(headFile.toURI().toString(),60,60,true,true,true));
+                }else {
+                    iv.setImage(null);
+                if (!DownloadHeadImgTask.hasUpdate){
+                    DownloadHeadImgTask task=new DownloadHeadImgTask();
+                    task.setOnSucceeded(workerStateEvent -> {
+                        if (task.getValue()){
+                            ssrListView.refresh();
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                    new MessageInfo(MessageType.INFO,"新头像下载完毕，如果仍缺少头像，可联系开发者"),false);
+                        }
+                    });
+                    Thread.startVirtualThread(task);
+                    }
+                }
+
+                name.setText(ssrData.getName());
+                date.setText(ssrData.getDate());
+                count.setText(String.valueOf(ssrData.getCount()));
+                progressBar.setProgress(ssrData.getCount()/80.0);
+
+                if (ssrData.isEvent()){
+                    desc.setText("限定");
+                    desc.setTextFill(Color.web("#ffd000"));
+                }else {
+                    desc.setText("常驻");
+                    desc.setTextFill(Color.web("#787878"));
+                }
+                setGraphic(root);
+            }else {
+                setGraphic(null);
+            }
+        }
+
+
+
+    }
 
 }
