@@ -7,7 +7,7 @@ import cn.tealc.wutheringwavestool.model.roleData.Role;
 import cn.tealc.wutheringwavestool.model.roleData.RoleDetail;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.thread.ImgColorBgTask;
-import cn.tealc.wutheringwavestool.thread.role.GameRoleDetailTask;
+import cn.tealc.wutheringwavestool.thread.api.role.GameRoleDetailTask;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleBooleanProperty;

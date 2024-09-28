@@ -1,4 +1,4 @@
-package cn.tealc.wutheringwavestool.thread;
+package cn.tealc.wutheringwavestool.thread.api;
 
 import cn.tealc.wutheringwavestool.model.sign.SignGood;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
@@ -11,15 +11,10 @@ import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
-import java.time.Instant;
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -44,8 +39,8 @@ public class SignGoodsTask extends Task<Pair<Boolean,List<SignGood>>> {
     }
 
     private Pair<Boolean,List<SignGood>> sign(String roleId,String userId,String token){
-        String url=String.format("https://api.kurobbs.com/encourage/signIn/initSignInV2?gameId=%s&serverId=%s&roleId=%s&userId=%s"
-                ,"3","76402e5b20be2c39f095a152090afddc",roleId,userId);
+        String url=String.format("%s?gameId=%s&serverId=%s&roleId=%s&userId=%s"
+                ,ApiConfig.SIGNIN_INIT_URL,ApiConfig.PARAM_GAME_ID,ApiConfig.PARAM_SERVER_ID,roleId,userId);
         HttpClient client = HttpClient.newHttpClient();
         try {
             HttpRequest request = HttpRequestUtil.getRequest(url,token);

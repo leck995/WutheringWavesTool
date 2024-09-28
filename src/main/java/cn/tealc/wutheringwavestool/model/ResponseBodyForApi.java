@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.model;
 
+import cn.tealc.wutheringwavestool.util.ApiUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
@@ -10,27 +11,18 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
  * @create: 2024-07-08 15:42
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ResponseBody<T> {
+public class ResponseBodyForApi{
     private Integer code;
     private String msg;
-    private T data;
+    private String data;
     private Boolean success;
 
 
-    public ResponseBody() {
+    public ResponseBodyForApi() {
     }
 
-    public ResponseBody(Integer code, String msg) {
-        this.code = code;
-        this.msg = msg;
-        this.success = false;
-    }
 
-    public ResponseBody(Integer code, String msg, Boolean success) {
-        this.code = code;
-        this.msg = msg;
-        this.success = success;
-    }
+
 
     public Integer getCode() {
         return code;
@@ -48,11 +40,11 @@ public class ResponseBody<T> {
         this.msg = msg;
     }
 
-    public T getData() {
+    public String getData() {
         return data;
     }
 
-    public void setData(T data) {
+    public void setData(String data) {
         this.data = data;
     }
 

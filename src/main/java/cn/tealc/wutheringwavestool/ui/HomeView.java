@@ -5,6 +5,7 @@ import cn.tealc.wutheringwavestool.Config;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.NotificationKey;
+import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
@@ -233,7 +234,13 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @FXML
     void toAlbum(ActionEvent event) {
         try {
-            File file=new File(Config.setting.getGameRootDir()+File.separator+"Wuthering Waves Game\\Client\\Saved\\ScreenShot");
+            File file=null;
+            if (Config.setting.getGameRootDirSource() == SourceType.DEFAULT){
+                file=new File(Config.setting.getGameRootDir()+File.separator+"Wuthering Waves Game/Client/Saved/ScreenShot");
+            }else {
+                file=new File(Config.setting.getGameRootDir()+File.separator+"Client/Saved/ScreenShot");
+            }
+
             if (file.exists()){
                 Desktop.getDesktop().open(file);
             }else {

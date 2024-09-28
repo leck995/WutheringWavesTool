@@ -7,12 +7,9 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.sign.SignGood;
 import cn.tealc.wutheringwavestool.model.sign.SignRecord;
-import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.model.sign.UserInfo;
-import cn.tealc.wutheringwavestool.thread.SignGoodsTask;
-import cn.tealc.wutheringwavestool.thread.SignTask;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import cn.tealc.wutheringwavestool.thread.api.SignGoodsTask;
+import cn.tealc.wutheringwavestool.thread.api.SignTask;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -21,8 +18,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -36,7 +31,7 @@ public class SignViewModel implements ViewModel {
     private final SimpleIntegerProperty userIndex = new SimpleIntegerProperty(-1);
     private final ObservableList<SignGood> goodsList= FXCollections.observableArrayList();
     private final SimpleStringProperty logs=new SimpleStringProperty();
-    private final SimpleBooleanProperty isSign=new SimpleBooleanProperty(false);
+    private final SimpleBooleanProperty isSign=new SimpleBooleanProperty(true);
     private final ObservableList<SignRecord> signHistoryList= FXCollections.observableArrayList();
 
     public SignViewModel() {

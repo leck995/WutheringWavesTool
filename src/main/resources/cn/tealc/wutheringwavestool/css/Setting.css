@@ -5,7 +5,10 @@
 .setting .left{
 
 }
+.setting .left .radio-button{
+    -fx-background-color: transparent;
 
+}
 
 
 

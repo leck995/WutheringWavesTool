@@ -1,14 +1,8 @@
 package cn.tealc.wutheringwavestool.ui;
 
-import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
-import cn.tealc.wutheringwavestool.model.sign.SignGood;
 import cn.tealc.wutheringwavestool.model.sign.UserInfo;
-import cn.tealc.wutheringwavestool.thread.SignGoodsTask;
-import cn.tealc.wutheringwavestool.thread.SignTask;
-import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -72,7 +66,7 @@ public class AccountViewModel implements ViewModel {
     public boolean updateUser(int index,UserInfo userInfo) {
         UserInfo oldUserInfo = accountList.get(index);
         UserInfoDao dao=new UserInfoDao();
-        UserInfo daoUserByRoleId = dao.getUserByRoleId(userInfo.getRoleId());
+        UserInfo daoUserByRoleId = dao.getUserByRoleId(oldUserInfo.getRoleId());
         if (daoUserByRoleId != null && Objects.equals(daoUserByRoleId.getId(), oldUserInfo.getId())){ //当roleid存在，且id是一个，允许更新
             if (userInfo.getMain()){
                 for (UserInfo oldMainUser : accountList) {

@@ -1,10 +1,9 @@
-package cn.tealc.wutheringwavestool.thread;
+package cn.tealc.wutheringwavestool.thread.api;
 
 import cn.tealc.wutheringwavestool.dao.SignHistoryDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.sign.SignRecord;
-import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.model.sign.UserInfo;
 import cn.tealc.wutheringwavestool.util.HttpRequestUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -13,15 +12,11 @@ import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -63,8 +58,8 @@ public class SignTask extends Task<String> {
     private String sign(String roleId,String userId,String token){
         LocalDate today = LocalDate.now();
         int monthValue= today.getMonthValue();
-        String url=String.format("https://api.kurobbs.com/encourage/signIn/v2?gameId=%s&serverId=%s&roleId=%s&userId=%s&reqMonth=%02d"
-                ,"3","76402e5b20be2c39f095a152090afddc",roleId,userId,monthValue);
+        String url=String.format("%s?gameId=%s&serverId=%s&roleId=%s&userId=%s&reqMonth=%02d"
+                ,ApiConfig.SIGNIN_URL,ApiConfig.PARAM_GAME_ID,ApiConfig.PARAM_SERVER_ID,roleId,userId,monthValue);
         HttpClient client = HttpClient.newHttpClient();
         try {
             HttpRequest request = HttpRequestUtil.getRequest(url,token);
@@ -89,8 +84,8 @@ public class SignTask extends Task<String> {
     }
 
     private void updateHistory(String roleId,String userId,String token){
-        String url=String.format("https://api.kurobbs.com/encourage/signIn/queryRecordV2?gameId=%s&serverId=%s&roleId=%s&userId=%s"
-                ,"3","76402e5b20be2c39f095a152090afddc",roleId,userId);
+        String url=String.format("%s?gameId=%s&serverId=%s&roleId=%s&userId=%s"
+                ,ApiConfig.SIGNIN_QUERY_URL,ApiConfig.PARAM_GAME_ID,ApiConfig.PARAM_SERVER_ID,roleId,userId);
         HttpClient client = HttpClient.newHttpClient();
         try {
             HttpRequest request = HttpRequestUtil.getRequest(url,token);

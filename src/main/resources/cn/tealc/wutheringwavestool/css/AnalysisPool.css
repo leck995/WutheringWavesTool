@@ -1,7 +1,5 @@
 
 
-
-
 .default-color0.chart-pie { -fx-pie-color: #f1d358; }
 .default-color1.chart-pie { -fx-pie-color: #C48FD8; }
 .default-color2.chart-pie { -fx-pie-color: #22bad9; }
@@ -13,26 +11,38 @@
 
 .ssr-label{
     -fx-text-fill: #f1d358;
-    -fx-font-size: 16;
+    -fx-font-size: 15;
+    -fx-font-weight: bold;
 }
 .sr-label{
     -fx-text-fill: #933fb1;
-    -fx-font-size: 16;
+    -fx-font-size: 15;
+    -fx-font-weight: bold;
 }
 .r-label{
     -fx-text-fill: #04b6c6;
-    -fx-font-size: 16;
+    -fx-font-size: 15;
+    -fx-font-weight: bold;
 }
 .total-label{
     -fx-text-fill: #ff6666;
-    -fx-font-size: 18;
+    -fx-font-size: 15;
+    -fx-font-weight: bold;
 
 }
 .current-label{
     -fx-text-fill: #ff6666;
-    -fx-font-size: 18;
+    -fx-font-size: 15;
+    -fx-font-weight: bold;
 
 }
+
+
+.tip{
+    -fx-text-fill: -color-font-subtle;
+    -fx-font-size: 12;
+}
+
 
 .left{
     -fx-background-radius: 8px;
@@ -145,4 +155,35 @@
     -fx-background-radius: 5;
     -fx-padding: 3;
   /*  -fx-effect:dropshadow(three-pass-box, -color-border-muted,2,0.7,0,0);*/
+}
+
+
+.scroll-pane .scroll-bar{
+    -fx-background-color: transparent;
+}
+.scroll-pane .scroll-bar:vertical .thumb,
+.scroll-pane .scroll-bar:vertical .track{
+    -fx-background-color: transparent;
+
+}
+.scroll-pane:hover .scroll-bar:vertical .thumb {
+    -fx-background-color: -color-hover-emphasis;
+}
+.scroll-pane .scroll-bar:horizontal .thumb{
+    -fx-background-color: transparent;
+}
+
+
+
+
+
+.ssr-thumb .child{
+    -fx-background-radius: 8;
+    -fx-border-color: -color-border-default;
+    -fx-border-radius: 8;
+    -fx-background-color: -color-bg-default-60;
+}
+.ssr-thumb .child .count{
+    -fx-font-size: 14;
+
 }

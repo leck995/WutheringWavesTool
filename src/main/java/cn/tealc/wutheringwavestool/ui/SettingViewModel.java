@@ -3,10 +3,12 @@ package cn.tealc.wutheringwavestool.ui;
 import cn.tealc.wutheringwavestool.Config;
 import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.NotificationKey;
+import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -33,12 +35,15 @@ public class SettingViewModel implements ViewModel {
     private ObservableList<String> fontFamilyList= FXCollections.observableArrayList();
     private SimpleBooleanProperty diyHomeBg=new SimpleBooleanProperty();
     private SimpleStringProperty diyHomeBgName=new SimpleStringProperty();
+    private SimpleObjectProperty<SourceType> gameRootDirSource=new SimpleObjectProperty<>();
 
     public SettingViewModel() {
         gameDir.bindBidirectional(Config.setting.gameRootDirProperty());
         startWithAnalysis.bindBidirectional(Config.setting.firstViewWithPoolAnalysisProperty());
         exitWhenGameOver.bindBidirectional(Config.setting.exitWhenGameOverProperty());
         hideWhenGameStart.bindBidirectional(Config.setting.hideWhenGameStartProperty());
+        gameRootDirSource.bindBidirectional(Config.setting.gameRootDirSourceProperty());
+
         fontFamilyList.setAll(Font.getFamilies());
         diyHomeBg.bindBidirectional(Config.setting.diyHomeBgProperty());
         diyHomeBgName.bindBidirectional(Config.setting.diyHomeBgNameProperty());
@@ -148,4 +153,15 @@ public class SettingViewModel implements ViewModel {
     }
 
 
+    public SourceType getGameRootDirSource() {
+        return gameRootDirSource.get();
+    }
+
+    public SimpleObjectProperty<SourceType> gameRootDirSourceProperty() {
+        return gameRootDirSource;
+    }
+
+    public void setGameRootDirSource(SourceType gameRootDirSource) {
+        this.gameRootDirSource.set(gameRootDirSource);
+    }
 }

@@ -148,7 +148,11 @@ public class GameAppListener implements WinUser.WinEventProc{
 
             //判断是否开启自动退出，退出即结束程序
             if (Config.setting.isExitWhenGameOver()){
-                MainApplication.exit();
+                if (totalGameTime > 60000){ //当游戏时长大于1分钟才自动关闭，以防鸣潮SB更新重启
+                    MainApplication.exit();
+                }else {
+                    LOG.info("检测到鸣潮已经结束，游戏时长小于一分钟，不自动停止");
+                }
             }
 
         }

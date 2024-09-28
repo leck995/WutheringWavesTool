@@ -1,12 +1,15 @@
-package cn.tealc.wutheringwavestool.thread.role;
+package cn.tealc.wutheringwavestool.thread.api.role;
 
 import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.wutheringwavestool.model.roleData.Role;
+import cn.tealc.wutheringwavestool.model.ResponseBodyForApi;
 import cn.tealc.wutheringwavestool.model.roleData.RoleDetail;
+import cn.tealc.wutheringwavestool.model.roleData.user.RoleInfo;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
+import cn.tealc.wutheringwavestool.thread.api.ApiConfig;
+import cn.tealc.wutheringwavestool.util.ApiDecryptException;
+import cn.tealc.wutheringwavestool.util.ApiUtil;
 import cn.tealc.wutheringwavestool.util.HttpRequestUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
@@ -16,7 +19,6 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.List;
 
 /**
  * @program: WutheringWavesTool
@@ -41,17 +43,20 @@ public class GameRoleDetailTask extends Task<ResponseBody<RoleDetail>> {
 
     private ResponseBody<RoleDetail> getRoleDate(String roleId,String token,int cardRoleId){
         String url=String.format(
-                "https://api.kurobbs.com/gamer/roleBox/aki/getRoleDetail?gameId=3&serverId=76402e5b20be2c39f095a152090afddc&roleId=%s&id=%d&channelId=19&countryCode=1",roleId,cardRoleId);
+                "%s?gameId=3&serverId=76402e5b20be2c39f095a152090afddc&roleId=%s&id=%d&channelId=19&countryCode=1", ApiConfig.ROLE_DETAIL_URL,roleId,cardRoleId);
         HttpClient client = HttpClient.newHttpClient();
         try {
             HttpRequest request = HttpRequestUtil.getRequest(url,token);
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 ObjectMapper mapper = new ObjectMapper();
-                ResponseBody<RoleDetail> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<RoleDetail>>() {});
-                if (responseBody.getCode() != 200) {
-                    LOG.error("服务器返回异常，错误代码：{}",responseBody.getCode());
-                }
+                ResponseBodyForApi responseBodyForApi = mapper.readValue(response.body(), new TypeReference<ResponseBodyForApi>() {
+                });
+
+                ResponseBody<RoleDetail> responseBody = new ResponseBody<>(responseBodyForApi.getCode(), responseBodyForApi.getMsg(),responseBodyForApi.getSuccess());
+                String row = ApiUtil.decrypt(responseBodyForApi.getData());
+                RoleDetail roleDetail = mapper.readValue(row, RoleDetail.class);
+                responseBody.setData(roleDetail);
                 return responseBody;
             }else {
                 ResponseBody<RoleDetail> responseBody = new ResponseBody<>();
@@ -67,6 +72,9 @@ public class GameRoleDetailTask extends Task<ResponseBody<RoleDetail>> {
             objectResponseBody.setSuccess(false);
             objectResponseBody.setCode(0);
             return objectResponseBody;
+        } catch (ApiDecryptException e) {
+            LOG.error("错误：",e);
+            return new ResponseBody<>(1,e.getMessage());
         }
     }
 }

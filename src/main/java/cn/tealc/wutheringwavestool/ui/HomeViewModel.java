@@ -7,6 +7,7 @@ import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
+import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
@@ -14,10 +15,10 @@ import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.model.roleData.user.BoxInfo;
 import cn.tealc.wutheringwavestool.model.roleData.user.RoleDailyData;
 import cn.tealc.wutheringwavestool.model.roleData.user.RoleInfo;
-import cn.tealc.wutheringwavestool.thread.SignTask;
-import cn.tealc.wutheringwavestool.thread.UserDailyDataTask;
-import cn.tealc.wutheringwavestool.thread.UserDataRefreshTask;
-import cn.tealc.wutheringwavestool.thread.UserInfoDataTask;
+import cn.tealc.wutheringwavestool.thread.api.SignTask;
+import cn.tealc.wutheringwavestool.thread.api.UserDailyDataTask;
+import cn.tealc.wutheringwavestool.thread.api.UserDataRefreshTask;
+import cn.tealc.wutheringwavestool.thread.api.UserInfoDataTask;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -101,6 +102,7 @@ public class HomeViewModel implements ViewModel {
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_GAME_TIME_UPDATE,(s, objects) -> {
             long playTime = (long) objects[0];
             updateGameTime(playTime);
+            updateRoleData();
         });
 
 
@@ -237,24 +239,28 @@ public class HomeViewModel implements ViewModel {
 
 
     public void startUpdate(){
-        String dir = Config.setting.gameRootDir.get();
-        if (dir != null){
-            File exe=new File(dir+File.separator + "launcher.exe");
-            if (exe.exists()){
-                try {
-                    Desktop.getDesktop().open(exe);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+        if (Config.setting.getGameRootDirSource() == SourceType.WE_GAME){
+            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                    new MessageInfo(MessageType.WARNING,"请前往WeGame进行更新"),false);
+        }else {
+            String dir = Config.setting.getGameRootDir();
+            if (dir != null){
+                File  exe=new File(dir + File.separator + "launcher.exe");
+                if (exe.exists()){
+                    try {
+                        Desktop.getDesktop().open(exe);
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }else {
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                            new MessageInfo(MessageType.WARNING,String.format("无法找到%s，请确保游戏目录正确",exe.getPath()),false));
                 }
             }else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING,String.format("无法找到%s，请确保游戏目录正确",exe.getPath()),false));
+                        new MessageInfo(MessageType.WARNING,"请在设置在先设置游戏目录"),false);
             }
-        }else {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING,"请在设置在先设置游戏目录"),false);
         }
-
     }
 
     public void signAndGame(){
@@ -264,9 +270,15 @@ public class HomeViewModel implements ViewModel {
         startGame();
     }
     public void startGame(){
-        String dir = Config.setting.gameRootDir.get();
+        String dir = Config.setting.getGameRootDir();
         if (dir != null){
-            File exe=new File(dir+File.separator+"Wuthering Waves Game"+File.separator + "Wuthering Waves.exe");
+            File exe=null;
+            if (Config.setting.getGameRootDirSource() == SourceType.DEFAULT){
+                exe=new File(dir+File.separator+"Wuthering Waves Game"+File.separator + "Wuthering Waves.exe");
+                //exe=new File(dir + File.separator + "Client/Binaries/Win64/Client-Win64-Shipping.exe");
+            }else {
+                exe=new File(dir + File.separator + "Wuthering Waves.exe");
+            }
             if (exe.exists()){
                 try {
                     Desktop.getDesktop().open(exe);

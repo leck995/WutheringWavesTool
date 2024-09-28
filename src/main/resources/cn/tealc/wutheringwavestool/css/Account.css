@@ -12,10 +12,10 @@
     -fx-padding: 8 10 8 10;
 }
 .account .list-view .list-cell:filled .user{
-    -fx-background-color: -color-bg-default;
+    -fx-background-color: -color-bg-default-90;
     -fx-background-radius: 10;
     -fx-padding: 10;
-    -fx-effect:dropshadow(three-pass-box,-color-border-muted,2,0.7,0,0);
+
 }
 
 .account .list-view .list-cell:empty .user{
@@ -33,4 +33,3 @@
 .list-view .list-cell .delete-btn{
     -fx-padding: 2;
 }
-

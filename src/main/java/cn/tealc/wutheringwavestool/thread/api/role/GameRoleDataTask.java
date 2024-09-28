@@ -1,8 +1,11 @@
-package cn.tealc.wutheringwavestool.thread.role;
+package cn.tealc.wutheringwavestool.thread.api.role;
 
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.roleData.Role;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
+import cn.tealc.wutheringwavestool.thread.api.ApiConfig;
+import cn.tealc.wutheringwavestool.util.ApiDecryptException;
+import cn.tealc.wutheringwavestool.util.ApiUtil;
 import cn.tealc.wutheringwavestool.util.HttpRequestUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,7 +41,7 @@ public class GameRoleDataTask extends Task<ResponseBody<List<Role>>> {
 
     private ResponseBody<List<Role>> getRoleDate(String roleId,String token){
         String url=String.format(
-                "https://api.kurobbs.com/gamer/roleBox/aki/roleData?gameId=3&serverId=76402e5b20be2c39f095a152090afddc&roleId=%s",roleId);
+                "%s?gameId=3&serverId=76402e5b20be2c39f095a152090afddc&roleId=%s", ApiConfig.ROLE_DATA_URL,roleId);
         HttpClient client = HttpClient.newHttpClient();
         try {
             HttpRequest request = HttpRequestUtil.getRequest(url,token);
@@ -50,7 +53,10 @@ public class GameRoleDataTask extends Task<ResponseBody<List<Role>>> {
                 int code = tree.get("code").asInt();
                 responseBody.setCode(code);
                 if (code == 200) {
-                    JsonNode jsonNode = tree.get("data").get("roleList");
+                    String data = tree.get("data").asText();
+                    String decrypt = ApiUtil.decrypt(data);
+                    JsonNode dataTree = mapper.readTree(decrypt);
+                    JsonNode jsonNode = dataTree.get("roleList");
                     List<Role> roleList = mapper.readValue(jsonNode.toString(), new TypeReference<List<Role>>() {
                     });
 
@@ -73,6 +79,9 @@ public class GameRoleDataTask extends Task<ResponseBody<List<Role>>> {
         } catch (IOException | InterruptedException e) {
             LOG.error("错误",e);
             return new ResponseBody<>(1,"角色数据获取错误");
+        } catch (ApiDecryptException e) {
+            LOG.error("错误",e);
+            return new ResponseBody<>(1,e.getMessage());
         }
     }
 }

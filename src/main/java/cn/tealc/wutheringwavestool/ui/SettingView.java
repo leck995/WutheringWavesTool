@@ -2,16 +2,16 @@ package cn.tealc.wutheringwavestool.ui;
 
 import atlantafx.base.controls.ToggleSwitch;
 import atlantafx.base.controls.ToggleSwitchSkin;
+import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.*;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
@@ -56,7 +56,8 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
     @FXML
     private ToggleSwitch diyBgSwitch;
 
-
+    @FXML
+    private ToggleGroup gameSourceType;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         gameDirField.textProperty().bindBidirectional(viewModel.gameDirProperty());
@@ -70,6 +71,21 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
         diyBgInputGroup.managedProperty().bind(diyBgSwitch.selectedProperty());
         diyBgInputGroup.visibleProperty().bind(diyBgSwitch.selectedProperty());
 
+        if (viewModel.getGameRootDirSource()==SourceType.DEFAULT){
+            gameSourceType.selectToggle(gameSourceType.getToggles().getFirst());
+        }else {
+            gameSourceType.selectToggle(gameSourceType.getToggles().get(1));
+        }
+        gameSourceType.selectedToggleProperty().addListener((observableValue, toggle, t1) -> {
+            if (t1 instanceof RadioButton radioButton) {
+                if (radioButton.getText().equals("默认")){
+                    viewModel.setGameRootDirSource(SourceType.DEFAULT);
+                } else{
+                    viewModel.setGameRootDirSource(SourceType.WE_GAME);
+                }
+            }
+        });
+
     }
     @FXML
     void setGameDir(ActionEvent event) {
@@ -78,7 +94,6 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
         File file = directoryChooser.showDialog(gameDirField.getScene().getWindow());
         if (file != null) {
             gameDirField.setText(file.getAbsolutePath());
-
         }
     }
 

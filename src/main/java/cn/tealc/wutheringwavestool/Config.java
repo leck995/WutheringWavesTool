@@ -20,6 +20,8 @@ import java.util.Map;
 public class Config {
     public static final String version="1.1.4";
     public static final String appTitle="鸣潮助手";
+    public static final String apiDecryptKey = "XSNLFgNCth8j8oJI3cNIdw==";
+
     public static Setting setting;
     public static String currentRoleId;
 

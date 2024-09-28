@@ -3,6 +3,7 @@ package cn.tealc.wutheringwavestool.ui;
 import cn.tealc.wutheringwavestool.Config;
 import cn.tealc.wutheringwavestool.NotificationKey;
 import cn.tealc.wutheringwavestool.model.CardInfo;
+import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.analysis.AnalysisData;
 import cn.tealc.wutheringwavestool.model.analysis.SsrData;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
@@ -14,6 +15,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -60,6 +62,9 @@ public class AnalysisPoolViewModel implements ViewModel {
     private SimpleStringProperty ssrMinText=new SimpleStringProperty();
     private SimpleStringProperty ssrMaxText=new SimpleStringProperty();
 
+
+    private SimpleBooleanProperty ssrModel=new SimpleBooleanProperty(true);
+
     public AnalysisPoolViewModel() {
         gameRootDir.bindBidirectional(Config.setting.gameRootDirProperty());
 
@@ -100,9 +105,15 @@ public class AnalysisPoolViewModel implements ViewModel {
 
 
     public void load() {
-        String dir = Config.setting.gameRootDir.get();
+        String dir = Config.setting.getGameRootDir();
         if (dir != null) {
-            File file=new File(Config.setting.getGameRootDir()+File.separator+"Wuthering Waves Game/Client/Saved/Logs/Client.log");
+            File file=null;
+            if (Config.setting.getGameRootDirSource() == SourceType.DEFAULT){
+                file=new File(dir + File.separator + "Wuthering Waves Game/Client/Saved/Logs/Client.log");
+            }else {
+                file=new File(dir + File.separator + "Client/Saved/Logs/Client.log");
+            }
+
             if (file.exists()){
                 String url = LogFileUtil.getLogFileUrl(file);
                 if (url != null){
@@ -127,7 +138,7 @@ public class AnalysisPoolViewModel implements ViewModel {
                             new MessageInfo(MessageType.INFO,"正在获取数据，请稍候"));
                 }else {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING,"抽卡数据不存在，请打开游戏内抽卡的详情数据页面后再次尝试"),false);
+                            new MessageInfo(MessageType.WARNING,"无法获取抽卡数据链接，请打开游戏内抽卡的详情数据页面后再次尝试"),false);
                 }
             }else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
@@ -219,10 +230,8 @@ public class AnalysisPoolViewModel implements ViewModel {
                 list.add(analysis(entry.getKey(),entry.getValue().stream().toList()));
             }
             analysisDataList.setAll(list);
-            Platform.runLater(() -> {
-                updatePoolDate(analysisDataList.getFirst());
-                publish("update");
-            });
+            updatePoolDate(analysisDataList.getFirst());
+            publish("update");
         });
 
     }
@@ -502,5 +511,13 @@ public class AnalysisPoolViewModel implements ViewModel {
 
     public SimpleStringProperty playerProperty() {
         return player;
+    }
+
+    public boolean isSsrModel() {
+        return ssrModel.get();
+    }
+
+    public SimpleBooleanProperty ssrModelProperty() {
+        return ssrModel;
     }
 }

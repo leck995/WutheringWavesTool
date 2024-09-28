@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import atlantafx.base.controls.ToggleSwitch?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
@@ -30,7 +34,7 @@
                   <ListView fx:id="poolListview" maxWidth="820.0" orientation="HORIZONTAL" prefHeight="70.0" prefWidth="820.0" styleClass="select-listview" />
                </children>
             </StackPane>
-            <StackPane layoutY="200.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="160.0">
+            <StackPane layoutY="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="160.0">
                <children>
                   <HBox fx:id="children" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="100.0">
                      <children>
@@ -97,11 +101,25 @@
                               </HBox>
                            </children>
                         </VBox>
-                        <ListView fx:id="ssrListView" maxWidth="400.0" prefWidth="400.0" />
+                        <StackPane prefHeight="150.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                           <children>
+                              <ScrollPane fitToHeight="true" fitToWidth="true">
+                                 <content>
+                                    <FlowPane fx:id="ssrFlowPane" hgap="10.0" prefHeight="200.0" prefWidth="200.0" styleClass="ssr-thumb" vgap="10.0" />
+                                 </content>
+                              </ScrollPane>
+                              <ListView fx:id="ssrListView" maxWidth="400.0" prefWidth="400.0" />
+                           </children>
+                        </StackPane>
                      </children>
+                     <padding>
+                        <Insets left="200.0" right="100.0" />
+                     </padding>
                   </HBox>
                </children>
             </StackPane>
+            <ToggleSwitch fx:id="ssrModelSwitch" selected="true" text="详情" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="75.0" />
+            <Label styleClass="tip" text="如无法刷新，可重新获取" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0" />
          </children>
       </AnchorPane>
    </children>

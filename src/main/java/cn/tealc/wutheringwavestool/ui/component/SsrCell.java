@@ -96,6 +96,7 @@ public class SsrCell extends ListCell<SsrData> {
                         @Override
                         public void handle(WorkerStateEvent workerStateEvent) {
                             if (task.getValue()){
+                                updateItem(ssrData,b);
                                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                                         new MessageInfo(MessageType.WARNING,"头像下载完毕，切换卡池即可查看"),false);
                             }
@@ -103,7 +104,6 @@ public class SsrCell extends ListCell<SsrData> {
                     });
                     Thread.startVirtualThread(task);
                 }
-
             }
 /*            String img = Config.headers.get(ssrData.getName());
             if (img!=null){
