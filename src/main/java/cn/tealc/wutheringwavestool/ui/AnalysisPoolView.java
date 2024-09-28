@@ -227,6 +227,8 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
                         }
                     });
                     Thread.startVirtualThread(task);
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                            new MessageInfo(MessageType.INFO, "正在下载新头像，请稍后几秒"), false);
                 }
             }
 
@@ -302,6 +304,8 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
                         }
                     });
                     Thread.startVirtualThread(task);
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                            new MessageInfo(MessageType.INFO, "正在下载新头像，请稍后几秒"), false);
                     }
                 }
 
