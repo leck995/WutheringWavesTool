@@ -1,15 +1,10 @@
-package cn.tealc.wutheringwavestool;
+package cn.tealc.wutheringwavestool.base;
 
 import cn.tealc.wutheringwavestool.model.Setting;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.beans.property.SimpleStringProperty;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * @program: WutheringWavesTool

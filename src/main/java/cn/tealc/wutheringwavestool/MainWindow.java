@@ -12,32 +12,21 @@
 
 package cn.tealc.wutheringwavestool;
 
-import cn.tealc.teafx.stage.RoundStage;
 import cn.tealc.teafx.theme.PrimerDark;
 import cn.tealc.teafx.theme.PrimerLight;
+import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.dao.JdbcUtils;
-import cn.tealc.wutheringwavestool.jna.GameAppListener;
-import cn.tealc.wutheringwavestool.jna.GlobalKeyListener;
 import cn.tealc.wutheringwavestool.ui.MainView;
 import cn.tealc.wutheringwavestool.ui.MainViewModel;
-import com.dustinredmond.fxtrayicon.FXTrayIcon;
-import com.github.kwhat.jnativehook.GlobalScreen;
-import com.github.kwhat.jnativehook.NativeHookException;
-import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinNT;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.ViewTuple;
 import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.fxml.Initializable;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.text.Font;
+import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import xss.it.nfx.AbstractNfxUndecoratedWindow;
@@ -45,9 +34,7 @@ import xss.it.nfx.HitSpot;
 import xss.it.nfx.WindowState;
 
 import java.io.*;
-import java.net.URL;
 import java.util.List;
-import java.util.ResourceBundle;
 
 /**
  * @author XDSSWAR
@@ -67,29 +54,16 @@ public final class MainWindow extends AbstractNfxUndecoratedWindow{
      */
     public MainWindow() throws UnsupportedEncodingException {
         super();
-
         window=this;
-        JdbcUtils.init();
-        System.setProperty("prism.lcdtext", "false");
-        System.setProperty("prism.text", "t2k");
-        VersionUpdateUtil.update();
-        if (Config.setting.isTheme()){
-            Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
-        }else {
-            Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
-        }
-
 
         ViewTuple<MainView, MainViewModel> viewTuple = FluentViewLoader.fxmlView(MainView.class).load();
         mainView = viewTuple.getCodeBehind();
         closeBtn = mainView.getCloseBtn();
         minBtn = mainView.getMinBtn();
         maxBtn = mainView.getMaxBtn();
-
         closeBtn.setOnAction(event -> {
             mainView.showExitDialog();
         });
-
         maxBtn.setOnAction(event -> {
             if (getWindowState().equals(WindowState.MAXIMIZED)){
                 setWindowState(WindowState.NORMAL);
@@ -98,7 +72,6 @@ public final class MainWindow extends AbstractNfxUndecoratedWindow{
                 setWindowState(WindowState.MAXIMIZED);
             }
         });
-
         minBtn.setOnAction(event -> setWindowState(WindowState.MINIMIZED));
 
         handelState(getWindowState());
@@ -112,6 +85,7 @@ public final class MainWindow extends AbstractNfxUndecoratedWindow{
         setHeight(Config.setting.getAppHeight());
         setMinHeight(720.0);
         setMinWidth(1280.0);
+        initStyle(StageStyle.TRANSPARENT);
         Config.setting.appWidthProperty().bind(scene.widthProperty());
         Config.setting.appHeightProperty().bind(scene.heightProperty());
         initFont();

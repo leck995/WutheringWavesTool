@@ -1,45 +1,31 @@
 package cn.tealc.wutheringwavestool;
 
-import cn.tealc.teafx.stage.RoundStage;
-import cn.tealc.teafx.theme.PrimerDark;
-import cn.tealc.teafx.theme.PrimerLight;
+import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
 import cn.tealc.wutheringwavestool.jna.GlobalKeyListener;
-import cn.tealc.wutheringwavestool.ui.AnalysisPoolView;
-import cn.tealc.wutheringwavestool.ui.AnalysisPoolViewModel;
-import cn.tealc.wutheringwavestool.ui.MainView;
-import cn.tealc.wutheringwavestool.ui.MainViewModel;
+import cn.tealc.wutheringwavestool.ui.tray.NewFxTrayIcon;
 import com.dustinredmond.fxtrayicon.FXTrayIcon;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
-import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
-import com.sun.jna.platform.win32.WinDef;
 import com.sun.jna.platform.win32.WinNT;
-import com.sun.jna.platform.win32.WinUser;
-import de.saxsys.mvvmfx.FluentViewLoader;
-import de.saxsys.mvvmfx.ViewTuple;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.CheckMenuItem;
+import javafx.embed.swing.SwingFXUtils;
+import javafx.geometry.Pos;
+import javafx.scene.control.Button;
+import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.image.Image;
-import javafx.scene.text.Font;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.material2.Material2AL;
-import org.kordamp.ikonli.material2.Material2MZ;
+import org.kordamp.ikonli.material2.Material2OutlinedMZ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.awt.*;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 public class MainApplication extends Application {
     private static final Logger LOG=LoggerFactory.getLogger(MainApplication.class);
@@ -49,18 +35,17 @@ public class MainApplication extends Application {
     private static FXTrayIcon fxTrayIcon;
     @Override
     public void start(Stage stage) throws IOException {
-        JdbcUtils.init();
         System.setProperty("native.encoding", "UTF-8");
         System.setProperty("prism.lcdtext", "false");
-        // System.setProperty("LcdFontSmoothing", "true");
+        System.setProperty("LcdFontSmoothing", "true");
         System.setProperty("prism.text", "t2k");
 
+        JdbcUtils.init();
         VersionUpdateUtil.update();
 
         window = new MainWindow();
         window.show();
 
-        //initFont();
         if (Config.setting.isTheme()){
             //Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
         }else {
@@ -68,14 +53,13 @@ public class MainApplication extends Application {
         }
 
         Application.setUserAgentStylesheet(FXResourcesLoader.load("css/light.css"));
-
         appListener = GameAppListener.getInstance();
         gameAppListener = User32.INSTANCE.SetWinEventHook(0x0003, 0x0003, null, appListener, 0, 0, 0);
 
+
+
         createTrayIcon();
         initExceptionHandler();
-
-
     }
 
 
@@ -122,29 +106,26 @@ public class MainApplication extends Application {
     }
 
     private void createTrayIcon() {
-        fxTrayIcon = new FXTrayIcon(window, window.getIcons().getFirst());
-        MenuItem recovery=new MenuItem("Show");
-        recovery.setOnAction(event -> {
-            Platform.runLater(()->{
-                window.setIconified(false);
-                window.show();
-                window.toFront();
-            });
+        Button show = new Button("显示",new FontIcon(Material2OutlinedMZ.REMOVE_FROM_QUEUE));
+        show.setOnAction(event -> {
+            window.setIconified(false);
+            window.show();
+            window.toFront();
         });
-        fxTrayIcon = new FXTrayIcon(window, window.getIcons().getFirst());
-
-        fxTrayIcon.addExitItem("Exit",actionEvent -> {
-            Platform.runLater(MainApplication::exit);
-        });
-
-        fxTrayIcon.addMenuItems(recovery);
- /*       fxTrayIcon.setOnAction(event -> {
-            Object source = event.getSource();
-            TrayIconWindow trayIconWindow = new TrayIconWindow();
-            trayIconWindow.show(window);
-        });*/
-
-        fxTrayIcon.show();
+        Button exit = new Button("退出",new FontIcon(Material2OutlinedMZ.POWER_SETTINGS_NEW));
+        exit.setOnAction(event -> Platform.runLater(MainApplication::exit));
+        VBox vbox = new VBox(show, exit);
+        vbox.getStyleClass().add("tray");
+        vbox.getStylesheets().add(FXResourcesLoader.load("css/TrayIcon.css"));
+        vbox.setPrefWidth(80);
+        vbox.setPrefHeight(60);
+        NewFxTrayIcon newFxTrayIcon = new NewFxTrayIcon(SwingFXUtils.fromFXImage(window.getIcons().getFirst(),null),Config.appTitle,vbox);
+        SystemTray systemTray = SystemTray.getSystemTray();
+        try {
+            systemTray.add(newFxTrayIcon);
+        } catch (AWTException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }

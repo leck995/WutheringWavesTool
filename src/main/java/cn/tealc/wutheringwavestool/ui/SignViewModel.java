@@ -1,6 +1,6 @@
 package cn.tealc.wutheringwavestool.ui;
 
-import cn.tealc.wutheringwavestool.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.SignHistoryDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;

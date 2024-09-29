@@ -1,6 +1,6 @@
 package cn.tealc.wutheringwavestool.ui;
 
-import cn.tealc.wutheringwavestool.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.CheckVersionTask;

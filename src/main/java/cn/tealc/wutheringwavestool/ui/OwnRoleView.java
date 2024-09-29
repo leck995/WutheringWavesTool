@@ -1,9 +1,9 @@
 package cn.tealc.wutheringwavestool.ui;
 
 import atlantafx.base.util.Animations;
-import cn.tealc.wutheringwavestool.Config;
+import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
-import cn.tealc.wutheringwavestool.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.roleData.Role;

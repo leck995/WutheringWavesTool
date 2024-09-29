@@ -1,8 +1,8 @@
 package cn.tealc.wutheringwavestool.ui;
 
-import cn.tealc.wutheringwavestool.Config;
+import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.MainApplication;
-import cn.tealc.wutheringwavestool.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;

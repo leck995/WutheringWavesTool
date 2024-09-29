@@ -1,7 +1,6 @@
 package cn.tealc.wutheringwavestool.util;
 
-import cn.tealc.wutheringwavestool.Config;
-import cn.tealc.wutheringwavestool.FXResourcesLoader;
+import cn.tealc.wutheringwavestool.base.Config;
 import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.image.Image;
 import org.slf4j.Logger;
@@ -11,7 +10,6 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 
 /**
  * @program: WutheringWavesTool

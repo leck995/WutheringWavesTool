@@ -1,10 +1,10 @@
 package cn.tealc.wutheringwavestool.ui;
 
 import atlantafx.base.theme.Styles;
-import cn.tealc.wutheringwavestool.Config;
+import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.MainApplication;
-import cn.tealc.wutheringwavestool.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;

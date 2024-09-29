@@ -3,10 +3,10 @@ package cn.tealc.wutheringwavestool.ui;
 import atlantafx.base.controls.Message;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
-import cn.tealc.wutheringwavestool.Config;
+import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.MainApplication;
-import cn.tealc.wutheringwavestool.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 
 import cn.tealc.wutheringwavestool.thread.MainBackgroundTask;
@@ -42,7 +42,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
-import java.util.Objects;
 import java.util.ResourceBundle;
 
 /**

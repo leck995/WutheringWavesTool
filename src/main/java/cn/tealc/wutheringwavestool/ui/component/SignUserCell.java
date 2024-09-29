@@ -2,22 +2,19 @@ package cn.tealc.wutheringwavestool.ui.component;
 
 import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;
-import cn.tealc.wutheringwavestool.MainApplication;
-import cn.tealc.wutheringwavestool.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.model.sign.UserInfo;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.MvvmFX;
-import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.util.Callback;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 

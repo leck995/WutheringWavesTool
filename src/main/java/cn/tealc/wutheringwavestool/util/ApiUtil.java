@@ -1,13 +1,13 @@
 package cn.tealc.wutheringwavestool.util;
 
-import cn.tealc.wutheringwavestool.Config;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import cn.tealc.wutheringwavestool.base.Config;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.SecretKeySpec;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -28,7 +28,7 @@ public class ApiUtil {
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             byte[] decryptedData = cipher.doFinal(encryptedData);
-            return new String(decryptedData);
+            return new String(decryptedData, StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException | IllegalBlockSizeException |
                  BadPaddingException e) {
             throw new ApiDecryptException("数据解密出现错误");

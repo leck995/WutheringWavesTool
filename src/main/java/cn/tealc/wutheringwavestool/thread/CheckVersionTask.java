@@ -1,13 +1,12 @@
 package cn.tealc.wutheringwavestool.thread;
 
-import cn.tealc.wutheringwavestool.Config;
+import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.model.Version;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Map;
 
 public class CheckVersionTask extends Task<Integer> {
     private static final String NET_URL="https://api.github.com/repos/leck995/WutheringWavesTool/releases/latest";

@@ -1,0 +1,37 @@
+.tray{
+    -fx-pref-width: 120;
+    -fx-spacing: 0;
+    -fx-alignment: top-center;
+    -fx-padding:  5 0 5 0;
+    -fx-background-radius: 5;
+    -fx-background-color: white;
+}
+
+.tray > .button{
+    -fx-padding:0;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-graphic-text-gap: 10px;
+    -fx-text-fill: -color-button-fg;
+
+    -fx-pref-width: 120;
+    -fx-pref-height: 25;
+    -fx-font-size: 12;
+
+}
+
+.tray > .button:hover,
+.tray > .button:focused{
+    -fx-background-insets: 0px;
+
+}
+.tray > .button:hover{
+    -fx-background-color: -color-hover-subtle;
+}
+
+.tray > .button > .ikonli-font-icon {
+    -fx-icon-color: -color-fg-default;
+    -fx-fill: -color-fg-default;
+    -fx-icon-size: 12px;
+}

@@ -2,12 +2,11 @@ package cn.tealc.wutheringwavestool.ui;
 
 import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;
-import cn.tealc.wutheringwavestool.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.model.sign.UserInfo;
-import cn.tealc.wutheringwavestool.ui.component.SignUserCell;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;

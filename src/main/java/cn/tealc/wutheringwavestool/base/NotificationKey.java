@@ -1,4 +1,4 @@
-package cn.tealc.wutheringwavestool;
+package cn.tealc.wutheringwavestool.base;
 
 /**
  * @program: AsmrPlayer-web
