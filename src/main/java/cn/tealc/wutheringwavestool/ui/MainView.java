@@ -285,7 +285,6 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
             ViewTuple<AnalysisPoolView, AnalysisPoolViewModel> viewTuple = FluentViewLoader.fxmlView(AnalysisPoolView.class).load();
-
             child.getChildren().setAll(viewTuple.getView());
             startNavAnim();
             bgPane.setVisible(false);

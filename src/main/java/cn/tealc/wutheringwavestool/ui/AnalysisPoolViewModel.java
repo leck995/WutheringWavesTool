@@ -68,16 +68,19 @@ public class AnalysisPoolViewModel implements ViewModel {
     public AnalysisPoolViewModel() {
         gameRootDir.bindBidirectional(Config.setting.gameRootDirProperty());
 
-        //查看本地是否存有数据，有则加载
-        File dataDir=new File("data");
-        if (dataDir.exists()) {
-            String[] players = dataDir.list((dir, name) -> dir.isDirectory());
-            playerList.setAll(players);
-            if (!playerList.isEmpty()){
-                player.set(playerList.getLast());
-                updatePlayer();
+        Thread.startVirtualThread(()->{
+            //查看本地是否存有数据，有则加载
+            File dataDir=new File("data");
+            if (dataDir.exists()) {
+                String[] players = dataDir.list((dir, name) -> dir.isDirectory());
+                playerList.setAll(players);
+                if (!playerList.isEmpty()){
+                    player.set(playerList.getLast());
+                    updatePlayer();
+                }
             }
-        }
+        });
+
     }
 
 
@@ -205,14 +208,16 @@ public class AnalysisPoolViewModel implements ViewModel {
         File poolJson=new File(String.format("data/%s/pool.json",player.get()));
         File dateJson=new File(String.format("data/%s/data.json",player.get()));
         if(poolJson.exists()){
-            ObjectMapper mapper = new ObjectMapper();
-            try {
-                data= mapper.readValue(poolJson, new TypeReference<Map<String, List<CardInfo>>>() {});
-                playerParams=mapper.readValue(dateJson, new TypeReference<Map<String, String>>() {});
-                init();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+            Thread.startVirtualThread(()->{
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    data= mapper.readValue(poolJson, new TypeReference<Map<String, List<CardInfo>>>() {});
+                    playerParams=mapper.readValue(dateJson, new TypeReference<Map<String, String>>() {});
+                    init();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
         }
     }
 

@@ -50,6 +50,7 @@ public class MainApplication extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         JdbcUtils.init();
+        System.setProperty("native.encoding", "UTF-8");
         System.setProperty("prism.lcdtext", "false");
         // System.setProperty("LcdFontSmoothing", "true");
         System.setProperty("prism.text", "t2k");
@@ -121,22 +122,28 @@ public class MainApplication extends Application {
     }
 
     private void createTrayIcon() {
-        MenuItem recovery=new MenuItem("还原");
+        fxTrayIcon = new FXTrayIcon(window, window.getIcons().getFirst());
+        MenuItem recovery=new MenuItem("Show");
         recovery.setOnAction(event -> {
             Platform.runLater(()->{
                 window.setIconified(false);
                 window.show();
                 window.toFront();
             });
-
         });
         fxTrayIcon = new FXTrayIcon(window, window.getIcons().getFirst());
 
-        fxTrayIcon.addExitItem("退出",actionEvent -> {
+        fxTrayIcon.addExitItem("Exit",actionEvent -> {
             Platform.runLater(MainApplication::exit);
         });
 
         fxTrayIcon.addMenuItems(recovery);
+ /*       fxTrayIcon.setOnAction(event -> {
+            Object source = event.getSource();
+            TrayIconWindow trayIconWindow = new TrayIconWindow();
+            trayIconWindow.show(window);
+        });*/
+
         fxTrayIcon.show();
     }
 

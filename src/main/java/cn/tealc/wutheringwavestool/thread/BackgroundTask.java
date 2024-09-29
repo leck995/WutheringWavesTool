@@ -27,7 +27,7 @@ public class BackgroundTask extends Task<Background> {
 
 
     public BackgroundTask() {
-        gaussianFilter = new GaussianFilter(25);
+        gaussianFilter = new GaussianFilter(15);
         contrastFilter = new ContrastFilter();
         contrastFilter.setBrightness(0.45f);
     }

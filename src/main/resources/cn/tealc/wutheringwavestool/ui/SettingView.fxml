@@ -9,7 +9,6 @@
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -77,11 +76,7 @@
                            <children>
                               <StackPane AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
-                                    <ImageView fx:id="appIconIv" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true">
-                                       <image>
-                                          <Image url="@../image/icon.png" />
-                                       </image>
-                                    </ImageView>
+                                    <ImageView fx:id="appIconIv" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" />
                                  </children>
                               </StackPane>
                               <VBox layoutX="120.0" layoutY="20.0" spacing="5.0" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="20.0">
