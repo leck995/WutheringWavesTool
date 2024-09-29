@@ -34,7 +34,7 @@ public class MainBackgroundTask extends Task<Background> {
         gaussianFilter = new GaussianFilter(16);
         contrastFilter = new ContrastFilter();
         contrastFilter.setBrightness(0.8f);
-        contrastFilter.setContrast(1.7f);
+        contrastFilter.setContrast(1.3f);
     }
 
     @Override

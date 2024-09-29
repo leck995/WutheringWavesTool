@@ -5,7 +5,6 @@ import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
 import cn.tealc.wutheringwavestool.jna.GlobalKeyListener;
 import cn.tealc.wutheringwavestool.ui.tray.NewFxTrayIcon;
-import com.dustinredmond.fxtrayicon.FXTrayIcon;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import com.sun.jna.platform.win32.User32;
@@ -13,10 +12,7 @@ import com.sun.jna.platform.win32.WinNT;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
-import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuItem;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -29,13 +25,11 @@ import java.io.IOException;
 
 public class MainApplication extends Application {
     private static final Logger LOG=LoggerFactory.getLogger(MainApplication.class);
-    public static MainWindow window;
+    public static Stage window;
     private static WinNT.HANDLE gameAppListener;
     public GameAppListener appListener;
-    private static FXTrayIcon fxTrayIcon;
     @Override
     public void start(Stage stage) throws IOException {
-        System.setProperty("native.encoding", "UTF-8");
         System.setProperty("prism.lcdtext", "false");
         System.setProperty("LcdFontSmoothing", "true");
         System.setProperty("prism.text", "t2k");
@@ -43,8 +37,14 @@ public class MainApplication extends Application {
         JdbcUtils.init();
         VersionUpdateUtil.update();
 
-        window = new MainWindow();
-        window.show();
+        if (!Config.setting.isChangeTitlebar()){
+            window = new MainWindow();
+            window.show();
+        }else {
+            window = new MainWindow2();
+            window.show();
+        }
+
 
         if (Config.setting.isTheme()){
             //Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
@@ -52,21 +52,20 @@ public class MainApplication extends Application {
             //Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
         }
 
-        Application.setUserAgentStylesheet(FXResourcesLoader.load("css/light.css"));
+        //Application.setUserAgentStylesheet(FXResourcesLoader.load("css/light.css"));
         appListener = GameAppListener.getInstance();
         gameAppListener = User32.INSTANCE.SetWinEventHook(0x0003, 0x0003, null, appListener, 0, 0, 0);
-
-
-
         createTrayIcon();
         initExceptionHandler();
     }
 
 
 
-    private void initPreConfig(){
 
-    }
+
+
+
+
 
 
     private void initExceptionHandler(){

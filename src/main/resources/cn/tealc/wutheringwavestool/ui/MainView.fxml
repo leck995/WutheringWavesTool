@@ -25,38 +25,46 @@
       <Pane fx:id="bgPane03" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #d6d2d250;" visible="false" />
       <AnchorPane prefHeight="750.0" prefWidth="1250.0">
          <children>
-            <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="200.0" spacing="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0">
+            <HBox fx:id="titlebar" layoutX="10.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <Button fx:id="minBtn" mnemonicParsing="false" styleClass="hit-btn">
-                     <graphic>
-                        <SVGPath content="M1 7L1 8L14 8L14 7Z" styleClass="shape" />
-                     </graphic>
-                  </Button>
-                  <Button fx:id="maxBtn" mnemonicParsing="false" styleClass="hit-btn">
-                     <graphic>
-                        <SVGPath content="M2.5 2 A 0.50005 0.50005 0 0 0 2 2.5L2 13.5 A 0.50005 0.50005 0 0 0 2.5 14L13.5 14 A 0.50005 0.50005 0 0 0 14 13.5L14 2.5 A 0.50005 0.50005 0 0 0 13.5 2L2.5 2 z M 3 3L13 3L13 13L3 13L3 3 z" styleClass="shape" />
-                     </graphic>
-                  </Button>
-                  <Button fx:id="closeBtn" mnemonicParsing="false">
-                     <styleClass>
-                        <String fx:value="hit-btn" />
-                        <String fx:value="hit-close" />
-                     </styleClass>
-                     <graphic>
-                        <SVGPath content="M3.726563 3.023438L3.023438 3.726563L7.292969 8L3.023438 12.269531L3.726563 12.980469L8 8.707031L12.269531 12.980469L12.980469 12.269531L8.707031 8L12.980469 3.726563L12.269531 3.023438L8 7.292969Z" styleClass="shape" />
-                     </graphic>
-                  </Button>
+                  <HBox alignment="CENTER_LEFT" prefHeight="50.0" spacing="10.0">
+                     <children>
+                        <ImageView fx:id="icon" fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../image/icon.png" />
+                           </image>
+                        </ImageView>
+                        <Label styleClass="title" text="鸣潮助手" />
+                     </children>
+                  </HBox>
+                  <Pane prefHeight="0.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                  <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+                     <children>
+                        <Button fx:id="minBtn" mnemonicParsing="false" styleClass="hit-btn">
+                           <graphic>
+                              <SVGPath content="M1 7L1 8L14 8L14 7Z" styleClass="shape" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="maxBtn" mnemonicParsing="false" styleClass="hit-btn">
+                           <graphic>
+                              <SVGPath content="M2.5 2 A 0.50005 0.50005 0 0 0 2 2.5L2 13.5 A 0.50005 0.50005 0 0 0 2.5 14L13.5 14 A 0.50005 0.50005 0 0 0 14 13.5L14 2.5 A 0.50005 0.50005 0 0 0 13.5 2L2.5 2 z M 3 3L13 3L13 13L3 13L3 3 z" styleClass="shape" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="closeBtn" mnemonicParsing="false">
+                           <styleClass>
+                              <String fx:value="hit-btn" />
+                              <String fx:value="hit-close" />
+                           </styleClass>
+                           <graphic>
+                              <SVGPath content="M3.726563 3.023438L3.023438 3.726563L7.292969 8L3.023438 12.269531L3.726563 12.980469L8 8.707031L12.269531 12.980469L12.980469 12.269531L8.707031 8L12.980469 3.726563L12.269531 3.023438L8 7.292969Z" styleClass="shape" />
+                           </graphic>
+                        </Button>
+                     </children>
+                  </HBox>
                </children>
-            </HBox>
-            <HBox alignment="CENTER_LEFT" prefHeight="50.0" spacing="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="0.0">
-               <children>
-                  <ImageView fx:id="icon" fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
-                     <image>
-                        <Image url="@../image/icon.png" />
-                     </image>
-                  </ImageView>
-                  <Label styleClass="title" text="鸣潮助手" />
-               </children>
+               <padding>
+                  <Insets left="10.0" right="10.0" />
+               </padding>
             </HBox>
             <HBox layoutY="50.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
                <children>

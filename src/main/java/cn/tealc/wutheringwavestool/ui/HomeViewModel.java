@@ -83,7 +83,6 @@ public class HomeViewModel implements ViewModel {
         userInfo = dao.getMain();
         if (userInfo != null) {
             Config.currentRoleId = userInfo.getRoleId();
-            getDailyData();
             updateRoleData();
         } else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
@@ -224,6 +223,8 @@ public class HomeViewModel implements ViewModel {
                 rolePaneVisible.set(true);
             } else {
                 rolePaneVisible.set(false);
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                        new MessageInfo(MessageType.WARNING, responseBody.getMsg(), false));
             }
         });
         Thread.startVirtualThread(userDailyDataTask);

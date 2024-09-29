@@ -46,6 +46,8 @@ public class GameTimeView implements FxmlView<GameTimeViewModel>, Initializable 
 
     @FXML
     private Label currentTotalTimeLabel;
+    @FXML
+    private Label currentUserName;
 
     @FXML
     private ImageView headImageView;
@@ -78,6 +80,7 @@ public class GameTimeView implements FxmlView<GameTimeViewModel>, Initializable 
         currentDayLabel.textProperty().bind(viewModel.currentDayTextProperty());
         currentTimeLabel.textProperty().bind(viewModel.currentTimeTextProperty());
         currentTotalTimeLabel.textProperty().bind(viewModel.currentTotalTimeTextProperty());
+        currentUserName.textProperty().bind(viewModel.currentUserNameProperty());
         //currentDayLabel.textProperty().bind(viewModel.currentDayTextProperty());
         currentProgress.progressProperty().bind(viewModel.currentProgressValueProperty());
         allTotalTimeLabel.textProperty().bind(viewModel.allTotalTimeTextProperty());

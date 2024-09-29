@@ -50,7 +50,10 @@ public class JdbcUtils {
                       token VARCHAR(255),
                       is_main BOOL DEFAULT false,
                       last_sign_time INTEGER,
-                      is_web BOOL DEFAULT false);
+                      is_web BOOL DEFAULT false,
+                      role_name VARCHAR,
+                      role_url VARCHAR,
+                      creat_time INTEGER);
                     """;
             String createSignHistory="""
                     CREATE TABLE IF NOT EXISTS sign_history(

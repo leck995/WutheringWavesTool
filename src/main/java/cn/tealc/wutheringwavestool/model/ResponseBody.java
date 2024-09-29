@@ -32,6 +32,9 @@ public class ResponseBody<T> {
         this.success = success;
     }
 
+
+
+
     public Integer getCode() {
         return code;
     }

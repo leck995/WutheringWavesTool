@@ -31,6 +31,9 @@ public class UserInfoDao {
         map.put("is_main","main");
         map.put("last_sign_time","lastSignTime");
         map.put("is_web","web");
+        map.put("role_name","roleName");
+        map.put("role_url","roleUrl");
+        map.put("creat_time","creatTime");
         BeanProcessor beanProcessor=new BeanProcessor(map);
         return new BasicRowProcessor(beanProcessor);
     }
@@ -77,12 +80,12 @@ public class UserInfoDao {
     }
 
     public int addUser(UserInfo userInfo){
-        String sql="INSERT INTO user_info (user_id,role_id,token,is_main,is_web) VALUES (?,?,?,?,?)";
+        String sql="INSERT INTO user_info (user_id,role_id,token,is_main,is_web,last_sign_time,role_name,role_url,creat_time) VALUES (?,?,?,?,?,?,?,?,?)";
         QueryRunner qr=new QueryRunner();
         try {
             ResultSetHandler<Integer> rsh = new ScalarHandler<Integer>();
             return qr.insert(con,sql,rsh,
-                    userInfo.getUserId(),userInfo.getRoleId(),userInfo.getToken(),userInfo.getMain(),userInfo.getWeb());
+                    userInfo.getUserId(),userInfo.getRoleId(),userInfo.getToken(),userInfo.getMain(),userInfo.getWeb(),userInfo.getLastSignTime(),userInfo.getRoleName(),userInfo.getRoleUrl(),userInfo.getCreatTime());
         } catch (SQLException e) {
             LOG.error(e.getMessage(),e);
             return 0;
@@ -90,10 +93,11 @@ public class UserInfoDao {
     }
 
     public int updateUser(UserInfo userInfo){
-        String sql="UPDATE user_info set user_id=?,role_id=?,token=?,is_main=?,is_web=? WHERE id=?";
+        String sql="UPDATE user_info set user_id=?,role_id=?,token=?,is_main=?,is_web=?,last_sign_time =? ,role_name=?,role_url=?,creat_time=? WHERE id=?";
         QueryRunner qr=new QueryRunner();
         try {
-            return qr.update(con,sql,userInfo.getUserId(),userInfo.getRoleId(),userInfo.getToken(),userInfo.getMain(),userInfo.getWeb(),userInfo.getId());
+            return qr.update(con,sql,userInfo.getUserId(),userInfo.getRoleId(),userInfo.getToken(),userInfo.getMain(),
+                    userInfo.getWeb(),userInfo.getLastSignTime(),userInfo.getRoleName(),userInfo.getRoleUrl(),userInfo.getCreatTime(),userInfo.getId());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

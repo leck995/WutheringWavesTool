@@ -80,6 +80,8 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
 
     @FXML
     private ToggleSwitch diyBgSwitch;
+    @FXML
+    private ToggleSwitch titlebarSwitch;
 
     @FXML
     private ToggleGroup gameSourceType;
@@ -117,6 +119,7 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
         appAuthor.setText(Config.appAuthor);
         appIconIv.setImage(new Image(FXResourcesLoader.load("image/icon.png"),100,100,true,true,true));
 
+        titlebarSwitch.selectedProperty().bindBidirectional(viewModel.changeTitlebarProperty());
 
 
     }

@@ -89,6 +89,9 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     private Region navBg;
     @FXML
     private ImageView icon;
+
+    @FXML
+    private HBox titlebar;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
@@ -469,5 +472,9 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
 
     public Button getCloseBtn() {
         return closeBtn;
+    }
+
+    public HBox getTitlebar() {
+        return titlebar;
     }
 }

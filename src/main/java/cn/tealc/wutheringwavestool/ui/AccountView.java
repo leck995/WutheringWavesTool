@@ -3,14 +3,20 @@ package cn.tealc.wutheringwavestool.ui;
 import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.wutheringwavestool.model.roleData.user.RoleDailyData;
+import cn.tealc.wutheringwavestool.model.roleData.user.RoleInfo;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.model.sign.UserInfo;
+import cn.tealc.wutheringwavestool.thread.api.UserDailyDataTask;
+import cn.tealc.wutheringwavestool.thread.api.UserInfoDataTask;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.MvvmFX;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -54,65 +60,8 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
 
     @FXML
     void addUser(ActionEvent event) {
-        Label userIdLabel = new Label("用户ID:");
-        TextField userIdTextField = new TextField();
-        userIdTextField.setPromptText("库街区的用户ID");
-        InputGroup inputGroup1 = new InputGroup(userIdLabel,userIdTextField);
-        inputGroup1.setAlignment(Pos.CENTER);
-        Label roleIdLabel = new Label("游戏ID:");
-
-        TextField roleIdTextField = new TextField();
-        roleIdTextField.setPromptText("鸣潮的玩家ID");
-        InputGroup inputGroup2 = new InputGroup(roleIdLabel,roleIdTextField);
-        inputGroup2.setAlignment(Pos.CENTER);
-
-        Label tokenLabel = new Label("Token: ");
-        TextField tokenTextField = new TextField();
-        tokenTextField.setPromptText("库街区的登录Token");
-        InputGroup inputGroup3 = new InputGroup(tokenLabel, tokenTextField);
-        inputGroup3.setAlignment(Pos.CENTER);
-
-        CheckBox mainCheckBox = new CheckBox("设为主账号");
-
-        VBox parentVBox = new VBox(10.0,inputGroup1,inputGroup2,inputGroup3,mainCheckBox);
-
-        parentVBox.setAlignment(Pos.CENTER);
-        Button saveBtn=new Button("保存");
-        saveBtn.getStyleClass().add(Styles.ACCENT);
-        Button cancelBtn=new Button("取消");
-        cancelBtn.setCancelButton(true);
-
-        Hyperlink guide=new Hyperlink("查看教程");
-        guide.setOnAction(event1 -> {
-            try {
-                Desktop.getDesktop().browse(URI.create("https://www.yuque.com/chashuisuipian/tc2ire/yh69bg99qcbdgic5"));
-            } catch (IOException e) {
-                LOG.info("跳转错误",e);
-            }
-        });
-        saveBtn.setOnAction(event1 -> {
-            String userId = userIdTextField.getText();
-            String roleId = roleIdTextField.getText();
-            String token = tokenTextField.getText();
-            boolean selected = mainCheckBox.isSelected();
-            if (!userId.isEmpty() && !roleId.isEmpty() && !token.isEmpty()) {
-                boolean status = viewModel.addUser(new UserInfo(userId,roleId,token,selected,false));
-                if (status) {
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"成功添加用户"));
-                }else {
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"重复添加，请先删除原有用户再添加"));
-                }
-            }
-            cancelBtn.fireEvent(event1); //这里是为了触发cancelBtn的事件，从而关闭窗口，属实另辟途径（自夸）
-        });
-        Label title = new Label("添加签到用户");
-        title.getStyleClass().add(Styles.TITLE_2);
-        JFXDialogLayout dialogLayout=new JFXDialogLayout();
-        dialogLayout.setHeading(title);
-        dialogLayout.setBody(parentVBox);
-        dialogLayout.setActions(guide,saveBtn,cancelBtn);
-        dialogLayout.setPrefSize(400,250);
-        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
+        AddAccountView addAccountView = new AddAccountView();
+        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,addAccountView);
     }
 
     class AccountCell extends ListCell<UserInfo> {
@@ -203,7 +152,7 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
             Label roleIdLabel = new Label("游戏ID:");
 
             TextField roleIdTextField = new TextField(item.getRoleId());
-            roleIdTextField.setPromptText("鸣潮的玩家ID");
+            roleIdTextField.setPromptText("鸣潮的玩家ID(特征码)");
             InputGroup inputGroup2 = new InputGroup(roleIdLabel,roleIdTextField);
             inputGroup2.setAlignment(Pos.CENTER);
 
@@ -231,13 +180,10 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
                 String token = tokenTextField.getText();
                 boolean selected = mainCheckBox.isSelected();
                 if (!userId.isEmpty() && !roleId.isEmpty() && !token.isEmpty()) {
-                    boolean b = viewModel.updateUser(getIndex(), new UserInfo(userId, roleId, token, selected, false));
-                    if (b){
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"修改成功"));
-                        cancelBtn.fireEvent(event1); //这里是为了触发cancelBtn的事件，从而关闭窗口
-                    }else {
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"修改失败"));
-                    }
+                    UserInfo userInfo = new UserInfo(userId, roleId, token, selected, true);
+
+                    check(userInfo,saveBtn,cancelBtn);
+
                 }
             });
             Label title = new Label("修改签到用户");
@@ -250,6 +196,119 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
             MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
         }
 
+
+        private void check(UserInfo userInfo,Button saveBtn,Button cancelBtn){
+            UserInfoDataTask task =new UserInfoDataTask(userInfo);
+            task.setOnSucceeded(event1 -> {
+                ResponseBody<RoleInfo> value = task.getValue();
+                if (value.getCode() == 200){
+                    userInfo.setRoleName(value.getData().getName());
+                    userInfo.setCreatTime(value.getData().getCreatTime());
+
+                    boolean b = viewModel.updateUser(getIndex(), userInfo);
+                    if (b){
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"成功修改用户:"+value.getData().getName()));
+
+                        cancelBtn.fireEvent(new ActionEvent()); //这里是为了触发cancelBtn的事件，从而关闭窗口
+                    }else {
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"修改失败,可能重复添加"));
+                    }
+                }else {
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"获取用户失败，输入信息有误，无法添加，原因:"+value.getMsg()));
+                }
+            });
+            Thread.startVirtualThread(task);
+        }
+
     }
+
+    class AddAccountView extends JFXDialogLayout{
+        private final Button saveBtn;
+        private final Button cancelBtn;
+
+        public AddAccountView() {
+            Label userIdLabel = new Label("用户ID:");
+            TextField userIdTextField = new TextField();
+            userIdTextField.setPromptText("库街区的用户ID");
+            InputGroup inputGroup1 = new InputGroup(userIdLabel,userIdTextField);
+            inputGroup1.setAlignment(Pos.CENTER);
+            Label roleIdLabel = new Label("游戏ID:");
+
+            TextField roleIdTextField = new TextField();
+            roleIdTextField.setPromptText("鸣潮的玩家ID(特征码)");
+            InputGroup inputGroup2 = new InputGroup(roleIdLabel,roleIdTextField);
+            inputGroup2.setAlignment(Pos.CENTER);
+
+            Label tokenLabel = new Label("Token: ");
+            TextField tokenTextField = new TextField();
+            tokenTextField.setPromptText("库街区的登录Token");
+            InputGroup inputGroup3 = new InputGroup(tokenLabel, tokenTextField);
+            inputGroup3.setAlignment(Pos.CENTER);
+
+            CheckBox mainCheckBox = new CheckBox("设为主账号");
+            VBox parentVBox = new VBox(10.0,inputGroup1,inputGroup2,inputGroup3,mainCheckBox);
+
+            parentVBox.setAlignment(Pos.CENTER);
+            saveBtn= new Button("保存");
+
+            saveBtn.getStyleClass().add(Styles.ACCENT);
+            cancelBtn = new Button("取消");
+            cancelBtn.setCancelButton(true);
+
+            Hyperlink guide=new Hyperlink("查看教程");
+            guide.setOnAction(event1 -> {
+                try {
+                    Desktop.getDesktop().browse(URI.create("https://www.yuque.com/chashuisuipian/tc2ire/yh69bg99qcbdgic5"));
+                } catch (IOException e) {
+                    LOG.info("跳转错误",e);
+                }
+            });
+            saveBtn.setOnAction(event1 -> {
+                String userId = userIdTextField.getText();
+                String roleId = roleIdTextField.getText();
+                String token = tokenTextField.getText();
+                boolean selected = mainCheckBox.isSelected();
+                if (!userId.isEmpty() && !roleId.isEmpty() && !token.isEmpty()) {
+                    UserInfo userInfo = new UserInfo(userId, roleId, token, selected, true);
+                    check(userInfo);
+                }
+
+            });
+            Label title = new Label("添加签到用户");
+            title.getStyleClass().add(Styles.TITLE_2);
+            setHeading(title);
+            setBody(parentVBox);
+            setActions(guide,saveBtn, cancelBtn);
+            setPrefSize(400,250);
+        }
+
+        private void check(UserInfo userInfo){
+            UserInfoDataTask task =new UserInfoDataTask(userInfo);
+            task.setOnSucceeded(event1 -> {
+                ResponseBody<RoleInfo> value = task.getValue();
+                if (value.getCode() == 200){
+                    userInfo.setRoleName(value.getData().getName());
+                    userInfo.setCreatTime(value.getData().getCreatTime());
+
+                    boolean status = viewModel.addUser(userInfo);
+                    if (status) {
+                        cancelBtn.fireEvent(new ActionEvent());//这里是为了触发cancelBtn的事件，从而关闭窗口，属实另辟途径（自夸）
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"成功添加用户:"+value.getData().getName()));
+                    }else {
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"重复添加，请先删除原有用户再添加"));
+                    }
+                }else {
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"获取用户失败，输入信息有误，无法添加，原因:"+value.getMsg()));
+                }
+            });
+            Thread.startVirtualThread(task);
+        }
+
+
+    }
+
+
+
+
 
 }

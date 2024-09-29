@@ -48,6 +48,9 @@
                            </children>
                         </StackPane>
                         <Label styleClass="title-3" text="基础设置" />
+                        <Label styleClass="title-4" text="新标题栏(出现多个标题栏时启用)" />
+                        <ToggleSwitch fx:id="titlebarSwitch" labelPosition="RIGHT" layoutX="10.0" layoutY="304.0" text="开启" />
+                        <Label layoutX="10.0" layoutY="186.0" styleClass="tip" text="需重启，窗口调整在右下角" />
                         <Label styleClass="title-4" text="启动页" />
                         <CheckBox fx:id="startWithAnalysisView" mnemonicParsing="false" text="抽卡分析" />
                         <Label layoutX="10.0" layoutY="346.0" styleClass="title-4" text="自定义背景(16:9最佳)" />

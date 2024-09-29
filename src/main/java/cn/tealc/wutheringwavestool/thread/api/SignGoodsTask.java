@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.thread.api;
 
+import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.sign.SignGood;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.util.HttpRequestUtil;
@@ -23,7 +24,7 @@ import java.util.List;
  * @author: Leck
  * @create: 2024-07-06 14:24
  */
-public class SignGoodsTask extends Task<Pair<Boolean,List<SignGood>>> {
+public class SignGoodsTask extends Task<ResponseBody<Pair<Boolean,List<SignGood>>>> {
     private static final Logger LOG= LoggerFactory.getLogger(SignGoodsTask.class);
     private SignUserInfo signUserInfo;
 
@@ -32,37 +33,48 @@ public class SignGoodsTask extends Task<Pair<Boolean,List<SignGood>>> {
     }
 
     @Override
-    protected Pair<Boolean,List<SignGood>> call() throws Exception {
-        Pair<Boolean,List<SignGood>> sign = sign(signUserInfo.getRoleId(), signUserInfo.getUserId(), signUserInfo.getToken());
+    protected ResponseBody<Pair<Boolean,List<SignGood>>> call() throws Exception {
+        ResponseBody<Pair<Boolean,List<SignGood>>> sign = sign(signUserInfo.getRoleId(), signUserInfo.getUserId(), signUserInfo.getToken());
         return sign;
-
     }
 
-    private Pair<Boolean,List<SignGood>> sign(String roleId,String userId,String token){
+    private ResponseBody<Pair<Boolean,List<SignGood>>>sign(String roleId,String userId,String token){
         String url=String.format("%s?gameId=%s&serverId=%s&roleId=%s&userId=%s"
                 ,ApiConfig.SIGNIN_INIT_URL,ApiConfig.PARAM_GAME_ID,ApiConfig.PARAM_SERVER_ID,roleId,userId);
         HttpClient client = HttpClient.newHttpClient();
+        ResponseBody<Pair<Boolean,List<SignGood>>> body =new ResponseBody<>();
         try {
             HttpRequest request = HttpRequestUtil.getRequest(url,token);
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 ObjectMapper mapper=new ObjectMapper();
                 JsonNode tree = mapper.readTree(response.body());
-                JsonNode jsonNode = tree.get("data").get("signInGoodsConfigs");
-                List<SignGood> signGoods = mapper.readValue(jsonNode.toString(), new TypeReference<List<SignGood>>() {
-                });
-                int num = tree.get("data").get("sigInNum").asInt();
-                for (int i = 0; i < signGoods.size(); i++) {
-                    signGoods.get(i).setSign(i < num);
+                int code = tree.get("code").asInt();
+                if (code == 200) {
+                    JsonNode data = tree.get("data");
+                    JsonNode jsonNode = data.get("signInGoodsConfigs");
+                    List<SignGood> signGoods = mapper.readValue(jsonNode.toString(), new TypeReference<List<SignGood>>() {
+                    });
+                    int num = data.get("sigInNum").asInt();
+                    for (int i = 0; i < signGoods.size(); i++) {
+                        signGoods.get(i).setSign(i < num);
+                    }
+                    Boolean isSign = data.get("isSigIn").asBoolean();
+                    body.setData(new Pair<>(isSign, signGoods));
                 }
-                Boolean isSign = tree.get("data").get("isSigIn").asBoolean();
-                return new Pair<>(isSign, signGoods);
+                body.setCode(code);
+                body.setMsg(tree.get("msg").asText());
+                return body;
             }else {
-                return null;
+                body.setCode(1);
+                body.setMsg("连接失败，错误状态码:" + response.statusCode());
+                return body;
             }
         } catch (IOException | InterruptedException e) {
             LOG.error("错误",e);
-            return null;
+            body.setCode(1);
+            body.setMsg(e.getMessage());
+            return body;
         }
     }
 }

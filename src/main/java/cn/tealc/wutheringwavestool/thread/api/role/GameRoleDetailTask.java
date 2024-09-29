@@ -53,26 +53,24 @@ public class GameRoleDetailTask extends Task<ResponseBody<RoleDetail>> {
                 ResponseBodyForApi responseBodyForApi = mapper.readValue(response.body(), new TypeReference<ResponseBodyForApi>() {
                 });
 
-                ResponseBody<RoleDetail> responseBody = new ResponseBody<>(responseBodyForApi.getCode(), responseBodyForApi.getMsg(),responseBodyForApi.getSuccess());
-                String row = ApiUtil.decrypt(responseBodyForApi.getData());
-                RoleDetail roleDetail = mapper.readValue(row, RoleDetail.class);
-                responseBody.setData(roleDetail);
-                return responseBody;
+                if (responseBodyForApi.getCode() == 200){
+                    ResponseBody<RoleDetail> responseBody = new ResponseBody<>(responseBodyForApi.getCode(), responseBodyForApi.getMsg(),responseBodyForApi.getSuccess());
+                    String row = ApiUtil.decrypt(responseBodyForApi.getData());
+                    RoleDetail roleDetail = mapper.readValue(row, RoleDetail.class);
+                    responseBody.setData(roleDetail);
+                    return responseBody;
+                }else {
+                    return new ResponseBody<>(1,responseBodyForApi.getMsg(),false);
+                }
             }else {
                 ResponseBody<RoleDetail> responseBody = new ResponseBody<>();
                 LOG.error("网络请求失败，错误代码：{}",response.statusCode());
                 responseBody.setCode(response.statusCode());
                 responseBody.setSuccess(false);
-                responseBody.setMsg("连接失败，无法获取数据");
+                responseBody.setMsg("连接失败，响应状态码:" + response.statusCode());
                 return responseBody;
             }
-        } catch (IOException | InterruptedException e) {
-            LOG.error("错误：",e);
-            ResponseBody<RoleDetail> objectResponseBody = new ResponseBody<>();
-            objectResponseBody.setSuccess(false);
-            objectResponseBody.setCode(0);
-            return objectResponseBody;
-        } catch (ApiDecryptException e) {
+        } catch (IOException | InterruptedException | ApiDecryptException e) {
             LOG.error("错误：",e);
             return new ResponseBody<>(1,e.getMessage());
         }

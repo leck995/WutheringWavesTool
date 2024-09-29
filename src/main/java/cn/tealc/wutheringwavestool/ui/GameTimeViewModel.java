@@ -36,7 +36,9 @@ public class GameTimeViewModel implements ViewModel {
     private final SimpleStringProperty currentTotalTimeText=new SimpleStringProperty();
     private final SimpleStringProperty currentDayText=new SimpleStringProperty();
     private final SimpleStringProperty currentTimeText=new SimpleStringProperty();
+    private final SimpleStringProperty currentUserName=new SimpleStringProperty();
     private final SimpleDoubleProperty currentProgressValue=new SimpleDoubleProperty();
+
     private final SimpleDoubleProperty totalProgressValue=new SimpleDoubleProperty();
 
 
@@ -54,8 +56,8 @@ public class GameTimeViewModel implements ViewModel {
             }
             fresh();
         }else {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING,"当前不存在主用户信息，无法获取，请在账号界面添加用户信息"),false);
+        /*    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                    new MessageInfo(MessageType.WARNING,"当前不存在主用户信息，无法获取，请在账号界面添加用户信息"),false);*/
         }
 
         userIndex.addListener((observableValue, number, t1) -> {
@@ -78,8 +80,8 @@ public class GameTimeViewModel implements ViewModel {
         double totalTime = sunTime(allTimeMap);
         allTotalTimeText.set(String.format("%.2f", totalTime));
 
-
-        List<GameTime> timeListByRoleId = gameTimeDao.getTimeListByRoleId(userInfoList.get(userIndex.get()).getRoleId());
+        UserInfo userInfo = userInfoList.get(userIndex.get());
+        List<GameTime> timeListByRoleId = gameTimeDao.getTimeListByRoleId(userInfo.getRoleId());
         Map<String, List<GameTime>> mainMap = getMap(timeListByRoleId);
 
         currentDayText.set(String.format("记录天数 %d 天", mainMap.keySet().size()));
@@ -90,6 +92,8 @@ public class GameTimeViewModel implements ViewModel {
         //统计当前账号全部时长
         double currentTotalTime = sunTime(mainMap);
         currentTotalTimeText.set(String.format("%.2f", currentTotalTime));
+
+        currentUserName.set(userInfo.getRoleName());
 
         totalProgressValue.set(currentTotalTime/totalTime);
 
@@ -262,5 +266,13 @@ public class GameTimeViewModel implements ViewModel {
 
     public ObservableList<UserInfo> getUserInfoList() {
         return userInfoList;
+    }
+
+    public String getCurrentUserName() {
+        return currentUserName.get();
+    }
+
+    public SimpleStringProperty currentUserNameProperty() {
+        return currentUserName;
     }
 }

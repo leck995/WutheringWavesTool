@@ -43,7 +43,7 @@ public class OwnRoleViewModel implements ViewModel {
             GameRoleDataTask task=new GameRoleDataTask(userInfo);
             task.setOnSucceeded(workerStateEvent -> {
                 ResponseBody<List<Role>> responseBody = task.getValue();
-                if (responseBody.getSuccess()){
+                if (responseBody.getCode() == 200){
                     List<Role> list=responseBody.getData();
                     roleList.setAll(list);
                 }else {

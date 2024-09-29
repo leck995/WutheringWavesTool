@@ -230,7 +230,7 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
                 }
             }
 
-            count.setText(String.valueOf(ssrData.getCount()));
+            count.setText(String.format("%02d",ssrData.getCount()));
             count.getStyleClass().add("count");
 
         }
@@ -309,7 +309,7 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
 
                 name.setText(ssrData.getName());
                 date.setText(ssrData.getDate());
-                count.setText(String.valueOf(ssrData.getCount()));
+                count.setText(String.format("%02d",ssrData.getCount()));
                 progressBar.setProgress(ssrData.getCount()/80.0);
 
                 if (ssrData.isEvent()){

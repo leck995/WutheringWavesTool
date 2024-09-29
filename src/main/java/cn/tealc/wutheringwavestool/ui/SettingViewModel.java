@@ -28,6 +28,7 @@ import java.nio.file.Files;
  */
 public class SettingViewModel implements ViewModel {
     private static final Logger LOG= LoggerFactory.getLogger(SettingViewModel.class);
+    private SimpleBooleanProperty changeTitlebar = new SimpleBooleanProperty();
     private SimpleStringProperty gameDir = new SimpleStringProperty();
     private SimpleBooleanProperty startWithAnalysis = new SimpleBooleanProperty();
     private SimpleBooleanProperty exitWhenGameOver = new SimpleBooleanProperty();
@@ -38,6 +39,7 @@ public class SettingViewModel implements ViewModel {
     private SimpleObjectProperty<SourceType> gameRootDirSource=new SimpleObjectProperty<>();
 
     public SettingViewModel() {
+        changeTitlebar.bindBidirectional(Config.setting.changeTitlebarProperty());
         gameDir.bindBidirectional(Config.setting.gameRootDirProperty());
         startWithAnalysis.bindBidirectional(Config.setting.firstViewWithPoolAnalysisProperty());
         exitWhenGameOver.bindBidirectional(Config.setting.exitWhenGameOverProperty());
@@ -163,5 +165,13 @@ public class SettingViewModel implements ViewModel {
 
     public void setGameRootDirSource(SourceType gameRootDirSource) {
         this.gameRootDirSource.set(gameRootDirSource);
+    }
+
+    public boolean isChangeTitlebar() {
+        return changeTitlebar.get();
+    }
+
+    public SimpleBooleanProperty changeTitlebarProperty() {
+        return changeTitlebar;
     }
 }

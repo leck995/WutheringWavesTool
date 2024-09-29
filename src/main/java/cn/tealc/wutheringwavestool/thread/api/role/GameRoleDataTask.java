@@ -59,7 +59,7 @@ public class GameRoleDataTask extends Task<ResponseBody<List<Role>>> {
                     JsonNode jsonNode = dataTree.get("roleList");
                     List<Role> roleList = mapper.readValue(jsonNode.toString(), new TypeReference<List<Role>>() {
                     });
-
+                    responseBody.setSuccess(tree.get("success").asBoolean());
                     roleList.sort((o1, o2) -> Integer.compare(o2.getLevel(),o1.getLevel()));
                     responseBody.setData(roleList);
                 }else {
@@ -67,19 +67,16 @@ public class GameRoleDataTask extends Task<ResponseBody<List<Role>>> {
                     JsonNode node = tree.get("msg");
                     responseBody.setMsg(node.asText());
                 }
-                responseBody.setSuccess(tree.get("success").asBoolean());
+
             }else {
                 LOG.error("网络请求失败，错误代码：{}",response.statusCode());
                 responseBody.setCode(response.statusCode());
                 responseBody.setSuccess(false);
-                responseBody.setMsg("连接失败，无法获取数据");
+                responseBody.setMsg("连接失败，响应状态码:" +response.statusCode());
             }
             return responseBody;
 
-        } catch (IOException | InterruptedException e) {
-            LOG.error("错误",e);
-            return new ResponseBody<>(1,"角色数据获取错误");
-        } catch (ApiDecryptException e) {
+        } catch (IOException | InterruptedException | ApiDecryptException e) {
             LOG.error("错误",e);
             return new ResponseBody<>(1,e.getMessage());
         }

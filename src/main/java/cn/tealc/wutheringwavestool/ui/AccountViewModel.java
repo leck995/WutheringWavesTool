@@ -2,6 +2,7 @@ package cn.tealc.wutheringwavestool.ui;
 
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.sign.UserInfo;
+import cn.tealc.wutheringwavestool.thread.api.UserInfoDataTask;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -95,6 +96,13 @@ public class AccountViewModel implements ViewModel {
         }
         return false;
     }
+
+    public void getUserInfo(UserInfo userInfo){
+        UserInfoDataTask task = new UserInfoDataTask(userInfo);
+        task.setOnSucceeded(event -> {});
+    }
+
+
 
     public ObservableList<UserInfo> getAccountList() {
         return accountList;

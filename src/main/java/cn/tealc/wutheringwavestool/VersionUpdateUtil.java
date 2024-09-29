@@ -26,6 +26,7 @@ public class VersionUpdateUtil {
     public static void update(){
         update01();
         update02();
+        update03();
     }
 
 
@@ -74,8 +75,6 @@ public class VersionUpdateUtil {
         if (file3.exists()){
             file3.delete();
         }
-
-
         Connection connection = JdbcUtils.getConnection();
         try {
             Statement st = connection.createStatement();
@@ -89,7 +88,40 @@ public class VersionUpdateUtil {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /*1.4.2版本*/
+    private static void update03(){
+        Connection connection = JdbcUtils.getConnection();
+        try {
+            Statement st = connection.createStatement();
+
+            String checkSql="select count(*) from sqlite_master where name='user_info' and sql like '%role_name%'";
+            ResultSet resultSet = st.executeQuery(checkSql);
+            int anInt = resultSet.getInt(1);
+            if (anInt == 0){
+                st.execute("ALTER table user_info ADD role_name VARCHAR");
+            }
+
+            String checkSql2="select count(*) from sqlite_master where name='user_info' and sql like '%role_url%'";
+            ResultSet resultSet2 = st.executeQuery(checkSql2);
+            int anInt2 = resultSet2.getInt(1);
+            if (anInt2 == 0){
+                st.execute("ALTER TABLE user_info ADD role_url VARCHAR");
+            }
+
+            String checkSql3="select count(*) from sqlite_master where name='user_info' and sql like '%creat_time%'";
+            ResultSet resultSet3 = st.executeQuery(checkSql3);
+            int anInt3 = resultSet3.getInt(1);
+            if (anInt3 == 0){
+                st.execute("ALTER TABLE user_info ADD creat_time INTEGER");
+            }
+            resultSet.close();
 
 
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

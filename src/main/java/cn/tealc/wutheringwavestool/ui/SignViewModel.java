@@ -3,6 +3,7 @@ package cn.tealc.wutheringwavestool.ui;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.SignHistoryDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.sign.SignGood;
@@ -17,6 +18,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.util.Pair;
 
 import java.util.*;
 
@@ -97,18 +99,18 @@ public class SignViewModel implements ViewModel {
         if (userInfo != null){
             SignGoodsTask task=new SignGoodsTask(userInfo);
             task.setOnSucceeded(workerStateEvent -> {
-                if (task.getValue() != null){
-                    goodsList.setAll(task.getValue().getValue());
-                    isSign.set(task.getValue().getKey());
+                ResponseBody<Pair<Boolean, List<SignGood>>> value = task.getValue();
+                if (value.getCode() == 200){
+                    Pair<Boolean, List<SignGood>> data = value.getData();
+                    goodsList.setAll(data.getValue());
+                    isSign.set(data.getKey());
                 }else {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING,"获取签到信息出现错误"),false);
+                            new MessageInfo(MessageType.WARNING, value.getMsg()),false);
                 }
-
             });
             Thread.startVirtualThread(task);
         }
-
     }
 
 

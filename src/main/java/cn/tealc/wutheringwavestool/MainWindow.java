@@ -55,7 +55,7 @@ public final class MainWindow extends AbstractNfxUndecoratedWindow{
     public MainWindow() throws UnsupportedEncodingException {
         super();
         window=this;
-
+        Application.setUserAgentStylesheet(FXResourcesLoader.load("css/light.css"));
         ViewTuple<MainView, MainViewModel> viewTuple = FluentViewLoader.fxmlView(MainView.class).load();
         mainView = viewTuple.getCodeBehind();
         closeBtn = mainView.getCloseBtn();
@@ -85,10 +85,11 @@ public final class MainWindow extends AbstractNfxUndecoratedWindow{
         setHeight(Config.setting.getAppHeight());
         setMinHeight(720.0);
         setMinWidth(1280.0);
-        initStyle(StageStyle.TRANSPARENT);
+        //initStyle(StageStyle.UNIFIED);
         Config.setting.appWidthProperty().bind(scene.widthProperty());
         Config.setting.appHeightProperty().bind(scene.heightProperty());
         initFont();
+
     }
 
 

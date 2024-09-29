@@ -7,6 +7,8 @@ import cn.tealc.wutheringwavestool.util.HttpRequestUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URI;
@@ -22,6 +24,7 @@ import java.time.Duration;
  * @create: 2024-07-06 14:24
  */
 public class UserDailyDataTask extends Task<ResponseBody<RoleDailyData>> {
+    private static final Logger LOG= LoggerFactory.getLogger(UserDailyDataTask.class);
     private SignUserInfo signUserInfo;
 
     public UserDailyDataTask(SignUserInfo signUserInfo) {
@@ -29,12 +32,12 @@ public class UserDailyDataTask extends Task<ResponseBody<RoleDailyData>> {
     }
 
     @Override
-    protected ResponseBody call() throws Exception {
-        ResponseBody sign = sign(signUserInfo.getRoleId(), signUserInfo.getToken());
+    protected ResponseBody<RoleDailyData> call() throws Exception {
+        ResponseBody<RoleDailyData> sign = sign(signUserInfo.getRoleId(), signUserInfo.getToken());
         return sign;
     }
 
-    private ResponseBody sign(String roleId,String token){
+    private ResponseBody<RoleDailyData> sign(String roleId,String token){
         String url=String.format("%s?type=2&roleId=%s&sizeType=1&gameId=%s"
                 ,ApiConfig.DAILY_DATA_URL,roleId,ApiConfig.PARAM_GAME_ID);
         HttpClient client = HttpClient.newHttpClient();
@@ -45,19 +48,22 @@ public class UserDailyDataTask extends Task<ResponseBody<RoleDailyData>> {
                 ObjectMapper mapper=new ObjectMapper();
 
                 JsonNode tree = mapper.readTree(response.body());
-                RoleDailyData data = mapper.readValue(tree.get("data").toString(), RoleDailyData.class);
-
+                int code = tree.get("code").asInt();
                 ResponseBody<RoleDailyData> responseBody = new ResponseBody<>();
-                responseBody.setData(data);
-                responseBody.setCode(tree.get("code").asInt());
+                if (code == 200) {
+                    RoleDailyData data = mapper.readValue(tree.get("data").toString(), RoleDailyData.class);
+                    responseBody.setData(data);
+                    responseBody.setSuccess(tree.get("success").asBoolean());
+                }
+                responseBody.setCode(code);
                 responseBody.setMsg(tree.get("msg").asText());
-                responseBody.setSuccess(tree.get("success").asBoolean());
                 return responseBody;
             }else {
-                return null;
+                return new ResponseBody<>(1,"网络连接失败,检查网络");
             }
         } catch (IOException | InterruptedException e) {
-            throw new RuntimeException(e);
+            LOG.error("UserDailyDataTask错误",e);
+            return new ResponseBody<>(1,e.getMessage());
         }
     }
 }

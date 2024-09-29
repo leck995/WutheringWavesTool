@@ -7,7 +7,6 @@
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
-<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -29,14 +28,10 @@
                   <AnchorPane prefHeight="150.0" prefWidth="300.0" styleClass="item">
                      <children>
                         <Label styleClass="header" text="当前账号" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                        <Label styleClass="header" text="伊人" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Label fx:id="currentUserName" styleClass="header" text="伊人" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                         <HBox spacing="10.0" styleClass="content" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
                            <children>
-                              <ImageView fx:id="headImageView" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
-                                 <image>
-                                    <Image url="@../image/icon.png" />
-                                 </image>
-                              </ImageView>
+                              <ImageView fx:id="headImageView" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" />
                               <VBox alignment="CENTER_LEFT" spacing="10.0">
                                  <children>
                                     <HBox>
