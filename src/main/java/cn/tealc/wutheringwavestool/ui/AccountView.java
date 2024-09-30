@@ -11,6 +11,7 @@ import cn.tealc.wutheringwavestool.model.roleData.user.RoleInfo;
 import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.model.sign.UserInfo;
 import cn.tealc.wutheringwavestool.thread.api.UserDailyDataTask;
+import cn.tealc.wutheringwavestool.thread.api.UserDataRefreshTask;
 import cn.tealc.wutheringwavestool.thread.api.UserInfoDataTask;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
@@ -198,26 +199,32 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
 
 
         private void check(UserInfo userInfo,Button saveBtn,Button cancelBtn){
-            UserInfoDataTask task =new UserInfoDataTask(userInfo);
-            task.setOnSucceeded(event1 -> {
-                ResponseBody<RoleInfo> value = task.getValue();
-                if (value.getCode() == 200){
-                    userInfo.setRoleName(value.getData().getName());
-                    userInfo.setCreatTime(value.getData().getCreatTime());
 
-                    boolean b = viewModel.updateUser(getIndex(), userInfo);
-                    if (b){
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"成功修改用户:"+value.getData().getName()));
+            UserDataRefreshTask refreshTask = new UserDataRefreshTask(userInfo);
 
-                        cancelBtn.fireEvent(new ActionEvent()); //这里是为了触发cancelBtn的事件，从而关闭窗口
+            refreshTask.setOnSucceeded(workerStateEvent -> {
+                UserInfoDataTask task =new UserInfoDataTask(userInfo);
+                task.setOnSucceeded(event1 -> {
+                    ResponseBody<RoleInfo> value = task.getValue();
+                    if (value.getCode() == 200){
+                        userInfo.setRoleName(value.getData().getName());
+                        userInfo.setCreatTime(value.getData().getCreatTime());
+
+                        boolean b = viewModel.updateUser(getIndex(), userInfo);
+                        if (b){
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"成功修改用户:"+value.getData().getName()));
+
+                            cancelBtn.fireEvent(new ActionEvent()); //这里是为了触发cancelBtn的事件，从而关闭窗口
+                        }else {
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"修改失败,可能重复添加"));
+                        }
                     }else {
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"修改失败,可能重复添加"));
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"获取用户失败，输入信息有误，无法添加，原因:"+value.getMsg()));
                     }
-                }else {
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"获取用户失败，输入信息有误，无法添加，原因:"+value.getMsg()));
-                }
+                });
+                Thread.startVirtualThread(task);
             });
-            Thread.startVirtualThread(task);
+            Thread.startVirtualThread(refreshTask);
         }
 
     }
@@ -283,25 +290,29 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
         }
 
         private void check(UserInfo userInfo){
-            UserInfoDataTask task =new UserInfoDataTask(userInfo);
-            task.setOnSucceeded(event1 -> {
-                ResponseBody<RoleInfo> value = task.getValue();
-                if (value.getCode() == 200){
-                    userInfo.setRoleName(value.getData().getName());
-                    userInfo.setCreatTime(value.getData().getCreatTime());
-
-                    boolean status = viewModel.addUser(userInfo);
-                    if (status) {
-                        cancelBtn.fireEvent(new ActionEvent());//这里是为了触发cancelBtn的事件，从而关闭窗口，属实另辟途径（自夸）
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"成功添加用户:"+value.getData().getName()));
+            UserDataRefreshTask refreshTask = new UserDataRefreshTask(userInfo);
+            refreshTask.setOnSucceeded(workerStateEvent -> {
+                UserInfoDataTask task =new UserInfoDataTask(userInfo);
+                task.setOnSucceeded(event1 -> {
+                    ResponseBody<RoleInfo> value = task.getValue();
+                    if (value.getCode() == 200){
+                        userInfo.setRoleName(value.getData().getName());
+                        userInfo.setCreatTime(value.getData().getCreatTime());
+                        boolean status = viewModel.addUser(userInfo);
+                        if (status) {
+                            cancelBtn.fireEvent(new ActionEvent());//这里是为了触发cancelBtn的事件，从而关闭窗口，属实另辟途径（自夸）
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"成功添加用户:"+value.getData().getName()));
+                        }else {
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"重复添加，请先删除原有用户再添加"));
+                        }
                     }else {
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"重复添加，请先删除原有用户再添加"));
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"获取用户失败，输入信息有误，无法添加，原因:"+value.getMsg()));
                     }
-                }else {
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"获取用户失败，输入信息有误，无法添加，原因:"+value.getMsg()));
-                }
+                });
+                Thread.startVirtualThread(task);
             });
-            Thread.startVirtualThread(task);
+            Thread.startVirtualThread(refreshTask);
+
         }
 
 

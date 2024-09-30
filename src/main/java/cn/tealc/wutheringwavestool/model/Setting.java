@@ -9,7 +9,7 @@ import javafx.beans.property.*;
  * @create: 2024-07-03 00:38
  */
 public class Setting {
-    private SimpleBooleanProperty changeTitlebar=new SimpleBooleanProperty(true);
+    private SimpleBooleanProperty changeTitlebar=new SimpleBooleanProperty(false);
     private SimpleDoubleProperty appWidth=new SimpleDoubleProperty(1250.0);
     private SimpleDoubleProperty appHeight=new SimpleDoubleProperty(760.0);
 

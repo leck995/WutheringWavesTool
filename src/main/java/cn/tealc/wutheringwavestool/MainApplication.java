@@ -125,6 +125,7 @@ public class MainApplication extends Application {
         } catch (AWTException e) {
             throw new RuntimeException(e);
         }
+        //newFxTrayIcon.displayMessage("Hello, World", "notification demo", TrayIcon.MessageType.INFO);
     }
 
 }

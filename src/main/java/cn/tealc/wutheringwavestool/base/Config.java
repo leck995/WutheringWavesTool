@@ -13,7 +13,7 @@ import java.io.IOException;
  * @create: 2024-07-03 00:37
  */
 public class Config {
-    public static final String version="1.1.5";
+    public static final String version="1.1.6";
     public static final String appTitle="鸣潮助手";
     public static final String appAuthor="Leck";
     public static final String apiDecryptKey = "XSNLFgNCth8j8oJI3cNIdw==";

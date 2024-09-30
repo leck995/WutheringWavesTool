@@ -85,10 +85,15 @@ public final class MainWindow extends AbstractNfxUndecoratedWindow{
         setHeight(Config.setting.getAppHeight());
         setMinHeight(720.0);
         setMinWidth(1280.0);
-        //initStyle(StageStyle.UNIFIED);
+        //initStyle(StageStyle.TRANSPARENT);
         Config.setting.appWidthProperty().bind(scene.widthProperty());
         Config.setting.appHeightProperty().bind(scene.heightProperty());
         initFont();
+
+        String s = """
+                jpackage --type app-image -n gateway-converter -m "cn.tealc.wutheringwavestool/cn.tealc.wutheringwavestool.MainApplication" --icon "D:\\code\\gateway-converter\\src\\main\\r
+                esources\\logo.ico" --runtime-image ".\\target\\app" --dest ".\\target\\build-package"
+                """;
 
     }
 
