@@ -1,6 +1,22 @@
 .setting{
-
+    -color-bg-default-60: #ffffff60;
+    -color-bg-default-40: #ffffff40;
+    -color-bg-default-30: #ffffff30;
 }
+
+.setting .scroll-bar{
+    -fx-background-color: transparent;
+    -fx-opacity: 1;
+}
+.setting .scroll-bar:vertical .thumb{
+    -fx-background-color: transparent;
+    -fx-background-insets: 1;
+}
+.setting:hover .scroll-bar:vertical .thumb{
+    -fx-background-color: -color-bg-default-60;
+}
+
+
 .setting .tip{
     -fx-font-size: 12;
     -fx-text-fill: -color-font-muted;
@@ -11,40 +27,39 @@
 }
 .setting .left .radio-button{
     -fx-background-color: transparent;
-
 }
 
 
 
-.setting .left > .title-3{
+.setting .left .title-3{
     -fx-padding: 25 0 5 0;
 }
 
-.setting .left  > .title-3{
+.setting .left  .title-3{
     -fx-padding: 25 0 5 0;
 }
-.setting .left >  .title-4 {
+.setting .left  .title-4 {
     -fx-font-size: 1.05em;
     -fx-font-weight: normal;
 }
 
-.setting .left > .input-group{
+.setting .left .input-group{
     -fx-background-radius: 20;
     -fx-padding: 5 10 5 10;
     -fx-background-color: -color-bg-default-60;
 }
-.setting .left > .input-group >.text-field{
+.setting .left .input-group >.text-field{
     -fx-background-color: transparent;
     -fx-padding: 0 40 0 0;
 }
-.setting .left >.input-group:hover{
+.setting .left .input-group:hover{
     -fx-background-color: -color-bg-default-90;
 }
-.setting .left > .input-group > .button{
+.setting .left .input-group > .button{
     -fx-background-color: transparent;
     -fx-padding: 5;
 }
-.setting .left > .input-group > .button:hover .ikonli-font-icon{
+.setting .left .input-group > .button:hover .ikonli-font-icon{
     -fx-icon-color: -color-accent-emphasis;
 }
 

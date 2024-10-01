@@ -91,13 +91,11 @@ public class MainWindow2 extends RoundStage {
                 Font.loadFonts(fileInputStream2,12);
                 getScene().getRoot().setStyle("-fx-font-family: \"HarmonyOS Sans SC\"");
             } catch (FileNotFoundException e) {
-                LOG.error("默认字体不存在");
+                LOG.error("加载自定义字体出现错误",e);
             }
         }else {
             getScene().getRoot().setStyle("-fx-font-family: \"Microsoft YaHei\"");
-            LOG.info("默认字体存在");
         }
-        LOG.info("系统默认字体:{}",Font.getDefault().getFamily());
     }
 
 

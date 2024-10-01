@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.model;
 
+import ch.qos.logback.classic.Level;
 import javafx.beans.property.*;
 
 /**
@@ -25,6 +26,8 @@ public class Setting {
     private SimpleStringProperty diyHomeBgName=new SimpleStringProperty(); //自定义背景文件名称
 
 
+    private SimpleStringProperty logLevel=new SimpleStringProperty("INFO");
+    private SimpleBooleanProperty checkNewVersion=new SimpleBooleanProperty(true);
     public String getGameRootDir() {
         return gameRootDir.get();
     }
@@ -184,5 +187,29 @@ public class Setting {
 
     public void setGameRootDirSource(SourceType gameRootDirSource) {
         this.gameRootDirSource.set(gameRootDirSource);
+    }
+
+    public String getLogLevel() {
+        return logLevel.get();
+    }
+
+    public SimpleStringProperty logLevelProperty() {
+        return logLevel;
+    }
+
+    public void setLogLevel(String logLevel) {
+        this.logLevel.set(logLevel);
+    }
+
+    public boolean isCheckNewVersion() {
+        return checkNewVersion.get();
+    }
+
+    public SimpleBooleanProperty checkNewVersionProperty() {
+        return checkNewVersion;
+    }
+
+    public void setCheckNewVersion(boolean checkNewVersion) {
+        this.checkNewVersion.set(checkNewVersion);
     }
 }

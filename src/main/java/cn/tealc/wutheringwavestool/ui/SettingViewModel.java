@@ -37,7 +37,7 @@ public class SettingViewModel implements ViewModel {
     private SimpleBooleanProperty diyHomeBg=new SimpleBooleanProperty();
     private SimpleStringProperty diyHomeBgName=new SimpleStringProperty();
     private SimpleObjectProperty<SourceType> gameRootDirSource=new SimpleObjectProperty<>();
-
+    private SimpleBooleanProperty checkNewVersion=new SimpleBooleanProperty();
     public SettingViewModel() {
         changeTitlebar.bindBidirectional(Config.setting.changeTitlebarProperty());
         gameDir.bindBidirectional(Config.setting.gameRootDirProperty());
@@ -49,6 +49,9 @@ public class SettingViewModel implements ViewModel {
         fontFamilyList.setAll(Font.getFamilies());
         diyHomeBg.bindBidirectional(Config.setting.diyHomeBgProperty());
         diyHomeBgName.bindBidirectional(Config.setting.diyHomeBgNameProperty());
+
+
+        checkNewVersion.bindBidirectional(Config.setting.checkNewVersionProperty());
 
         diyHomeBg.addListener((observableValue, aBoolean, t1) -> {
             if (t1){
@@ -173,5 +176,13 @@ public class SettingViewModel implements ViewModel {
 
     public SimpleBooleanProperty changeTitlebarProperty() {
         return changeTitlebar;
+    }
+
+    public boolean isCheckNewVersion() {
+        return checkNewVersion.get();
+    }
+
+    public SimpleBooleanProperty checkNewVersionProperty() {
+        return checkNewVersion;
     }
 }

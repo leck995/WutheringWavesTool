@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool;
 
+import ch.qos.logback.classic.Level;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
@@ -15,6 +16,7 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.control.Button;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2OutlinedMZ;
 import org.slf4j.Logger;
@@ -28,15 +30,25 @@ public class MainApplication extends Application {
     public static Stage window;
     private static WinNT.HANDLE gameAppListener;
     public GameAppListener appListener;
-    @Override
-    public void start(Stage stage) throws IOException {
+    private NewFxTrayIcon newFxTrayIcon;
+
+
+    public MainApplication() {
         System.setProperty("prism.lcdtext", "false");
         System.setProperty("LcdFontSmoothing", "true");
         System.setProperty("prism.text", "t2k");
 
+        ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory
+                .getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
+        root.setLevel(Level.toLevel(Config.setting.getLogLevel()));
+
+        Platform.setImplicitExit(false);
+    }
+
+    @Override
+    public void start(Stage stage) throws IOException {
         JdbcUtils.init();
         VersionUpdateUtil.update();
-
         if (!Config.setting.isChangeTitlebar()){
             window = new MainWindow();
             window.show();
@@ -57,6 +69,7 @@ public class MainApplication extends Application {
         gameAppListener = User32.INSTANCE.SetWinEventHook(0x0003, 0x0003, null, appListener, 0, 0, 0);
         createTrayIcon();
         initExceptionHandler();
+
     }
 
 
@@ -94,6 +107,13 @@ public class MainApplication extends Application {
         if (gameAppListener != null) {
             User32.INSTANCE.UnhookWinEvent(gameAppListener);
         }
+        SystemTray systemTray = SystemTray.getSystemTray();
+        for (TrayIcon trayIcon : systemTray.getTrayIcons()) {
+            if (trayIcon instanceof NewFxTrayIcon tray) {
+                systemTray.remove(tray);
+            }
+        }
+        Platform.setImplicitExit(true);
         JdbcUtils.exit();
         Config.save();
         window.close();
@@ -105,27 +125,38 @@ public class MainApplication extends Application {
     }
 
     private void createTrayIcon() {
-        Button show = new Button("显示",new FontIcon(Material2OutlinedMZ.REMOVE_FROM_QUEUE));
-        show.setOnAction(event -> {
-            window.setIconified(false);
-            window.show();
-            window.toFront();
-        });
-        Button exit = new Button("退出",new FontIcon(Material2OutlinedMZ.POWER_SETTINGS_NEW));
-        exit.setOnAction(event -> Platform.runLater(MainApplication::exit));
-        VBox vbox = new VBox(show, exit);
-        vbox.getStyleClass().add("tray");
-        vbox.getStylesheets().add(FXResourcesLoader.load("css/TrayIcon.css"));
-        vbox.setPrefWidth(80);
-        vbox.setPrefHeight(60);
-        NewFxTrayIcon newFxTrayIcon = new NewFxTrayIcon(SwingFXUtils.fromFXImage(window.getIcons().getFirst(),null),Config.appTitle,vbox);
-        SystemTray systemTray = SystemTray.getSystemTray();
-        try {
-            systemTray.add(newFxTrayIcon);
-        } catch (AWTException e) {
-            throw new RuntimeException(e);
+        if (SystemTray.isSupported()){
+            Button show = new Button("显示",new FontIcon(Material2OutlinedMZ.REMOVE_FROM_QUEUE));
+            show.setOnAction(event -> {
+                window.setIconified(false);
+                window.show();
+                window.toFront();
+            });
+            Button exit = new Button("退出",new FontIcon(Material2OutlinedMZ.POWER_SETTINGS_NEW));
+            exit.setOnAction(event -> Platform.runLater(MainApplication::exit));
+            VBox vbox = new VBox(show, exit);
+            vbox.getStyleClass().add("tray");
+            vbox.getStylesheets().add(FXResourcesLoader.load("css/TrayIcon.css"));
+            vbox.setPrefWidth(80);
+            vbox.setPrefHeight(60);
+            newFxTrayIcon = new NewFxTrayIcon(SwingFXUtils.fromFXImage(window.getIcons().getFirst(),null),Config.appTitle,vbox);
+            newFxTrayIcon.addActionListener(e -> {
+                Platform.runLater(() -> {
+                    window.setIconified(false);
+                    window.show();
+                    window.toFront();
+                });
+            });
+
+            SystemTray systemTray = SystemTray.getSystemTray();
+            try {
+                systemTray.add(newFxTrayIcon);
+            } catch (AWTException e) {
+                LOG.error("Tray Error",e);
+            }
+        }else {
+            LOG.info("SystemTray is not supported");
         }
-        //newFxTrayIcon.displayMessage("Hello, World", "notification demo", TrayIcon.MessageType.INFO);
     }
 
 }

@@ -9,6 +9,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -90,7 +92,7 @@ public class VersionUpdateUtil {
         }
     }
 
-    /*1.4.2版本*/
+    /*1.4.6版本*/
     private static void update03(){
         Connection connection = JdbcUtils.getConnection();
         try {
@@ -117,11 +119,44 @@ public class VersionUpdateUtil {
                 st.execute("ALTER TABLE user_info ADD creat_time INTEGER");
             }
             resultSet.close();
-
-
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+
+        Thread.startVirtualThread(() -> {
+            File binFile=new File("bin");
+            File confFile=new File("conf");
+            File legalFile=new File("legal");
+            File libFile=new File("lib");
+            File appFile=new File("App.exe");
+            if (binFile.exists() && binFile.isDirectory()){
+                deleteFile(binFile);
+            }
+            if (confFile.exists() && confFile.isDirectory()){
+                deleteFile(confFile);
+            }
+            if (legalFile.exists() && legalFile.isDirectory() ){
+                deleteFile(legalFile);
+            }
+            if (libFile.exists() && libFile.isDirectory()){
+                deleteFile(libFile);
+            }
+            if (appFile.exists() && appFile.isFile()){
+                appFile.delete();
+            }
+        });
+
+    }
+
+    public static void deleteFile(File file) {
+        if(file.isFile()) {
+            file.delete();
+        }else {
+            File[] childFilePaths = file.listFiles();//得到当前的路径
+            for(File childFile : childFilePaths) {
+                deleteFile(childFile);
+            }
+            file.delete();
         }
     }
 }

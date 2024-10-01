@@ -22,7 +22,8 @@ open module cn.tealc.wutheringwavestool {
     requires net.coobird.thumbnailator;
     requires com.github.kwhat.jnativehook;
     requires nfx.core;
-
+    requires ch.qos.logback.core;
+    requires ch.qos.logback.classic;
     exports cn.tealc.wutheringwavestool;
     exports cn.tealc.wutheringwavestool.model;
     exports cn.tealc.wutheringwavestool.model.roleData to com.fasterxml.jackson.databind;

@@ -26,50 +26,70 @@
                <children>
                   <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="left" HBox.hgrow="ALWAYS">
                      <children>
-                        <Label layoutX="10.0" layoutY="64.0" styleClass="title-4" text="鸣潮安装目录" />
-                        <HBox spacing="15.0">
+                        <VBox prefHeight="0.0" prefWidth="100.0" spacing="10.0">
                            <children>
-                              <RadioButton mnemonicParsing="false" selected="true" text="默认">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="gameSourceType" />
-                                 </toggleGroup>
-                              </RadioButton>
-                              <RadioButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="WeGame" toggleGroup="$gameSourceType" />
+                              <Label styleClass="title-4" text="鸣潮安装目录" />
+                              <HBox spacing="15.0">
+                                 <children>
+                                    <RadioButton mnemonicParsing="false" selected="true" text="默认">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="gameSourceType" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="WeGame" toggleGroup="$gameSourceType" />
+                                 </children>
+                              </HBox>
+                              <StackPane maxWidth="350.0" styleClass="input-group">
+                                 <children>
+                                    <TextField fx:id="gameDirField" prefWidth="250.0" />
+                                    <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setGameDir" StackPane.alignment="CENTER_RIGHT">
+                                       <graphic>
+                                          <FontIcon iconLiteral="mdoal-folder" />
+                                       </graphic>
+                                    </Button>
+                                 </children>
+                              </StackPane>
                            </children>
-                        </HBox>
-                        <StackPane maxWidth="350.0" styleClass="input-group">
-                           <children>
-                              <TextField fx:id="gameDirField" prefWidth="250.0" />
-                              <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setGameDir" StackPane.alignment="CENTER_RIGHT">
-                                 <graphic>
-                                    <FontIcon iconLiteral="mdoal-folder" />
-                                 </graphic>
-                              </Button>
-                           </children>
-                        </StackPane>
+                        </VBox>
                         <Label styleClass="title-3" text="基础设置" />
-                        <Label styleClass="title-4" text="新标题栏(出现多个标题栏时启用)" />
-                        <ToggleSwitch fx:id="titlebarSwitch" labelPosition="RIGHT" layoutX="10.0" layoutY="304.0" text="开启" />
-                        <Label layoutX="10.0" layoutY="186.0" styleClass="tip" text="需重启，窗口调整在右下角" />
-                        <Label styleClass="title-4" text="启动页" />
-                        <CheckBox fx:id="startWithAnalysisView" mnemonicParsing="false" text="抽卡分析" />
-                        <Label layoutX="10.0" layoutY="346.0" styleClass="title-4" text="自定义背景(16:9最佳)" />
-                        <ToggleSwitch fx:id="diyBgSwitch" labelPosition="RIGHT" layoutX="10.0" layoutY="341.0" text="开启" />
-                        <StackPane fx:id="diyBgInputGroup" layoutX="10.0" layoutY="39.0" maxWidth="350.0" styleClass="input-group">
+                        <VBox spacing="10.0">
                            <children>
-                              <TextField fx:id="diyBgField" prefWidth="250.0" />
-                              <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setBgFile" StackPane.alignment="CENTER_RIGHT">
-                                 <graphic>
-                                    <FontIcon iconLiteral="mdoal-image" />
-                                 </graphic>
-                              </Button>
+                              <Label styleClass="title-4" text="新标题栏(出现多个标题栏时启用)" />
+                              <ToggleSwitch fx:id="titlebarSwitch" labelPosition="RIGHT" text="开启" />
+                              <Label styleClass="tip" text="需重启，窗口调整在右下角" />
+                              <Label styleClass="title-4" text="启动页" />
+                              <CheckBox fx:id="startWithAnalysisView" mnemonicParsing="false" text="抽卡分析" />
+                              <Label styleClass="title-4" text="自定义背景(16:9最佳)" />
+                              <ToggleSwitch fx:id="diyBgSwitch" labelPosition="RIGHT" text="开启" />
+                              <StackPane fx:id="diyBgInputGroup" maxWidth="350.0" styleClass="input-group">
+                                 <children>
+                                    <TextField fx:id="diyBgField" prefWidth="250.0" />
+                                    <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setBgFile" StackPane.alignment="CENTER_RIGHT">
+                                       <graphic>
+                                          <FontIcon iconLiteral="mdoal-image" />
+                                       </graphic>
+                                    </Button>
+                                 </children>
+                              </StackPane>
                            </children>
-                        </StackPane>
+                        </VBox>
                         <Label layoutX="10.0" layoutY="84.0" styleClass="title-3" text="游戏行为" />
-                        <Label styleClass="title-4" text="游戏启动时隐藏程序至托盘" />
-                        <ToggleSwitch fx:id="hideWhenGameStart" labelPosition="RIGHT" text="开启" />
-                        <Label styleClass="title-4" text="游戏关闭时自动退出程序" />
-                        <ToggleSwitch fx:id="exitWhenGameOver" labelPosition="RIGHT" text="开启" />
+                        <VBox spacing="10.0">
+                           <children>
+                              <Label styleClass="title-4" text="游戏启动时隐藏程序至托盘" />
+                              <ToggleSwitch fx:id="hideWhenGameStart" labelPosition="RIGHT" text="开启" />
+                              <Label styleClass="title-4" text="游戏关闭时自动退出程序" />
+                              <ToggleSwitch fx:id="exitWhenGameOver" labelPosition="RIGHT" text="开启" />
+                           </children>
+                        </VBox>
+                        <Label layoutX="10.0" layoutY="471.0" styleClass="title-3" text="其他设置" />
+                        <VBox spacing="10.0">
+                           <children>
+                              <Label styleClass="title-4" text="检测更新" />
+                              <ToggleSwitch fx:id="versionCheckSwitch" labelPosition="RIGHT" text="开启" />
+                              <Label styleClass="tip" text="助手功能尚未完善，建议开启检测" />
+                           </children>
+                        </VBox>
                      </children>
                   </VBox>
                   <VBox maxWidth="350.0" prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="right" HBox.hgrow="ALWAYS">
@@ -113,13 +133,14 @@
                               <FontIcon iconLiteral="antf-pay-circle" />
                            </graphic>
                         </Button>
-                     </children></VBox>
+                     </children>
+                  </VBox>
                </children>
             </HBox>
          </content>
       </ScrollPane>
    </children>
    <padding>
-      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+      <Insets bottom="10.0" left="10.0" top="10.0" />
    </padding>
 </AnchorPane>

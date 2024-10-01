@@ -119,7 +119,7 @@
                </children>
             </StackPane>
             <ToggleSwitch fx:id="ssrModelSwitch" selected="true" text="详情" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="75.0" />
-            <Label styleClass="tip" text="如无法刷新，可重新获取" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0" />
+            <Label styleClass="tip" text="有效期1小时，如无法刷新，可打开抽卡历史重新获取" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0" />
          </children>
       </AnchorPane>
    </children>
