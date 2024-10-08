@@ -79,7 +79,7 @@
                                           </ImageView>
                                        </graphic>
                                     </Label>
-                                    <Label fx:id="skill04" contentDisplay="TOP" layoutX="10.0" layoutY="10.0" styleClass="level" text="LV.1">
+                                    <Label fx:id="skill04" contentDisplay="TOP" layoutX="10.0" layoutY="10.0" styleClass="level" text="LV.2">
                                        <graphic>
                                           <ImageView fx:id="skillImg04" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
@@ -88,7 +88,7 @@
                                           </ImageView>
                                        </graphic>
                                     </Label>
-                                    <Label fx:id="skill03" contentDisplay="TOP" layoutX="10.0" layoutY="60.0" styleClass="level" text="LV.1">
+                                    <Label fx:id="skill03" contentDisplay="TOP" styleClass="level" text="LV.3">
                                        <graphic>
                                           <ImageView fx:id="skillImg03" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
@@ -97,7 +97,7 @@
                                           </ImageView>
                                        </graphic>
                                     </Label>
-                                    <Label fx:id="skill02" contentDisplay="TOP" layoutX="10.0" layoutY="110.0" styleClass="level" text="LV.1">
+                                    <Label fx:id="skill02" contentDisplay="TOP" layoutX="10.0" layoutY="110.0" styleClass="level" text="LV.4">
                                        <graphic>
                                           <ImageView fx:id="skillImg02" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
@@ -106,7 +106,7 @@
                                           </ImageView>
                                        </graphic>
                                     </Label>
-                                    <Label fx:id="skill01" contentDisplay="TOP" layoutX="10.0" layoutY="160.0" styleClass="level" text="LV.1">
+                                    <Label fx:id="skill01" contentDisplay="TOP" layoutX="10.0" layoutY="160.0" styleClass="level" text="LV.6">
                                        <graphic>
                                           <ImageView fx:id="skillImg01" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                              <image>

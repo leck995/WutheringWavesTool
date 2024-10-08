@@ -61,7 +61,7 @@ public class AnalysisPoolViewModel implements ViewModel {
     private SimpleStringProperty ssrAvgText=new SimpleStringProperty();
     private SimpleStringProperty ssrMinText=new SimpleStringProperty();
     private SimpleStringProperty ssrMaxText=new SimpleStringProperty();
-
+    private SimpleStringProperty ssrEventAvgText=new SimpleStringProperty(); //限定平均抽数
 
     private SimpleBooleanProperty ssrModel=new SimpleBooleanProperty(true);
 
@@ -141,11 +141,11 @@ public class AnalysisPoolViewModel implements ViewModel {
                             new MessageInfo(MessageType.INFO,"正在获取数据，请稍候"));
                 }else {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING,"无法获取抽卡数据链接，请打开游戏内抽卡的详情数据页面后再次尝试"),false);
+                            new MessageInfo(MessageType.WARNING,"无法获取抽卡数据链接，请打开游戏内抽卡的历史记录页面后再次尝试"),false);
                 }
             }else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING,"抽卡数据不存在，请打开游戏内抽卡的详情数据页面后再次尝试"),false);
+                        new MessageInfo(MessageType.WARNING,"抽卡数据不存在，请打开游戏内抽卡的历史记录页面后再次尝试"),false);
             }
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
@@ -184,6 +184,12 @@ public class AnalysisPoolViewModel implements ViewModel {
      */
     private void savePoolData(Map<String, String> params){
         String playerId = params.get("playerId");
+
+ /*       File userDataDir=new File(String.format("data/%s",playerId));
+        if (userDataDir.exists()){
+            userDataDir.lastModified()
+        }
+*/
         ObjectMapper mapper = new ObjectMapper();
         File poolJson=new File(String.format("data/%s/pool.json",playerId));
         File dateJson=new File(String.format("data/%s/data.json",playerId));
@@ -265,6 +271,14 @@ public class AnalysisPoolViewModel implements ViewModel {
         ssrAvgText.set(String.format("%.3f", analysis.getSsrAvg()));
         ssrMaxText.set(String.valueOf(analysis.getSsrMax()));
         ssrMinText.set(String.valueOf(analysis.getSsrMin()));
+        int sum = analysis.getSsrDataList().stream().mapToInt(ssrData -> ssrData.getCount()).sum();
+        long count = analysis.getSsrDataList().stream().filter(SsrData::isEvent).count();
+        if (count != 0){
+            ssrEventAvgText.set(String.format("%.3f", (double)sum / (double) count));
+        }else {
+            ssrEventAvgText.set(null);
+        }
+
 
         ssrList.setAll(analysis.getSsrDataList());
         //扇形图数据
@@ -527,5 +541,13 @@ public class AnalysisPoolViewModel implements ViewModel {
 
     public SimpleBooleanProperty ssrModelProperty() {
         return ssrModel;
+    }
+
+    public String getSsrEventAvgText() {
+        return ssrEventAvgText.get();
+    }
+
+    public SimpleStringProperty ssrEventAvgTextProperty() {
+        return ssrEventAvgText;
     }
 }

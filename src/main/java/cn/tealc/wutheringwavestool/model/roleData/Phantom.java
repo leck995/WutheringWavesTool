@@ -20,6 +20,33 @@ public class Phantom {
     private List<PhoantomMainProps> mainProps;
     private List<PhoantomMainProps> subProps;
 
+    private Status status;
+    private Status propStatus;
+
+    public enum Status{
+        ACE("ACE",5),
+        SSS("SSS",4),
+        SS("SS",3),
+        S("S",2),
+        N("N",1);
+
+        final String text;
+        final int level;
+        Status(String text, int level) {
+            this.text = text;
+            this.level = level;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public int getLevel() {
+            return level;
+        }
+    }
+
+
     public PhantomProp getPhantomProp() {
         return phantomProp;
     }
@@ -75,5 +102,21 @@ public class Phantom {
 
     public void setSubProps(List<PhoantomMainProps> subProps) {
         this.subProps = subProps;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public Status getPropStatus() {
+        return propStatus;
+    }
+
+    public void setPropStatus(Status propStatus) {
+        this.propStatus = propStatus;
     }
 }

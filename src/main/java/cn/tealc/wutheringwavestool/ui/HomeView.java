@@ -232,6 +232,24 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
 
     @FXML
+    void toWikiMap01(ActionEvent event) {
+        try {
+            Desktop.getDesktop().browse(new URI("https://www.kurobbs.com/mc/map/"));
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @FXML
+    void toWikiMap02(ActionEvent event) {
+        try {
+            Desktop.getDesktop().browse(new URI("https://map.caimogu.cc/ww/main.html"));
+        } catch (IOException | URISyntaxException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @FXML
     void toAlbum(ActionEvent event) {
         try {
             File file=null;

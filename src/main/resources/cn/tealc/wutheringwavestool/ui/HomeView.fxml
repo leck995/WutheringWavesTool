@@ -3,6 +3,7 @@
 <?import java.lang.String?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressBar?>
@@ -29,7 +30,7 @@
                         </ImageView>
                         <VBox alignment="CENTER_LEFT" spacing="2.0">
                            <children>
-                              <Label fx:id="roleNameLabel" styleClass="data-label-1" text="长离长离长离长离长离长离" />
+                              <Label fx:id="roleNameLabel" styleClass="data-label-1" text="角色名" />
                               <HBox alignment="CENTER_LEFT">
                                  <children>
                                     <Label fx:id="levelLabel" styleClass="level" text="LV.48" />
@@ -173,8 +174,18 @@
             </MenuButton>
             <MenuButton mnemonicParsing="false" popupSide="TOP" styleClass="func-btn" text="Wiki">
               <items>
-                <MenuItem mnemonicParsing="false" onAction="#toWiki01" text="库街区" />
-                <MenuItem mnemonicParsing="false" onAction="#toWiki02" text="GameKee" />
+                  <Menu mnemonicParsing="false" text="库街区">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#toWiki01" text="主页" />
+                      <MenuItem mnemonicParsing="false" onAction="#toWikiMap01" text="大地图" />
+                    </items>
+                  </Menu>
+                  <Menu mnemonicParsing="false" text="GameKee">
+                    <items>
+                      <MenuItem mnemonicParsing="false" onAction="#toWiki02" text="主页" />
+                      <MenuItem mnemonicParsing="false" onAction="#toWikiMap02" text="大地图" />
+                    </items>
+                  </Menu>
               </items>
                <graphic>
                   <FontIcon iconLiteral="mdal-book" />

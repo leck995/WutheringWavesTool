@@ -6,7 +6,7 @@
 
     <groupId>cn.tealc</groupId>
     <artifactId>WutheringWavesTool</artifactId>
-    <version>1.1.6</version>
+    <version>1.1.7</version>
     <name>WutheringWavesTool</name>
 
     <properties>
@@ -122,7 +122,11 @@
             <artifactId>commons-dbutils</artifactId>
             <version>1.8.1</version>
         </dependency>
-
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.17.1</version>
+        </dependency>
         <dependency>
             <groupId>com.jhlabs</groupId>
             <artifactId>filters</artifactId>
@@ -146,8 +150,6 @@
             <artifactId>nfx-core</artifactId>
             <version>1.0.0</version>
         </dependency>
-
-
     </dependencies>
 
     <build>
@@ -178,8 +180,7 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.11.0</version>
                 <configuration>
-                    <source>21</source>
-                    <target>21</target>
+                    <release>21</release>
                 </configuration>
             </plugin>
             <plugin>

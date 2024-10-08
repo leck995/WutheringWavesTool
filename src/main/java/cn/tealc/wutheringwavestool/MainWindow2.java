@@ -72,7 +72,7 @@ public class MainWindow2 extends RoundStage {
         setWidth(Config.setting.getAppWidth());
         setHeight(Config.setting.getAppHeight());
         setMinHeight(720.0);
-        setMinWidth(1280.0);
+        setMinWidth(1285.0);
         //initStyle(StageStyle.UNIFIED);
         Config.setting.appWidthProperty().bind(scene.widthProperty());
         Config.setting.appHeightProperty().bind(scene.heightProperty());

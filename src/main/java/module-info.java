@@ -15,6 +15,7 @@ open module cn.tealc.wutheringwavestool {
     requires org.slf4j;
     requires com.sun.jna.platform;
     requires org.apache.commons.dbutils;
+    requires org.apache.commons.codec;
     requires org.xerial.sqlitejdbc;
     requires com.sun.jna;
     requires filters;
@@ -24,12 +25,15 @@ open module cn.tealc.wutheringwavestool {
     requires nfx.core;
     requires ch.qos.logback.core;
     requires ch.qos.logback.classic;
+
+
     exports cn.tealc.wutheringwavestool;
     exports cn.tealc.wutheringwavestool.model;
     exports cn.tealc.wutheringwavestool.model.roleData to com.fasterxml.jackson.databind;
     exports cn.tealc.wutheringwavestool.model.roleData.user to com.fasterxml.jackson.databind;
     exports cn.tealc.wutheringwavestool.model.analysis to com.fasterxml.jackson.databind;
     exports cn.tealc.wutheringwavestool.model.sign to com.fasterxml.jackson.databind;
+    exports cn.tealc.wutheringwavestool.model.roleData.weight;
     exports cn.tealc.wutheringwavestool.ui;
     exports cn.tealc.wutheringwavestool.base;
     exports cn.tealc.wutheringwavestool.jna;

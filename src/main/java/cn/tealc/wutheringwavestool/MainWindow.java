@@ -84,7 +84,7 @@ public final class MainWindow extends AbstractNfxUndecoratedWindow{
         setWidth(Config.setting.getAppWidth());
         setHeight(Config.setting.getAppHeight());
         setMinHeight(720.0);
-        setMinWidth(1280.0);
+        setMinWidth(1285.0);
         //initStyle(StageStyle.TRANSPARENT);
         Config.setting.appWidthProperty().bind(scene.widthProperty());
         Config.setting.appHeightProperty().bind(scene.heightProperty());

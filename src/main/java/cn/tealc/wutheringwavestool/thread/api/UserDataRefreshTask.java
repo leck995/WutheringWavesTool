@@ -41,11 +41,11 @@ public class UserDataRefreshTask extends Task<ResponseBody<String>> {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             HttpRequest request2 = HttpRequestUtil.getRequest(url2,token);
             HttpResponse<String> response2 = client.send(request2, HttpResponse.BodyHandlers.ofString());
-            LOG.debug("刷新请求1,状态码:{},刷新请求2,状态码:{}",response.statusCode(),response2.statusCode());
-            return null;
+            LOG.debug("角色数刷新,状态码1: {},状态码2: {}",response.statusCode(),response2.statusCode());
+            return new ResponseBody<>(200,"角色数据刷新成功");
         } catch (IOException | InterruptedException e) {
             LOG.error("错误",e);
-            return new ResponseBody<>(1,"无法成功刷新数据，连接或解析错误");
+            return new ResponseBody<>(1,"无法刷新角色数据，连接超时或解析错误");
         }
     }
 }

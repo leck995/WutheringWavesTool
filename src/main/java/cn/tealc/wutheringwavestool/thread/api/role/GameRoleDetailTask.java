@@ -56,6 +56,7 @@ public class GameRoleDetailTask extends Task<ResponseBody<RoleDetail>> {
                 if (responseBodyForApi.getCode() == 200){
                     ResponseBody<RoleDetail> responseBody = new ResponseBody<>(responseBodyForApi.getCode(), responseBodyForApi.getMsg(),responseBodyForApi.getSuccess());
                     String row = ApiUtil.decrypt(responseBodyForApi.getData());
+                    System.out.println(row);
                     RoleDetail roleDetail = mapper.readValue(row, RoleDetail.class);
                     responseBody.setData(roleDetail);
                     return responseBody;

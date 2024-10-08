@@ -49,6 +49,27 @@
                                     </Button>
                                  </children>
                               </StackPane>
+                              <Label layoutX="10.0" layoutY="10.0" styleClass="title-4" text="游戏启动程序" />
+                              <HBox layoutX="10.0" layoutY="39.0" spacing="15.0">
+                                 <children>
+                                    <RadioButton fx:id="gameStartAppRadioDefault" mnemonicParsing="false" selected="true" text="默认">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="gameStartAppType" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="自定义" toggleGroup="$gameStartAppType" />
+                                 </children>
+                              </HBox>
+                              <StackPane fx:id="gameStartAppGroup" layoutX="10.0" layoutY="70.0" maxWidth="350.0" styleClass="input-group">
+                                 <children>
+                                    <TextField fx:id="gameStartAppField" prefWidth="250.0" />
+                                    <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setGameApp" StackPane.alignment="CENTER_RIGHT">
+                                       <graphic>
+                                          <FontIcon iconLiteral="mdoal-folder" />
+                                       </graphic>
+                                    </Button>
+                                 </children>
+                              </StackPane>
                            </children>
                         </VBox>
                         <Label styleClass="title-3" text="基础设置" />

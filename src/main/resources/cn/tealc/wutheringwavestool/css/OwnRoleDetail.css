@@ -3,7 +3,36 @@
     -color-bg-default-40: #ffffff40;
     -color-bg-default-30: #ffffff30;
 }
+.role-detail .separator{
+    -fx-padding: 4 0 8 0;
+}
+.role-detail .separator > .line{
+    -fx-border-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #777676 0.0%, #77767600 100.0%) transparent transparent transparent;
+    -fx-border-insets: 1px 0 0 0;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+}
+.role-detail .status{
+    -fx-font-size: 20;
+    -fx-font-weight: bold ;
+    -fx-font-style: italic;
 
+}
+.role-detail .status.ace{
+    -fx-text-fill: #e33737;
+}
+.role-detail .status.sss{
+    -fx-text-fill: #ffec16;
+}
+.role-detail  .status.ss{
+    -fx-text-fill:#ffec16;
+}
+.role-detail  .status.s{
+    -fx-text-fill: #9300e8;
+}
+.role-detail  .status.n{
+    /* -fx-text-fill: #434343;*/
+}
 .role-detail .role{
 
 }
@@ -77,63 +106,169 @@
     -fx-text-fill: white;
 }
 
+
+
+.role-detail .phantom-desc{
+    -fx-background-color: -color-bg-default-30;
+    -fx-background-radius: 5;
+    -fx-border-color: transparent;
+    -fx-padding: 5 10 5 10;
+}
+.role-detail .phantom-desc .tip{
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+}
+.role-detail .phantom-desc .status{
+    -fx-font-size: 25;
+}
+
+.role-detail .phantom-total{
+    -fx-background-color: -color-bg-default-30;
+    -fx-background-radius: 5;
+    -fx-border-color: transparent;
+    -fx-padding: 5 0 5 0;
+}
+
+
+
+
+.role-detail .phantom-total .sub-prop1{
+    -fx-font-size: 15;
+    -fx-pref-width: 150;
+    -fx-font-weight: bold;
+    -fx-text-fill: #434343;
+}
+.role-detail .phantom-total .sub-prop1 .thumb{
+    -fx-fill: #434343;
+}
+.role-detail .phantom-total .sub-prop1 .thumb.sss {
+    -fx-fill: #ffec16;
+}
+.role-detail .phantom-total .sub-prop1 .thumb.ss {
+    -fx-fill: #00dde8;
+}
+
+.role-detail .phantom-total .sub-prop2{
+    -fx-font-size: 15;
+    -fx-font-weight: bold;
+    -fx-text-fill: #434343;
+}
+
 .role-detail .phantom{
     -fx-background-color: -color-bg-default-30;
     -fx-background-radius: 5;
     -fx-border-color: transparent;
     -fx-padding: 5 10 5 10;
 }
-.role-detail .phantom .left{
+
+
+.role-detail .phantom .top{
+
+}
+.role-detail .phantom .top .tip{
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+}
+
+.role-detail .phantom .top .status{
+    -fx-font-size: 20;
+    -fx-font-weight: bold ;
+    -fx-font-style: italic;
+    -fx-pref-width: 40;
+}
+.role-detail .phantom .top .status.ace{
+    -fx-text-fill: #e33737;
+}
+.role-detail .phantom .top .status.sss{
+    -fx-text-fill: #ffec16;
+}
+.role-detail .phantom .top .status.ss{
+    -fx-text-fill:#ffec16;
+}
+.role-detail .phantom .top .status.s{
+    -fx-text-fill: #9300e8;
+}
+.role-detail .phantom .top .status.n{
+   /* -fx-text-fill: #434343;*/
+}
+
+
+
+.role-detail .phantom .main-prop{
+
+
+
+}
+.role-detail .phantom .main-prop .icon{
     -fx-background-radius: 5.0;
     -fx-padding: 5.0;
 }
-.role-detail .phantom .left.ssr{
+.role-detail .phantom .main-prop .icon.ssr{
     -fx-background-color: linear-gradient(from 100.0% 0.0% to 100.0% 100.0%, #fad9578c 0.0%, #f7d23be8 100.0%);
 }
-.role-detail .phantom .left.sr{
+.role-detail .phantom .main-prop .icon.sr{
     -fx-background-color: linear-gradient(from 100.0% 0.0% to 100.0% 100.0%, #d7afffff 0.0%, #f7beffff 100.0%);
 }
 
-.role-detail .phantom .left.r{
+.role-detail .phantom .main-prop .icon.r{
     -fx-background-color: linear-gradient(from 100.0% 0.0% to 100.0% 100.0%, #fdfdfd 0.0%, #bab9b9 100.0%);
 }
-.role-detail .phantom .left > .cost{
+.role-detail .phantom .main-prop .icon > .cost{
     -fx-background-color: #292222;
     -fx-padding: 3;
     -fx-background-radius: 3;
     -fx-text-fill: white;
 }
-.role-detail .phantom .right .cost1{
-    -fx-font-size: 15;
-    -fx-pref-width: 150;
-    -fx-text-fill: -color-font-subtle;
-}
-.role-detail .phantom .right .cost2{
-    -fx-font-size: 15;
-    -fx-text-fill: -color-font-subtle;
-}
 
-.role-detail .phantom .right .main-prop1{
+
+.role-detail .phantom .main-prop .main-prop1{
     -fx-font-size: 18;
     -fx-font-weight: bold;
-    -fx-pref-width: 150;
+    -fx-pref-width: 120;
+
 }
-.role-detail .phantom .right .main-prop2{
+.role-detail .phantom .main-prop .main-prop2{
     -fx-font-size: 18;
     -fx-font-weight: bold;
 }
 
-.role-detail .phantom .right .sub-prop1{
+
+
+
+
+.role-detail .phantom .sub-prop .cost1{
     -fx-font-size: 15;
     -fx-pref-width: 150;
+    -fx-text-fill: -color-font-subtle;
 }
-
-.role-detail .phantom .right .sub-prop2{
+.role-detail .phantom .sub-prop .cost2{
     -fx-font-size: 15;
+    -fx-text-fill: -color-font-subtle;
 }
 
 
 
+.role-detail .phantom .sub-prop .sub-prop1{
+    -fx-font-size: 16;
+    -fx-pref-width: 200;
+    -fx-font-weight: bold;
+    -fx-text-fill: #434343;
+}
+.role-detail .phantom .sub-prop .sub-prop1 .thumb{
+    -fx-fill: #434343;
+}
+.role-detail .phantom .sub-prop .sub-prop1 .thumb.sss {
+     -fx-fill: #ffec16;
+ }
+.role-detail .phantom .sub-prop .sub-prop1 .thumb.ss {
+    -fx-fill: #00dde8;
+}
+
+.role-detail .phantom .sub-prop .sub-prop2{
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+    -fx-text-fill: #434343;
+}
 
 
 

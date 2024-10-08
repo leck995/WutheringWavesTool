@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.tray;
 
+import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.layout.Region;
@@ -20,6 +21,7 @@ import java.awt.event.MouseEvent;
 public class NewFxTrayIcon extends TrayIcon {
     private final Stage stage = new Stage();
     private final StackPane pane = new StackPane();
+    private Stage parent;
 
     public NewFxTrayIcon(Image image, String tooltip,Region menu) {
         super(image, tooltip);
@@ -55,7 +57,9 @@ public class NewFxTrayIcon extends TrayIcon {
 
 
     private void initStage(){
-        Stage parent = new Stage();
+        parent = new Stage();
+        parent.setTitle("鸣潮助手 Tray Parent");
+        stage.getIcons().add(new javafx.scene.image.Image(FXResourcesLoader.load("image/icon.png"),45,45,true,true));
         parent.setWidth(1.0);
         parent.setHeight(1.0);
         parent.initStyle(StageStyle.UTILITY);
@@ -64,10 +68,13 @@ public class NewFxTrayIcon extends TrayIcon {
         Scene scene = new Scene(pane);
         pane.setStyle("-fx-background-color: transparent;");
         scene.setFill(Color.TRANSPARENT);
+        stage.setTitle("鸣潮助手 Tray");
+
         stage.setScene(scene);
-        stage.initStyle(StageStyle.TRANSPARENT);
+        stage.getIcons().add(new javafx.scene.image.Image(FXResourcesLoader.load("image/icon.png"),45,45,true,true));
+        stage.initStyle(StageStyle.UNDECORATED);
         stage.initOwner(parent);
-        stage.setAlwaysOnTop(true); //设置为顶层，否则在windows系统中会被底部任务栏遮挡
+        //stage.setAlwaysOnTop(true); //设置为顶层，否则在windows系统中会被底部任务栏遮挡
         stage.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
                 stage.hide();

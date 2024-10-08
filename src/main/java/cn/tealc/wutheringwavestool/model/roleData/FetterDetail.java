@@ -64,4 +64,17 @@ public class FetterDetail {
     public void setSecondDescription(String secondDescription) {
         this.secondDescription = secondDescription;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof FetterDetail detail) {
+            return detail.getGroupId() == this.getGroupId();
+        }
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return this.getGroupId();
+    }
 }

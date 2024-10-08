@@ -91,6 +91,12 @@
                                     <Label fx:id="ssrAvgLabel" styleClass="ssr-label" text="10" />
                                  </children>
                               </HBox>
+                              <HBox alignment="CENTER" layoutX="20.0" layoutY="485.0">
+                                 <children>
+                                    <Label text="限定平均抽数：" />
+                                    <Label fx:id="ssrEventAvgLabel" styleClass="ssr-label" text="10" />
+                                 </children>
+                              </HBox>
                               <HBox alignment="CENTER">
                                  <children>
                                     <Label layoutX="10.0" layoutY="10.0" text="最欧：" />

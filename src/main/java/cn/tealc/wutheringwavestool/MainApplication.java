@@ -2,14 +2,19 @@ package cn.tealc.wutheringwavestool;
 
 import ch.qos.logback.classic.Level;
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
 import cn.tealc.wutheringwavestool.jna.GlobalKeyListener;
+import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.wutheringwavestool.thread.ResourcesSyncTask;
 import cn.tealc.wutheringwavestool.ui.tray.NewFxTrayIcon;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinNT;
+import de.saxsys.mvvmfx.MvvmFX;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
@@ -22,6 +27,7 @@ import org.kordamp.ikonli.material2.Material2OutlinedMZ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 
@@ -70,15 +76,32 @@ public class MainApplication extends Application {
         createTrayIcon();
         initExceptionHandler();
 
+
+        syncRemoteResources();
     }
 
 
 
+    /**
+     * @description: 更同步远程仓库的资源
+     * @param:
+     * @return  void
+     * @date:   2024/10/6
+     */
+    private void syncRemoteResources() {
+        ResourcesSyncTask task = new ResourcesSyncTask();
+        task.messageProperty().addListener((observableValue, s, t1) -> {
+            if (t1 != null){
+                if (t1.contains("成功")){
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,t1));
+                }else {
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.INFO,t1));
+                }
 
-
-
-
-
+            }
+        });
+        Thread.startVirtualThread(task);
+    }
 
 
     private void initExceptionHandler(){
@@ -108,6 +131,9 @@ public class MainApplication extends Application {
             User32.INSTANCE.UnhookWinEvent(gameAppListener);
         }
         SystemTray systemTray = SystemTray.getSystemTray();
+
+
+
         for (TrayIcon trayIcon : systemTray.getTrayIcons()) {
             if (trayIcon instanceof NewFxTrayIcon tray) {
                 systemTray.remove(tray);
@@ -147,6 +173,9 @@ public class MainApplication extends Application {
                     window.toFront();
                 });
             });
+
+
+
 
             SystemTray systemTray = SystemTray.getSystemTray();
             try {

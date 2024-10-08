@@ -68,7 +68,6 @@ public class LocalResourcesManager {
     public static Image imageBuffer(String url){
         File file=new File(String.format(BUFFER_DIR_TEMPLATE,getName(url)));
         if (file.exists()){ //有缓存，获取
-            LOG.debug("{}有缓存，获取",file.getName());
             return new Image(file.toURI().toString(),true);
         }else { //无缓存，获取并保存
             LOG.debug("{}无缓存，获取并保存",file);
@@ -81,7 +80,6 @@ public class LocalResourcesManager {
     public static Image imageBuffer(String url,double width,double height,boolean preserveRatio,boolean smooth){
         File file=new File(String.format(BUFFER_DIR_TEMPLATE,getName(url)));
         if (file.exists()){ //有缓存，获取
-            LOG.debug("{}有缓存，获取",file.getName());
             return new Image(file.toURI().toString(),width,height,preserveRatio,smooth);
         }else { //无缓存，获取并保存
             LOG.debug("{}无缓存，获取并保存",file);
@@ -90,7 +88,6 @@ public class LocalResourcesManager {
             return image;
         }
     }
-
 
 
     public static String addHomeIcon(String roleName,String url){
@@ -121,7 +118,6 @@ public class LocalResourcesManager {
         return new File(String.format(HOME_ROLE_DIR_TEMPLATE_2, Config.setting.getHomeViewRole()));
     }
 
-
     /**
      * @description:
      * @param:	url
@@ -137,8 +133,6 @@ public class LocalResourcesManager {
             return null;
         }
     }
-
-
 
     public static String getName(String url){
         int index=url.lastIndexOf("/");
@@ -161,10 +155,8 @@ public class LocalResourcesManager {
                 }
                 BufferedImage read = SwingFXUtils.fromFXImage(image,null);
                 ImageIO.write(read, getSuffix(file.getName()), file);
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 LOG.error("保存图片缓存出错",e);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
             }
         });
     }

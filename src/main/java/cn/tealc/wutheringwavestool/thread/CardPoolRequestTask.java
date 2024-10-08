@@ -152,6 +152,7 @@ public class CardPoolRequestTask extends Task<Map<String, List<CardInfo>>> {
             case '9':
                 REQUEST_URL = oversea_REQUEST_URL;
                 Country = "SEA";
+                break;
             default:
                 throw new IllegalArgumentException("Invalid playerId: " + playerId);
         }

@@ -84,9 +84,18 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
     private ToggleSwitch titlebarSwitch;
     @FXML
     private ToggleSwitch versionCheckSwitch;
+    @FXML
+    private TextField gameStartAppField;
 
     @FXML
+    private StackPane gameStartAppGroup;
+
+    @FXML
+    private ToggleGroup gameStartAppType;
+    @FXML
     private ToggleGroup gameSourceType;
+    @FXML
+    private RadioButton gameStartAppRadioDefault;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         gameDirField.textProperty().bindBidirectional(viewModel.gameDirProperty());
@@ -114,6 +123,29 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
                 }
             }
         });
+
+        gameStartAppField.textProperty().bindBidirectional(viewModel.gameAppStartPathProperty());
+        gameStartAppGroup.disableProperty().bind(gameStartAppType.selectedToggleProperty().isEqualTo(gameStartAppRadioDefault));
+        if (!viewModel.isGameAppStartCustom()){
+            gameStartAppType.selectToggle(gameStartAppType.getToggles().getFirst());
+        }else {
+            gameStartAppType.selectToggle(gameStartAppType.getToggles().get(1));
+        }
+        gameStartAppType.selectedToggleProperty().addListener((observableValue, toggle, t1) -> {
+            if (t1 instanceof RadioButton radioButton) {
+                if (radioButton.getText().equals("默认")){
+                    viewModel.setGameAppStartCustom(false);
+                    gameStartAppField.setText("Wuthering Waves.exe");
+                } else{
+                    viewModel.setGameAppStartCustom(true);
+                    gameStartAppField.setText("");
+                }
+            }
+        });
+
+
+
+
 
 
         appName.setText(Config.appTitle);
@@ -182,12 +214,16 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
     void toSupport(ActionEvent event) {
         Label title = new Label("感谢支持");
         title.getStyleClass().add(Styles.TITLE_2);
-        Image image =new Image(FXResourcesLoader.load("image/support.png"),450,400,true,true,true);
+        Label tip1 =new Label("助手的开发耗费了开发者大量的时间与精力，如果助手对您有所帮助且您财力有余，可以支持一下开发者，让开发者有更多激情去完成助手的后续开发，感谢。");
+        tip1.setWrapText(true);
+        tip1.setPrefWidth(450);
+        tip1.setMinHeight(80);
+        Image image =new Image(FXResourcesLoader.load("image/support.png"),400,350,true,true,true);
         ImageView iv = new ImageView(image);
 
-        Label tip =new Label("您可以按照如下格式附上留言:");
-        Label tip2 =new Label("[称呼]:[消息]");
-        VBox center = new VBox(5.0,iv,tip,tip2);
+        Label tip2 =new Label("您可以按照如下格式附上留言:");
+        Label tip3 =new Label("[称呼]:[消息]");
+        VBox center = new VBox(5.0,tip1,iv,tip2,tip3);
 
 
         Button cancelBtn = new Button("取消");
@@ -198,6 +234,16 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
         dialogLayout.setActions(cancelBtn);
         dialogLayout.setPrefSize(500,500);
         MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
+    }
+
+    @FXML
+    void setGameApp(ActionEvent event) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("选择鸣潮启动程序");
+        File file = fileChooser.showOpenDialog(gameDirField.getScene().getWindow());
+        if (file != null) {
+            gameStartAppField.setText(file.getAbsolutePath());
+        }
     }
 
 }

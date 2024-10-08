@@ -77,8 +77,6 @@ public class HomeViewModel implements ViewModel {
     private SimpleBooleanProperty hasSign = new SimpleBooleanProperty(false);
 
     public HomeViewModel() {
-        //getPoolInfo();
-
         UserInfoDao dao = new UserInfoDao();
         userInfo = dao.getMain();
         if (userInfo != null) {
@@ -90,17 +88,19 @@ public class HomeViewModel implements ViewModel {
         }
 
         updateGameTime(GameAppListener.getInstance().getDuration());
-
-
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_GAME_TIME_UPDATE, (s, objects) -> {
             long playTime = (long) objects[0];
             updateGameTime(playTime);
             updateRoleData();
         });
-
-
     }
 
+    /**
+     * @description: 更新游玩时长
+     * @param:	time	尚未保存到数据库中的时长
+     * @return  void
+     * @date:   2024/10/8
+     */
     private void updateGameTime(long time) {
         List<GameTime> list = getGameTimes();
         if (list != null) {
@@ -109,14 +109,18 @@ public class HomeViewModel implements ViewModel {
         }
     }
 
-    private void updateGameTime() {
-        List<GameTime> list = getGameTimes();
-        if (list != null) {
-            long sum = list.stream().mapToLong(GameTime::getDuration).sum();
-            updateGameTimeText(sum);
-        }
+    /**
+     * @description: 获取数据库中的当天游玩时长时间
+     * @return  java.util.List<cn.tealc.wutheringwavestool.model.game.GameTime>
+     * @date:   2024/10/8
+     */
+    private List<GameTime> getGameTimes() {
+        GameTimeDao gameTimeDao = new GameTimeDao();
+        LocalDate localDate = LocalDate.now();
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String date = dateTimeFormatter.format(localDate);
+        return gameTimeDao.getTimeListByData(date);
     }
-
     private void updateGameTimeText(long sum) {
         int hour = (int) (sum / (1000 * 60 * 60));
         int minute = (int) ((sum % (1000 * 60 * 60)) / (1000 * 60));
@@ -134,13 +138,7 @@ public class HomeViewModel implements ViewModel {
         gameTimeText.set(String.format("今日在线 %d 小时 %d 分钟", hour, minute));
     }
 
-    private List<GameTime> getGameTimes() {
-        GameTimeDao gameTimeDao = new GameTimeDao();
-        LocalDate localDate = LocalDate.now();
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        String date = dateTimeFormatter.format(localDate);
-        return gameTimeDao.getTimeListByData(date);
-    }
+
 
     public void updateRoleData() {
         if (userInfo != null) {
@@ -258,6 +256,8 @@ public class HomeViewModel implements ViewModel {
         }
     }
 
+
+
     public void signAndGame() {
         SignTask task = new SignTask();
         task.setOnSucceeded(workerStateEvent -> hasSign.set(true));
@@ -265,16 +265,26 @@ public class HomeViewModel implements ViewModel {
         startGame();
     }
 
+
     public void startGame() {
         String dir = Config.setting.getGameRootDir();
         if (dir != null) {
             File exe = null;
-            if (Config.setting.getGameRootDirSource() == SourceType.DEFAULT) {
-                exe = new File(dir + File.separator + "Wuthering Waves Game" + File.separator + "Wuthering Waves.exe");
-                //exe=new File(dir + File.separator + "Client/Binaries/Win64/Client-Win64-Shipping.exe");
-            } else {
-                exe = new File(dir + File.separator + "Wuthering Waves.exe");
+            if (Config.setting.isGameStartAppCustom()){
+                exe=new File(Config.setting.getGameStarAppPath());
+                if (!exe.exists()) {
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                            new MessageInfo(MessageType.WARNING, String.format("自定义启动程序: %s 不存在", exe.getPath())));
+                    return;
+                }
+            }else {
+                if (Config.setting.getGameRootDirSource() == SourceType.DEFAULT) {
+                    exe = new File(dir + File.separator + "Wuthering Waves Game" + File.separator + "Wuthering Waves.exe");
+                } else {
+                    exe = new File(dir + File.separator + "Wuthering Waves.exe");
+                }
             }
+
             if (exe.exists()) {
                 try {
                     Desktop.getDesktop().open(exe);
@@ -295,41 +305,6 @@ public class HomeViewModel implements ViewModel {
         }
     }
 
-
-    public void getPoolInfo() {
-        String url = "https://api.kurobbs.com/wiki/core/homepage/getPage";
-        HttpClient client = HttpClient.newHttpClient();
-        ObjectMapper mapper = new ObjectMapper();
-
-        HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .timeout(Duration.ofSeconds(20))
-                .header("Content-type", "application/json")
-                .headers("Wiki_type", "9")
-                .POST(HttpRequest.BodyPublishers.noBody())
-                .build();
-        HttpResponse<String> response = null;
-        try {
-            response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            System.out.println(response.body());
-            if (response.statusCode() == 200) {
-                JsonNode tree = mapper.readTree(response.body());
-                JsonNode sideModules = tree.get("data").get("contentJson").get("sideModules");
-                JsonNode jsonNode = sideModules.get(0);
-                System.out.println(jsonNode.get("title").asText());
-
-                //System.out.println(response.body());
-                //return mapper.readValue(response.body(), Message.class);
-            } else {
-                //return null;
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
 
     public String getEnergyText() {
         return energyText.get();

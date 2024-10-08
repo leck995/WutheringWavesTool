@@ -37,6 +37,8 @@ public class SettingViewModel implements ViewModel {
     private SimpleBooleanProperty diyHomeBg=new SimpleBooleanProperty();
     private SimpleStringProperty diyHomeBgName=new SimpleStringProperty();
     private SimpleObjectProperty<SourceType> gameRootDirSource=new SimpleObjectProperty<>();
+    private SimpleStringProperty gameAppStartPath=new SimpleStringProperty();
+    private SimpleBooleanProperty gameAppStartCustom=new SimpleBooleanProperty();
     private SimpleBooleanProperty checkNewVersion=new SimpleBooleanProperty();
     public SettingViewModel() {
         changeTitlebar.bindBidirectional(Config.setting.changeTitlebarProperty());
@@ -45,6 +47,9 @@ public class SettingViewModel implements ViewModel {
         exitWhenGameOver.bindBidirectional(Config.setting.exitWhenGameOverProperty());
         hideWhenGameStart.bindBidirectional(Config.setting.hideWhenGameStartProperty());
         gameRootDirSource.bindBidirectional(Config.setting.gameRootDirSourceProperty());
+
+        gameAppStartPath.bindBidirectional(Config.setting.gameStarAppPath);
+        gameAppStartCustom.bindBidirectional(Config.setting.gameStartAppCustomProperty());
 
         fontFamilyList.setAll(Font.getFamilies());
         diyHomeBg.bindBidirectional(Config.setting.diyHomeBgProperty());
@@ -184,5 +189,25 @@ public class SettingViewModel implements ViewModel {
 
     public SimpleBooleanProperty checkNewVersionProperty() {
         return checkNewVersion;
+    }
+
+    public String getGameAppStartPath() {
+        return gameAppStartPath.get();
+    }
+
+    public SimpleStringProperty gameAppStartPathProperty() {
+        return gameAppStartPath;
+    }
+
+    public boolean isGameAppStartCustom() {
+        return gameAppStartCustom.get();
+    }
+
+    public SimpleBooleanProperty gameAppStartCustomProperty() {
+        return gameAppStartCustom;
+    }
+
+    public void setGameAppStartCustom(boolean gameAppStartCustom) {
+        this.gameAppStartCustom.set(gameAppStartCustom);
     }
 }

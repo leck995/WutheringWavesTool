@@ -80,6 +80,8 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
     @FXML
     private Label ssrMinLabel;
     @FXML
+    private Label ssrEventAvgLabel;
+    @FXML
     private ComboBox<String> playerComboBox;
 
     @FXML
@@ -103,7 +105,7 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
         ssrAvgLabel.textProperty().bind(viewModel.ssrAvgTextProperty());
         ssrMaxLabel.textProperty().bind(viewModel.ssrMaxTextProperty());
         ssrMinLabel.textProperty().bind(viewModel.ssrMinTextProperty());
-
+        ssrEventAvgLabel.textProperty().bind(viewModel.ssrEventAvgTextProperty());
 
         poolListview.setItems(viewModel.getPoolNameList());
         poolListview.setCellFactory(stringListView -> new PoolNameCell());

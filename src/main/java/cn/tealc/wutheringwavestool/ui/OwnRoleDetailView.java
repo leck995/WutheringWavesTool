@@ -2,6 +2,7 @@ package cn.tealc.wutheringwavestool.ui;
 
 import cn.tealc.teafx.utils.AnchorPaneUtil;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
+import cn.tealc.wutheringwavestool.model.roleData.FetterDetail;
 import cn.tealc.wutheringwavestool.model.roleData.Phantom;
 import cn.tealc.wutheringwavestool.model.roleData.PhoantomMainProps;
 import cn.tealc.wutheringwavestool.model.roleData.Role;
@@ -14,10 +15,11 @@ import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
@@ -25,14 +27,20 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.TextAlignment;
 import javafx.util.Callback;
 import javafx.util.Pair;
 
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.ResourceBundle;
+import java.util.concurrent.Flow;
 
 /**
  * @program: WutheringWavesTool
@@ -207,65 +215,310 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
             }
         });
 
-
-
         viewModel.getPhantomList().addListener((ListChangeListener<? super Pair<Phantom, Image>>) change -> {
             phantomListGroup.getChildren().clear();
-            for (Pair<Phantom, Image> phantomImagePair : change.getList()) {
-                phantomListGroup.getChildren().add(new PhantomItem(phantomImagePair));
+            HBox phantomTop = PhantomTop();
+            phantomListGroup.getChildren().add(phantomTop);
+
+            FlowPane flowPane =new FlowPane();
+            flowPane.setHgap(15.0);
+            flowPane.setVgap(15.0);
+
+            phantomListGroup.getChildren().add(flowPane);
+
+            if (!change.getList().isEmpty()) {
+                for (Pair<Phantom, Image> phantomImagePair : change.getList()) {
+                    flowPane.getChildren().add(new PhantomItem(phantomImagePair));
+                }
+                flowPane.getChildren().add(phantomGuidance());
             }
+
         });
 
 
     }
 
 
-    class PhantomItem extends AnchorPane{
+    /**
+     * @description: 创建声骸头部信息，如套装效果，声骸词条总值
+     * @param:
+     * @return  javafx.scene.layout.HBox
+     * @date:   2024/10/5
+     */
+    private HBox PhantomTop(){
+        HBox hBox = new HBox();
+        hBox.setSpacing(15.0);
+        //套装效果
+        if (!viewModel.getFetterDetails().isEmpty()) {
+            VBox vBox = new VBox();
+            vBox.setAlignment(Pos.CENTER_LEFT);
+            vBox.getStyleClass().add("phantom-desc");
+            vBox.setMaxWidth(300);
+            vBox.setSpacing(5.0);
+
+
+
+
+            Label tip = new Label("声骸评级:");
+            Label level =new Label();
+            Separator separator = new Separator(Orientation.HORIZONTAL);
+            separator.setPrefWidth(200);
+            tip.getStyleClass().add("tip");
+
+            if (viewModel.getPhantomStatus() != null) {
+                level.setText(viewModel.getPhantomStatus().getText());
+                level.getStyleClass().add("status");
+                switch (viewModel.getPhantomStatus().getLevel()){
+                    case 1:  level.getStyleClass().add("n");
+                    case 2:  level.getStyleClass().add("s");
+                    case 3:  level.getStyleClass().add("ss");
+                    case 4:  level.getStyleClass().add("sss");
+                    case 5:  level.getStyleClass().add("ace");
+                }
+            }else {
+                level.getStyleClass().add("tip");
+                level.setText("当前无法评级");
+            }
+
+
+
+            HBox levelHbox = new HBox(10.0,tip,level);
+            levelHbox.setAlignment(Pos.CENTER_LEFT);
+            vBox.getChildren().addAll(levelHbox,separator);
+
+
+            for (FetterDetail fetterDetail : viewModel.getFetterDetails()) {
+                if (fetterDetail.getNum() == 5){
+                    vBox.getChildren().add(fetterItem(fetterDetail,1));
+                    vBox.getChildren().add(fetterItem(fetterDetail,2));
+                }else if (fetterDetail.getNum() > 2){
+                    vBox.getChildren().add(fetterItem(fetterDetail,1));
+                }
+            }
+            hBox.getChildren().add(vBox);
+        }
+
+        //声骸词条总值
+        if (!viewModel.getTotalPhantomValueList().isEmpty()){
+            FlowPane right=new FlowPane();
+            right.setAlignment(Pos.CENTER_LEFT);
+            HBox.setHgrow(right,Priority.ALWAYS);
+            right.setHgap(15.0);
+            right.setVgap(5.0);
+            right.getStyleClass().add("phantom-total");
+
+            for (PhoantomMainProps prop : viewModel.getTotalPhantomValueList()) {
+                Label label1=new Label(prop.getAttributeName());
+                Label label2=new Label(prop.getAttributeValue());
+
+                Rectangle thumb=new Rectangle(4.0,15.0);
+                thumb.setArcWidth(4);
+                thumb.setArcHeight(4);
+                thumb.getStyleClass().add("thumb");
+                label1.setGraphic(thumb);
+
+                label1.getStyleClass().add("sub-prop1");
+                label2.getStyleClass().add("sub-prop2");
+
+                if (prop.getLevel() == 3){
+                    thumb.getStyleClass().add("sss");
+                }else if (prop.getLevel() == 2){
+                    thumb.getStyleClass().add("ss");
+                }else if (prop.getLevel() == 1){
+                    thumb.getStyleClass().add("ss");
+                }
+                HBox hbox=new HBox(label1,label2);
+                hbox.setPadding(new Insets(0,10,0,10));
+                hbox.setPrefWidth(300);
+                hbox.setMaxWidth(300);
+                right.getChildren().add(hbox);
+            }
+            hBox.getChildren().add(right);
+        }
+        return hBox;
+    }
+
+
+
+    /**
+     * @description: 套装文本显示
+     * @param:	null
+     * @return
+     * @date:   2024/10/5
+     */
+    private Label fetterItem(FetterDetail detail,int index){
+        Label label=new Label();
+        ImageView iconIV = new ImageView();
+        iconIV.setFitHeight(20);
+        iconIV.setFitWidth(20);
+        iconIV.setImage(LocalResourcesManager.imageBuffer(detail.getIconUrl(),20,20,true,true));
+        if (index == 1){
+            label.setText(detail.getFirstDescription());
+        }else {
+            label.setText(detail.getSecondDescription());
+        }
+        label.setGraphic(iconIV);
+        label.setPrefWidth(280.0);
+        label.setMinHeight(Label.USE_PREF_SIZE);
+        label.setWrapText(true);
+        return label;
+    }
+
+
+
+
+
+
+    private VBox phantomGuidance(){
+        VBox vBox = new VBox();
+        VBox top = new VBox();
+        top.getStyleClass().add("top");
+        Label tip1=new Label("评级说明:");
+        tip1.getStyleClass().add("tip");
+
+        Hyperlink button =new Hyperlink("详细说明");
+        button.setVisited(true);
+        button.setOnAction(actionEvent -> {
+            try {
+                Desktop.getDesktop().browse(
+                        URI.create("https://github.com/leck995/WutheringWavesTool/wiki/%E5%A3%B0%E9%AA%B8%E6%B5%8B%E8%AF%84%E6%9C%BA%E5%88%B6%E8%AF%B4%E6%98%8E"));
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        StackPane stackPane = new StackPane(tip1,button);
+        StackPane.setAlignment(tip1,Pos.CENTER_LEFT);
+        StackPane.setAlignment(button,Pos.CENTER_RIGHT);
+
+        Separator separator = new Separator(Orientation.HORIZONTAL);
+        separator.setPrefWidth(200);
+
+        top.getChildren().addAll(stackPane,separator);
+
+        String text= """
+                共ACE、SSS、SS、SS、N这5个等级。
+             
+                测评将声骸分为两个部分，分为词条和数值：
+                    词条：统计对于角色的重要词条的多少
+                    数值：统计当前词条数值与词条最大数
+                           值的比值
+                请注意当前ACE与SSS的要求比较苛刻，SS即可意味着可以毕业。
+                
+                该功能处于测试阶段，数据可能存在错误，自定义功能会在该功能完善时推出。
+                """;
+
+        Label textLabel = new Label(text);
+        textLabel.setWrapText(true);
+        textLabel.setPrefHeight(Label.USE_COMPUTED_SIZE);
+
+
+
+        vBox.getChildren().addAll(top,textLabel);
+        vBox.setSpacing(8.0);
+        vBox.setPrefWidth(300);
+        vBox.setMinWidth(300);
+        vBox.getStyleClass().add("phantom");
+        return vBox;
+    }
+
+
+
+
+
+
+    class PhantomItem extends VBox{
         private ImageView iv=new ImageView();
         private Label level=new Label();
-        private StackPane left=new StackPane();
         private ImageView attrIV=new ImageView();
 
         public PhantomItem(Pair<Phantom, Image> pair) {
+            setPrefWidth(300);
+            setMinWidth(300);
             Phantom phantom = pair.getKey();
+            VBox top = new VBox();
+            top.getStyleClass().add("top");
+            HBox countPane = new HBox();
+            countPane.setSpacing(15.0);
+            if (phantom.getStatus() != null){
+                Label tip1=new Label("词条:");
+                Label tip2=new Label("词条数值:");
+                tip1.getStyleClass().add("tip");
+                tip2.getStyleClass().add("tip");
 
+                Label status1=new Label();
+                Label status2=new Label();
+
+                status1.getStyleClass().add("status");
+                status2.getStyleClass().add("status");
+
+                status1.setText(phantom.getStatus().getText());
+                if (phantom.getStatus() == Phantom.Status.ACE){
+                    status1.getStyleClass().add("ace");
+                } else if (phantom.getStatus() == Phantom.Status.SSS){
+                    status1.getStyleClass().add("sss");
+                }else if (phantom.getStatus() == Phantom.Status.SS){
+                    status1.getStyleClass().add("ss");
+                }else if (phantom.getStatus() == Phantom.Status.S){
+                    status1.getStyleClass().add("s");
+                }else {
+                    status1.getStyleClass().add("n");
+                }
+
+
+                status2.setText(phantom.getPropStatus().getText());
+                if (phantom.getPropStatus() == Phantom.Status.ACE){
+                    status2.getStyleClass().add("ace");
+                } else if (phantom.getPropStatus() == Phantom.Status.SSS){
+                    status2.getStyleClass().add("sss");
+                }else if (phantom.getPropStatus() == Phantom.Status.SS){
+                    status2.getStyleClass().add("ss");
+                }else if (phantom.getPropStatus() == Phantom.Status.S){
+                    status2.getStyleClass().add("s");
+                }else {
+                    status2.getStyleClass().add("n");
+                }
+
+                HBox topChild1=new HBox(15.0,tip1,status1);
+                HBox topChild2=new HBox(15.0,tip2,status2);
+                topChild1.setAlignment(Pos.CENTER_LEFT);
+                topChild2.setAlignment(Pos.CENTER_LEFT);
+
+
+                countPane.getChildren().addAll(topChild1,topChild2);
+            }else {
+                Label label =new Label("当前无法评级");
+                label.getStyleClass().add("tip");
+                countPane.getChildren().addAll(label);
+            }
+
+
+
+            Separator separator = new Separator(Orientation.HORIZONTAL);
+            separator.setPrefWidth(200);
+
+            top.getChildren().addAll(countPane,separator);
+
+            //头像
+            StackPane iconPane=new StackPane();
+            iconPane.getStyleClass().add("icon");
             iv.setFitHeight(65);
             iv.setFitWidth(65);
             attrIV.setFitHeight(20);
             attrIV.setFitWidth(20);
             level.getStyleClass().add("cost");
-            left.getChildren().addAll(iv,attrIV,level);
+            iconPane.getChildren().addAll(iv,attrIV,level);
             StackPane.setAlignment(attrIV, Pos.TOP_LEFT);
             StackPane.setAlignment(level, Pos.BOTTOM_RIGHT);
-            //root.getStyleClass().add("phantom-detail-cell");
             iv.setImage(pair.getValue());
             level.setText(String.valueOf(phantom.getLevel()));
             attrIV.setImage(LocalResourcesManager.imageBuffer(pair.getKey().getFetterDetail().getIconUrl()));
-
-
             switch (pair.getKey().getQuality()){
-                case 5 -> left.getStyleClass().add("ssr");
-                case 4 -> left.getStyleClass().add("sr");
-                default -> left.getStyleClass().add("r");
+                case 5 -> iconPane.getStyleClass().add("ssr");
+                case 4 -> iconPane.getStyleClass().add("sr");
+                default -> iconPane.getStyleClass().add("r");
             }
-
-
-            GridPane right=new GridPane(3,3);
-
-            right.setHgap(40.0);
-            right.setVgap(5.0);
-
-
-
-     /*       Label cost=new Label("COST");
-            Label cost2=new Label(String.valueOf(phantom.getCost()));
-            cost.getStyleClass().add("cost1");
-            cost2.getStyleClass().add("cost2");
-            HBox costBox=new HBox(cost,cost2);
-            costBox.setSpacing(20);
-            right.add(costBox,0,2);*/
-
-
+            //主词条
+            VBox mainProp=new VBox();
             for (int i = 0; i < phantom.getMainProps().size(); i++) {
                 PhoantomMainProps prop = phantom.getMainProps().get(i);
                 Label label1=new Label(prop.getAttributeName());
@@ -274,33 +527,59 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
                 label2.getStyleClass().add("main-prop2");
                 HBox hbox=new HBox(label1,label2);
                 hbox.setSpacing(20);
-                right.add(hbox,0,i);
+                mainProp.getChildren().add(hbox);
             }
 
+            HBox mainHBox=new HBox();
+            mainHBox.setSpacing(5.0);
+            mainHBox.getChildren().addAll(iconPane,mainProp);
 
+
+
+
+
+
+            VBox subPropVBox=new VBox();
+            subPropVBox.setSpacing(8.0);
             if (phantom.getSubProps() != null){
                 for (int i = 0; i < phantom.getSubProps().size(); i++) {
                     PhoantomMainProps prop = phantom.getSubProps().get(i);
-                    Label label1=new Label(prop.getAttributeName());
+                    Label label1=new Label(String.format("%s(%.1f)",prop.getAttributeName(),prop.getAttributeMaxValue()));
                     Label label2=new Label(prop.getAttributeValue());
-                    label1.setPrefWidth(120);
+
+                    Rectangle thumb=new Rectangle(4.0,15.0);
+                    thumb.setArcWidth(4);
+                    thumb.setArcHeight(4);
+                    thumb.getStyleClass().add("thumb");
+                    label1.setGraphic(thumb);
+
                     label1.getStyleClass().add("sub-prop1");
                     label2.getStyleClass().add("sub-prop2");
-                    HBox hbox=new HBox(label1,label2);
-                    hbox.setSpacing(20);
-                    if (i < 3){
-                        right.add(hbox,1,i);
-                    } else {
-                        right.add(hbox,2,i-3);
+
+
+                    if (prop.getLevel() == 3){
+                        thumb.getStyleClass().add("sss");
+                    }else if (prop.getLevel() == 2){
+                        thumb.getStyleClass().add("ss");
+                    }else if (prop.getLevel() == 1){
+                        thumb.getStyleClass().add("ss");
                     }
+                    HBox hbox=new HBox(label1,label2);
+                    hbox.setSpacing(10);
+                    subPropVBox.getChildren().addAll(hbox);
                 }
             }
 
-            left.getStyleClass().add("left");
-            right.getStyleClass().add("right");
-            getChildren().addAll(left,right);
-            AnchorPaneUtil.setPosition(left,0.0,null,0.0,0.0);
-            AnchorPaneUtil.setPosition(right,0.0,0.0,0.0,85.0);
+
+
+
+
+
+            subPropVBox.getStyleClass().add("sub-prop");
+            mainHBox.getStyleClass().add("main-prop");
+            getChildren().addAll(top,mainHBox,subPropVBox);
+
+            setSpacing(8.0);
             getStyleClass().add("phantom");
         }
     }
