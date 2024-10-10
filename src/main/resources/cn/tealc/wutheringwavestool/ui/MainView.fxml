@@ -86,7 +86,7 @@
                                     <FontIcon iconLiteral="mdral-home" styleClass="hit-btn" />
                                  </graphic>
                               </ToggleButton>
-                              <ToggleButton fx:id="signBtn" alignment="CENTER_LEFT" ellipsisString="" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" onAction="#toSign" prefWidth="140.0" styleClass="icon-only" text="签到" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                              <ToggleButton fx:id="signBtn" accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" onAction="#toSign" prefWidth="140.0" styleClass="icon-only" text="签到" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
                                     <FontIcon iconLiteral="mdral-beenhere" />
                                  </graphic>
@@ -101,13 +101,13 @@
                                     <FontIcon iconLiteral="mdal-broken_image" />
                                  </graphic>
                               </ToggleButton>
-                              <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="30.0" layoutY="104.0" mnemonicParsing="false" onAction="#toOwnRole" prefWidth="140.0" styleClass="icon-only" text="我的角色" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                              <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="30.0" layoutY="104.0" mnemonicParsing="false" onAction="#toOwnRole" prefWidth="140.0" styleClass="icon-only" text="我的角色" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
                                     <FontIcon iconLiteral="mdmz-person" />
                                  </graphic>
                               </ToggleButton>
                               <Spacer VBox.vgrow="ALWAYS" />
-                              <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="30.0" layoutY="718.0" mnemonicParsing="false" onAction="#toAccount" prefWidth="140.0" styleClass="icon-only" text="账号" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                              <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="30.0" layoutY="718.0" mnemonicParsing="false" onAction="#toAccount" prefWidth="140.0" styleClass="icon-only" text="账号" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
                                     <FontIcon iconLiteral="mdal-account_box" />
                                  </graphic>

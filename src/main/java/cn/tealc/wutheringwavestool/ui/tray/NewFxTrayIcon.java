@@ -74,7 +74,7 @@ public class NewFxTrayIcon extends TrayIcon {
         stage.getIcons().add(new javafx.scene.image.Image(FXResourcesLoader.load("image/icon.png"),45,45,true,true));
         stage.initStyle(StageStyle.UNDECORATED);
         stage.initOwner(parent);
-        //stage.setAlwaysOnTop(true); //设置为顶层，否则在windows系统中会被底部任务栏遮挡
+        stage.setAlwaysOnTop(true); //设置为顶层，否则在windows系统中会被底部任务栏遮挡
         stage.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue) {
                 stage.hide();

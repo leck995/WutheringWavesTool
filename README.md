@@ -26,7 +26,10 @@ ___
 ![image.png](https://github.com/leck995/WutheringWavesTool/blob/new-ui/temp/04.png)
 
 ![image.png](https://github.com/leck995/WutheringWavesTool/blob/new-ui/temp/05.png)
+![image.png](https://github.com/leck995/WutheringWavesTool/blob/new-ui/temp/06.png)
 ## 教程
+
+
 ***
 软件启动先在设置中设置鸣潮游戏目录（类似于“D:\Game\Wuthering Waves”）,这是最优先的一步。
 
@@ -51,6 +54,7 @@ ___
 
 
 ## 问题解答
+### 注意，教程可能部分存在过时,可前往[WIKI](https://github.com/leck995/WutheringWavesTool/wiki)结合使用
 ***
 #### 1. 提示无法获取抽卡数据连接
 * 确保游戏安装根目录正确，获取前打开游戏的抽卡历史界面。
@@ -60,10 +64,7 @@ ___
 #### 3. 助手内所有的文本均乱码或字体异常
 检查操作系统是否修改过默认字体，可下载带有font标志的安装包进行使用
 
-## 其他
-***
-项目背景来之与网络，有知晓作者请告知一下，谢谢。
-项目仅供学习交流使用，请勿用于其他用途。
+
 
 ## 感谢与支持
 ***
@@ -81,6 +82,7 @@ ___
 * [Sqlite-jdbc](https://github.com/xerial/sqlite-jdbc)
 * [Collapse](https://github.com/CollapseLauncher/Collapse)
 
+项目背景作者为[Rafa](https://www.pixiv.net/artworks/120767239)，感谢。
 
 ### 赞助
 倘若喜欢本程序，欢迎支持一下开发者，您的支持会加快软件的开发进度。

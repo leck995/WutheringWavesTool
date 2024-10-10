@@ -147,7 +147,7 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
             SignUserInfo item = getItem();
             Label userIdLabel = new Label("用户ID:");
             TextField userIdTextField = new TextField(item.getUserId());
-            userIdTextField.setPromptText("库街区的用户ID");
+            userIdTextField.setPromptText("库街区的用户UID");
             InputGroup inputGroup1 = new InputGroup(userIdLabel,userIdTextField);
             inputGroup1.setAlignment(Pos.CENTER);
             Label roleIdLabel = new Label("游戏ID:");
@@ -236,7 +236,7 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
         public AddAccountView() {
             Label userIdLabel = new Label("用户ID:");
             TextField userIdTextField = new TextField();
-            userIdTextField.setPromptText("库街区的用户ID");
+            userIdTextField.setPromptText("库街区的用户UID");
             InputGroup inputGroup1 = new InputGroup(userIdLabel,userIdTextField);
             inputGroup1.setAlignment(Pos.CENTER);
             Label roleIdLabel = new Label("游戏ID:");

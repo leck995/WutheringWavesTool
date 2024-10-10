@@ -73,9 +73,15 @@ public class GameTimeView implements FxmlView<GameTimeViewModel>, Initializable 
             headImageView.setImage(new Image(FXResourcesLoader.load("image/icon.png"),80,80,true,true,true));
         }
 
-        accountComboBox.setItems(viewModel.getUserInfoList());
-        accountComboBox.getSelectionModel().select(viewModel.getUserIndex());
-        viewModel.userIndexProperty().bind(accountComboBox.getSelectionModel().selectedIndexProperty());
+        if (!Config.setting.isNoKuJieQu()){
+            accountComboBox.setItems(viewModel.getUserInfoList());
+            accountComboBox.getSelectionModel().select(viewModel.getUserIndex());
+            viewModel.userIndexProperty().bind(accountComboBox.getSelectionModel().selectedIndexProperty());
+        }else {
+            accountComboBox.setVisible(false);
+        }
+
+
         lineChart.setData(viewModel.getChartData());
         currentDayLabel.textProperty().bind(viewModel.currentDayTextProperty());
         currentTimeLabel.textProperty().bind(viewModel.currentTimeTextProperty());

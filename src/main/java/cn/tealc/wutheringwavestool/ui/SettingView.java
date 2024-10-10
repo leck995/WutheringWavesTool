@@ -26,6 +26,8 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.slf4j.Logger;
@@ -85,6 +87,8 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
     @FXML
     private ToggleSwitch versionCheckSwitch;
     @FXML
+    private ToggleSwitch noKuJieQuSwitch;
+    @FXML
     private TextField gameStartAppField;
 
     @FXML
@@ -98,6 +102,9 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
     private RadioButton gameStartAppRadioDefault;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+
+
         gameDirField.textProperty().bindBidirectional(viewModel.gameDirProperty());
         startWithAnalysisView.selectedProperty().bindBidirectional(viewModel.startWithAnalysisProperty());
 
@@ -108,6 +115,10 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
         diyBgSwitch.selectedProperty().bindBidirectional(viewModel.diyHomeBgProperty());
         diyBgInputGroup.managedProperty().bind(diyBgSwitch.selectedProperty());
         diyBgInputGroup.visibleProperty().bind(diyBgSwitch.selectedProperty());
+
+
+        noKuJieQuSwitch.selectedProperty().bindBidirectional(Config.setting.noKuJieQuProperty());
+
 
         if (viewModel.getGameRootDirSource()==SourceType.DEFAULT){
             gameSourceType.selectToggle(gameSourceType.getToggles().getFirst());
@@ -151,7 +162,11 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
         appName.setText(Config.appTitle);
         appVersion.setText(Config.version);
         appAuthor.setText(Config.appAuthor);
-        appIconIv.setImage(new Image(FXResourcesLoader.load("image/icon.png"),100,100,true,true,true));
+
+
+        appIconIv.setFitWidth(80);
+        appIconIv.setFitHeight(80);
+        appIconIv.setImage(new Image(FXResourcesLoader.load("image/icon.png"),80,80,true,true,true));
 
         titlebarSwitch.selectedProperty().bindBidirectional(viewModel.changeTitlebarProperty());
         versionCheckSwitch.selectedProperty().bindBidirectional(viewModel.checkNewVersionProperty());
@@ -240,6 +255,7 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
     void setGameApp(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("选择鸣潮启动程序");
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("exe","*.exe"));
         File file = fileChooser.showOpenDialog(gameDirField.getScene().getWindow());
         if (file != null) {
             gameStartAppField.setText(file.getAbsolutePath());

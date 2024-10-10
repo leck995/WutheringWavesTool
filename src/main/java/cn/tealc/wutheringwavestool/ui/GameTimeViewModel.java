@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.ui;
 
+import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
@@ -9,6 +10,7 @@ import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.sign.UserInfo;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -42,29 +44,37 @@ public class GameTimeViewModel implements ViewModel {
     private final SimpleDoubleProperty totalProgressValue=new SimpleDoubleProperty();
 
 
+    //private final SimpleBooleanProperty noKuJieQu = new SimpleBooleanProperty(false);
+
     public GameTimeViewModel() {
-        UserInfoDao dao = new UserInfoDao();
-        List<UserInfo> userInfos = dao.getAll();
-        userInfoList.setAll(userInfos);
-        UserInfo main = dao.getMain();
-        if (main != null) {
-            for (int i = 0; i < userInfoList.size(); i++) {
-                if (Objects.equals(userInfoList.get(i).getId(), main.getId())) {
-                    userIndex.set(i);
-                    break;
+        if (!Config.setting.isNoKuJieQu()){
+            UserInfoDao dao = new UserInfoDao();
+            List<UserInfo> userInfos = dao.getAll();
+            userInfoList.setAll(userInfos);
+            UserInfo main = dao.getMain();
+            if (main != null) {
+                for (int i = 0; i < userInfoList.size(); i++) {
+                    if (Objects.equals(userInfoList.get(i).getId(), main.getId())) {
+                        userIndex.set(i);
+                        break;
+                    }
                 }
-            }
-            fresh();
-        }else {
+                freshWithAccount();
+            }else {
         /*    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                     new MessageInfo(MessageType.WARNING,"当前不存在主用户信息，无法获取，请在账号界面添加用户信息"),false);*/
+            }
+
+            userIndex.addListener((observableValue, number, t1) -> {
+                if (t1 != null) {
+                    freshWithAccount();
+                }
+            });
+        }else {
+            freshWithoutAccount();
         }
 
-        userIndex.addListener((observableValue, number, t1) -> {
-            if (t1 != null) {
-                fresh();
-            }
-        });
+
 
 
     }
@@ -72,7 +82,13 @@ public class GameTimeViewModel implements ViewModel {
 
 
 
-    private void fresh() {
+    /**
+     * @description: 使用库街区账号时
+     * @param:
+     * @return  void
+     * @date:   2024/10/8
+     */
+    private void freshWithAccount() {
         GameTimeDao gameTimeDao = new GameTimeDao();
         //统计所有账号全部时长
         List<GameTime> gameTimeList = gameTimeDao.getAllTime();
@@ -94,6 +110,39 @@ public class GameTimeViewModel implements ViewModel {
         currentTotalTimeText.set(String.format("%.2f", currentTotalTime));
 
         currentUserName.set(userInfo.getRoleName());
+
+        totalProgressValue.set(currentTotalTime/totalTime);
+
+        updateCurrentGameTime();
+    }
+
+
+    /**
+     * @description: 不使用库街区时
+     * @param:
+     * @return  void
+     * @date:   2024/10/8
+     */
+    private void freshWithoutAccount() {
+        GameTimeDao gameTimeDao = new GameTimeDao();
+        //统计所有账号全部时长
+        List<GameTime> gameTimeList = gameTimeDao.getAllTime();
+        Map<String, List<GameTime>> allTimeMap = getMap(gameTimeList);
+        double totalTime = sunTime(allTimeMap);
+        allTotalTimeText.set(String.format("%.2f", totalTime));
+
+
+
+        currentDayText.set(String.format("记录天数 %d 天", allTimeMap.keySet().size()));
+
+        Map<String, List<GameTime>> mapInWeek = getMapInWeek(gameTimeList);
+        //统计七日时长图表
+        updateChartDate(mapInWeek,"主账号时长");
+        //统计当前账号全部时长
+        double currentTotalTime = sunTime(allTimeMap);
+        currentTotalTimeText.set(String.format("%.2f", currentTotalTime));
+
+        currentUserName.set("全部用户");
 
         totalProgressValue.set(currentTotalTime/totalTime);
 

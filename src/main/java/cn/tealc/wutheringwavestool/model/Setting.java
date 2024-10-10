@@ -14,7 +14,7 @@ public class Setting {
     private SimpleDoubleProperty appWidth=new SimpleDoubleProperty(1280.0);
     private SimpleDoubleProperty appHeight=new SimpleDoubleProperty(760.0);
 
-    private SimpleBooleanProperty leftBarShow=new SimpleBooleanProperty(false); //左侧菜单栏是否关闭
+    private SimpleBooleanProperty leftBarShow=new SimpleBooleanProperty(true); //左侧菜单栏是否关闭
     private SimpleBooleanProperty theme=new SimpleBooleanProperty(false); //主题，false为亮色
     private SimpleStringProperty homeViewIcon=new SimpleStringProperty();  //主页头像
     private SimpleStringProperty homeViewRole=new SimpleStringProperty(); //主页人物
@@ -37,7 +37,7 @@ public class Setting {
 
 
     private SimpleIntegerProperty resourceSource = new SimpleIntegerProperty(1); //0代表Github，1代表码云
-
+    private SimpleBooleanProperty noKuJieQu = new SimpleBooleanProperty(false); //不使用库街区
 
 
 
@@ -272,5 +272,17 @@ public class Setting {
 
     public void setGameStartAppCustom(boolean gameStartAppCustom) {
         this.gameStartAppCustom.set(gameStartAppCustom);
+    }
+
+    public boolean isNoKuJieQu() {
+        return noKuJieQu.get();
+    }
+
+    public SimpleBooleanProperty noKuJieQuProperty() {
+        return noKuJieQu;
+    }
+
+    public void setNoKuJieQu(boolean noKuJieQu) {
+        this.noKuJieQu.set(noKuJieQu);
     }
 }

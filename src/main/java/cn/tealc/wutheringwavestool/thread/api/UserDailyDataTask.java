@@ -33,8 +33,7 @@ public class UserDailyDataTask extends Task<ResponseBody<RoleDailyData>> {
 
     @Override
     protected ResponseBody<RoleDailyData> call() throws Exception {
-        ResponseBody<RoleDailyData> sign = sign(signUserInfo.getRoleId(), signUserInfo.getToken());
-        return sign;
+        return sign(signUserInfo.getRoleId(), signUserInfo.getToken());
     }
 
     private ResponseBody<RoleDailyData> sign(String roleId,String token){
@@ -59,7 +58,7 @@ public class UserDailyDataTask extends Task<ResponseBody<RoleDailyData>> {
                 responseBody.setMsg(tree.get("msg").asText());
                 return responseBody;
             }else {
-                return new ResponseBody<>(1,"网络连接失败,检查网络");
+                return new ResponseBody<>(1,"网络连接失败,异常状态码: " + response.statusCode());
             }
         } catch (IOException | InterruptedException e) {
             LOG.error("UserDailyDataTask错误",e);

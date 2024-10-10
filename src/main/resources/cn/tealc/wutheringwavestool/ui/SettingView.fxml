@@ -80,6 +80,9 @@
                               <Label styleClass="tip" text="需重启，窗口调整在右下角" />
                               <Label styleClass="title-4" text="启动页" />
                               <CheckBox fx:id="startWithAnalysisView" mnemonicParsing="false" text="抽卡分析" />
+                              <Label styleClass="title-4" text="禁用库街区" />
+                              <ToggleSwitch fx:id="noKuJieQuSwitch" labelPosition="RIGHT" text="禁用" />
+                              <Label layoutX="10.0" layoutY="73.0" styleClass="tip" text="需重启" />
                               <Label styleClass="title-4" text="自定义背景(16:9最佳)" />
                               <ToggleSwitch fx:id="diyBgSwitch" labelPosition="RIGHT" text="开启" />
                               <StackPane fx:id="diyBgInputGroup" maxWidth="350.0" styleClass="input-group">
@@ -120,10 +123,10 @@
                            <children>
                               <StackPane AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                                  <children>
-                                    <ImageView fx:id="appIconIv" fitHeight="100.0" fitWidth="100.0" pickOnBounds="true" preserveRatio="true" />
+                                    <ImageView fx:id="appIconIv" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" />
                                  </children>
                               </StackPane>
-                              <VBox layoutX="120.0" layoutY="20.0" spacing="5.0" AnchorPane.leftAnchor="120.0" AnchorPane.topAnchor="20.0">
+                              <VBox layoutX="120.0" layoutY="20.0" spacing="2.0" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="10.0">
                                  <children>
                                     <Label fx:id="appName" styleClass="title-4" text="WutheringWavesTool" />
                                     <Label fx:id="appVersion" text="1.4.1" />

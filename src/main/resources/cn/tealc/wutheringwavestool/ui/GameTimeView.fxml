@@ -28,7 +28,7 @@
                   <AnchorPane prefHeight="150.0" prefWidth="300.0" styleClass="item">
                      <children>
                         <Label styleClass="header" text="当前账号" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                        <Label fx:id="currentUserName" styleClass="header" text="伊人" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Label fx:id="currentUserName" styleClass="header" text="未知" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                         <HBox spacing="10.0" styleClass="content" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
                            <children>
                               <ImageView fx:id="headImageView" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" />

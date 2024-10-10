@@ -77,16 +77,8 @@ public class HomeViewModel implements ViewModel {
     private SimpleBooleanProperty hasSign = new SimpleBooleanProperty(false);
 
     public HomeViewModel() {
-        UserInfoDao dao = new UserInfoDao();
-        userInfo = dao.getMain();
-        if (userInfo != null) {
-            Config.currentRoleId = userInfo.getRoleId();
-            updateRoleData();
-        } else {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING, "当前不存在主用户信息，无法获取，请在账号界面添加用户信息"), false);
-        }
 
+        updateRoleData();
         updateGameTime(GameAppListener.getInstance().getDuration());
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_GAME_TIME_UPDATE, (s, objects) -> {
             long playTime = (long) objects[0];
@@ -140,17 +132,41 @@ public class HomeViewModel implements ViewModel {
 
 
 
+    /**
+     * @description: 刷新角色数据
+     * @param:
+     * @return  void
+     * @date:   2024/10/8
+     */
     public void updateRoleData() {
+        if (Config.setting.isNoKuJieQu()){
+            hasSign.set(true);
+            return;
+        }
+
         if (userInfo != null) {
             UserDataRefreshTask task = new UserDataRefreshTask(userInfo);
             task.setOnSucceeded(workerStateEvent -> {
-                getDailyData();
-                getRoleData();
+                ResponseBody<String> responseBody = task.getValue();
+                if (responseBody.getCode() == 200) {
+                    getDailyData();
+                    getRoleData();
+                }else {
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                            new MessageInfo(MessageType.WARNING, responseBody.getMsg()));
+                }
             });
             Thread.startVirtualThread(task);
         } else {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING, "当前不存在用户信息，无法进行刷新，请在账号界面添加用户信息或者重启助手"), false);
+            UserInfoDao dao = new UserInfoDao();
+            userInfo = dao.getMain();
+            if (userInfo != null) {
+                Config.currentRoleId = userInfo.getRoleId();
+                updateRoleData();
+            } else {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                        new MessageInfo(MessageType.WARNING, "当前不存在主用户信息，无法获取，请在账号界面添加用户信息"));
+            }
         }
     }
 
@@ -163,7 +179,6 @@ public class HomeViewModel implements ViewModel {
                 roleNameText.set(roleInfo.getName());
                 gameLifeText.set(String.format("已活跃%d天", roleInfo.getActiveDays()));
                 levelText.set(String.format("LV.%d", roleInfo.getLevel()));
-
                 for (BoxInfo boxInfo : roleInfo.getBoxList()) {
                     if (boxInfo.getBoxName().equals("朴素奇藏箱")) {
                         box1Text.set(String.valueOf(boxInfo.getNum()));
@@ -183,46 +198,46 @@ public class HomeViewModel implements ViewModel {
             }
         });
         Thread.startVirtualThread(userInfoDataTask);
-
-
     }
 
     private void getDailyData() {
         UserDailyDataTask userDailyDataTask = new UserDailyDataTask(userInfo);
         userDailyDataTask.setOnSucceeded(workerStateEvent -> {
             ResponseBody<RoleDailyData> responseBody = userDailyDataTask.getValue();
-            if (responseBody != null && responseBody.getCode() == 200) {
-                RoleDailyData data = responseBody.getData();
-                energyText.set(String.format("%d/%d", data.getEnergyData().getCur(), data.getEnergyData().getTotal()));
-                if (data.getEnergyData().getRefreshTimeStamp() == 0) {
-                    energyTimeText.set("体力已满");
-                } else {
-                    long timestamp = data.getEnergyData().getRefreshTimeStamp() * 1000; // 仅为示例，实际应替换为具体的时间戳
-                    Date date = new Date(timestamp);
-                    Instant instant = Instant.ofEpochMilli(timestamp);
-                    LocalDate dateFromTimestamp = instant.atZone(ZoneId.systemDefault()).toLocalDate();
-                    LocalDate currentDate = LocalDate.now();
-                    boolean isSameDay = dateFromTimestamp.equals(currentDate);
-                    if (isSameDay) {
-                        SimpleDateFormat formatter = new SimpleDateFormat("满: 今日HH:mm");
-                        energyTimeText.set(formatter.format(date));
+            if (responseBody != null) {
+                if (responseBody.getCode() == 200){
+                    RoleDailyData data = responseBody.getData();
+                    energyText.set(String.format("%d/%d", data.getEnergyData().getCur(), data.getEnergyData().getTotal()));
+                    if (data.getEnergyData().getRefreshTimeStamp() == 0) {
+                        energyTimeText.set("体力已满");
                     } else {
-                        SimpleDateFormat formatter = new SimpleDateFormat("满: 明日HH:mm");
-                        energyTimeText.set(formatter.format(date));
+                        long timestamp = data.getEnergyData().getRefreshTimeStamp() * 1000; // 仅为示例，实际应替换为具体的时间戳
+                        Date date = new Date(timestamp);
+                        Instant instant = Instant.ofEpochMilli(timestamp);
+                        LocalDate dateFromTimestamp = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+                        LocalDate currentDate = LocalDate.now();
+                        boolean isSameDay = dateFromTimestamp.equals(currentDate);
+                        if (isSameDay) {
+                            SimpleDateFormat formatter = new SimpleDateFormat("满: 今日HH:mm");
+                            energyTimeText.set(formatter.format(date));
+                        } else {
+                            SimpleDateFormat formatter = new SimpleDateFormat("满: 明日HH:mm");
+                            energyTimeText.set(formatter.format(date));
+                        }
                     }
+                    hasSign.set(data.isHasSignIn());
+                    livenessText.set(String.valueOf(data.getLivenessData().getCur()));
+                    battlePassLevelText.set(String.format("电台 LV.%02d", data.getBattlePassData().getFirst().getCur()));
+                    battlePassNumText.set(String.format("经验:%d/%d", data.getBattlePassData().get(1).getCur(), data.getBattlePassData().get(1).getTotal()));
+                    double cur = data.getBattlePassData().get(1).getCur();
+                    double total = data.getBattlePassData().get(1).getTotal();
+                    battlePassProgress.set(cur / total);
+                    rolePaneVisible.set(true);
+                }else {
+                    rolePaneVisible.set(false);
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                            new MessageInfo(MessageType.WARNING, responseBody.getMsg()));
                 }
-                hasSign.set(data.isHasSignIn());
-                livenessText.set(String.valueOf(data.getLivenessData().getCur()));
-                battlePassLevelText.set(String.format("电台 LV.%02d", data.getBattlePassData().getFirst().getCur()));
-                battlePassNumText.set(String.format("经验:%d/%d", data.getBattlePassData().get(1).getCur(), data.getBattlePassData().get(1).getTotal()));
-                double cur = data.getBattlePassData().get(1).getCur();
-                double total = data.getBattlePassData().get(1).getTotal();
-                battlePassProgress.set(cur / total);
-                rolePaneVisible.set(true);
-            } else {
-                rolePaneVisible.set(false);
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING, responseBody.getMsg(), false));
             }
         });
         Thread.startVirtualThread(userDailyDataTask);

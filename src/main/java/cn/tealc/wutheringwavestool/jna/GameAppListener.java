@@ -4,7 +4,9 @@ import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
+import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
+import cn.tealc.wutheringwavestool.model.sign.UserInfo;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
@@ -49,7 +51,7 @@ public class GameAppListener implements WinUser.WinEventProc{
         user32.GetWindowText(hwnd, buffer, buffer.length);
         String title = Native.toString(buffer);
         //LOG.debug("当前前台窗口是:{}",title);
-        if (title.equals("鸣潮  ")){
+        if (title.equals("鸣潮  ") || title.equals("鸣潮  ") ){
             if (!start){
                 game=hwnd;
                 start = true;
@@ -99,13 +101,15 @@ public class GameAppListener implements WinUser.WinEventProc{
             GameTimeDao dao=new GameTimeDao();
 
 
+            UserInfoDao userInfoDao = new UserInfoDao();
+            UserInfo currentUser = userInfoDao.getMain();
 
             if (startDate.isBefore(localDate)){ //跨天
                 LocalDateTime endOfDay = startDate.plusDays(1).atStartOfDay();
                 long millisecondsUntilEndOfDay = ChronoUnit.MILLIS.between(startDateTime, endOfDay);
                 GameTime gameTime1=new GameTime();
-                if (Config.currentRoleId != null){
-                    gameTime1.setRoleId(Config.currentRoleId);
+                if (currentUser != null){
+                    gameTime1.setRoleId(currentUser.getRoleId());
                 }
                 gameTime1.setGameDate(dateTimeFormatter.format(startDate));
                 gameTime1.setStartTime(startGameTime);
@@ -116,8 +120,8 @@ public class GameAppListener implements WinUser.WinEventProc{
 
 
                 GameTime gameTime=new GameTime();
-                if (Config.currentRoleId != null){
-                    gameTime.setRoleId(Config.currentRoleId);
+                if (currentUser != null){
+                    gameTime.setRoleId(currentUser.getRoleId());
                 }
                 gameTime.setGameDate(dateTimeFormatter.format(localDate));
                 long todayMillis = totalGameTime - millisecondsUntilEndOfDay;
@@ -130,8 +134,9 @@ public class GameAppListener implements WinUser.WinEventProc{
 
             }else {
                 GameTime gameTime=new GameTime();
-                if (Config.currentRoleId != null){
-                    gameTime.setRoleId(Config.currentRoleId);
+
+                if (currentUser != null){
+                    gameTime.setRoleId(currentUser.getRoleId());
                 }
                 gameTime.setGameDate(dateTimeFormatter.format(localDate));
                 gameTime.setStartTime(startGameTime);

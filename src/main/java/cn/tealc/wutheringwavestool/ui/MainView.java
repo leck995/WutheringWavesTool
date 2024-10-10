@@ -42,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.Iterator;
 import java.util.ResourceBundle;
 
 /**
@@ -120,6 +121,20 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         icon.setImage(new Image(FXResourcesLoader.load("image/icon.png"),45,45,true,true));
 
 
+        if (Config.setting.isNoKuJieQu()){
+            Iterator<Node> iterator = nav.getChildren().iterator();
+            while (iterator.hasNext()) {
+                Node next = iterator.next();
+                if (next instanceof ToggleButton button) {
+                    if (button.getAccessibleText() != null && button.getAccessibleText().equals("kujiequ")){
+                        iterator.remove();
+                    }
+                }
+
+            }
+        }
+
+
         navBtn.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
             if (!t1){
                 for (Toggle toggle : navToggleGroup.getToggles()) {
@@ -135,6 +150,10 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         });
 
         navBtn.selectedProperty().bindBidirectional(Config.setting.leftBarShowProperty());
+
+
+
+
 
 
 
@@ -291,6 +310,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             child.getChildren().setAll(viewTuple.getView());
             startNavAnim();
             bgPane.setVisible(false);
+
         }else {
             toggleButton.setSelected(true);
         }
