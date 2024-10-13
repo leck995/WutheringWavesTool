@@ -1,6 +1,8 @@
 package cn.tealc.wutheringwavestool.util;
 
 import cn.tealc.wutheringwavestool.base.Config;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -19,6 +21,7 @@ import java.util.Base64;
  * @create: 2024-09-28 07:06
  */
 public class ApiUtil {
+    private static final Logger LOG = LoggerFactory.getLogger(ApiUtil.class);
     public static String decrypt(String value) throws ApiDecryptException {
         String keyBase64 = Config.apiDecryptKey;
         byte[] key = Base64.getDecoder().decode(keyBase64);
@@ -31,7 +34,9 @@ public class ApiUtil {
             return new String(decryptedData, StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException | IllegalBlockSizeException |
                  BadPaddingException e) {
-            throw new ApiDecryptException("数据解密出现错误");
+            LOG.error("数据解密出现错误，原内容{}",value);
+            LOG.error(e.getMessage(),e);
+            return null;
         }
     }
 }

@@ -58,18 +58,21 @@ public class UserInfoDataTask extends Task<ResponseBody<RoleInfo>> {
                 ObjectMapper mapper=new ObjectMapper();
                 ResponseBodyForApi responseBodyForApi = mapper.readValue(response.body(), new TypeReference<ResponseBodyForApi>() {
                 });
-
                 ResponseBody<RoleInfo> responseBody = new ResponseBody<>(responseBodyForApi.getCode(), responseBodyForApi.getMsg(),responseBodyForApi.getSuccess());
-                String row = ApiUtil.decrypt(responseBodyForApi.getData());
 
-                //遇到个用户会返回null,不知道为什么，初步判断可能需要刷新后才能获取，以防万一，做个判断好了
-                if(row.equals("null")){
-                    return new ResponseBody<>(1, "返回值为空，请先使用库街区APP查看鸣潮数据后再次尝试，后再联系开发者");
+                if (responseBody.getCode() == 200){
+                    String row = ApiUtil.decrypt(responseBodyForApi.getData());
+                    //遇到个用户会返回null,不知道为什么，初步判断可能需要刷新后才能获取，以防万一，做个判断好了
+                    if (row == null || row.equals("null")) {
+                        return new ResponseBody<>(1, "返回值为空，请先使用库街区APP查看鸣潮数据后再次尝试，后再联系开发者");
+                    }
+                    RoleInfo roleInfo = mapper.readValue(row, RoleInfo.class);
+                    responseBody.setData(roleInfo);
+                    return responseBody;
+                }else {
+                    return new ResponseBody<>(1, responseBody.getMsg());
                 }
 
-                RoleInfo roleInfo = mapper.readValue(row, RoleInfo.class);
-                responseBody.setData(roleInfo);
-                return responseBody;
             }else {
                 return new ResponseBody<>(1, "连接出错");
             }
