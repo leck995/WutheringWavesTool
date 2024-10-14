@@ -23,20 +23,20 @@ import java.util.Base64;
 public class ApiUtil {
     private static final Logger LOG = LoggerFactory.getLogger(ApiUtil.class);
     public static String decrypt(String value) throws ApiDecryptException {
+        try {
         String keyBase64 = Config.apiDecryptKey;
         byte[] key = Base64.getDecoder().decode(keyBase64);
         byte[] encryptedData = Base64.getDecoder().decode(value);
         SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
-        try {
+
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             byte[] decryptedData = cipher.doFinal(encryptedData);
             return new String(decryptedData, StandardCharsets.UTF_8);
-        } catch (NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException | IllegalBlockSizeException |
+        } catch (NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException | IllegalBlockSizeException | IllegalArgumentException |
                  BadPaddingException e) {
-            LOG.error("数据解密出现错误，原内容{}",value);
-            LOG.error(e.getMessage(),e);
-            return null;
+            LOG.info("数据解密出现错误，返回原内容{}",value);
+            return value;
         }
     }
 }

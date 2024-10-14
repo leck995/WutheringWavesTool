@@ -128,7 +128,6 @@ public class VersionUpdateUtil {
             File confFile=new File("conf");
             File legalFile=new File("legal");
             File libFile=new File("lib");
-            File appFile=new File("App.exe");
             if (binFile.exists() && binFile.isDirectory()){
                 deleteFile(binFile);
             }
@@ -140,9 +139,6 @@ public class VersionUpdateUtil {
             }
             if (libFile.exists() && libFile.isDirectory()){
                 deleteFile(libFile);
-            }
-            if (appFile.exists() && appFile.isFile()){
-                appFile.delete();
             }
         });
 
