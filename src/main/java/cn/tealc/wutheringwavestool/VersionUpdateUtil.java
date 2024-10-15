@@ -2,15 +2,13 @@ package cn.tealc.wutheringwavestool;
 
 import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
-import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
-import cn.tealc.wutheringwavestool.model.sign.UserInfo;
+import cn.tealc.wutheringwavestool.model.kujiequ.sign.SignUserInfo;
+import cn.tealc.wutheringwavestool.model.kujiequ.sign.UserInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;

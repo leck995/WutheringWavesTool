@@ -29,11 +29,12 @@ open module cn.tealc.wutheringwavestool {
 
     exports cn.tealc.wutheringwavestool;
     exports cn.tealc.wutheringwavestool.model;
-    exports cn.tealc.wutheringwavestool.model.roleData to com.fasterxml.jackson.databind;
-    exports cn.tealc.wutheringwavestool.model.roleData.user to com.fasterxml.jackson.databind;
+    exports cn.tealc.wutheringwavestool.model.kujiequ.towerData;
+    exports cn.tealc.wutheringwavestool.model.kujiequ.roleData to com.fasterxml.jackson.databind;
+    exports cn.tealc.wutheringwavestool.model.kujiequ.roleData.user to com.fasterxml.jackson.databind;
     exports cn.tealc.wutheringwavestool.model.analysis to com.fasterxml.jackson.databind;
-    exports cn.tealc.wutheringwavestool.model.sign to com.fasterxml.jackson.databind;
-    exports cn.tealc.wutheringwavestool.model.roleData.weight;
+    exports cn.tealc.wutheringwavestool.model.kujiequ.sign to com.fasterxml.jackson.databind;
+    exports cn.tealc.wutheringwavestool.model.kujiequ.roleData.weight;
     exports cn.tealc.wutheringwavestool.ui;
     exports cn.tealc.wutheringwavestool.base;
     exports cn.tealc.wutheringwavestool.jna;

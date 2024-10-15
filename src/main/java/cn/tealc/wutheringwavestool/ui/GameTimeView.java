@@ -2,7 +2,7 @@ package cn.tealc.wutheringwavestool.ui;
 
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
-import cn.tealc.wutheringwavestool.model.sign.UserInfo;
+import cn.tealc.wutheringwavestool.model.kujiequ.sign.UserInfo;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;

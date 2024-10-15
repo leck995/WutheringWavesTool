@@ -1,17 +1,13 @@
 package cn.tealc.wutheringwavestool.ui;
 
-import cn.tealc.teafx.utils.AnchorPaneUtil;
-import cn.tealc.wutheringwavestool.FXResourcesLoader;
-import cn.tealc.wutheringwavestool.model.roleData.FetterDetail;
-import cn.tealc.wutheringwavestool.model.roleData.Phantom;
-import cn.tealc.wutheringwavestool.model.roleData.PhoantomMainProps;
-import cn.tealc.wutheringwavestool.model.roleData.Role;
+import cn.tealc.wutheringwavestool.model.kujiequ.roleData.FetterDetail;
+import cn.tealc.wutheringwavestool.model.kujiequ.roleData.Phantom;
+import cn.tealc.wutheringwavestool.model.kujiequ.roleData.PhoantomMainProps;
+import cn.tealc.wutheringwavestool.model.kujiequ.roleData.Role;
 import cn.tealc.wutheringwavestool.ui.component.OwnRoleDetailCell;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.FxmlView;
-import de.saxsys.mvvmfx.Initialize;
 import de.saxsys.mvvmfx.InjectViewModel;
-import javafx.beans.binding.Bindings;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -27,20 +23,14 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Line;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.TextAlignment;
-import javafx.util.Callback;
 import javafx.util.Pair;
 
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
-import java.util.List;
-import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.concurrent.Flow;
 
 /**
  * @program: WutheringWavesTool

@@ -1,8 +1,8 @@
 package cn.tealc.wutheringwavestool.thread.api;
 
 import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
-import cn.tealc.wutheringwavestool.model.roleData.user.RoleDailyData;
+import cn.tealc.wutheringwavestool.model.kujiequ.sign.SignUserInfo;
+import cn.tealc.wutheringwavestool.model.kujiequ.roleData.user.RoleDailyData;
 import cn.tealc.wutheringwavestool.util.HttpRequestUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,11 +11,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.time.Duration;
 
 /**
  * @program: WutheringWavesTool

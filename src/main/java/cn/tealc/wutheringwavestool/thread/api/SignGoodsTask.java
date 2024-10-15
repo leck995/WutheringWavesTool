@@ -1,8 +1,8 @@
 package cn.tealc.wutheringwavestool.thread.api;
 
 import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.wutheringwavestool.model.sign.SignGood;
-import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
+import cn.tealc.wutheringwavestool.model.kujiequ.sign.SignGood;
+import cn.tealc.wutheringwavestool.model.kujiequ.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.util.HttpRequestUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;

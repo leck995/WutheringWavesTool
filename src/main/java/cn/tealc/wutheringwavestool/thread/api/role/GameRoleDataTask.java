@@ -1,8 +1,8 @@
 package cn.tealc.wutheringwavestool.thread.api.role;
 
 import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.wutheringwavestool.model.roleData.Role;
-import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
+import cn.tealc.wutheringwavestool.model.kujiequ.roleData.Role;
+import cn.tealc.wutheringwavestool.model.kujiequ.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.thread.api.ApiConfig;
 import cn.tealc.wutheringwavestool.util.ApiDecryptException;
 import cn.tealc.wutheringwavestool.util.ApiUtil;

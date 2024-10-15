@@ -1,7 +1,7 @@
 package cn.tealc.wutheringwavestool.ui;
 
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
-import cn.tealc.wutheringwavestool.model.sign.UserInfo;
+import cn.tealc.wutheringwavestool.model.kujiequ.sign.UserInfo;
 import cn.tealc.wutheringwavestool.thread.api.UserInfoDataTask;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.collections.FXCollections;

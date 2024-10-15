@@ -1,10 +1,8 @@
 package cn.tealc.wutheringwavestool.dao;
 
 
-import cn.tealc.wutheringwavestool.model.sign.SignRecord;
-import cn.tealc.wutheringwavestool.model.sign.UserInfo;
+import cn.tealc.wutheringwavestool.model.kujiequ.sign.SignRecord;
 import org.apache.commons.dbutils.*;
-import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 import org.apache.commons.dbutils.handlers.ScalarHandler;
 import org.slf4j.Logger;

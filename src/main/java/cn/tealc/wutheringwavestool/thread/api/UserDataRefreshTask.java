@@ -1,7 +1,7 @@
 package cn.tealc.wutheringwavestool.thread.api;
 
 import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.wutheringwavestool.model.sign.SignUserInfo;
+import cn.tealc.wutheringwavestool.model.kujiequ.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.util.HttpRequestUtil;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;

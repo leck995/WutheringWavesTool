@@ -1,8 +1,8 @@
 package cn.tealc.wutheringwavestool.ui;
 
-import cn.tealc.wutheringwavestool.model.sign.SignGood;
-import cn.tealc.wutheringwavestool.model.sign.SignRecord;
-import cn.tealc.wutheringwavestool.model.sign.UserInfo;
+import cn.tealc.wutheringwavestool.model.kujiequ.sign.SignGood;
+import cn.tealc.wutheringwavestool.model.kujiequ.sign.SignRecord;
+import cn.tealc.wutheringwavestool.model.kujiequ.sign.UserInfo;
 
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.FxmlView;

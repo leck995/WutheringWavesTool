@@ -393,6 +393,20 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     }
 
 
+    @FXML
+    void toTower(ActionEvent event) {
+        ToggleButton toggleButton= (ToggleButton) event.getSource();
+        if (toggleButton.isSelected()){
+            ViewTuple<TowerView, TowerViewModel> viewTuple = FluentViewLoader.fxmlView(TowerView.class).load();
+            bgPane.setVisible(false);
+            child.getChildren().setAll(viewTuple.getView());
+            startNavAnim();
+        }else {
+            toggleButton.setSelected(true);
+        }
+    }
+
+
 
     private void startChangeAnim(){
         Animations.slideInLeft(child,Duration.millis(300)).play();

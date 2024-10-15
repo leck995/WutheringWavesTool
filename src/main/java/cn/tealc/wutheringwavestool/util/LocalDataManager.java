@@ -1,8 +1,7 @@
 package cn.tealc.wutheringwavestool.util;
 
-import cn.tealc.wutheringwavestool.model.roleData.weight.PhantomWeight;
+import cn.tealc.wutheringwavestool.model.kujiequ.roleData.weight.PhantomWeight;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import javafx.scene.image.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
