@@ -5,6 +5,7 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.CheckVersionTask;
+import cn.tealc.wutheringwavestool.thread.api.role.GameRoleDataSaveTask;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
@@ -30,5 +31,7 @@ public class MainViewModel implements ViewModel {
             });
             Thread.startVirtualThread(task);
         }
+
+
     }
 }

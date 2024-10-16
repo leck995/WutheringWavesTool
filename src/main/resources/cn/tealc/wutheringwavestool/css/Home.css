@@ -77,10 +77,12 @@
     -fx-font-size: 12;
 }
 .role .daily-data .progress-bar > .bar{
-    -fx-background-color: -color-font-subtle;
+    -fx-background-color: #998f82;
     -fx-padding: 2px;
 }
-
+.role .daily-data .progress-bar > .track{
+    -fx-background-color: #cfc6b2;
+}
 
 .role .role-data{
     -fx-background-color: -color-bg-default-90;

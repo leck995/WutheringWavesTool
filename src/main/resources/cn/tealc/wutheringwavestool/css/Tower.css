@@ -1,0 +1,108 @@
+.tower{
+    -color-bg-default-60: #ffffff60;
+    -color-bg-default-40: #ffffff40;
+    -color-bg-default-30: #ffffff30;
+}
+.tower .separator{
+    -fx-padding: 4 0 8 0;
+}
+.tower .separator > .line{
+    -fx-border-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #777676 0.0%, #77767600 100.0%) transparent transparent transparent;
+    -fx-border-insets: 1px 0 0 0;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+}
+.tower .status{
+    -fx-font-size: 20;
+    -fx-font-weight: bold ;
+    -fx-font-style: italic;
+
+}
+.tower .status.ace{
+    -fx-text-fill: #e33737;
+}
+.tower .status.sss{
+    -fx-text-fill: #ffec16;
+}
+.tower  .status.ss{
+    -fx-text-fill:#ffec16;
+}
+.tower  .status.s{
+    -fx-text-fill: #9300e8;
+}
+.tower  .status.n{
+    /* -fx-text-fill: #434343;*/
+}
+
+
+
+.tower .difficulty-list-view{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+.tower .difficulty-list-view .list-cell{
+    -fx-padding: 5,5,5,0;
+}
+.tower .difficulty-list-view .list-cell,
+.tower .difficulty-list-view .list-cell:selected{
+    -fx-background-color: transparent;
+}
+
+.tower .difficulty-list-view .list-cell > .tower-cell{
+    -fx-padding: 8,20,8,20;
+    -fx-spacing: 15;
+    -fx-background-radius: 5;
+    -fx-pref-height: 35;
+
+}
+
+.tower .difficulty-list-view .list-cell:hover > .tower-cell,
+.tower .difficulty-list-view .list-cell:selected > .tower-cell{
+    -fx-background-color: -color-bg-default-40;
+}
+
+.tower .difficulty-list-view .list-cell > .tower-cell .tower-name{
+    -fx-font-size: 15;
+}
+
+.tower .difficulty-list-view .list-cell > .tower-cell .tower-star{
+    -fx-font-size: 15;
+    -fx-text-fill: -color-font-muted;
+}
+.tower .difficulty-list-view .list-cell > .tower-cell .tower-star.full-star{
+    -fx-text-fill: #ffec16;
+}
+.tower .difficulty-list-view .list-cell > .tower-cell .tower-star.full-star .ikonli-font-icon {
+    -fx-icon-color: #ffec16;
+    -fx-fill: #ffec16;
+}
+.tower .difficulty-list-view .scroll-bar{
+    -fx-background-color: transparent;
+    -fx-opacity: 1;
+}
+.tower .difficulty-list-view .scroll-bar:vertical .thumb{
+    -fx-background-color: transparent;
+    -fx-background-insets: 1;
+}
+.tower .difficulty-list-view:hover .scroll-bar:vertical .thumb{
+    -fx-background-color: -color-bg-default-30;
+}
+
+
+
+.tower .right .area{
+    -fx-spacing: 8;
+    -fx-background-color: -color-bg-default-30;
+    -fx-background-radius: 5;
+    -fx-padding: 15 10 5 10;
+}
+
+.tower .right .area .area-title{
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+}
+
+
+.tower .right .area .floor-title{
+    -fx-font-size: 16;
+}

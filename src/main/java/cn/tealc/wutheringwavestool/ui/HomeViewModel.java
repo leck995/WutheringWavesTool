@@ -19,6 +19,7 @@ import cn.tealc.wutheringwavestool.thread.api.SignTask;
 import cn.tealc.wutheringwavestool.thread.api.UserDailyDataTask;
 import cn.tealc.wutheringwavestool.thread.api.UserDataRefreshTask;
 import cn.tealc.wutheringwavestool.thread.api.UserInfoDataTask;
+import cn.tealc.wutheringwavestool.thread.api.role.GameRoleDataSaveTask;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleBooleanProperty;

@@ -121,6 +121,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         livenessIV.setImage(new Image(MainApplication.class.getResource("image/liveness.png").toExternalForm(),true));
         livenessLabel.textProperty().bind(viewModel.livenessTextProperty());
         battlePassIV.setImage(new Image(MainApplication.class.getResource("image/battle-pass.png").toExternalForm(),true));
+
         battlePassProgress.progressProperty().bind(viewModel.battlePassProgressProperty());
         battlePassLevelLabel.textProperty().bind(viewModel.battlePassLevelTextProperty());
         battlePassNumLabel.textProperty().bind(viewModel.battlePassNumTextProperty());

@@ -108,7 +108,7 @@
                               </ToggleButton>
                               <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="230.0" mnemonicParsing="false" onAction="#toTower" prefWidth="140.0" styleClass="icon-only" text="深塔历史" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
-                                    <FontIcon iconLiteral="mdmz-person" />
+                                    <FontIcon iconLiteral="mdmz-navigation" />
                                  </graphic>
                               </ToggleButton>
                               <Spacer VBox.vgrow="ALWAYS" />

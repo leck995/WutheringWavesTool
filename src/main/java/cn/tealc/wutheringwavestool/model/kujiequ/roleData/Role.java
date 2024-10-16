@@ -21,7 +21,7 @@ public class Role {
     private String attributeName;
     private int weaponTypeId;
     private String weaponTypeName;
-    private String acronym;
+    private String acronym; //缩写
     private Integer mapRoleId;
 
     public int getRoleId() {

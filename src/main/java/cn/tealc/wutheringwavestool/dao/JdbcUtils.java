@@ -32,7 +32,7 @@ public class JdbcUtils {
     public static void init() {
         try {
             Connection con = DriverManager.getConnection(url);
-            String createRoleList="""
+            String createGameTime="""
                     CREATE TABLE IF NOT EXISTS game_time(
                       id INTEGER PRIMARY KEY AUTOINCREMENT,
                       role_id VARCHAR(100),
@@ -66,10 +66,41 @@ public class JdbcUtils {
                       role_id VARCHAR,
                       user_id VARCHAR);
                     """;
+
+            String createGameRole="""
+                    CREATE TABLE IF NOT EXISTS game_role(
+                      role_id BIGINT PRIMARY KEY,
+                      role_name VARCHAR,
+                      role_icon_url INTEGER,
+                      role_pic_url VARCHAR,
+                      star_level INTEGER,
+                      attribute_id INTEGER,
+                      attribute_name VARCHAR,     
+                      weapon_type_id INTEGER,
+                      weapon_type_name VARCHAR,
+                      acronym VARCHAR,
+                      breach INTEGER);
+                    """;
+            String createGameTower="""
+                    CREATE TABLE IF NOT EXISTS game_tower(
+                      id INTEGER PRIMARY KEY AUTOINCREMENT,
+                      floor INTEGER  NOT NULL,
+                      pic_url INTEGER,
+                      role_list VARCHAR,
+                      star INTEGER,
+                      area_id INTEGER  NOT NULL,
+                      area_name VARCHAR  NOT NULL,
+                      difficulty INTEGER,
+                      difficulty_name VARCHAR,
+                      endTime INTEGER NOT NULL ,
+                      UNIQUE (area_id, floor, endTime));
+                    """;
             Statement st = con.createStatement();
-            st.execute(createRoleList);
+            st.execute(createGameTime);
+            st.execute(createGameRole);
             st.execute(createUserInfo);
             st.execute(createSignHistory);
+            st.execute(createGameTower);
             st.close();
             con.close();
         } catch (SQLException e) {

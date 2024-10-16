@@ -70,11 +70,11 @@
                               </HBox>
                            </children>
                         </HBox>
-                        <HBox layoutX="10.0" layoutY="10.0" spacing="20.0">
+                        <HBox layoutX="10.0" layoutY="10.0" prefHeight="40.0" spacing="20.0">
                            <children>
                               <HBox alignment="CENTER_LEFT" spacing="10.0">
                                  <children>
-                                    <ImageView fx:id="battlePassIV" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" />
+                                    <ImageView fx:id="battlePassIV" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" translateY="3.0" />
                                     <VBox alignment="CENTER_LEFT">
                                        <children>
                                           <HBox alignment="CENTER_LEFT" spacing="10.0">
