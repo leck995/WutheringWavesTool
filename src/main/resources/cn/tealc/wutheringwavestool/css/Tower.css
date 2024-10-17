@@ -35,6 +35,12 @@
 }
 
 
+.tower .end-time{
+    -fx-font-size: 18;
+    -fx-text-fill: -color-font-muted;
+    -fx-font-weight: bold;
+}
+
 
 .tower .difficulty-list-view{
     -fx-background-color: transparent;

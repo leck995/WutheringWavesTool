@@ -40,6 +40,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * @program: WutheringWavesTool
@@ -267,6 +268,8 @@ public class HomeViewModel implements ViewModel {
 
 
 
+
+
     public void signAndGame() {
         SignTask task = new SignTask();
         task.setOnSucceeded(workerStateEvent -> hasSign.set(true));
@@ -295,7 +298,8 @@ public class HomeViewModel implements ViewModel {
             }
 
             if (exe.exists()) {
-                try {
+                runExeByCustom(exe.getAbsolutePath(),"-dx11","-SkipSplash");
+        /*        try {
                     Desktop.getDesktop().open(exe);
                     if (Config.setting.isHideWhenGameStart()) {
                         MainApplication.window.hide();
@@ -303,7 +307,7 @@ public class HomeViewModel implements ViewModel {
                 } catch (IOException e) {
                     LOG.info("启动游戏错误", e);
                     MainApplication.window.show();
-                }
+                }*/
             } else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                         new MessageInfo(MessageType.WARNING, String.format("无法找到%s，请确保游戏目录正确", exe.getPath()), false));
@@ -314,6 +318,36 @@ public class HomeViewModel implements ViewModel {
         }
     }
 
+
+
+    /**
+     * @description: 第一个参数必须是启动器的路径
+     * @param:	params
+     * @return  void
+     * @date:   2024/10/17
+     */
+    private void runExeByCustom(String... params) {
+        Thread.startVirtualThread(()->{
+            ProcessBuilder processBuilder = new ProcessBuilder(params);
+            try {
+                processBuilder.start();
+                //process.waitFor();目前的时长统计已不再需要该方法，仅作念想
+            } catch (IOException e) {
+                LOG.info("无法启动程序,进行提权启动");
+                String[] command2 = {"cmd.exe", "/c", "start", "\"\""}; //权限不够，提权
+                String[] mergedArray = Stream.concat(Stream.of(command2), Stream.of(params))
+                        .toArray(String[]::new);
+                ProcessBuilder processBuilder2 = new ProcessBuilder(mergedArray);
+                try {
+                    processBuilder2.start();
+                } catch (IOException ex) {
+                    LOG.error("提权后依然无法启动程序",e);
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.ERROR,"自定义参数方式启动失败:"+e.getMessage()));
+                }
+            }
+
+        });
+    }
 
     public String getEnergyText() {
         return energyText.get();

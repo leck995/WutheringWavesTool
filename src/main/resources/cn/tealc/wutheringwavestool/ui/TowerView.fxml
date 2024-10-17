@@ -16,16 +16,21 @@
             <VBox layoutY="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="60.0">
                <children>
                         <ListView fx:id="difficuityListview" prefHeight="300.0" prefWidth="150.0" styleClass="difficulty-list-view" />
-                  <Label styleClass="title-3" text="历史查询" />
-                  <ListView fx:id="towerHistoryListview" prefHeight="200.0" prefWidth="200.0" styleClass="difficulty-list-view" VBox.vgrow="ALWAYS" />
+                  <VBox VBox.vgrow="ALWAYS">
+                     <children>
+                        <Label styleClass="title-3" text="往期历史" translateX="10.0" />
+                        <ListView fx:id="towerHistoryListview" prefHeight="200.0" prefWidth="200.0" styleClass="difficulty-list-view" />
+                     </children>
+                  </VBox>
                </children>
             </VBox>
-                <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="right" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="240.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
+            <Label fx:id="title" layoutX="20.0" layoutY="20.0" styleClass="title-2" text="深境之塔" AnchorPane.leftAnchor="210.0" AnchorPane.topAnchor="15.0" />
+                <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="right" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
                     <content>
                   <FlowPane fx:id="areaFlowPane" columnHalignment="CENTER" hgap="50.0" vgap="40.0" />
                     </content>
                 </ScrollPane>
-            <Label fx:id="seasonEndTimeLabel" styleClass="title-3" text="深境之塔" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0" />
+            <Label fx:id="seasonEndTimeLabel" styleClass="end-time" text="刷新" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="16.0" />
             </children>
         </AnchorPane>
     </children>

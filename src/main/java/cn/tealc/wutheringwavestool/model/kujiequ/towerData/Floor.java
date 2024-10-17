@@ -1,6 +1,5 @@
 package cn.tealc.wutheringwavestool.model.kujiequ.towerData;
 
-import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
@@ -15,12 +14,16 @@ import java.util.List;
 public class Floor {
     private Integer floor;
     private String picUrl;
-    private List<Role> roleList;
+    private List<SimpleRole> roleList;
     private int star;
 
 
     public Integer getFloor() {
         return floor;
+    }
+
+    public void setFloor(Integer floor) {
+        this.floor = floor;
     }
 
     public String getPicUrl() {
@@ -31,11 +34,11 @@ public class Floor {
         this.picUrl = picUrl;
     }
 
-    public List<Role> getRoleList() {
+    public List<SimpleRole> getRoleList() {
         return roleList;
     }
 
-    public void setRoleList(List<Role> roleList) {
+    public void setRoleList(List<SimpleRole> roleList) {
         this.roleList = roleList;
     }
 

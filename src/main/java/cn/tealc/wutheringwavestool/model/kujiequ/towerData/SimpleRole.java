@@ -9,9 +9,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * @create: 2024-10-15 23:12
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Role {
+public class SimpleRole {
     private Integer roleId;
     private String iconUrl;
+
+    public SimpleRole(Integer roleId, String iconUrl) {
+        this.roleId = roleId;
+        this.iconUrl = iconUrl;
+    }
+
+    public SimpleRole() {
+    }
 
     public Integer getRoleId() {
         return roleId;

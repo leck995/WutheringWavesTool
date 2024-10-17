@@ -1,10 +1,9 @@
 package cn.tealc.wutheringwavestool.ui;
 
-import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.model.kujiequ.towerData.Difficulty;
 import cn.tealc.wutheringwavestool.model.kujiequ.towerData.Floor;
-import cn.tealc.wutheringwavestool.model.kujiequ.towerData.Role;
+import cn.tealc.wutheringwavestool.model.kujiequ.towerData.SimpleRole;
 import cn.tealc.wutheringwavestool.model.kujiequ.towerData.TowerArea;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.FxmlView;
@@ -18,13 +17,11 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.util.Pair;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2MZ;
 
-import java.awt.geom.Area;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -43,6 +40,8 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
     private FlowPane areaFlowPane;
     @FXML
     private Label seasonEndTimeLabel;
+    @FXML
+    private Label title;
 
     @FXML
     private ListView<Pair<Long, Pair<String,String>>> towerHistoryListview;
@@ -50,6 +49,7 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        title.textProperty().bind(viewModel.titleProperty());
         difficuityListview.setItems(viewModel.getDifficultyList());
         difficuityListview.setCellFactory(difficultyListView -> new DifficultyCell());
 
@@ -58,9 +58,10 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
         difficuityListview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 viewModel.changeDifficulty(newValue);
-                seasonEndTimeLabel.setVisible(newValue.getDifficulty() == 3);
+                boolean show = newValue.getDifficulty() == 3;
+                seasonEndTimeLabel.setVisible(show);
+                towerHistoryListview.getParent().setVisible(show);
             }
-
         });
         viewModel.getTowerAreaList().addListener((ListChangeListener<? super TowerArea>) change -> {
             areaFlowPane.getChildren().clear();
@@ -73,11 +74,16 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
 
         towerHistoryListview.setItems(viewModel.getTowerHistoryList());
         towerHistoryListview.setCellFactory(difficultyListView -> new HistoryCell());
+        towerHistoryListview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                viewModel.changeHistory(newValue.getKey());
+            }
+        });
     }
 
 
 
-    class DifficultyCell extends ListCell<Difficulty> {
+    static class DifficultyCell extends ListCell<Difficulty> {
         private final StackPane child;
         private final Label title=new Label();
         private final Label star=new Label();
@@ -122,21 +128,31 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
         }
     }
 
-    class HistoryCell extends ListCell<Pair<Long,Pair<String,String>>> {
+    static class HistoryCell extends ListCell<Pair<Long,Pair<String,String>>> {
+        private final HBox child = new HBox();
+        private final Label title=new Label();
+        public HistoryCell() {
+            child.getChildren().add(title);
+            title.getStyleClass().add("tower-name");
+            child.getStyleClass().add("tower-cell");
+        }
+
         @Override
         protected void updateItem(Pair<Long, Pair<String, String>> pair, boolean b) {
             super.updateItem(pair, b);
             if (!b){
-                //setDisable(false);
-                setText(pair.getValue().getKey() +"--"+pair.getValue().getValue());
+                setDisable(false);
+                title.setText(pair.getValue().getKey() +"--"+pair.getValue().getValue());
+                setGraphic(child);
             }else {
-                setText(null);
-               // setDisable(true);
+                title.setText(null);
+                setGraphic(null);
+                setDisable(true);
             }
         }
     }
 
-    class AreaCell extends VBox {
+    static class AreaCell extends VBox {
         private static final Image STAR_IMAGE = new Image(FXResourcesLoader.load("image/star01.png"),30,30,true,true,true);
         private final Label title;
         private TowerArea towerArea;
@@ -190,8 +206,8 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
 
                 }
 
-                if (floor.getRoleList() != null) {
-                    for (Role role : floor.getRoleList()) {
+                if (floor.getRoleList() != null && !floor.getRoleList().isEmpty()) {
+                    for (SimpleRole role : floor.getRoleList()) {
                         ImageView roleIv = new ImageView();
                         Image image = LocalResourcesManager.imageBuffer(role.getIconUrl(),50,50,true,true);
                         roleIv.setImage(image);

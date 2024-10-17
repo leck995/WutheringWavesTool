@@ -53,6 +53,19 @@ public class GameTowerDataDao {
         }
     }
 
+    public Set<TowerData> getListByEndTime(long endTime){
+        QueryRunner qr=new QueryRunner();
+        String sql="SELECT * FROM game_tower where endTime = ?";
+        try {
+            List<TowerData> query = qr.query(con, sql, new BeanListHandler<>(TowerData.class,getRowProcessor()),endTime);
+            return new HashSet<>(query);
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(),e);
+            return null;
+        }
+    }
+
+
     public Set<Long> getEndTimeList(){
         QueryRunner qr=new QueryRunner();
         String sql="SELECT endTime FROM game_tower";
