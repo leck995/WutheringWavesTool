@@ -62,7 +62,7 @@ public class GameAppListener implements WinUser.WinEventProc{
             if (start){
                 long endGameTime = System.currentTimeMillis(); //游戏结束时间
                 long totalGameTime = endGameTime - startGameTime;//总共游玩时间
-                if (totalGameTime > 60 * 60 * 1000){ //鸣潮游戏与登陆器是分开的，这回导致出现多次调用，故设置1分钟来过滤
+                if (totalGameTime >  60 * 1000){ //鸣潮游戏与登陆器是分开的，这回导致出现多次调用，故设置1分钟来过滤
                     MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_GAME_TIME_UPDATE,totalGameTime);
                 }
                 save();
@@ -71,7 +71,7 @@ public class GameAppListener implements WinUser.WinEventProc{
             if (start){ //只要游戏启动过，start必为true,所以不用处理其他情况
                 long endGameTime = System.currentTimeMillis(); //游戏结束时间
                 long totalGameTime = endGameTime - startGameTime;//总共游玩时间
-                if (totalGameTime > 60 * 60 * 1000){//鸣潮游戏与登陆器是分开的，这回导致出现多次调用，故设置1分钟来过滤
+                if (totalGameTime > 60 * 1000){//鸣潮游戏与登陆器是分开的，这回导致出现多次调用，故设置1分钟来过滤
                     MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_GAME_TIME_UPDATE,totalGameTime);
                 }
                 save();
