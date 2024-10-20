@@ -51,7 +51,7 @@ public class GameAppListener implements WinUser.WinEventProc{
         user32.GetWindowText(hwnd, buffer, buffer.length);
         String title = Native.toString(buffer);
         //LOG.debug("当前前台窗口是:{}",title);
-        if (title.equals("鸣潮  ") || title.equals("鸣潮  ") ){
+        if (title.equals("鸣潮  ") || title.equals("Wuthering Waves  ") ){
             if (!start){
                 game=hwnd;
                 start = true;
@@ -62,14 +62,18 @@ public class GameAppListener implements WinUser.WinEventProc{
             if (start){
                 long endGameTime = System.currentTimeMillis(); //游戏结束时间
                 long totalGameTime = endGameTime - startGameTime;//总共游玩时间
-                MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_GAME_TIME_UPDATE,totalGameTime);
+                if (totalGameTime > 60 * 60 * 1000){ //鸣潮游戏与登陆器是分开的，这回导致出现多次调用，故设置1分钟来过滤
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_GAME_TIME_UPDATE,totalGameTime);
+                }
                 save();
             }
         }else {
             if (start){ //只要游戏启动过，start必为true,所以不用处理其他情况
                 long endGameTime = System.currentTimeMillis(); //游戏结束时间
                 long totalGameTime = endGameTime - startGameTime;//总共游玩时间
-                MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_GAME_TIME_UPDATE,totalGameTime);
+                if (totalGameTime > 60 * 60 * 1000){//鸣潮游戏与登陆器是分开的，这回导致出现多次调用，故设置1分钟来过滤
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_GAME_TIME_UPDATE,totalGameTime);
+                }
                 save();
             }
         }

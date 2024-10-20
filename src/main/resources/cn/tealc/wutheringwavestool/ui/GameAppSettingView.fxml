@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import atlantafx.base.controls.ToggleSwitch?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+
+<AnchorPane prefHeight="800.0" prefWidth="1200.0" styleClass="game-setting" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.GameAppSettingView">
+   <children>
+      <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="20.0" spacing="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0">
+         <children>
+            <Label styleClass="title-2" text="高级启动" />
+            <ToggleSwitch fx:id="userAdvanceSettingSwitch" labelPosition="RIGHT" onMouseClicked="#showWarning" text="启用" />
+         </children>
+      </HBox>
+      <ScrollPane fx:id="content" fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="65.0">
+         <content>
+            <HBox prefHeight="100.0" prefWidth="200.0">
+               <children>
+                  <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="left" HBox.hgrow="ALWAYS">
+                     <children>
+                        <VBox prefHeight="0.0" prefWidth="100.0" spacing="10.0">
+                           <children>
+                              <Label layoutX="10.0" layoutY="10.0" styleClass="title-4" text="游戏启动程序" />
+                              <HBox layoutX="10.0" layoutY="39.0" spacing="15.0">
+                                 <children>
+                                    <RadioButton fx:id="gameStartAppRadioDefault" accessibleText="default" mnemonicParsing="false" onAction="#setAppPathModel" selected="true" text="默认">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="gameStartAppToggleGroup" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton accessibleText="custom" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setAppPathModel" text="自定义" toggleGroup="$gameStartAppToggleGroup" />
+                                 </children>
+                              </HBox>
+                              <StackPane fx:id="gameStartAppGroup" maxWidth="350.0" styleClass="input-group">
+                                 <children>
+                                    <TextField fx:id="gameStartAppField" prefWidth="250.0" />
+                                    <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setGameApp" StackPane.alignment="CENTER_RIGHT">
+                                       <graphic>
+                                          <FontIcon iconLiteral="mdoal-folder" />
+                                       </graphic>
+                                    </Button>
+                                 </children>
+                              </StackPane>
+                              <Label styleClass="title-4" text="启动参数" />
+                              <HBox spacing="15.0">
+                                 <children>
+                                    <RadioButton mnemonicParsing="false" onAction="#setDX" text="DX11">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="gameDxToggleGroup" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setDX" text="DX12" toggleGroup="$gameDxToggleGroup" />
+                                 </children>
+                              </HBox>
+                              <StackPane maxWidth="350.0" minHeight="38.0" styleClass="input-group">
+                                 <children>
+                                    <TextField fx:id="paramField" prefWidth="250.0" />
+                                 </children>
+                              </StackPane>
+                           </children>
+                        </VBox>
+                        <Label styleClass="tip" text="默认启动程序不一定完全支持启动参数，请优先使用自定义" />
+                        <Label layoutX="10.0" layoutY="84.0" styleClass="title-3" text="游戏设置" />
+                        <VBox spacing="10.0">
+                           <children>
+                              <Label styleClass="title-4" text="游戏帧数(FPS)" />
+                              <HBox spacing="15.0">
+                                 <children>
+                                    <RadioButton fx:id="gameFps30" mnemonicParsing="false" onAction="#setFPS" text="30">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="gameFpsToggleGroup" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton fx:id="gameFps45" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setFPS" text="45" toggleGroup="$gameFpsToggleGroup" />
+                                    <RadioButton fx:id="gameFps60" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setFPS" text="60" toggleGroup="$gameFpsToggleGroup" />
+                                    <RadioButton fx:id="gameFps120" layoutX="78.0" layoutY="10.0" mnemonicParsing="false" onAction="#setFPS" text="120" toggleGroup="$gameFpsToggleGroup" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                  </VBox>
+                  <VBox maxWidth="350.0" prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="right" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label styleClass="title-3" text="引擎优化" />
+                        <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#openEngineIni" prefWidth="150.0" styleClass="func-btn" text="Engine.ini">
+                           <graphic>
+                              <FontIcon iconLiteral="mdal-edit" />
+                           </graphic>
+                        </Button>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+         </content>
+      </ScrollPane>
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" top="10.0" />
+   </padding>
+   <stylesheets>
+      <URL value="@../css/Setting.css" />
+      <URL value="@../css/GameAppSetting.css" />
+   </stylesheets>
+</AnchorPane>

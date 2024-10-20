@@ -52,12 +52,12 @@
                               <Label layoutX="10.0" layoutY="10.0" styleClass="title-4" text="游戏启动程序" />
                               <HBox layoutX="10.0" layoutY="39.0" spacing="15.0">
                                  <children>
-                                    <RadioButton fx:id="gameStartAppRadioDefault" mnemonicParsing="false" selected="true" text="默认">
+                                    <RadioButton fx:id="gameStartAppRadioDefault" accessibleText="default" mnemonicParsing="false" onAction="#setAppPathModel" selected="true" text="默认">
                                        <toggleGroup>
                                           <ToggleGroup fx:id="gameStartAppType" />
                                        </toggleGroup>
                                     </RadioButton>
-                                    <RadioButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="自定义" toggleGroup="$gameStartAppType" />
+                                    <RadioButton accessibleText="custom" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setAppPathModel" text="自定义" toggleGroup="$gameStartAppType" />
                                  </children>
                               </HBox>
                               <StackPane fx:id="gameStartAppGroup" layoutX="10.0" layoutY="70.0" maxWidth="350.0" styleClass="input-group">
@@ -95,6 +95,18 @@
                                     </Button>
                                  </children>
                               </StackPane>
+                              <Label layoutX="10.0" layoutY="266.0" styleClass="title-4" text="关闭主面板" />
+                              <HBox prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                                 <children>
+                                    <RadioButton accessibleText="0" mnemonicParsing="false" onAction="#setCloseEvent" text="选择">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="closeEventToggleGroup" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton accessibleText="1" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setCloseEvent" text="直接退出" toggleGroup="$closeEventToggleGroup" />
+                                    <RadioButton accessibleText="2" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setCloseEvent" text="最小化" toggleGroup="$closeEventToggleGroup" />
+                                 </children>
+                              </HBox>
                            </children>
                         </VBox>
                         <Label layoutX="10.0" layoutY="84.0" styleClass="title-3" text="游戏行为" />
@@ -155,6 +167,12 @@
                         <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="173.0" mnemonicParsing="false" onAction="#toSupport" prefWidth="150.0" styleClass="func-btn" text="请作者喝杯咖啡">
                            <graphic>
                               <FontIcon iconLiteral="antf-pay-circle" />
+                           </graphic>
+                        </Button>
+                        <Label layoutX="10.0" layoutY="231.0" styleClass="title-3" text="教程与解答" />
+                        <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="269.0" mnemonicParsing="false" onAction="#toWiki" prefWidth="150.0" styleClass="func-btn" text="前往Wiki">
+                           <graphic>
+                              <FontIcon iconLiteral="mdmz-menu_book" />
                            </graphic>
                         </Button>
                      </children>

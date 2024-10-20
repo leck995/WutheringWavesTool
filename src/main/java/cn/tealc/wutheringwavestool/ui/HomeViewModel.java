@@ -38,6 +38,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
@@ -76,6 +77,7 @@ public class HomeViewModel implements ViewModel {
         updateRoleData();
         updateGameTime(GameAppListener.getInstance().getDuration());
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_GAME_TIME_UPDATE, (s, objects) -> {
+            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             long playTime = (long) objects[0];
             updateGameTime(playTime);
             updateRoleData();
@@ -298,16 +300,26 @@ public class HomeViewModel implements ViewModel {
             }
 
             if (exe.exists()) {
-                runExeByCustom(exe.getAbsolutePath(),"-dx11","-SkipSplash");
-        /*        try {
-                    Desktop.getDesktop().open(exe);
-                    if (Config.setting.isHideWhenGameStart()) {
-                        MainApplication.window.hide();
+
+                if (Config.setting.isUserAdvanceGameSettings()){ //使用高级启动设置
+                    String appParams = Config.setting.getAppParams();
+                    if (appParams != null && !appParams.isEmpty()) {
+                        String[] arrays = appParams.split(" ");
+                        String[] newArray = new String[arrays.length + 1];
+                        newArray[0] = exe.getAbsolutePath();
+                        // 复制原数组的元素到新数组
+                        System.arraycopy(arrays, 0, newArray, 1, arrays.length);
+                        for (String s : newArray) {
+                            System.out.println(s);
+                        }
+                        runExeByCustom(newArray);
+                    }else {
+                        runExeByCustom(exe.getAbsolutePath());
                     }
-                } catch (IOException e) {
-                    LOG.info("启动游戏错误", e);
-                    MainApplication.window.show();
-                }*/
+                    //runExeByCustom(exe.getAbsolutePath(),"-dx11","-SkipSplash");
+                }else {
+                    runExe(exe);
+                }
             } else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                         new MessageInfo(MessageType.WARNING, String.format("无法找到%s，请确保游戏目录正确", exe.getPath()), false));
@@ -347,6 +359,19 @@ public class HomeViewModel implements ViewModel {
             }
 
         });
+    }
+
+
+    private void runExe(File exe){
+        try {
+            Desktop.getDesktop().open(exe);
+            if (Config.setting.isHideWhenGameStart()) {
+                MainApplication.window.hide();
+            }
+        } catch (IOException e) {
+            LOG.info("启动游戏错误", e);
+            MainApplication.window.show();
+        }
     }
 
     public String getEnergyText() {

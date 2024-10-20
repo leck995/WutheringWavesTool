@@ -9,6 +9,7 @@ import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 
+import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.MainBackgroundTask;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialog;
@@ -28,6 +29,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -41,6 +44,10 @@ import org.kordamp.ikonli.material2.Material2OutlinedMZ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
 import java.util.ResourceBundle;
@@ -74,6 +81,9 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     @FXML
     private ToggleButton homeBtn;
 
+
+    @FXML
+    private ToggleButton supportBtn;
 
     private GaussianBlur bgGaussianBlur;
     @FXML
@@ -141,17 +151,19 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
                     ToggleButton toggleButton = (ToggleButton) toggle;
                     toggleButton.getStyleClass().remove("icon-only");
                 }
+                supportBtn.getStyleClass().remove("icon-only");
             }else {
                 for (Toggle toggle : navToggleGroup.getToggles()) {
                     ToggleButton toggleButton = (ToggleButton) toggle;
                     toggleButton.getStyleClass().add("icon-only");
                 }
+                supportBtn.getStyleClass().add("icon-only");
             }
         });
 
         navBtn.selectedProperty().bindBidirectional(Config.setting.leftBarShowProperty());
 
-
+        supportBtn.visibleProperty().bind(Config.setting.supportProperty().not());
 
 
 
@@ -274,7 +286,15 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     }
 
 
-    public void showExitDialog(){
+    public void close(){
+        switch (Config.setting.getCloseEvent()) {
+            case 0 -> showExitDialog();
+            case 1 -> MainApplication.exit();
+            case 2 -> MainApplication.window.hide();
+        }
+    }
+
+    private void showExitDialog(){
         JFXDialogLayout dialogLayout = new JFXDialogLayout();
         Label title = new Label("关闭提示");
         title.getStyleClass().add("title-2");
@@ -406,6 +426,61 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         }
     }
 
+    @FXML
+    void toStartAppSetting(ActionEvent event) {
+        ToggleButton toggleButton= (ToggleButton) event.getSource();
+        if (toggleButton.isSelected()){
+            ViewTuple<GameAppSettingView, GameAppSettingViewModel> viewTuple = FluentViewLoader.fxmlView(GameAppSettingView.class).load();
+            bgPane.setVisible(false);
+            child.getChildren().setAll(viewTuple.getView());
+            startNavAnim();
+        }else {
+            toggleButton.setSelected(true);
+        }
+    }
+
+    @FXML
+    void toSupport(ActionEvent event) {
+        ToggleButton toggleButton= (ToggleButton) event.getSource();
+        toggleButton.setSelected(false);
+        Label title = new Label("感谢支持");
+        title.getStyleClass().add(Styles.TITLE_2);
+        Label tip1 =new Label("助手的开发耗费了开发者大量的时间与精力，如果助手对您有所帮助且您财力有余，可以赞助一下开发者，您的支持将促进助手的开发与完善。");
+        tip1.setWrapText(true);
+        tip1.setPrefWidth(450);
+        tip1.setMinHeight(80);
+        Image image =new Image(FXResourcesLoader.load("image/support.png"),400,350,true,true,true);
+        ImageView iv = new ImageView(image);
+
+        Label tip2 =new Label("您可以按照如下格式附上留言:");
+        Label tip3 =new Label("鸣潮助手 @[称呼]:[消息]");
+        VBox center = new VBox(5.0,tip1,iv,tip2,tip3);
+
+        Hyperlink browserBtn = new Hyperlink("查看赞助名单");
+        browserBtn.setOnAction(actionEvent -> {
+            try {
+                Desktop.getDesktop().browse(new URI(Config.URL_SUPPORT_LIST));
+            } catch (IOException | URISyntaxException e) {
+                LOG.error("打开赞助名单失败{}",e.getMessage());
+            }
+        });
+        Button okBtn = new Button("我已赞助，永久关闭");
+        Button cancelBtn = new Button("取消");
+
+        okBtn.setOnAction(actionEvent -> {
+            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"感谢您的支持，谢谢",Duration.seconds(5)));
+            Config.setting.setSupport(true);
+            cancelBtn.fireEvent(actionEvent);
+        });
+
+        cancelBtn.setCancelButton(true);
+        JFXDialogLayout dialogLayout=new JFXDialogLayout();
+        dialogLayout.setHeading(title);
+        dialogLayout.setBody(center);
+        dialogLayout.setActions(browserBtn,okBtn,cancelBtn);
+        dialogLayout.setPrefSize(500,500);
+        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
+    }
 
 
     private void startChangeAnim(){

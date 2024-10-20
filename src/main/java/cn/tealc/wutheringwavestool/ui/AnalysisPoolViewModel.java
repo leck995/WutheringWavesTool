@@ -145,11 +145,11 @@ public class AnalysisPoolViewModel implements ViewModel {
                 }
             }else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING,"抽卡数据不存在，请打开游戏内抽卡的历史记录页面后再次尝试"),false);
+                        new MessageInfo(MessageType.WARNING,String.format("无法获取抽卡数据链接，请确认游戏根目录正确且文件%s存在",file.getAbsolutePath())),false);
             }
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING,"请在设置在先设置游戏目录"),false);
+                    new MessageInfo(MessageType.WARNING,"请在设置在先设置游戏根目录"),false);
         }
     }
 

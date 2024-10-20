@@ -48,7 +48,7 @@ public class SettingViewModel implements ViewModel {
         hideWhenGameStart.bindBidirectional(Config.setting.hideWhenGameStartProperty());
         gameRootDirSource.bindBidirectional(Config.setting.gameRootDirSourceProperty());
 
-        gameAppStartPath.bindBidirectional(Config.setting.gameStarAppPath);
+        gameAppStartPath.bindBidirectional(Config.setting.gameStarAppPathProperty());
         gameAppStartCustom.bindBidirectional(Config.setting.gameStartAppCustomProperty());
 
         fontFamilyList.setAll(Font.getFamilies());

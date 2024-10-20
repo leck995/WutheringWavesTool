@@ -51,7 +51,7 @@ public class MainWindow2 extends RoundStage {
         titlebar.setOnMouseClicked(handler);
 
         closeBtn.setOnAction(event -> {
-            mainView.showExitDialog();
+            mainView.close();
         });
         maxedProperty().addListener((observable, oldValue, newValue) -> {
             if (maxBtn.getGraphic() instanceof SVGPath path) {

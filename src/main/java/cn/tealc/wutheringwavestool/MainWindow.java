@@ -62,7 +62,7 @@ public final class MainWindow extends AbstractNfxUndecoratedWindow{
         minBtn = mainView.getMinBtn();
         maxBtn = mainView.getMaxBtn();
         closeBtn.setOnAction(event -> {
-            mainView.showExitDialog();
+            mainView.close();
         });
         maxBtn.setOnAction(event -> {
             if (getWindowState().equals(WindowState.MAXIMIZED)){
