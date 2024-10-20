@@ -43,16 +43,17 @@ public class Setting {
     /*=================设置-其他设置===================*/
     private SimpleBooleanProperty checkNewVersion=new SimpleBooleanProperty(true); //检查更新
 
-
-
     /*=============资源库=============*/
     private SimpleIntegerProperty resourceSource = new SimpleIntegerProperty(1); //0代表Github，1代表码云
-
-
 
     /*=================高级启动相关===================*/
     private SimpleBooleanProperty userAdvanceGameSettings=new SimpleBooleanProperty(false); //使用高级启动
     private SimpleStringProperty  appParams = new SimpleStringProperty(); //启动参数
+
+    /*=================签到相关===================*/
+    private SimpleBooleanProperty autoKujieQuSign=new SimpleBooleanProperty(false); //使用高级启动
+
+
 
     public String getGameRootDir() {
         return gameRootDir.get();
@@ -341,5 +342,17 @@ public class Setting {
 
     public void setCloseEvent(int closeEvent) {
         this.closeEvent.set(closeEvent);
+    }
+
+    public boolean isAutoKujieQuSign() {
+        return autoKujieQuSign.get();
+    }
+
+    public SimpleBooleanProperty autoKujieQuSignProperty() {
+        return autoKujieQuSign;
+    }
+
+    public void setAutoKujieQuSign(boolean autoKujieQuSign) {
+        this.autoKujieQuSign.set(autoKujieQuSign);
     }
 }

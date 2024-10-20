@@ -71,13 +71,11 @@ public class HomeViewModel implements ViewModel {
     private SimpleStringProperty gameTimeTipText = new SimpleStringProperty();
     private SimpleObjectProperty<Image> headImg = new SimpleObjectProperty<>();
     private SimpleBooleanProperty hasSign = new SimpleBooleanProperty(false);
-
+    private SimpleStringProperty signText = new SimpleStringProperty();
     public HomeViewModel() {
-
         updateRoleData();
         updateGameTime(GameAppListener.getInstance().getDuration());
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_GAME_TIME_UPDATE, (s, objects) -> {
-            System.out.println("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
             long playTime = (long) objects[0];
             updateGameTime(playTime);
             updateRoleData();
@@ -154,6 +152,11 @@ public class HomeViewModel implements ViewModel {
                 }
             });
             Thread.startVirtualThread(task);
+
+            if (Config.setting.isAutoKujieQuSign()){
+                sign();
+            }
+
         } else {
             UserInfoDao dao = new UserInfoDao();
             userInfo = dao.getMain();
@@ -273,12 +276,20 @@ public class HomeViewModel implements ViewModel {
 
 
     public void signAndGame() {
-        SignTask task = new SignTask();
-        task.setOnSucceeded(workerStateEvent -> hasSign.set(true));
-        Thread.startVirtualThread(task);
+        sign();
         startGame();
     }
 
+
+    public void sign(){
+        SignTask task = new SignTask();
+        task.setOnSucceeded(workerStateEvent -> {
+            hasSign.set(true);
+            signText.set("签到完成");
+        });
+        Thread.startVirtualThread(task);
+        signText.set("签到中...");
+    }
 
     public void startGame() {
         String dir = Config.setting.getGameRootDir();

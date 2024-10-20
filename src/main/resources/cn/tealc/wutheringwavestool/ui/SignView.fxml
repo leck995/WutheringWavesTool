@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import atlantafx.base.controls.ToggleSwitch?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
@@ -21,8 +22,9 @@
       </HBox>
       <Label styleClass="title-2" text="签到" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
       <Label fx:id="isSignLabel" styleClass="warning" text="(今日尚未签到)" AnchorPane.leftAnchor="70.0" AnchorPane.topAnchor="18.0" />
-      <HBox spacing="10.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="40.0">
+      <HBox alignment="CENTER" spacing="15.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="40.0">
          <children>
+            <ToggleSwitch fx:id="autoSignSwitch" labelPosition="RIGHT" text="启动助手自动签到" />
             <Button mnemonicParsing="false" onAction="#sign" styleClass="accent" text="签到" />
          </children>
       </HBox>

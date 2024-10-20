@@ -1,5 +1,7 @@
 package cn.tealc.wutheringwavestool.ui;
 
+import atlantafx.base.controls.ToggleSwitch;
+import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.model.kujiequ.sign.SignGood;
 import cn.tealc.wutheringwavestool.model.kujiequ.sign.SignRecord;
 import cn.tealc.wutheringwavestool.model.kujiequ.sign.UserInfo;
@@ -15,6 +17,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
@@ -41,6 +44,8 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
     private Label isSignLabel;
     @FXML
     private ListView<SignRecord> signHistoryListView;
+    @FXML
+    private ToggleSwitch autoSignSwitch;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -68,6 +73,9 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
         signHistoryListView.setItems(viewModel.getSignHistoryList());
         signHistoryListView.setFixedCellSize(40);
         signHistoryListView.setCellFactory(signRecordListView -> new SignHistoryListCell());
+
+
+        autoSignSwitch.selectedProperty().bindBidirectional(Config.setting.autoKujieQuSignProperty());
 
     }
 
@@ -130,5 +138,8 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
         public void updateSelected(boolean b) {
 
         }
+
+
+
     }
 }
