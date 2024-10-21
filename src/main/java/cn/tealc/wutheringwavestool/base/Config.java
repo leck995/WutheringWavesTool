@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ResourceBundle;
 
 /**
  * @program: WutheringWavesTool
@@ -19,6 +20,7 @@ public class Config {
     public static final String apiDecryptKey = "XSNLFgNCth8j8oJI3cNIdw==";
     public static final String URL_SUPPORT_LIST="https://www.yuque.com/chashuisuipian/sm05lg/ag7ct2or8ecz98cp";
 
+    public static ResourceBundle language;
     public static Setting setting;
     public static String currentRoleId;
 

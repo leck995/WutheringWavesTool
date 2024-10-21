@@ -5,6 +5,7 @@ import cn.tealc.teafx.stage.handler.DragWindowHandler;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.ui.MainView;
 import cn.tealc.wutheringwavestool.ui.MainViewModel;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.ViewTuple;
 import javafx.application.Application;
@@ -68,7 +69,7 @@ public class MainWindow2 extends RoundStage {
         Scene scene = getScene();
         scene.getStylesheets().add(FXResourcesLoader.load("css/Default.css"));
         getIcons().add(new Image(FXResourcesLoader.load("image/icon.png"),45,45,true,true));
-        setTitle("鸣潮助手");
+        setTitle(LanguageManager.getString("app.title"));
         setWidth(Config.setting.getAppWidth());
         setHeight(Config.setting.getAppHeight());
         setMinHeight(720.0);

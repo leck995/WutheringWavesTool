@@ -15,13 +15,12 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-
 <AnchorPane prefHeight="800.0" prefWidth="1200.0" styleClass="game-setting" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.GameAppSettingView">
    <children>
       <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="20.0" spacing="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0">
          <children>
-            <Label styleClass="title-2" text="高级启动" />
-            <ToggleSwitch fx:id="userAdvanceSettingSwitch" labelPosition="RIGHT" onMouseClicked="#showWarning" text="启用" />
+            <Label styleClass="title-2" text="%ui.game_app.title" />
+            <ToggleSwitch fx:id="userAdvanceSettingSwitch" labelPosition="RIGHT" onMouseClicked="#showWarning" text="%ui.game_app.enable" />
          </children>
       </HBox>
       <ScrollPane fx:id="content" fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="65.0">
@@ -32,15 +31,15 @@
                      <children>
                         <VBox prefHeight="0.0" prefWidth="100.0" spacing="10.0">
                            <children>
-                              <Label layoutX="10.0" layoutY="10.0" styleClass="title-4" text="游戏启动程序" />
+                              <Label layoutX="10.0" layoutY="10.0" styleClass="title-4" text="%ui.setting.default.app_path" />
                               <HBox layoutX="10.0" layoutY="39.0" spacing="15.0">
                                  <children>
-                                    <RadioButton fx:id="gameStartAppRadioDefault" accessibleText="default" mnemonicParsing="false" onAction="#setAppPathModel" selected="true" text="默认">
+                                    <RadioButton fx:id="gameStartAppRadioDefault" accessibleText="default" mnemonicParsing="false" onAction="#setAppPathModel" selected="true" text="%ui.setting.default.app_path.radio01">
                                        <toggleGroup>
                                           <ToggleGroup fx:id="gameStartAppToggleGroup" />
                                        </toggleGroup>
                                     </RadioButton>
-                                    <RadioButton accessibleText="custom" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setAppPathModel" text="自定义" toggleGroup="$gameStartAppToggleGroup" />
+                                    <RadioButton accessibleText="custom" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setAppPathModel" text="%ui.setting.default.app_path.radio02" toggleGroup="$gameStartAppToggleGroup" />
                                  </children>
                               </HBox>
                               <StackPane fx:id="gameStartAppGroup" maxWidth="350.0" styleClass="input-group">
@@ -53,7 +52,7 @@
                                     </Button>
                                  </children>
                               </StackPane>
-                              <Label styleClass="title-4" text="启动参数" />
+                              <Label styleClass="title-4" text="%ui.game_app.params" />
                               <HBox spacing="15.0">
                                  <children>
                                     <RadioButton mnemonicParsing="false" onAction="#setDX" text="DX11">
@@ -71,11 +70,11 @@
                               </StackPane>
                            </children>
                         </VBox>
-                        <Label styleClass="tip" text="默认启动程序不一定完全支持启动参数，请优先使用自定义" />
-                        <Label layoutX="10.0" layoutY="84.0" styleClass="title-3" text="游戏设置" />
+                        <Label styleClass="tip" text="%ui.game_app.params.tip" />
+                        <Label layoutX="10.0" layoutY="84.0" styleClass="title-3" text="%ui.game_app.setting" />
                         <VBox spacing="10.0">
                            <children>
-                              <Label styleClass="title-4" text="游戏帧数(FPS)" />
+                              <Label styleClass="title-4" text="%ui.game_app.setting.fps" />
                               <HBox spacing="15.0">
                                  <children>
                                     <RadioButton fx:id="gameFps30" mnemonicParsing="false" onAction="#setFPS" text="30">
@@ -94,7 +93,7 @@
                   </VBox>
                   <VBox maxWidth="350.0" prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="right" HBox.hgrow="ALWAYS">
                      <children>
-                        <Label styleClass="title-3" text="引擎优化" />
+                        <Label styleClass="title-3" text="%ui.game_app.engine" />
                         <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#openEngineIni" prefWidth="150.0" styleClass="func-btn" text="Engine.ini">
                            <graphic>
                               <FontIcon iconLiteral="mdal-edit" />

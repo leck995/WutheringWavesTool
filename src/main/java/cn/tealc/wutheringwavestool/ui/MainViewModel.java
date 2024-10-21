@@ -6,6 +6,7 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.CheckVersionTask;
 import cn.tealc.wutheringwavestool.thread.api.role.GameRoleDataSaveTask;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
@@ -22,16 +23,14 @@ public class MainViewModel implements ViewModel {
             CheckVersionTask task = new CheckVersionTask();
             task.setOnSucceeded(workerStateEvent -> {
                 if (task.getValue()==-1){
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"网络异常，无法检测新版本"));
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.message.type01")));
                 }else if (task.getValue()==1){
                     Platform.runLater(()->{
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.INFO,"有新版本，请前往设置更新"));
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.INFO,LanguageManager.getString("ui.main.message.type02")));
                     });
                 }
             });
             Thread.startVirtualThread(task);
         }
-
-
     }
 }

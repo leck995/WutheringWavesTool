@@ -5,6 +5,7 @@ import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.wutheringwavestool.model.kujiequ.sign.UserInfo;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -55,9 +56,6 @@ public class GameTimeViewModel implements ViewModel {
                     }
                 }
                 freshWithAccount();
-            }else {
-        /*    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING,"当前不存在主用户信息，无法获取，请在账号界面添加用户信息"),false);*/
             }
 
             userIndex.addListener((observableValue, number, t1) -> {
@@ -95,11 +93,11 @@ public class GameTimeViewModel implements ViewModel {
         List<GameTime> timeListByRoleId = gameTimeDao.getTimeListByRoleId(userInfo.getRoleId());
         Map<String, List<GameTime>> mainMap = getMap(timeListByRoleId);
 
-        currentDayText.set(String.format("记录天数 %d 天", mainMap.keySet().size()));
+        currentDayText.set(String.format(LanguageManager.getString("ui.game_time.account.days"), mainMap.keySet().size()));
 
         Map<String, List<GameTime>> mapInWeek = getMapInWeek(timeListByRoleId);
         //统计七日时长图表
-        updateChartDate(mapInWeek,"主账号时长");
+        updateChartDate(mapInWeek,LanguageManager.getString("ui.game_time.total.charts.main_account"));
         //统计当前账号全部时长
         double currentTotalTime = sunTime(mainMap);
         currentTotalTimeText.set(String.format("%.2f", currentTotalTime));
@@ -128,16 +126,16 @@ public class GameTimeViewModel implements ViewModel {
 
 
 
-        currentDayText.set(String.format("记录天数 %d 天", allTimeMap.keySet().size()));
+        currentDayText.set(String.format(LanguageManager.getString("ui.game_time.account.days"), allTimeMap.keySet().size()));
 
         Map<String, List<GameTime>> mapInWeek = getMapInWeek(gameTimeList);
         //统计七日时长图表
-        updateChartDate(mapInWeek,"主账号时长");
+        updateChartDate(mapInWeek,LanguageManager.getString("ui.game_time.total.charts.title"));
         //统计当前账号全部时长
         double currentTotalTime = sunTime(allTimeMap);
         currentTotalTimeText.set(String.format("%.2f", currentTotalTime));
 
-        currentUserName.set("全部用户");
+        currentUserName.set(LanguageManager.getString("ui.game_time.account.unknown"));
 
         totalProgressValue.set(currentTotalTime/totalTime);
 
@@ -244,7 +242,7 @@ public class GameTimeViewModel implements ViewModel {
 
             currentProgressValue.set(sum / (1000.0 * 60.0 * 60.0)/24.0);
 
-            currentTimeText.set(String.format("今日在线 %d 小时 %d 分钟",hour,minute));
+            currentTimeText.set(String.format(LanguageManager.getString("ui.game_time.account.duration"),hour,minute));
         }
     }
 

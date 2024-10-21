@@ -18,7 +18,7 @@
 
 <AnchorPane prefHeight="800.0" prefWidth="1200.0" styleClass="setting" stylesheets="@../css/Setting.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.SettingView">
    <children>
-      <Label styleClass="title-1" text="设置" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0" />
+      <Label styleClass="title-1" text="%ui.setting.title" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0" />
       <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0" />
       <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="65.0">
          <content>
@@ -28,15 +28,16 @@
                      <children>
                         <VBox prefHeight="0.0" prefWidth="100.0" spacing="10.0">
                            <children>
-                              <Label styleClass="title-4" text="鸣潮安装目录" />
+                              <Label styleClass="title-4" text="%ui.setting.default.game_dir" />
                               <HBox spacing="15.0">
                                  <children>
-                                    <RadioButton mnemonicParsing="false" selected="true" text="默认">
+                                    <RadioButton accessibleText="default" mnemonicParsing="false" onAction="#setSelectedGameType" selected="true" text="%ui.setting.default.game_dir.radio01">
                                        <toggleGroup>
                                           <ToggleGroup fx:id="gameSourceType" />
                                        </toggleGroup>
                                     </RadioButton>
-                                    <RadioButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="WeGame" toggleGroup="$gameSourceType" />
+                                    <RadioButton accessibleText="wegame" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio02" toggleGroup="$gameSourceType" />
+                                    <RadioButton accessibleText="global" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio03" toggleGroup="$gameSourceType" />
                                  </children>
                               </HBox>
                               <StackPane maxWidth="350.0" styleClass="input-group">
@@ -49,15 +50,15 @@
                                     </Button>
                                  </children>
                               </StackPane>
-                              <Label layoutX="10.0" layoutY="10.0" styleClass="title-4" text="游戏启动程序" />
+                              <Label layoutX="10.0" layoutY="10.0" styleClass="title-4" text="%ui.setting.default.app_path" />
                               <HBox layoutX="10.0" layoutY="39.0" spacing="15.0">
                                  <children>
-                                    <RadioButton fx:id="gameStartAppRadioDefault" accessibleText="default" mnemonicParsing="false" onAction="#setAppPathModel" selected="true" text="默认">
+                                    <RadioButton fx:id="gameStartAppRadioDefault" accessibleText="default" mnemonicParsing="false" onAction="#setAppPathModel" selected="true" text="%ui.setting.default.app_path.radio01">
                                        <toggleGroup>
                                           <ToggleGroup fx:id="gameStartAppType" />
                                        </toggleGroup>
                                     </RadioButton>
-                                    <RadioButton accessibleText="custom" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setAppPathModel" text="自定义" toggleGroup="$gameStartAppType" />
+                                    <RadioButton accessibleText="custom" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setAppPathModel" text="%ui.setting.default.app_path.radio02" toggleGroup="$gameStartAppType" />
                                  </children>
                               </HBox>
                               <StackPane fx:id="gameStartAppGroup" layoutX="10.0" layoutY="70.0" maxWidth="350.0" styleClass="input-group">
@@ -72,19 +73,19 @@
                               </StackPane>
                            </children>
                         </VBox>
-                        <Label styleClass="title-3" text="基础设置" />
+                        <Label styleClass="title-3" text="%ui.setting.base.title" />
                         <VBox spacing="10.0">
                            <children>
-                              <Label styleClass="title-4" text="新标题栏(出现多个标题栏时启用)" />
-                              <ToggleSwitch fx:id="titlebarSwitch" labelPosition="RIGHT" text="开启" />
-                              <Label styleClass="tip" text="需重启，窗口调整在右下角" />
-                              <Label styleClass="title-4" text="启动页" />
-                              <CheckBox fx:id="startWithAnalysisView" mnemonicParsing="false" text="抽卡分析" />
-                              <Label styleClass="title-4" text="禁用库街区" />
-                              <ToggleSwitch fx:id="noKuJieQuSwitch" labelPosition="RIGHT" text="禁用" />
-                              <Label layoutX="10.0" layoutY="73.0" styleClass="tip" text="需重启" />
-                              <Label styleClass="title-4" text="自定义背景(16:9最佳)" />
-                              <ToggleSwitch fx:id="diyBgSwitch" labelPosition="RIGHT" text="开启" />
+                              <Label styleClass="title-4" text="%ui.setting.base.titlebar" />
+                              <ToggleSwitch fx:id="titlebarSwitch" labelPosition="RIGHT" text="%ui.setting.base.titlebar.switch" />
+                              <Label styleClass="tip" text="%ui.setting.base.titlebar.tip" />
+                              <Label styleClass="title-4" text="%ui.setting.base.firstView" />
+                              <CheckBox fx:id="startWithAnalysisView" mnemonicParsing="false" text="%ui.setting.base.firstView.card" />
+                              <Label styleClass="title-4" text="%ui.setting.base.kujiequ" />
+                              <ToggleSwitch fx:id="noKuJieQuSwitch" labelPosition="RIGHT" text="%ui.setting.base.kujiequ.switch" />
+                              <Label layoutX="10.0" layoutY="73.0" styleClass="tip" text="%ui.setting.base.kujiequ.tip" />
+                              <Label styleClass="title-4" text="%ui.setting.base.background" />
+                              <ToggleSwitch fx:id="diyBgSwitch" labelPosition="RIGHT" text="%ui.setting.base.background.switch" />
                               <StackPane fx:id="diyBgInputGroup" maxWidth="350.0" styleClass="input-group">
                                  <children>
                                     <TextField fx:id="diyBgField" prefWidth="250.0" />
@@ -95,42 +96,42 @@
                                     </Button>
                                  </children>
                               </StackPane>
-                              <Label layoutX="10.0" layoutY="266.0" styleClass="title-4" text="关闭主面板" />
+                              <Label layoutX="10.0" layoutY="266.0" styleClass="title-4" text="%ui.setting.base.close_event" />
                               <HBox prefHeight="100.0" prefWidth="200.0" spacing="15.0">
                                  <children>
-                                    <RadioButton accessibleText="0" mnemonicParsing="false" onAction="#setCloseEvent" text="选择">
+                                    <RadioButton accessibleText="0" mnemonicParsing="false" onAction="#setCloseEvent" text="%ui.setting.base.close_event.type01">
                                        <toggleGroup>
                                           <ToggleGroup fx:id="closeEventToggleGroup" />
                                        </toggleGroup>
                                     </RadioButton>
-                                    <RadioButton accessibleText="1" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setCloseEvent" text="直接退出" toggleGroup="$closeEventToggleGroup" />
-                                    <RadioButton accessibleText="2" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setCloseEvent" text="最小化" toggleGroup="$closeEventToggleGroup" />
+                                    <RadioButton accessibleText="1" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setCloseEvent" text="%ui.setting.base.close_event.type02" toggleGroup="$closeEventToggleGroup" />
+                                    <RadioButton accessibleText="2" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setCloseEvent" text="%ui.setting.base.close_event.type03" toggleGroup="$closeEventToggleGroup" />
                                  </children>
                               </HBox>
                            </children>
                         </VBox>
-                        <Label layoutX="10.0" layoutY="84.0" styleClass="title-3" text="游戏行为" />
+                        <Label layoutX="10.0" layoutY="84.0" styleClass="title-3" text="%ui.setting.game" />
                         <VBox spacing="10.0">
                            <children>
-                              <Label styleClass="title-4" text="游戏启动时隐藏程序至托盘" />
-                              <ToggleSwitch fx:id="hideWhenGameStart" labelPosition="RIGHT" text="开启" />
-                              <Label styleClass="title-4" text="游戏关闭时自动退出程序" />
-                              <ToggleSwitch fx:id="exitWhenGameOver" labelPosition="RIGHT" text="开启" />
+                              <Label styleClass="title-4" text="%ui.setting.game.hide" />
+                              <ToggleSwitch fx:id="hideWhenGameStart" labelPosition="RIGHT" text="%ui.setting.game.switch" />
+                              <Label styleClass="title-4" text="%ui.setting.game.exit" />
+                              <ToggleSwitch fx:id="exitWhenGameOver" labelPosition="RIGHT" text="%ui.setting.game.switch" />
                            </children>
                         </VBox>
-                        <Label layoutX="10.0" layoutY="471.0" styleClass="title-3" text="其他设置" />
+                        <Label layoutX="10.0" layoutY="471.0" styleClass="title-3" text="%ui.setting.other" />
                         <VBox spacing="10.0">
                            <children>
-                              <Label styleClass="title-4" text="检测更新" />
-                              <ToggleSwitch fx:id="versionCheckSwitch" labelPosition="RIGHT" text="开启" />
-                              <Label styleClass="tip" text="助手功能尚未完善，建议开启检测" />
+                              <Label styleClass="title-4" text="%ui.setting.other.check_version" />
+                              <ToggleSwitch fx:id="versionCheckSwitch" labelPosition="RIGHT" text="%ui.setting.other.switch" />
+                              <Label styleClass="tip" text="%ui.setting.other.check_version.tip" />
                            </children>
                         </VBox>
                      </children>
                   </VBox>
                   <VBox maxWidth="350.0" prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="right" HBox.hgrow="ALWAYS">
                      <children>
-                        <Label styleClass="title-2" text="关于" />
+                        <Label styleClass="title-2" text="%ui.setting.about.title" />
                         <AnchorPane>
                            <children>
                               <StackPane AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -140,37 +141,37 @@
                               </StackPane>
                               <VBox layoutX="120.0" layoutY="20.0" spacing="2.0" AnchorPane.leftAnchor="110.0" AnchorPane.topAnchor="10.0">
                                  <children>
-                                    <Label fx:id="appName" styleClass="title-4" text="WutheringWavesTool" />
-                                    <Label fx:id="appVersion" text="1.4.1" />
-                                    <Label fx:id="appAuthor" text="Leck" />
+                                    <Label fx:id="appName" styleClass="title-4" text="%ui.setting.about.app_name" />
+                                    <Label fx:id="appVersion" text="%ui.setting.about.app_version" />
+                                    <Label fx:id="appAuthor" text="%ui.setting.about.author" />
                                  </children>
                               </VBox>
                            </children>
                         </AnchorPane>
-                        <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#toWeb" prefWidth="150.0" styleClass="func-btn" text="前往更新">
+                        <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#toWeb" prefWidth="200.0" styleClass="func-btn" text="%ui.setting.about.update">
                            <graphic>
                               <FontIcon iconLiteral="anto-github" />
                            </graphic>
                         </Button>
-                        <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#toIssues" prefWidth="150.0" styleClass="func-btn" text="提交Issues">
+                        <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#toIssues" prefWidth="200.0" styleClass="func-btn" text="%ui.setting.about.issue">
                            <graphic>
                               <FontIcon iconLiteral="anto-github" />
                            </graphic>
                         </Button>
-                        <Label layoutX="10.0" layoutY="293.0" styleClass="title-3" text="交流" />
-                        <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="138.0" mnemonicParsing="false" onAction="#toQQGroup" prefWidth="150.0" styleClass="func-btn" text="群(234294078)">
+                        <Label layoutX="10.0" layoutY="293.0" styleClass="title-3" text="%ui.setting.communication.title" />
+                        <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="138.0" mnemonicParsing="false" onAction="#toQQGroup" prefWidth="200.0" styleClass="func-btn" text="%ui.setting.communication.QQ">
                            <graphic>
                               <FontIcon iconLiteral="anto-qq" />
                            </graphic>
                         </Button>
-                        <Label layoutX="10.0" layoutY="10.0" styleClass="title-3" text="赞助" />
-                        <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="173.0" mnemonicParsing="false" onAction="#toSupport" prefWidth="150.0" styleClass="func-btn" text="请作者喝杯咖啡">
+                        <Label layoutX="10.0" layoutY="10.0" styleClass="title-3" text="%ui.setting.sponsor.title" />
+                        <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="173.0" mnemonicParsing="false" onAction="#toSupport" prefWidth="200.0" styleClass="func-btn" text="%ui.setting.sponsor.cafe">
                            <graphic>
                               <FontIcon iconLiteral="antf-pay-circle" />
                            </graphic>
                         </Button>
-                        <Label layoutX="10.0" layoutY="231.0" styleClass="title-3" text="教程与解答" />
-                        <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="269.0" mnemonicParsing="false" onAction="#toWiki" prefWidth="150.0" styleClass="func-btn" text="前往Wiki">
+                        <Label layoutX="10.0" layoutY="231.0" styleClass="title-3" text="%ui.setting.question.title" />
+                        <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="269.0" mnemonicParsing="false" onAction="#toWiki" prefWidth="200.0" styleClass="func-btn" text="%ui.setting.question.wiki">
                            <graphic>
                               <FontIcon iconLiteral="mdmz-menu_book" />
                            </graphic>

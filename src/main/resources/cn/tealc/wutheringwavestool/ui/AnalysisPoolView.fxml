@@ -21,12 +21,12 @@
    <children>
   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
          <children>
-            <Label styleClass="title-2" text="抽卡分析" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+            <Label styleClass="title-2" text="%ui.analysis.title" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
             <HBox layoutX="1138.0" layoutY="10.0" spacing="20.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                <children>
                   <ComboBox fx:id="playerComboBox" prefWidth="150.0" />
-                  <Button layoutX="180.0" layoutY="10.0" mnemonicParsing="false" onAction="#fresh" styleClass="accent" text="刷新" />
-                  <Button mnemonicParsing="false" onAction="#load" styleClass="success" text="获取" />
+                  <Button layoutX="180.0" layoutY="10.0" mnemonicParsing="false" onAction="#fresh" styleClass="accent" text="%ui.analysis.account.refresh" />
+                  <Button mnemonicParsing="false" onAction="#load" styleClass="success" text="%ui.analysis.account.get" />
                </children>
             </HBox>
             <StackPane layoutX="146.0" layoutY="96.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
@@ -50,18 +50,18 @@
                                  <children>
                                     <HBox alignment="CENTER">
                                        <children>
-                                          <Label text="已 " />
+                                          <Label text="%ui.analysis.charts.tip01.item01" />
                                           <Label fx:id="currentCountLabel" layoutX="10.0" layoutY="10.0" styleClass="current-label" text="12" />
-                                          <Label layoutX="119.0" layoutY="10.0" text=" 抽没有出货" />
+                                          <Label layoutX="119.0" layoutY="10.0" text="%ui.analysis.charts.tip01.item02" />
                                        </children>
                                     </HBox>
                                     <HBox alignment="CENTER">
                                        <children>
-                                          <Label text="总共 " />
+                                          <Label text="%ui.analysis.charts.tip02.item01" />
                                           <Label fx:id="totalCountLabel" styleClass="total-label" text="12" />
-                                          <Label layoutX="119.0" layoutY="10.0" text=" 抽，相当于 " />
+                                          <Label layoutX="119.0" layoutY="10.0" text="%ui.analysis.charts.tip02.item02" />
                                           <Label fx:id="totalCostLabel" layoutX="139.0" layoutY="10.0" styleClass="total-label" text="16500" />
-                                          <Label layoutX="197.0" layoutY="10.0" text=" 石头" />
+                                          <Label layoutX="197.0" layoutY="10.0" text="%ui.analysis.charts.tip02.item03" />
                                        </children>
                                     </HBox>
                                  </children>
@@ -77,31 +77,31 @@
                                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 </rowConstraints>
                                  <children>
-                                    <Label fx:id="ssrLabel1" styleClass="ssr-label" text="五星" GridPane.halignment="CENTER" />
+                                    <Label fx:id="ssrLabel1" styleClass="ssr-label" text="%ui.analysis.charts.tip03.ssr" GridPane.halignment="CENTER" />
                                     <Label fx:id="ssrLabel2" layoutX="10.0" layoutY="18.0" styleClass="ssr-label" text="[15%]" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
-                                    <Label fx:id="srLabel1" layoutX="10.0" layoutY="18.0" styleClass="sr-label" text="四星" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                    <Label fx:id="srLabel1" layoutX="10.0" layoutY="18.0" styleClass="sr-label" text="%ui.analysis.charts.tip03.sr" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
                                     <Label fx:id="srLabel2" layoutX="330.0" layoutY="18.0" styleClass="sr-label" text="[15%]" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                                    <Label fx:id="rLabel1" layoutX="10.0" layoutY="18.0" styleClass="r-label" text="三星" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                                    <Label fx:id="rLabel1" layoutX="10.0" layoutY="18.0" styleClass="r-label" text="%ui.analysis.charts.tip03.r" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
                                     <Label fx:id="rLabel2" layoutX="10.0" layoutY="18.0" styleClass="r-label" text="[15%]" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
                                  </children>
                               </GridPane>
                               <HBox alignment="CENTER" layoutX="20.0" layoutY="481.0">
                                  <children>
-                                    <Label text="五星平均抽数：" />
+                                    <Label text="%ui.analysis.charts.tip04" />
                                     <Label fx:id="ssrAvgLabel" styleClass="ssr-label" text="10" />
                                  </children>
                               </HBox>
                               <HBox alignment="CENTER" layoutX="20.0" layoutY="485.0">
                                  <children>
-                                    <Label text="限定平均抽数：" />
+                                    <Label text="%ui.analysis.charts.tip05" />
                                     <Label fx:id="ssrEventAvgLabel" styleClass="ssr-label" text="10" />
                                  </children>
                               </HBox>
                               <HBox alignment="CENTER">
                                  <children>
-                                    <Label layoutX="10.0" layoutY="10.0" text="最欧：" />
+                                    <Label layoutX="10.0" layoutY="10.0" text="%ui.analysis.charts.tip06" />
                                     <Label fx:id="ssrMinLabel" layoutX="108.0" layoutY="10.0" styleClass="ssr-label" text="10" />
-                                    <Label alignment="CENTER_RIGHT" layoutX="125.0" layoutY="10.0" prefWidth="80.0" text="最非：" />
+                                    <Label alignment="CENTER_RIGHT" layoutX="125.0" layoutY="10.0" prefWidth="80.0" text="%ui.analysis.charts.tip07" />
                                     <Label fx:id="ssrMaxLabel" layoutX="167.0" layoutY="10.0" styleClass="current-label" text="10" />
                                  </children>
                               </HBox>
@@ -114,7 +114,7 @@
                                     <FlowPane fx:id="ssrFlowPane" hgap="10.0" prefHeight="200.0" prefWidth="200.0" styleClass="ssr-thumb" vgap="10.0" />
                                  </content>
                               </ScrollPane>
-                              <ListView fx:id="ssrListView" maxWidth="400.0" prefWidth="400.0" />
+                              <ListView fx:id="ssrListView" maxWidth="400.0" minWidth="400.0" prefWidth="400.0" />
                            </children>
                         </StackPane>
                      </children>
@@ -124,8 +124,8 @@
                   </HBox>
                </children>
             </StackPane>
-            <ToggleSwitch fx:id="ssrModelSwitch" selected="true" text="详情" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="75.0" />
-            <Label styleClass="tip" text="有效期1小时，如无法刷新，可打开抽卡历史重新获取" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0" />
+            <ToggleSwitch fx:id="ssrModelSwitch" selected="true" text="%ui.analysis.role.switch" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="75.0" />
+            <Label styleClass="tip" text="%ui.analysis.account.tip" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0" />
          </children>
       </AnchorPane>
    </children>

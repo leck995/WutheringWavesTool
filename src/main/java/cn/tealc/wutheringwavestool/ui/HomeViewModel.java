@@ -20,6 +20,7 @@ import cn.tealc.wutheringwavestool.thread.api.UserDailyDataTask;
 import cn.tealc.wutheringwavestool.thread.api.UserDataRefreshTask;
 import cn.tealc.wutheringwavestool.thread.api.UserInfoDataTask;
 import cn.tealc.wutheringwavestool.thread.api.role.GameRoleDataSaveTask;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -50,9 +51,7 @@ import java.util.stream.Stream;
  * @create: 2024-07-03 19:57
  */
 public class HomeViewModel implements ViewModel {
-    private static final Logger LOG = LoggerFactory.getLogger(HomeViewModel.class);
-    private final String[] gameTips = {"今日还没有开始冒险", "只是上去做个每日任务", "等找完这个宝箱，我就休息", "小肝不算肝", "肝佬"};
-    private SignUserInfo userInfo;
+    private static final Logger LOG = LoggerFactory.getLogger(HomeViewModel.class);private SignUserInfo userInfo;
     private SimpleStringProperty energyText = new SimpleStringProperty();
     private SimpleStringProperty energyTimeText = new SimpleStringProperty();
     private SimpleStringProperty livenessText = new SimpleStringProperty();
@@ -111,18 +110,21 @@ public class HomeViewModel implements ViewModel {
     private void updateGameTimeText(long sum) {
         int hour = (int) (sum / (1000 * 60 * 60));
         int minute = (int) ((sum % (1000 * 60 * 60)) / (1000 * 60));
+        String[] tips = LanguageManager.getStringArray("ui.home.label.time.others");
         if (hour == 0 && minute == 0) {
-            gameTimeTipText.set(gameTips[0]);
+            gameTimeTipText.set(tips[0]);
         } else if (hour < 1 && minute < 15) {
-            gameTimeTipText.set(gameTips[1]);
+            gameTimeTipText.set(tips[1]);
         } else if (hour <= 2) {
-            gameTimeTipText.set(gameTips[2]);
+            gameTimeTipText.set(tips[2]);
         } else if (hour <= 5) {
-            gameTimeTipText.set(gameTips[3]);
+            gameTimeTipText.set(tips[3]);
         } else {
-            gameTimeTipText.set(gameTips[4]);
+            gameTimeTipText.set(tips[4]);
         }
-        gameTimeText.set(String.format("今日在线 %d 小时 %d 分钟", hour, minute));
+
+        String total = LanguageManager.getString("ui.home.label.time.total");
+        gameTimeText.set(String.format(total, hour, minute));
     }
 
 
@@ -165,7 +167,7 @@ public class HomeViewModel implements ViewModel {
                 updateRoleData();
             } else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING, "当前不存在主用户信息，无法获取，请在账号界面添加用户信息"));
+                        new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type01")));
             }
         }
     }
@@ -177,16 +179,18 @@ public class HomeViewModel implements ViewModel {
             if (responseBody.getCode() == 200) {
                 RoleInfo roleInfo = responseBody.getData();
                 roleNameText.set(roleInfo.getName());
-                gameLifeText.set(String.format("已活跃%d天", roleInfo.getActiveDays()));
+                String template = LanguageManager.getString("ui.home.label.role.day");
+                gameLifeText.set(String.format(template, roleInfo.getActiveDays()));
                 levelText.set(String.format("LV.%d", roleInfo.getLevel()));
+                String[] chests = LanguageManager.getStringArray("ui.home.label.chest.types");
                 for (BoxInfo boxInfo : roleInfo.getBoxList()) {
-                    if (boxInfo.getBoxName().equals("朴素奇藏箱")) {
+                    if (boxInfo.getBoxName().equals(chests[0])) {
                         box1Text.set(String.valueOf(boxInfo.getNum()));
-                    } else if (boxInfo.getBoxName().equals("基准奇藏箱")) {
+                    } else if (boxInfo.getBoxName().equals(chests[1])) {
                         box2Text.set(String.valueOf(boxInfo.getNum()));
-                    } else if (boxInfo.getBoxName().equals("精密奇藏箱")) {
+                    } else if (boxInfo.getBoxName().equals(chests[2])) {
                         box3Text.set(String.valueOf(boxInfo.getNum()));
-                    } else if (boxInfo.getBoxName().equals("辉光奇藏箱")) {
+                    } else if (boxInfo.getBoxName().equals(chests[3])) {
                         box4Text.set(String.valueOf(boxInfo.getNum()));
                     }
                 }
@@ -208,8 +212,10 @@ public class HomeViewModel implements ViewModel {
                 if (responseBody.getCode() == 200){
                     RoleDailyData data = responseBody.getData();
                     energyText.set(String.format("%d/%d", data.getEnergyData().getCur(), data.getEnergyData().getTotal()));
-                    if (data.getEnergyData().getRefreshTimeStamp() == 0) {
-                        energyTimeText.set("体力已满");
+
+                    String[] strengths = LanguageManager.getStringArray("ui.home.label.daily.strength");
+                    if (data.getEnergyData().getRefreshTimeStamp() == 0) { //体力已
+                        energyTimeText.set(strengths[2]);
                     } else {
                         long timestamp = data.getEnergyData().getRefreshTimeStamp() * 1000; // 仅为示例，实际应替换为具体的时间戳
                         Date date = new Date(timestamp);
@@ -217,18 +223,18 @@ public class HomeViewModel implements ViewModel {
                         LocalDate dateFromTimestamp = instant.atZone(ZoneId.systemDefault()).toLocalDate();
                         LocalDate currentDate = LocalDate.now();
                         boolean isSameDay = dateFromTimestamp.equals(currentDate);
-                        if (isSameDay) {
-                            SimpleDateFormat formatter = new SimpleDateFormat("满: 今日HH:mm");
+                        if (isSameDay) { //今日体力满时间
+                            SimpleDateFormat formatter = new SimpleDateFormat(strengths[0]);
                             energyTimeText.set(formatter.format(date));
-                        } else {
-                            SimpleDateFormat formatter = new SimpleDateFormat("满: 明日HH:mm");
+                        } else { //明日体力满时间
+                            SimpleDateFormat formatter = new SimpleDateFormat(strengths[1]);
                             energyTimeText.set(formatter.format(date));
                         }
                     }
                     hasSign.set(data.isHasSignIn());
                     livenessText.set(String.valueOf(data.getLivenessData().getCur()));
-                    battlePassLevelText.set(String.format("电台 LV.%02d", data.getBattlePassData().getFirst().getCur()));
-                    battlePassNumText.set(String.format("经验:%d/%d", data.getBattlePassData().get(1).getCur(), data.getBattlePassData().get(1).getTotal()));
+                    battlePassLevelText.set(String.format(" LV.%02d", data.getBattlePassData().getFirst().getCur()));
+                    battlePassNumText.set(String.format("%d/%d", data.getBattlePassData().get(1).getCur(), data.getBattlePassData().get(1).getTotal()));
                     double cur = data.getBattlePassData().get(1).getCur();
                     double total = data.getBattlePassData().get(1).getTotal();
                     battlePassProgress.set(cur / total);
@@ -249,7 +255,7 @@ public class HomeViewModel implements ViewModel {
     public void startUpdate() {
         if (Config.setting.getGameRootDirSource() == SourceType.WE_GAME) {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING, "请前往WeGame进行更新"), false);
+                    new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type02")), false);
         } else {
             String dir = Config.setting.getGameRootDir();
             if (dir != null) {
@@ -262,11 +268,11 @@ public class HomeViewModel implements ViewModel {
                     }
                 } else {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING, String.format("无法找到%s，请确保游戏目录正确", exe.getPath()), false));
+                            new MessageInfo(MessageType.WARNING, String.format(LanguageManager.getString("ui.home.message.type03"), exe.getPath()), false));
                 }
             } else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING, "请在设置在先设置游戏目录"), false);
+                        new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type04")), false);
             }
         }
     }
@@ -285,10 +291,10 @@ public class HomeViewModel implements ViewModel {
         SignTask task = new SignTask();
         task.setOnSucceeded(workerStateEvent -> {
             hasSign.set(true);
-            signText.set("签到完成");
+            signText.set(LanguageManager.getString("ui.home.label.sign.yes"));
         });
         Thread.startVirtualThread(task);
-        signText.set("签到中...");
+        signText.set(LanguageManager.getString("ui.home.label.sign.ing"));
     }
 
     public void startGame() {
@@ -299,19 +305,22 @@ public class HomeViewModel implements ViewModel {
                 exe=new File(Config.setting.getGameStarAppPath());
                 if (!exe.exists()) {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING, String.format("自定义启动程序: %s 不存在", exe.getPath())));
+                            new MessageInfo(MessageType.WARNING,
+                                    String.format(
+                                            LanguageManager.getString("ui.home.message.type05"),
+                                            exe.getPath()
+                                    )));
                     return;
                 }
             }else {
-                if (Config.setting.getGameRootDirSource() == SourceType.DEFAULT) {
-                    exe = new File(dir + File.separator + "Wuthering Waves Game" + File.separator + "Wuthering Waves.exe");
-                } else {
+                if (Config.setting.getGameRootDirSource() == SourceType.WE_GAME) {
                     exe = new File(dir + File.separator + "Wuthering Waves.exe");
+                } else {
+                    exe = new File(dir + File.separator + "Wuthering Waves Game" + File.separator + "Wuthering Waves.exe");
                 }
             }
 
             if (exe.exists()) {
-
                 if (Config.setting.isUserAdvanceGameSettings()){ //使用高级启动设置
                     String appParams = Config.setting.getAppParams();
                     if (appParams != null && !appParams.isEmpty()) {
@@ -333,11 +342,11 @@ public class HomeViewModel implements ViewModel {
                 }
             } else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING, String.format("无法找到%s，请确保游戏目录正确", exe.getPath()), false));
+                        new MessageInfo(MessageType.WARNING, String.format(LanguageManager.getString("ui.home.message.type03"), exe.getPath())));
             }
         } else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING, "请在设置在先设置游戏目录"), false);
+                    new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type04")));
         }
     }
 

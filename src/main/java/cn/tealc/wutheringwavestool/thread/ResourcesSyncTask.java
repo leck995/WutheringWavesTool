@@ -70,7 +70,7 @@ public class ResourcesSyncTask extends Task<String> {
     private synchronized void minusFileSize() {
         filesSize--;
         if (filesSize == 0) {
-            updateMessage("更新资源完成");
+            updateMessage("success");
         }
     }
 
@@ -79,7 +79,7 @@ public class ResourcesSyncTask extends Task<String> {
         try {
             String row = readJsonFile(url);
             if (row == null){
-                updateMessage("无法访问远程资源仓库，检查网络并正确设置资源仓库源");
+                updateMessage("error");
                 return null;
             }
             RootResource remoteResource = mapper.readValue(row, RootResource.class);
@@ -92,13 +92,13 @@ public class ResourcesSyncTask extends Task<String> {
                             LOG.debug("远程仓库无更新");
                             return null;
                         }else {
-                            updateMessage("检测到有新的资源，开始更新");
+                            updateMessage("start");
                             updateDateFile(remoteResource);
                             downloadFile(url,localFile.getPath());
                         }
                     }
                 }else {
-                    updateMessage("检测到有新的资源，开始更新");
+                    updateMessage("start");
                     updateDateFile(remoteResource);
                     downloadFile(url,localFile.getPath());
                 }

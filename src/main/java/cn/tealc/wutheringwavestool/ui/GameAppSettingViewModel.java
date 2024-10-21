@@ -4,6 +4,7 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameSettingDao;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleStringProperty;
@@ -29,7 +30,7 @@ public class GameAppSettingViewModel implements ViewModel {
     }
 
     /**
-     * @description: 修改帧率，此处value必须为0,1，2，3
+     * @description: 修改帧率，此处value必须为0，1，2，3
      * @param:	value
      * @return  void
      * @date:   2024/10/19
@@ -38,7 +39,7 @@ public class GameAppSettingViewModel implements ViewModel {
         GameSettingDao gameSettingDao = new GameSettingDao();
         boolean customFrameRate = gameSettingDao.updateSettingValueByKey("CustomFrameRate", value);
         if (!customFrameRate) {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.ERROR,"修改帧率失败"));
+            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.ERROR, LanguageManager.getString("ui.game_app.setting.fps.message")));
         }
     }
 

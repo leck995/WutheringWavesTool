@@ -9,6 +9,7 @@ import cn.tealc.wutheringwavestool.model.analysis.SsrData;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.CardPoolRequestTask;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LogFileUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -31,7 +32,7 @@ import java.util.*;
  * @create: 2024-07-03 01:18
  */
 public class AnalysisPoolViewModel implements ViewModel {
-    private static final List<String> BASE_SSR_LIST=List.of("凌阳","安可","卡卡罗","维里奈","鉴心","浩境粼光","千古洑流","停驻之烟","擎渊怒涛 ","漪澜浮录");
+    private final List<String> baseSSRList;
 
     private SimpleStringProperty gameRootDir = new SimpleStringProperty();
     private ObservableList<String> poolNameList= FXCollections.observableArrayList();
@@ -66,6 +67,7 @@ public class AnalysisPoolViewModel implements ViewModel {
     private SimpleBooleanProperty ssrModel=new SimpleBooleanProperty(true);
 
     public AnalysisPoolViewModel() {
+        baseSSRList = List.of(LanguageManager.getStringArray("ui.analysis.base_role"));
         gameRootDir.bindBidirectional(Config.setting.gameRootDirProperty());
 
         Thread.startVirtualThread(()->{
@@ -94,15 +96,15 @@ public class AnalysisPoolViewModel implements ViewModel {
                 init();
                 savePoolData(playerParams);
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.SUCCESS,"抽卡数据已完成分析"));
+                        new MessageInfo(MessageType.SUCCESS,LanguageManager.getString("ui.analysis.message.type01")));
             });
             Thread.startVirtualThread(task);
             pieChartData.clear();
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.INFO,"正在获取数据，请稍候"));
+                    new MessageInfo(MessageType.INFO,LanguageManager.getString("ui.analysis.message.type02")));
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING,"角色不存在，请使用获取功能"));
+                    new MessageInfo(MessageType.WARNING,LanguageManager.getString("ui.analysis.message.type03")));
         }
     }
 
@@ -133,23 +135,23 @@ public class AnalysisPoolViewModel implements ViewModel {
                         savePoolData(params);
                         publish("update-player");
                         MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                                new MessageInfo(MessageType.SUCCESS,"抽卡数据已完成分析"));
+                                new MessageInfo(MessageType.SUCCESS,LanguageManager.getString("ui.analysis.message.type01")));
                     });
                     Thread.startVirtualThread(task);
                     pieChartData.clear();
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.INFO,"正在获取数据，请稍候"));
+                            new MessageInfo(MessageType.INFO,LanguageManager.getString("ui.analysis.message.type02")));
                 }else {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING,"无法获取抽卡数据链接，请打开游戏内抽卡的历史记录页面后再次尝试"),false);
+                            new MessageInfo(MessageType.WARNING,LanguageManager.getString("ui.analysis.message.type04")),false);
                 }
             }else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING,String.format("无法获取抽卡数据链接，请确认游戏根目录正确且文件%s存在",file.getAbsolutePath())),false);
+                        new MessageInfo(MessageType.WARNING,String.format(LanguageManager.getString("ui.analysis.message.type05"),file.getAbsolutePath())),false);
             }
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING,"请在设置在先设置游戏根目录"),false);
+                    new MessageInfo(MessageType.WARNING,LanguageManager.getString("ui.analysis.message.type06")),false);
         }
     }
 
@@ -351,7 +353,7 @@ public class AnalysisPoolViewModel implements ViewModel {
                 ssrData.setDate(cardInfo.getTime());
                 ssrData.setName(cardInfo.getName());
                 ssrData.setCount(cardInfos.size());
-                ssrData.setEvent(!BASE_SSR_LIST.contains(cardInfo.getName()));
+                ssrData.setEvent(!baseSSRList.contains(cardInfo.getName()));
                 ssrDataList.add(ssrData);
             }
             double avg = totalCount / ssrIndexList.size();

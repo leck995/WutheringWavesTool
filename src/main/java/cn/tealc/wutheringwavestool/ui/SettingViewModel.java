@@ -47,17 +47,12 @@ public class SettingViewModel implements ViewModel {
         exitWhenGameOver.bindBidirectional(Config.setting.exitWhenGameOverProperty());
         hideWhenGameStart.bindBidirectional(Config.setting.hideWhenGameStartProperty());
         gameRootDirSource.bindBidirectional(Config.setting.gameRootDirSourceProperty());
-
         gameAppStartPath.bindBidirectional(Config.setting.gameStarAppPathProperty());
         gameAppStartCustom.bindBidirectional(Config.setting.gameStartAppCustomProperty());
-
         fontFamilyList.setAll(Font.getFamilies());
         diyHomeBg.bindBidirectional(Config.setting.diyHomeBgProperty());
         diyHomeBgName.bindBidirectional(Config.setting.diyHomeBgNameProperty());
-
-
         checkNewVersion.bindBidirectional(Config.setting.checkNewVersionProperty());
-
         diyHomeBg.addListener((observableValue, aBoolean, t1) -> {
             if (t1){
               if (getDiyHomeBgName()!= null){
@@ -67,8 +62,8 @@ public class SettingViewModel implements ViewModel {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
             }
         });
-
     }
+
 
 
     public void setFontFamily(String fontFamily) {
@@ -87,11 +82,8 @@ public class SettingViewModel implements ViewModel {
                     LOG.info("旧背景删除:{}",delete);
                 }
             }
-
             diyHomeBgName.set(newFile.getName());
             MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
-
-
 
         } catch (IOException e) {
             LOG.error("IO ERROR",e);

@@ -20,7 +20,7 @@
          <children>
             <VBox layoutX="2.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <Label layoutX="10.0" layoutY="105.0" styleClass="title-3" text="角色" />
+                  <Label layoutX="10.0" layoutY="105.0" styleClass="title-3" text="%ui.home.label.role" />
                   <HBox fx:id="rolePane2" alignment="CENTER_LEFT" spacing="15.0" styleClass="role-data">
                      <children>
                         <ImageView fx:id="headIV" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
@@ -41,7 +41,7 @@
                         </VBox>
                      </children>
                   </HBox>
-                  <Label styleClass="title-3" text="每日数据" />
+                  <Label styleClass="title-3" text="%ui.home.label.daily" />
                   <VBox styleClass="daily-data">
                      <children>
                         <HBox spacing="20.0">
@@ -52,7 +52,7 @@
                                     <VBox alignment="CENTER">
                                        <children>
                                           <Label fx:id="energyLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="192/240" />
-                                          <Label fx:id="energyTimeLabel" styleClass="data-label-2" text="结晶波片" />
+                                          <Label fx:id="energyTimeLabel" styleClass="data-label-2" text="今日已满" />
                                        </children>
                                     </VBox>
                                  </children>
@@ -63,7 +63,7 @@
                                     <VBox alignment="CENTER">
                                        <children>
                                           <Label fx:id="livenessLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="100" />
-                                          <Label styleClass="data-label-2" text="活跃度" />
+                                          <Label styleClass="data-label-2" text="%ui.home.label.daily.activity" />
                                        </children>
                                     </VBox>
                                  </children>
@@ -79,8 +79,18 @@
                                        <children>
                                           <HBox alignment="CENTER_LEFT" spacing="10.0">
                                              <children>
-                                                <Label fx:id="battlePassLevelLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="电台(LV.16)" />
-                                                <Label fx:id="battlePassNumLabel" contentDisplay="BOTTOM" layoutX="10.0" layoutY="10.0" styleClass="data-label-2" text="经验：1200/1200" />
+                                                <HBox alignment="CENTER_LEFT">
+                                                   <children>
+                                                      <Label contentDisplay="BOTTOM" layoutX="10.0" layoutY="10.0" styleClass="data-label-1" text="%ui.home.label.station" />
+                                                      <Label fx:id="battlePassLevelLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="(LV.16)" />
+                                                   </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT">
+                                                   <children>
+                                                      <Label fx:id="battlePassNumLabel1" contentDisplay="BOTTOM" layoutX="10.0" layoutY="10.0" styleClass="data-label-2" text="%ui.home.label.station.num" />
+                                                      <Label fx:id="battlePassNumLabel" contentDisplay="BOTTOM" styleClass="data-label-2" text="1200/1200" />
+                                                   </children>
+                                                </HBox>
                                              </children>
                                           </HBox>
                                           <ProgressBar fx:id="battlePassProgress" prefWidth="200.0" progress="0.0" />
@@ -92,31 +102,31 @@
                         </HBox>
                      </children>
                   </VBox>
-                  <Label layoutX="10.0" layoutY="105.0" styleClass="title-3" text="宝箱" />
+                  <Label layoutX="10.0" layoutY="105.0" styleClass="title-3" text="%ui.home.label.chest" />
                   <HBox alignment="CENTER" spacing="10.0" styleClass="box-data">
                      <children>
                         <VBox alignment="CENTER" spacing="2.0">
                            <children>
                               <Label fx:id="box1Label" styleClass="data-label-1" text="251" />
-                              <Label styleClass="data-label-2" text="朴素奇藏" />
+                              <Label styleClass="data-label-2" text="%ui.home.label.chest.type01" />
                            </children>
                         </VBox>
                         <VBox alignment="CENTER" layoutX="10.0" layoutY="10.0" spacing="2.0">
                            <children>
                               <Label fx:id="box2Label" styleClass="data-label-1" text="251" />
-                              <Label styleClass="data-label-2" text="基准奇藏" />
+                              <Label styleClass="data-label-2" text="%ui.home.label.chest.type02" />
                            </children>
                         </VBox>
                         <VBox alignment="CENTER" layoutX="66.0" layoutY="10.0" spacing="2.0">
                            <children>
                               <Label fx:id="box3Label" styleClass="data-label-1" text="251" />
-                              <Label styleClass="data-label-2" text="精密奇藏" />
+                              <Label styleClass="data-label-2" text="%ui.home.label.chest.type03" />
                            </children>
                         </VBox>
                         <VBox alignment="CENTER" layoutX="122.0" layoutY="10.0" spacing="2.0">
                            <children>
                               <Label fx:id="box4Label" styleClass="data-label-1" text="251" />
-                              <Label styleClass="data-label-2" text="辉光奇藏" />
+                              <Label styleClass="data-label-2" text="%ui.home.label.chest.type04" />
                            </children>
                         </VBox>
                      </children>
@@ -136,33 +146,33 @@
       </AnchorPane>
       <VBox layoutX="710.0" layoutY="475.0" prefWidth="280.0" spacing="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="460.0">
          <children>
-            <Label styleClass="title-3" text="时长" />
+            <Label styleClass="title-3" text="%ui.home.label.time" />
             <HBox alignment="CENTER" spacing="10.0" styleClass="game-time">
                <children>
                   <FontIcon iconLiteral="mdal-desktop_mac" styleClass="icon" />
                   <VBox alignment="CENTER">
                      <children>
-                        <Label fx:id="gameTimeLabel" styleClass="detail" text="今天已在线%d小时" />
-                        <Label fx:id="gameTimeTipLabel" layoutX="93.0" layoutY="20.0" styleClass="tip" text="每天五分钟，轻轻松松" />
+                        <Label fx:id="gameTimeLabel" styleClass="detail" text="%ui.home.label.time.total" />
+                        <Label fx:id="gameTimeTipLabel" layoutX="93.0" layoutY="20.0" styleClass="tip" text="%ui.home.label.space.time.other01" />
                      </children>
                   </VBox>
                </children>
             </HBox>
          </children>
       </VBox>
-      <Label styleClass="title-2" text="主页" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+      <Label styleClass="title-2" text="%ui.home.label.title" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
       <ImageView fx:id="roleIV" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
-      <Label fx:id="hasSignLabel" styleClass="sign-label" text="今日尚未签到" AnchorPane.bottomAnchor="70.0" AnchorPane.rightAnchor="40.0" />
+      <Label fx:id="hasSignLabel" styleClass="sign-label" text="%ui.home.label.sign.no" AnchorPane.bottomAnchor="70.0" AnchorPane.rightAnchor="40.0" />
       <HBox spacing="15.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="30.0">
          <children>
-            <MenuButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" popupSide="TOP" styleClass="func-btn" text="浏览">
+            <MenuButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" popupSide="TOP" styleClass="func-btn" text="%ui.home.button.browser">
                <items>
-                  <MenuItem mnemonicParsing="false" onAction="#toAlbum" text="截图目录">
+                  <MenuItem mnemonicParsing="false" onAction="#toAlbum" text="%ui.home.button.browser.screenshot_dir">
                      <graphic>
                         <FontIcon iconLiteral="mdal-image" />
                      </graphic>
                   </MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#toGameDir" text="安装目录">
+                  <MenuItem mnemonicParsing="false" onAction="#toGameDir" text="%ui.home.button.browser.install_dir">
                      <graphic>
                         <FontIcon iconLiteral="mdsmz-snippet_folder" />
                      </graphic>
@@ -172,18 +182,18 @@
                   <FontIcon iconLiteral="mdsal-folder" />
                </graphic>
             </MenuButton>
-            <MenuButton mnemonicParsing="false" popupSide="TOP" styleClass="func-btn" text="Wiki">
+            <MenuButton mnemonicParsing="false" popupSide="TOP" styleClass="func-btn" text="%ui.home.button.wiki">
               <items>
-                  <Menu mnemonicParsing="false" text="库街区">
+                  <Menu mnemonicParsing="false" text="%ui.home.button.wiki.kujiequ">
                     <items>
-                      <MenuItem mnemonicParsing="false" onAction="#toWiki01" text="主页" />
-                      <MenuItem mnemonicParsing="false" onAction="#toWikiMap01" text="大地图" />
+                      <MenuItem mnemonicParsing="false" onAction="#toWiki01" text="%ui.home.button.wiki.kujiequ.website" />
+                      <MenuItem mnemonicParsing="false" onAction="#toWikiMap01" text="%ui.home.button.wiki.kujiequ.map" />
                     </items>
                   </Menu>
-                  <Menu mnemonicParsing="false" text="GameKee">
+                  <Menu mnemonicParsing="false" text="%ui.home.button.wiki.gamekee">
                     <items>
-                      <MenuItem mnemonicParsing="false" onAction="#toWiki02" text="主页" />
-                      <MenuItem mnemonicParsing="false" onAction="#toWikiMap02" text="大地图" />
+                      <MenuItem mnemonicParsing="false" onAction="#toWiki02" text="%ui.home.button.wiki.gamekee.website" />
+                      <MenuItem mnemonicParsing="false" onAction="#toWikiMap02" text="%ui.home.button.wiki.gamekee.map" />
                     </items>
                   </Menu>
               </items>
@@ -191,12 +201,12 @@
                   <FontIcon iconLiteral="mdal-book" />
                </graphic>
             </MenuButton>
-            <Button layoutX="122.0" layoutY="10.0" mnemonicParsing="false" onAction="#startUpdate" styleClass="func-btn" text="启动更新">
+            <Button layoutX="122.0" layoutY="10.0" mnemonicParsing="false" onAction="#startUpdate" styleClass="func-btn" text="%ui.home.button.start_update">
                <graphic>
                   <FontIcon iconLiteral="mdsal-cloud_download" />
                </graphic>
             </Button>
-            <Button mnemonicParsing="false" onAction="#startGame" text="启动游戏">
+            <Button mnemonicParsing="false" onAction="#startGame" text="%ui.home.button.start_game">
                <graphic>
                   <FontIcon iconLiteral="mdral-games" />
                </graphic>

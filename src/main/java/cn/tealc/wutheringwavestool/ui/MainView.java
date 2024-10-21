@@ -11,6 +11,7 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.MainBackgroundTask;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialog;
 import com.jfoenixN.controls.JFXDialogLayout;
@@ -443,20 +444,20 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     void toSupport(ActionEvent event) {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         toggleButton.setSelected(false);
-        Label title = new Label("感谢支持");
-        title.getStyleClass().add(Styles.TITLE_2);
-        Label tip1 =new Label("助手的开发耗费了开发者大量的时间与精力，如果助手对您有所帮助且您财力有余，可以赞助一下开发者，您的支持将促进助手的开发与完善。");
+        Label title = new Label(LanguageManager.getString("ui.setting.sponsor.dialog.title"));
+        title.getStyleClass().add(Styles.TITLE_3);
+        Label tip1 =new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip01"));
         tip1.setWrapText(true);
         tip1.setPrefWidth(450);
         tip1.setMinHeight(80);
-        Image image =new Image(FXResourcesLoader.load("image/support.png"),400,350,true,true,true);
+        Image image =new Image(FXResourcesLoader.load("image/support.png"),350,320,true,true,true);
         ImageView iv = new ImageView(image);
 
-        Label tip2 =new Label("您可以按照如下格式附上留言:");
-        Label tip3 =new Label("鸣潮助手 @[称呼]:[消息]");
+        Label tip2 =new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip02"));
+        Label tip3 =new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip03"));
         VBox center = new VBox(5.0,tip1,iv,tip2,tip3);
 
-        Hyperlink browserBtn = new Hyperlink("查看赞助名单");
+        Hyperlink browserBtn = new Hyperlink(LanguageManager.getString("ui.setting.sponsor.dialog.browser"));
         browserBtn.setOnAction(actionEvent -> {
             try {
                 Desktop.getDesktop().browse(new URI(Config.URL_SUPPORT_LIST));
@@ -464,8 +465,9 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
                 LOG.error("打开赞助名单失败{}",e.getMessage());
             }
         });
-        Button okBtn = new Button("我已赞助，永久关闭");
-        Button cancelBtn = new Button("取消");
+        Button okBtn = new Button(LanguageManager.getString("ui.setting.sponsor.dialog.ok"));
+        Button cancelBtn = new Button(LanguageManager.getString("ui.common.cancel"));
+
 
         okBtn.setOnAction(actionEvent -> {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"感谢您的支持，谢谢",Duration.seconds(5)));

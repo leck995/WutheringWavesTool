@@ -15,7 +15,7 @@
 
 <AnchorPane prefHeight="700.0" prefWidth="1000.0" styleClass="gametime" stylesheets="@../css/GameTime.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.GameTimeView">
    <children>
-      <Label styleClass="title-2" text="游玩时长" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <Label styleClass="title-2" text="%ui.game_time.title" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
       <HBox alignment="CENTER_LEFT" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <ComboBox fx:id="accountComboBox" prefWidth="150.0" />
@@ -27,8 +27,8 @@
                <children>
                   <AnchorPane prefHeight="150.0" prefWidth="300.0" styleClass="item">
                      <children>
-                        <Label styleClass="header" text="当前账号" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                        <Label fx:id="currentUserName" styleClass="header" text="未知" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Label styleClass="header" text="%ui.game_time.account.current" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Label fx:id="currentUserName" styleClass="header" text="%ui.game_time.account.unknown" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                         <HBox spacing="10.0" styleClass="content" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
                            <children>
                               <ImageView fx:id="headImageView" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" />
@@ -36,11 +36,11 @@
                                  <children>
                                     <HBox>
                                        <children>
-                                          <Label fx:id="currentDayLabel" text="记录天数 15 " />
+                                          <Label fx:id="currentDayLabel" text="%ui.game_time.account.days" />
                                           <Pane HBox.hgrow="ALWAYS" />
                                        </children>
                                     </HBox>
-                                    <Label fx:id="currentTimeLabel" text="今日已游玩3小时20分钟" />
+                                    <Label fx:id="currentTimeLabel" text="%ui.game_time.account.duration" />
                                     <ProgressBar fx:id="currentProgress" prefWidth="200.0" progress="0.68" />
                                  </children>
                               </VBox>
@@ -53,20 +53,20 @@
                   </AnchorPane>
                   <AnchorPane prefHeight="150.0" prefWidth="300.0" styleClass="item">
                      <children>
-                        <Label styleClass="header" text="统计" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                        <Label styleClass="header" text="总时长" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Label styleClass="header" text="%ui.game_time.total" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                        <Label styleClass="header" text="%ui.game_time.tip" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                         <VBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="50.0" spacing="10.0" styleClass="content" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
                            <children>
                               <HBox>
                                  <children>
-                                    <Label text="当前账号：" />
+                                    <Label prefWidth="90.0" text="%ui.game_time.total.current" />
                                     <Label fx:id="currentTotalTimeLabel" layoutX="10.0" layoutY="10.0" text="32.5" />
                                     <Label layoutX="150.0" layoutY="10.0" text="小时" />
                                  </children>
                               </HBox>
                               <HBox layoutX="10.0" layoutY="33.0">
                                  <children>
-                                    <Label text="所有账号：" />
+                                    <Label prefWidth="90.0" text="%ui.game_time.total.all" />
                                     <Label fx:id="allTotalTimeLabel" layoutX="10.0" layoutY="10.0" text="42.5" />
                                     <Label layoutX="150.0" layoutY="10.0" text="小时" />
                                  </children>
@@ -81,12 +81,12 @@
                   </AnchorPane>
                </children>
             </HBox>
-            <LineChart fx:id="lineChart" legendSide="TOP" maxWidth="650.0" prefWidth="650.0" title="七日时长一览">
+            <LineChart fx:id="lineChart" legendSide="TOP" maxWidth="650.0" prefWidth="650.0" title="%ui.game_time.total.charts.title">
               <xAxis>
                 <CategoryAxis side="BOTTOM" />
               </xAxis>
               <yAxis>
-                <NumberAxis label="分钟" side="LEFT" />
+                <NumberAxis label="%ui.game_time.total.charts.y" side="LEFT" />
               </yAxis>
             </LineChart>
          </children>

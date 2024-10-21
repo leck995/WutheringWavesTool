@@ -34,7 +34,7 @@
                               <Image url="@../image/icon.png" />
                            </image>
                         </ImageView>
-                        <Label styleClass="title" text="鸣潮助手" />
+                        <Label styleClass="title" text="%ui.main.label.title" />
                      </children>
                   </HBox>
                   <Pane prefHeight="0.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
@@ -73,12 +73,12 @@
                         <Region fx:id="navBg" styleClass="nav-bg" />
                         <VBox fx:id="nav" alignment="CENTER_LEFT" spacing="10.0" styleClass="main-nav">
                            <children>
-                              <ToggleButton fx:id="navBtn" contentDisplay="GRAPHIC_ONLY" ellipsisString="" layoutX="15.0" layoutY="20.0" mnemonicParsing="false" prefWidth="140.0" selected="true" styleClass="nav-btn" text="菜单">
+                              <ToggleButton fx:id="navBtn" contentDisplay="GRAPHIC_ONLY" ellipsisString="" layoutX="15.0" layoutY="20.0" mnemonicParsing="false" prefWidth="140.0" selected="true" styleClass="nav-btn" text="%ui.main.button.nav.type01">
                                  <graphic>
                                     <FontIcon iconLiteral="mdral-format_list_bulleted" />
                                  </graphic>
                               </ToggleButton>
-                              <ToggleButton fx:id="homeBtn" contentDisplay="GRAPHIC_ONLY" ellipsisString="" mnemonicParsing="false" onAction="#toMain" prefWidth="140.0" styleClass="icon-only" text="主页" textOverrun="CLIP">
+                              <ToggleButton fx:id="homeBtn" contentDisplay="GRAPHIC_ONLY" ellipsisString="" mnemonicParsing="false" onAction="#toMain" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type02" textOverrun="CLIP">
                                  <toggleGroup>
                                     <ToggleGroup fx:id="navToggleGroup" />
                                  </toggleGroup>
@@ -86,48 +86,48 @@
                                     <FontIcon iconLiteral="mdral-home" styleClass="hit-btn" />
                                  </graphic>
                               </ToggleButton>
-                              <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="104.0" mnemonicParsing="false" onAction="#toStartAppSetting" prefWidth="140.0" styleClass="icon-only" text="高级启动" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                              <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="104.0" mnemonicParsing="false" onAction="#toStartAppSetting" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type03" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
                                     <FontIcon iconLiteral="mdmz-widgets" />
                                  </graphic>
                               </ToggleButton>
-                              <ToggleButton fx:id="signBtn" accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" onAction="#toSign" prefWidth="140.0" styleClass="icon-only" text="每日签到" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                              <ToggleButton fx:id="signBtn" accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" onAction="#toSign" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type04" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
                                     <FontIcon iconLiteral="mdral-beenhere" />
                                  </graphic>
                               </ToggleButton>
-                              <ToggleButton fx:id="analysisBtn" alignment="CENTER_LEFT" ellipsisString="" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#toAnalysis" prefWidth="140.0" styleClass="icon-only" text="抽卡分析" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                              <ToggleButton fx:id="analysisBtn" alignment="CENTER_LEFT" ellipsisString="" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#toAnalysis" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type05" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
                                     <FontIcon iconLiteral="mdal-article" />
                                  </graphic>
                               </ToggleButton>
-                              <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="30.0" layoutY="718.0" mnemonicParsing="false" onAction="#toGameTime" prefWidth="140.0" styleClass="icon-only" text="游玩统计" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                              <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="30.0" layoutY="718.0" mnemonicParsing="false" onAction="#toGameTime" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type06" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
                                     <FontIcon iconLiteral="mdal-broken_image" />
                                  </graphic>
                               </ToggleButton>
-                              <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="30.0" layoutY="104.0" mnemonicParsing="false" onAction="#toOwnRole" prefWidth="140.0" styleClass="icon-only" text="我的角色" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                              <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="30.0" layoutY="104.0" mnemonicParsing="false" onAction="#toOwnRole" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type07" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
                                     <FontIcon iconLiteral="mdmz-person" />
                                  </graphic>
                               </ToggleButton>
-                              <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="230.0" mnemonicParsing="false" onAction="#toTower" prefWidth="140.0" styleClass="icon-only" text="深塔历史" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                              <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="230.0" mnemonicParsing="false" onAction="#toTower" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type08" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
                                     <FontIcon iconLiteral="mdmz-navigation" />
                                  </graphic>
                               </ToggleButton>
                               <Spacer VBox.vgrow="ALWAYS" />
-                              <ToggleButton fx:id="supportBtn" alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="668.0" mnemonicParsing="false" onAction="#toSupport" prefWidth="140.0" styleClass="icon-only" text="赞助" textOverrun="CLIP">
+                              <ToggleButton fx:id="supportBtn" alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="668.0" mnemonicParsing="false" onAction="#toSupport" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type09" textOverrun="CLIP">
                                  <graphic>
                                     <FontIcon iconLiteral="mdal-local_cafe" />
                                  </graphic>
                               </ToggleButton>
-                              <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="30.0" layoutY="718.0" mnemonicParsing="false" onAction="#toAccount" prefWidth="140.0" styleClass="icon-only" text="账号" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                              <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="30.0" layoutY="718.0" mnemonicParsing="false" onAction="#toAccount" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type10" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
                                     <FontIcon iconLiteral="mdal-account_box" />
                                  </graphic>
                               </ToggleButton>
-                              <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" onAction="#toSetting" prefWidth="140.0" styleClass="icon-only" text="设置" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                              <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="10.0" layoutY="45.0" mnemonicParsing="false" onAction="#toSetting" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type11" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
                                     <FontIcon iconLiteral="mdmz-settings" />
                                  </graphic>

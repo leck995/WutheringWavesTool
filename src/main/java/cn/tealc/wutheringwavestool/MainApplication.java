@@ -10,6 +10,7 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.ResourcesSyncTask;
 import cn.tealc.wutheringwavestool.ui.tray.NewFxTrayIcon;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
 import com.sun.jna.platform.win32.User32;
@@ -30,6 +31,8 @@ import org.slf4j.LoggerFactory;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 public class MainApplication extends Application {
     private static final Logger LOG=LoggerFactory.getLogger(MainApplication.class);
@@ -44,11 +47,18 @@ public class MainApplication extends Application {
         System.setProperty("LcdFontSmoothing", "true");
         System.setProperty("prism.text", "t2k");
 
+        Config.language = ResourceBundle.getBundle("cn.tealc/wutheringwavestool/language/local",Locale.ENGLISH);
+        MvvmFX.setGlobalResourceBundle(Config.language);
+
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory
                 .getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.toLevel(Config.setting.getLogLevel()));
 
         Platform.setImplicitExit(false);
+
+
+
+
     }
 
     @Override
@@ -92,12 +102,11 @@ public class MainApplication extends Application {
         ResourcesSyncTask task = new ResourcesSyncTask();
         task.messageProperty().addListener((observableValue, s, t1) -> {
             if (t1 != null){
-                if (t1.contains("成功")){
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,t1));
-                }else {
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.INFO,t1));
+                switch (t1){
+                    case "success" -> MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS, LanguageManager.getString("ui.main.sync.message.success")));
+                    case "error" -> MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.ERROR, LanguageManager.getString("ui.main.sync.message.error")));
+                    case "start" -> MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.INFO, LanguageManager.getString("ui.main.sync.message.start")));
                 }
-
             }
         });
         Thread.startVirtualThread(task);
@@ -111,7 +120,6 @@ public class MainApplication extends Application {
             public void uncaughtException(Thread t, Throwable e) {
                 // 抛出栈信息
                 LOG.error("线程：{}，出现异常：{}",t.getName(),e.getMessage(),e);
-
             }
         });
     }
@@ -132,8 +140,6 @@ public class MainApplication extends Application {
         }
         SystemTray systemTray = SystemTray.getSystemTray();
 
-
-
         for (TrayIcon trayIcon : systemTray.getTrayIcons()) {
             if (trayIcon instanceof NewFxTrayIcon tray) {
                 systemTray.remove(tray);
@@ -152,13 +158,13 @@ public class MainApplication extends Application {
 
     private void createTrayIcon() {
         if (SystemTray.isSupported()){
-            Button show = new Button("显示",new FontIcon(Material2OutlinedMZ.REMOVE_FROM_QUEUE));
+            Button show = new Button(LanguageManager.getString("ui.tray.show"),new FontIcon(Material2OutlinedMZ.REMOVE_FROM_QUEUE));
             show.setOnAction(event -> {
                 window.setIconified(false);
                 window.show();
                 window.toFront();
             });
-            Button exit = new Button("退出",new FontIcon(Material2OutlinedMZ.POWER_SETTINGS_NEW));
+            Button exit = new Button(LanguageManager.getString("ui.tray.exit"),new FontIcon(Material2OutlinedMZ.POWER_SETTINGS_NEW));
             exit.setOnAction(event -> Platform.runLater(MainApplication::exit));
             VBox vbox = new VBox(show, exit);
             vbox.getStyleClass().add("tray");

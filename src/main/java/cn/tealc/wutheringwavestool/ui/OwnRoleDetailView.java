@@ -386,7 +386,7 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
         top.getChildren().addAll(stackPane,separator);
 
         String text= """
-                共ACE、SSS、SS、SS、N这5个等级。
+                共ACE、SSS、SS、S、N这5个等级。
              
                 测评将声骸分为两个部分，分为词条和数值：
                     词条：统计对于角色的重要词条的多少

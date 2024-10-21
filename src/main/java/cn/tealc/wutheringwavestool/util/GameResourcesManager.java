@@ -25,10 +25,11 @@ public class GameResourcesManager {
         String dir = Config.setting.getGameRootDir();
         File exe = null;
         if (dir != null) {
-            if (Config.setting.getGameRootDirSource() == SourceType.DEFAULT) {
-                exe = new File(dir + File.separator + "Wuthering Waves Game/Client/Saved/LocalStorage/LocalStorage.db");
-            } else {
+            if (Config.setting.getGameRootDirSource() == SourceType.WE_GAME) {
                 exe = new File(dir + File.separator + "Client/Saved/LocalStorage/LocalStorage.db");
+            } else {
+                exe = new File(dir + File.separator + "Wuthering Waves Game/Client/Saved/LocalStorage/LocalStorage.db");
+
             }
             if (!exe.exists()) {
                 return null;
@@ -41,10 +42,10 @@ public class GameResourcesManager {
         String dir = Config.setting.getGameRootDir();
         File exe = null;
         if (dir != null) {
-            if (Config.setting.getGameRootDirSource() == SourceType.DEFAULT) {
-                exe = new File(dir + File.separator + "Wuthering Waves Game/Client/Binaries/Win64/Client-Win64-Shipping.exe");
-            } else {
+            if (Config.setting.getGameRootDirSource() == SourceType.WE_GAME) {
                 exe = new File(dir + File.separator + "Client/Binaries/Win64/Client-Win64-Shipping.exe");
+            } else {
+                exe = new File(dir + File.separator + "Wuthering Waves Game/Client/Binaries/Win64/Client-Win64-Shipping.exe");
             }
             if (!exe.exists()) {
                 return null;
@@ -56,10 +57,11 @@ public class GameResourcesManager {
         String dir = Config.setting.getGameRootDir();
         File exe = null;
         if (dir != null) {
-            if (Config.setting.getGameRootDirSource() == SourceType.DEFAULT) {
-                exe = new File(dir + File.separator + "Wuthering Waves Game" + File.separator + "Wuthering Waves.exe");
-            } else {
+            if (Config.setting.getGameRootDirSource() == SourceType.WE_GAME) {
                 exe = new File(dir + File.separator + "Wuthering Waves.exe");
+            } else {
+                exe = new File(dir + File.separator + "Wuthering Waves Game" + File.separator + "Wuthering Waves.exe");
+
             }
             if (!exe.exists()) {
                 return null;
@@ -72,10 +74,10 @@ public class GameResourcesManager {
         String dir = Config.setting.getGameRootDir();
         File exe = null;
         if (dir != null) {
-            if (Config.setting.getGameRootDirSource() == SourceType.DEFAULT) {
-                exe = new File(dir + File.separator + "Wuthering Waves Game/Client/Saved/Config/WindowsNoEditor/Engine.ini");
-            } else {
+            if (Config.setting.getGameRootDirSource() == SourceType.WE_GAME) {
                 exe = new File(dir + File.separator + "Client/Saved/Config/WindowsNoEditor/Engine.ini");
+            } else {
+                exe = new File(dir + File.separator + "Wuthering Waves Game/Client/Saved/Config/WindowsNoEditor/Engine.ini");
             }
             if (!exe.exists()) {
                 return null;

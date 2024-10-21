@@ -9,6 +9,7 @@ import cn.tealc.wutheringwavestool.dao.GameSettingDao;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -127,17 +128,17 @@ public class GameAppSettingView implements FxmlView<GameAppSettingViewModel>, In
     void showWarning(MouseEvent event) {
         if (userAdvanceSettingSwitch.isSelected()) {
             userAdvanceSettingSwitch.setSelected(false);
-            Label title = new Label("警告");
+            Label title = new Label(LanguageManager.getString("ui.common.warning"));
             title.getStyleClass().add(Styles.TITLE_2);
-            Label tip1 =new Label("高级启动部分功能存在修改游戏配置的行为，一旦开启，由于误操作或者其他原因，导致的所有的责任将由用户自己承担，与开发者没有任何关系，请谨慎对待。");
+            Label tip1 =new Label(LanguageManager.getString("ui.game_app.warning.tip"));
             tip1.setWrapText(true);
             tip1.setPrefWidth(450);
             tip1.setMinHeight(80);
             VBox center = new VBox(5.0,tip1);
-            Button okBtn = new Button("继续使用");
+            Button okBtn = new Button(LanguageManager.getString("ui.game_app.warning.ok"));
             okBtn.getStyleClass().add(Styles.DANGER);
 
-            Button cancelBtn = new Button("取消");
+            Button cancelBtn = new Button(LanguageManager.getString("ui.common.cancel"));
             cancelBtn.setCancelButton(true);
 
             okBtn.setOnAction(actionEvent -> {
@@ -150,8 +151,6 @@ public class GameAppSettingView implements FxmlView<GameAppSettingViewModel>, In
             dialogLayout.setActions(okBtn,cancelBtn);
             dialogLayout.setPrefSize(500,500);
             MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
-        }else {
-
         }
     }
 
@@ -232,7 +231,7 @@ public class GameAppSettingView implements FxmlView<GameAppSettingViewModel>, In
     @FXML
     void setGameApp(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("选择鸣潮启动程序");
+        fileChooser.setTitle(LanguageManager.getString("ui.setting.file.app.title"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("exe","*.exe"));
         File file = fileChooser.showOpenDialog(gameStartAppField.getScene().getWindow());
         if (file != null) {
@@ -252,7 +251,7 @@ public class GameAppSettingView implements FxmlView<GameAppSettingViewModel>, In
                 LOG.error(e.getMessage());
             }
         }else {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"无法找到配置文件Engine。ini"));
+            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,LanguageManager.getString("ui.game_app.engine.message")));
         }
     }
 }

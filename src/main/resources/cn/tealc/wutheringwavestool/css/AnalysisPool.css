@@ -28,12 +28,13 @@
     -fx-text-fill: #ff6666;
     -fx-font-size: 15;
     -fx-font-weight: bold;
-
+    -fx-padding: 0 5 0 5;
 }
 .current-label{
     -fx-text-fill: #ff6666;
     -fx-font-size: 15;
     -fx-font-weight: bold;
+    -fx-padding: 0 5 0 5;
 
 }
 

@@ -10,6 +10,7 @@ import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -107,9 +108,6 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
     private ToggleGroup closeEventToggleGroup;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
-
-
         gameDirField.textProperty().bindBidirectional(viewModel.gameDirProperty());
         startWithAnalysisView.selectedProperty().bindBidirectional(viewModel.startWithAnalysisProperty());
 
@@ -130,15 +128,7 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
         }else {
             gameSourceType.selectToggle(gameSourceType.getToggles().get(1));
         }
-        gameSourceType.selectedToggleProperty().addListener((observableValue, toggle, t1) -> {
-            if (t1 instanceof RadioButton radioButton) {
-                if (radioButton.getText().equals("默认")){
-                    viewModel.setGameRootDirSource(SourceType.DEFAULT);
-                } else{
-                    viewModel.setGameRootDirSource(SourceType.WE_GAME);
-                }
-            }
-        });
+
 
         gameStartAppField.textProperty().bindBidirectional(viewModel.gameAppStartPathProperty());
         gameStartAppGroup.disableProperty().bind(gameStartAppType.selectedToggleProperty().isEqualTo(gameStartAppRadioDefault));
@@ -165,6 +155,29 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
         if (Config.setting.getCloseEvent() >= 0 && Config.setting.getCloseEvent() <= 2)
             closeEventToggleGroup.selectToggle(closeEventToggleGroup.getToggles().get(Config.setting.getCloseEvent()));
     }
+
+    @FXML
+    void setSelectedGameType(ActionEvent event) {
+        Object source = event.getSource();
+        if (source instanceof RadioButton button) {
+            switch (button.getAccessibleText()) {
+                case "default"-> {
+                    viewModel.setGameRootDirSource(SourceType.DEFAULT);
+                    noKuJieQuSwitch.setSelected(false);
+                }
+                case "wegame" -> {
+                    viewModel.setGameRootDirSource(SourceType.WE_GAME);
+                    noKuJieQuSwitch.setSelected(false);
+                }
+                case "global" -> {
+                    viewModel.setGameRootDirSource(SourceType.GLOBAL);
+                    noKuJieQuSwitch.setSelected(true);
+                }
+            }
+        }
+    }
+
+
     @FXML
     void setAppPathModel(ActionEvent event) {
         Object source = event.getSource();
@@ -197,7 +210,7 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
     @FXML
     void setGameDir(ActionEvent event) {
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle("选择鸣潮安装根目录");
+        directoryChooser.setTitle(LanguageManager.getString("ui.setting.file.game_dir.title"));
         File file = directoryChooser.showDialog(gameDirField.getScene().getWindow());
         if (file != null) {
             File startApp = null;
@@ -229,7 +242,7 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
     @FXML
     void setBgFile(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("选择背景图片");
+        fileChooser.setTitle(LanguageManager.getString("ui.setting.file.background.title"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("jpg,jpeg,png,bmp","*.png","*.jpg","*.jpeg","*.bmp"));
         File file = fileChooser.showOpenDialog(gameDirField.getScene().getWindow());
         if (file != null) {
@@ -255,25 +268,25 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
         ClipboardContent content = new ClipboardContent();
         content.putString("234294078");
         clipboard.setContent(content);
-        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"已复制群号，可到QQ中搜索加入"));
+        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,LanguageManager.getString("ui.setting.communication.QQ.tip")));
     }
 
     @FXML
     void toSupport(ActionEvent event) {
-        Label title = new Label("感谢支持");
-        title.getStyleClass().add(Styles.TITLE_2);
-        Label tip1 =new Label("助手的开发耗费了开发者大量的时间与精力，如果助手对您有所帮助且您财力有余，可以赞助一下开发者，您的支持将促进助手的开发与完善。");
+        Label title = new Label(LanguageManager.getString("ui.setting.sponsor.dialog.title"));
+        title.getStyleClass().add(Styles.TITLE_3);
+        Label tip1 =new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip01"));
         tip1.setWrapText(true);
         tip1.setPrefWidth(450);
-        tip1.setMinHeight(80);
-        Image image =new Image(FXResourcesLoader.load("image/support.png"),400,350,true,true,true);
+        tip1.setPrefHeight(80);
+        Image image =new Image(FXResourcesLoader.load("image/support.png"),350,320,true,true,true);
         ImageView iv = new ImageView(image);
 
-        Label tip2 =new Label("您可以按照如下格式附上留言:");
-        Label tip3 =new Label("鸣潮助手 @[称呼]:[消息]");
+        Label tip2 =new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip02"));
+        Label tip3 =new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip03"));
         VBox center = new VBox(5.0,tip1,iv,tip2,tip3);
 
-        Hyperlink browserBtn = new Hyperlink("查看赞助名单");
+        Hyperlink browserBtn = new Hyperlink(LanguageManager.getString("ui.setting.sponsor.dialog.browser"));
         browserBtn.setOnAction(actionEvent -> {
             try {
                 Desktop.getDesktop().browse(new URI(Config.URL_SUPPORT_LIST));
@@ -282,7 +295,7 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
             }
         });
 
-        Button cancelBtn = new Button("取消");
+        Button cancelBtn = new Button(LanguageManager.getString("ui.common.cancel"));
         cancelBtn.setCancelButton(true);
         JFXDialogLayout dialogLayout=new JFXDialogLayout();
         dialogLayout.setHeading(title);
@@ -295,7 +308,7 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
     @FXML
     void setGameApp(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("选择鸣潮启动程序");
+        fileChooser.setTitle(LanguageManager.getString("ui.setting.file.app.title"));
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("exe","*.exe"));
         File file = fileChooser.showOpenDialog(gameDirField.getScene().getWindow());
         if (file != null) {

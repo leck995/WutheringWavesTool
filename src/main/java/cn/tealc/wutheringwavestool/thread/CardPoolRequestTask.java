@@ -3,9 +3,12 @@ package cn.tealc.wutheringwavestool.thread;
 import cn.tealc.wutheringwavestool.model.CardInfo;
 import cn.tealc.wutheringwavestool.model.Message;
 
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -25,6 +28,7 @@ import java.util.*;
  * @create: 2024-07-03 00:14
  */
 public class CardPoolRequestTask extends Task<Map<String, List<CardInfo>>> {
+    private static final Logger LOG = LoggerFactory.getLogger(CardPoolRequestTask.class);
     private static final String cn_REQUEST_URL="https://gmserver-api.aki-game2.com/gacha/record/query";
     private static final String oversea_REQUEST_URL="https://gmserver-api.aki-game2.net/gacha/record/query";
     String REQUEST_URL = null;
@@ -33,13 +37,14 @@ public class CardPoolRequestTask extends Task<Map<String, List<CardInfo>>> {
     private Map<String, String> params;
 
     public CardPoolRequestTask(Map<String, String> params, String gameRootDir) {
-        typePool.put("角色活动唤取","1");
-        typePool.put("武器活动唤取","2");
-        typePool.put("角色常驻唤取","3");
-        typePool.put("武器常驻唤取","4");
-        typePool.put("新手唤取","5");
-        typePool.put("新手自选唤取","6");
-        typePool.put("新手自选唤取（感恩定向唤取）","7");
+        String[] pools = LanguageManager.getStringArray("ui.analysis.base_pool");
+        typePool.put(pools[0],"1");
+        typePool.put(pools[1],"2");
+        typePool.put(pools[2],"3");
+        typePool.put(pools[3],"4");
+        typePool.put(pools[4],"5");
+        typePool.put(pools[5],"6");
+        typePool.put(pools[6],"7");
         this.params = params;
     }
 
@@ -154,6 +159,7 @@ public class CardPoolRequestTask extends Task<Map<String, List<CardInfo>>> {
                 Country = "SEA";
                 break;
             default:
+
                 throw new IllegalArgumentException("Invalid playerId: " + playerId);
         }
         return REQUEST_URL;

@@ -8,6 +8,7 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.DownloadHeadImgTask;
 import cn.tealc.wutheringwavestool.ui.component.PoolNameCell;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -181,8 +182,6 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
                     }
                 }
             });
-
-
         }
     }
 
@@ -212,26 +211,7 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
             File headFile=new File(String.format("assets/header/%s.png",ssrData.getName()));
             if (headFile.exists()){
                 iv.setImage(new Image(headFile.toURI().toString(),70,70,true,true,true));
-            }else {
-                iv.setImage(null);
-                if (!DownloadHeadImgTask.hasUpdate){
-                    DownloadHeadImgTask task=new DownloadHeadImgTask();
-                    task.setOnSucceeded(workerStateEvent -> {
-                        if (task.getValue()) {
-                            File headFile1 = new File(String.format("assets/header/%s.png", ssrData.getName()));
-                            if (headFile1.exists()) {
-                                iv.setImage(new Image(headFile1.toURI().toString(), 70, 70, true, true, true));
-                            }
-                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                                    new MessageInfo(MessageType.SUCCESS, "新头像下载完毕,如果仍缺少头像，可联系开发者"), false);
-                        }
-                    });
-                    Thread.startVirtualThread(task);
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.INFO, "正在下载新头像，请稍后几秒"), false);
-                }
             }
-
             count.setText(String.format("%02d",ssrData.getCount()));
             count.getStyleClass().add("count");
 
@@ -294,31 +274,17 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
                     iv.setImage(new Image(headFile.toURI().toString(),60,60,true,true,true));
                 }else {
                     iv.setImage(null);
-                if (!DownloadHeadImgTask.hasUpdate){
-                    DownloadHeadImgTask task=new DownloadHeadImgTask();
-                    task.setOnSucceeded(workerStateEvent -> {
-                        if (task.getValue()){
-                            ssrListView.refresh();
-                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                                    new MessageInfo(MessageType.SUCCESS,"新头像下载完毕，如果仍缺少头像，可联系开发者"),false);
-                        }
-                    });
-                    Thread.startVirtualThread(task);
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.INFO, "正在下载新头像，请稍后几秒"), false);
-                    }
                 }
-
                 name.setText(ssrData.getName());
                 date.setText(ssrData.getDate());
                 count.setText(String.format("%02d",ssrData.getCount()));
                 progressBar.setProgress(ssrData.getCount()/80.0);
 
                 if (ssrData.isEvent()){
-                    desc.setText("限定");
+                    desc.setText(LanguageManager.getString("ui.analysis.role.list.tip01"));
                     desc.setTextFill(Color.web("#ffd000"));
                 }else {
-                    desc.setText("常驻");
+                    desc.setText(LanguageManager.getString("ui.analysis.role.list.tip02"));
                     desc.setTextFill(Color.web("#787878"));
                 }
                 setGraphic(root);
@@ -326,8 +292,6 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
                 setGraphic(null);
             }
         }
-
-
 
     }
 

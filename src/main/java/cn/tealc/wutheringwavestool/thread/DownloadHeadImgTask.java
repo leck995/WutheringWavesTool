@@ -14,6 +14,7 @@ import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 
+@Deprecated
 public class DownloadHeadImgTask extends Task<Boolean> {
     private static final Logger LOG= LoggerFactory.getLogger(DownloadHeadImgTask.class);
     private static final String HEAD_JSON_URL="https://raw.githubusercontent.com/leck995/WutheringWavesTool/new-ui/assets/data/header.json";
