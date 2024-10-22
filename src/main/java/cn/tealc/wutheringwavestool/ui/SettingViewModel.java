@@ -13,12 +13,16 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.text.Font;
+import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.List;
+import java.util.Locale;
+import java.util.ResourceBundle;
 
 /**
  * @program: WutheringWavesTool
@@ -40,6 +44,8 @@ public class SettingViewModel implements ViewModel {
     private SimpleStringProperty gameAppStartPath=new SimpleStringProperty();
     private SimpleBooleanProperty gameAppStartCustom=new SimpleBooleanProperty();
     private SimpleBooleanProperty checkNewVersion=new SimpleBooleanProperty();
+
+    private ObservableList<Pair<String, Locale>> languages=FXCollections.observableArrayList();
     public SettingViewModel() {
         changeTitlebar.bindBidirectional(Config.setting.changeTitlebarProperty());
         gameDir.bindBidirectional(Config.setting.gameRootDirProperty());
@@ -62,6 +68,13 @@ public class SettingViewModel implements ViewModel {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
             }
         });
+
+
+        languages.setAll(
+                List.of(
+                        new Pair<>("简体中文",Locale.CHINA),
+                        new Pair<>("English",Locale.ENGLISH)
+                ));
     }
 
 
@@ -92,6 +105,11 @@ public class SettingViewModel implements ViewModel {
     }
 
 
+    public void setLanguages(Locale locale) {
+        Config.setting.setLanguage(locale);
+        Config.language = ResourceBundle.getBundle("cn.tealc/wutheringwavestool/language/local",Config.setting.getLanguage());
+        MvvmFX.setGlobalResourceBundle(Config.language);
+    }
 
 
     public String getGameDir() {
@@ -201,5 +219,9 @@ public class SettingViewModel implements ViewModel {
 
     public void setGameAppStartCustom(boolean gameAppStartCustom) {
         this.gameAppStartCustom.set(gameAppStartCustom);
+    }
+
+    public ObservableList<Pair<String, Locale>> getLanguages() {
+        return languages;
     }
 }

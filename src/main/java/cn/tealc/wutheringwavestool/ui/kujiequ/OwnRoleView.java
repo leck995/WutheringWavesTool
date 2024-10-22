@@ -1,4 +1,4 @@
-package cn.tealc.wutheringwavestool.ui;
+package cn.tealc.wutheringwavestool.ui.kujiequ;
 
 import atlantafx.base.util.Animations;
 import cn.tealc.wutheringwavestool.base.Config;

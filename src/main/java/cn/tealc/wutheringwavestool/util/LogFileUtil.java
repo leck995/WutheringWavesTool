@@ -1,10 +1,15 @@
 package cn.tealc.wutheringwavestool.util;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -16,6 +21,7 @@ import java.util.regex.Pattern;
  * @create: 2024-07-04 16:38
  */
 public class LogFileUtil {
+    private static final Logger LOG = LoggerFactory.getLogger(LogFileUtil.class);
     /**
      * @description: 从日志文件读取卡池链接
      * @param:	file	日志文件
@@ -24,16 +30,22 @@ public class LogFileUtil {
      */
     public static String getLogFileUrl(File file){
         Pattern pattern = Pattern.compile("https.*/aki/gacha/index.html#/record[?=&\\w\\-]+");
+        List<String> list = new ArrayList<String>();
+
         try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.find()) {
-                    return matcher.group(0);
+                    list.add(matcher.group(0));
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            LOG.error(e.getMessage(),e);
+        }
+
+        if (!list.isEmpty()) {
+            return list.getLast();
         }
         return null;
     }

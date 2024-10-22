@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1000.0" styleClass="sign" stylesheets="@../css/Sign.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.SignView">
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" styleClass="sign" stylesheets="@../../css/Sign.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.SignView">
    <children>
       <HBox alignment="CENTER" layoutX="840.0" layoutY="10.0" spacing="5.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="10.0">
          <children>

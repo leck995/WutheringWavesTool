@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.util;
 
+import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.model.kujiequ.roleData.weight.PhantomWeight;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
@@ -16,34 +17,34 @@ import java.io.IOException;
  */
 public class LocalDataManager {
     private static final Logger LOG= LoggerFactory.getLogger(LocalDataManager.class);
-    private static final String WEIGHT_DEFAULT_DIR_TEMPLATE="assets/data/weight/default/%s.json";
-    private static final String WEIGHT_CUSTOM_DIR_TEMPLATE="assets/data/weight/custom/%s.json";
+    private static final String WEIGHT_DEFAULT_DIR_TEMPLATE="assets/data/%s/weight/default/%s.json";
+    private static final String WEIGHT_CUSTOM_DIR_TEMPLATE="assets/data/%s/weight/custom/%s.json";
 
     static {
-        File dir=new File("assets/data/weight/default");
+        File dir=new File(String.format(WEIGHT_DEFAULT_DIR_TEMPLATE, Config.setting.getLanguage(),"A")).getParentFile();
         if (!dir.exists()) {
             boolean result = dir.mkdirs();
             if (!result){
-                LOG.error("无法创建缓存目录");
+                LOG.error("无法创建默认声骸权重目录");
             }
         }
-        File dir2=new File("assets/data/weight/custom");
+        File dir2=new File(String.format(WEIGHT_CUSTOM_DIR_TEMPLATE, Config.setting.getLanguage(),"A")).getParentFile();
         if (!dir2.exists()) {
             boolean result = dir2.mkdirs();
             if (!result){
-                LOG.error("无法创建缓存目录");
+                LOG.error("无法创建自定义声骸权重目录");
             }
         }
     }
 
     public static PhantomWeight getWeight(String roleName){
         ObjectMapper mapper = new ObjectMapper();
-        File file=new File(String.format(WEIGHT_CUSTOM_DIR_TEMPLATE,roleName));
+        File file=new File(String.format(WEIGHT_CUSTOM_DIR_TEMPLATE, Config.setting.getLanguage(),roleName));
         try {
             if (file.exists()){
                 return mapper.readValue(file, PhantomWeight.class);
             }else {
-                file=new File(String.format(WEIGHT_DEFAULT_DIR_TEMPLATE,roleName));
+                file=new File(String.format(WEIGHT_DEFAULT_DIR_TEMPLATE, Config.setting.getLanguage(),roleName));
                 if (file.exists()){
                     return mapper.readValue(file, PhantomWeight.class);
                 }

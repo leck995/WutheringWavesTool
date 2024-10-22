@@ -20,6 +20,13 @@ import java.io.File;
 public class GameResourcesManager {
     private static final Logger LOG = LoggerFactory.getLogger(GameResourcesManager.class);
 
+    public static File getGameDir(){
+        File dir = new File(Config.setting.getGameRootDir());
+        if (!dir.exists()) {
+            return null;
+        }
+        return dir;
+    }
 
     public static File getGameDB(){
         String dir = Config.setting.getGameRootDir();
@@ -70,7 +77,7 @@ public class GameResourcesManager {
         return exe;
     }
 
-    public static File getGameEngineIni(){
+    public static File getGameEngineIni() {
         String dir = Config.setting.getGameRootDir();
         File exe = null;
         if (dir != null) {
@@ -78,6 +85,23 @@ public class GameResourcesManager {
                 exe = new File(dir + File.separator + "Client/Saved/Config/WindowsNoEditor/Engine.ini");
             } else {
                 exe = new File(dir + File.separator + "Wuthering Waves Game/Client/Saved/Config/WindowsNoEditor/Engine.ini");
+            }
+            if (!exe.exists()) {
+                return null;
+            }
+        }
+        return exe;
+    }
+
+
+    public static File getGameScreenShoot(){
+        String dir = Config.setting.getGameRootDir();
+        File exe = null;
+        if (dir != null) {
+            if (Config.setting.getGameRootDirSource() == SourceType.WE_GAME) {
+                exe =new File(Config.setting.getGameRootDir()+File.separator+"Client/Saved/ScreenShot");
+            } else {
+                exe =new File(Config.setting.getGameRootDir()+File.separator+"Wuthering Waves Game/Client/Saved/ScreenShot");
             }
             if (!exe.exists()) {
                 return null;

@@ -1,4 +1,4 @@
-package cn.tealc.wutheringwavestool.ui;
+package cn.tealc.wutheringwavestool.ui.kujiequ;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.SignHistoryDao;

@@ -50,7 +50,6 @@ public class GameSettingDao {
         Connection conn = GameJdbcUtils.getConnection();
         Pair<String,String> pair=null;
         try {
-
             Map<String, Object> map = qr.query(conn,sql, new MapHandler(),key);
             if (map != null) {
                 String keyRow = (String) map.get("key");
@@ -58,7 +57,6 @@ public class GameSettingDao {
                 System.out.println(keyRow + ":" + value);
                 pair =new Pair<>(keyRow, value);
             }
-
         } catch (SQLException e) {
             LOG.error(e.getMessage(),e);
         }finally{

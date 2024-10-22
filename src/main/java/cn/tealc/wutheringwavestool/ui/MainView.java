@@ -11,6 +11,7 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.MainBackgroundTask;
+import cn.tealc.wutheringwavestool.ui.kujiequ.*;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialog;
@@ -51,6 +52,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
@@ -132,6 +134,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         icon.setImage(new Image(FXResourcesLoader.load("image/icon.png"),45,45,true,true));
 
 
+        //禁用库街区，系统语言为英文也会默认禁用库街区
         if (Config.setting.isNoKuJieQu()){
             Iterator<Node> iterator = nav.getChildren().iterator();
             while (iterator.hasNext()) {
@@ -141,7 +144,6 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
                         iterator.remove();
                     }
                 }
-
             }
         }
 

@@ -20,7 +20,7 @@
 .setting .tip{
     -fx-font-size: 12;
     -fx-text-fill: -color-font-muted;
-    -fx-padding: 0 0 10 0;
+    -fx-padding: 0 0 0 0;
 }
 .setting .left{
 

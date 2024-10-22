@@ -1,4 +1,4 @@
-package cn.tealc.wutheringwavestool.ui;
+package cn.tealc.wutheringwavestool.ui.kujiequ;
 
 import cn.tealc.wutheringwavestool.dao.GameRoleDataDao;
 import cn.tealc.wutheringwavestool.dao.GameTowerDataDao;
@@ -9,7 +9,6 @@ import cn.tealc.wutheringwavestool.model.kujiequ.sign.UserInfo;
 import cn.tealc.wutheringwavestool.model.kujiequ.towerData.*;
 import cn.tealc.wutheringwavestool.model.tower.TowerData;
 import cn.tealc.wutheringwavestool.thread.api.TowerDataDetailTask;
-import cn.tealc.wutheringwavestool.thread.api.role.GameRoleDataSaveTask;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -36,8 +35,7 @@ public class TowerViewModel implements ViewModel {
     private final ObservableList<Difficulty> difficultyList = FXCollections.observableArrayList();
     private final ObservableList<TowerArea> towerAreaList = FXCollections.observableArrayList();
     private final ObservableList<Pair<Long,Pair<String,String>>> towerHistoryList = FXCollections.observableArrayList();
-    private SimpleStringProperty seasonEndTime = new SimpleStringProperty();
-
+    private final SimpleStringProperty seasonEndTime = new SimpleStringProperty();
     private final SimpleStringProperty title= new SimpleStringProperty();
 
     public TowerViewModel() {
@@ -45,17 +43,10 @@ public class TowerViewModel implements ViewModel {
         userInfo = userInfoDao.getMain();
         if (userInfo != null) {
             getData();
-        }else {
-
         }
-
-
     }
 
     private void getData(){
-        GameRoleDataSaveTask gameRoleDataSaveTask = new GameRoleDataSaveTask(userInfo);
-        Thread.startVirtualThread(gameRoleDataSaveTask);
-
         TowerDataDetailTask task = new TowerDataDetailTask(userInfo);
         task.setOnSucceeded(event -> {
             //System.out.println(task.getValue().getData().get(0).getDifficultyName());
@@ -78,8 +69,6 @@ public class TowerViewModel implements ViewModel {
                 // 输出结果
                 seasonEndTime.set(String.format("%d天%d小时后刷新", days, hours));
                 title.set("深境区");
-
-
                 GameTowerDataDao dataDao = new GameTowerDataDao();
                 Set<Long> endTimeList = dataDao.getEndTimeList();
 
@@ -98,13 +87,8 @@ public class TowerViewModel implements ViewModel {
             }else {
 
             }
-
-
         });
         Thread.startVirtualThread(task);
-
-
-
     }
 
     
@@ -125,7 +109,7 @@ public class TowerViewModel implements ViewModel {
             }
         }
 
-        GameRoleDataDao gameRoleDataDao = new GameRoleDataDao();
+
         for (TowerData data : list) {
             Floor floor = new Floor();
             floor.setFloor(data.getFloor());
@@ -135,12 +119,8 @@ public class TowerViewModel implements ViewModel {
             if (data.getRoleList() != null){
                 String[] roleIds = data.getRoleList().split(",");
                 for (String roleId : roleIds) {
-                    Role role = gameRoleDataDao.getRoleDataById(Integer.parseInt(roleId));
-                    if (role != null){
-                        SimpleRole aim = new SimpleRole(role.getRoleId(), role.getRoleIconUrl());
-                        roleList.add(aim);
-                    }
-
+                    SimpleRole aim = new SimpleRole(Integer.valueOf(roleId), null);
+                    roleList.add(aim);
                 }
             }
             floor.setRoleList(roleList);

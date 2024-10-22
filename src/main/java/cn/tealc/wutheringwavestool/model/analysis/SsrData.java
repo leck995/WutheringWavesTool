@@ -11,10 +11,19 @@ import java.util.List;
  * @create: 2024-07-03 11:39
  */
 public class SsrData {
+    private int id;
     private String name;
     private int count;
     private boolean event;//限定活动
     private String date;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getName() {
         return name;

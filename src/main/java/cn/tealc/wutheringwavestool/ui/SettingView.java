@@ -33,6 +33,8 @@ import javafx.scene.shape.Rectangle;
 import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.Duration;
+import javafx.util.Pair;
+import javafx.util.StringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +44,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
@@ -106,6 +109,9 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
 
     @FXML
     private ToggleGroup closeEventToggleGroup;
+
+    @FXML
+    private ComboBox<Pair<String, Locale>> languageBox;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         gameDirField.textProperty().bindBidirectional(viewModel.gameDirProperty());
@@ -125,8 +131,10 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
 
         if (viewModel.getGameRootDirSource()==SourceType.DEFAULT){
             gameSourceType.selectToggle(gameSourceType.getToggles().getFirst());
-        }else {
+        }else if(viewModel.getGameRootDirSource()==SourceType.WE_GAME){
             gameSourceType.selectToggle(gameSourceType.getToggles().get(1));
+        }else {
+            gameSourceType.selectToggle(gameSourceType.getToggles().get(2));
         }
 
 
@@ -154,6 +162,31 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
 
         if (Config.setting.getCloseEvent() >= 0 && Config.setting.getCloseEvent() <= 2)
             closeEventToggleGroup.selectToggle(closeEventToggleGroup.getToggles().get(Config.setting.getCloseEvent()));
+
+
+
+        languageBox.setItems(viewModel.getLanguages());
+        for (Pair<String, Locale> language : languageBox.getItems()) {
+            if (language.getValue().toString().equals(Config.setting.getLanguage().toString())){
+                languageBox.getSelectionModel().select(language);
+            }
+        }
+        languageBox.getSelectionModel().selectedItemProperty().addListener((observableValue, stringLocalePair, t1) -> {
+            if (t1 != null) {
+                viewModel.setLanguages(t1.getValue());
+            }
+        });
+        languageBox.setConverter(new StringConverter<>() {
+            @Override
+            public String toString(Pair<String, Locale> stringLocalePair) {
+                return stringLocalePair.getKey();
+            }
+            @Override
+            public Pair<String, Locale> fromString(String s) {
+                return null;
+            }
+        });
+
     }
 
     @FXML
@@ -214,10 +247,10 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
         File file = directoryChooser.showDialog(gameDirField.getScene().getWindow());
         if (file != null) {
             File startApp = null;
-            if (Config.setting.getGameRootDirSource() == SourceType.DEFAULT){
-                startApp = new File(file.getAbsolutePath() + File.separator + "launcher.exe");
-            }else if (Config.setting.getGameRootDirSource() == SourceType.WE_GAME){
+            if (Config.setting.getGameRootDirSource() == SourceType.WE_GAME){
                 startApp = new File(file.getAbsolutePath() + File.separator + "Wuthering Waves.exe");
+            } else{
+                startApp = new File(file.getAbsolutePath() + File.separator + "launcher.exe");
             }
             if (startApp != null && startApp.exists()) {
                 gameDirField.setText(file.getAbsolutePath());

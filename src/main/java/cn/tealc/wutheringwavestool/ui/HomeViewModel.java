@@ -1,7 +1,7 @@
 package cn.tealc.wutheringwavestool.ui;
 
-import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.MainApplication;
+import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
@@ -9,17 +9,16 @@ import cn.tealc.wutheringwavestool.jna.GameAppListener;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.kujiequ.roleData.user.BoxInfo;
 import cn.tealc.wutheringwavestool.model.kujiequ.roleData.user.RoleDailyData;
 import cn.tealc.wutheringwavestool.model.kujiequ.roleData.user.RoleInfo;
 import cn.tealc.wutheringwavestool.model.kujiequ.sign.SignUserInfo;
+import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.api.SignTask;
 import cn.tealc.wutheringwavestool.thread.api.UserDailyDataTask;
 import cn.tealc.wutheringwavestool.thread.api.UserDataRefreshTask;
 import cn.tealc.wutheringwavestool.thread.api.UserInfoDataTask;
-import cn.tealc.wutheringwavestool.thread.api.role.GameRoleDataSaveTask;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
@@ -39,7 +38,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
@@ -137,7 +135,7 @@ public class HomeViewModel implements ViewModel {
      */
     public void updateRoleData() {
         if (Config.setting.isNoKuJieQu()){
-            hasSign.set(true);
+            hasSign.set(false);
             return;
         }
 

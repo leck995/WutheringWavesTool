@@ -1,4 +1,4 @@
-package cn.tealc.wutheringwavestool.ui;
+package cn.tealc.wutheringwavestool.ui.kujiequ;
 
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.model.kujiequ.towerData.Difficulty;
@@ -209,7 +209,7 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
                 if (floor.getRoleList() != null && !floor.getRoleList().isEmpty()) {
                     for (SimpleRole role : floor.getRoleList()) {
                         ImageView roleIv = new ImageView();
-                        Image image = LocalResourcesManager.imageBuffer(role.getIconUrl(),50,50,true,true);
+                        Image image = LocalResourcesManager.header(role.getRoleId(),50,50);
                         roleIv.setImage(image);
                         Circle circle = new Circle(25,25,25);
                         roleIv.setClip(circle);
@@ -219,7 +219,6 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
                     Label label = new Label("暂无数据");
                     roleHbox.getChildren().add(label);
                 }
-
 
                 getChildren().add(floorHBox);
             }

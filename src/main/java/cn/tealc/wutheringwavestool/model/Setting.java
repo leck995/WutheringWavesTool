@@ -1,7 +1,10 @@
 package cn.tealc.wutheringwavestool.model;
 
 import ch.qos.logback.classic.Level;
+import cn.tealc.wutheringwavestool.base.Config;
 import javafx.beans.property.*;
+
+import java.util.Locale;
 
 /**
  * @program: WutheringWavesTool
@@ -11,6 +14,7 @@ import javafx.beans.property.*;
  */
 public class Setting {
 
+    private SimpleObjectProperty<Locale> language = new SimpleObjectProperty<>(Locale.getDefault());
     private SimpleDoubleProperty appWidth=new SimpleDoubleProperty(1280.0);
     private SimpleDoubleProperty appHeight=new SimpleDoubleProperty(760.0);
 
@@ -34,7 +38,7 @@ public class Setting {
     private SimpleBooleanProperty firstViewWithPoolAnalysis=new SimpleBooleanProperty(false);//启动页设置为抽卡分析
     private SimpleBooleanProperty diyHomeBg=new SimpleBooleanProperty(false); //启用自定义背景
     private SimpleStringProperty diyHomeBgName=new SimpleStringProperty(); //自定义背景文件名称
-    private SimpleBooleanProperty noKuJieQu = new SimpleBooleanProperty(false); //不使用库街区
+    private SimpleBooleanProperty noKuJieQu = new SimpleBooleanProperty(getLanguage() != Locale.CHINA); //不使用库街区
     private SimpleIntegerProperty closeEvent = new SimpleIntegerProperty(0); //关闭主界面行为，0选择，1退出，2最小化
     /*=================设置-游戏行为===================*/
     private SimpleBooleanProperty exitWhenGameOver=new SimpleBooleanProperty(false); //检测到游戏关闭自动关闭程序
@@ -54,6 +58,17 @@ public class Setting {
     private SimpleBooleanProperty autoKujieQuSign=new SimpleBooleanProperty(false); //使用高级启动
 
 
+    public Locale getLanguage() {
+        return language.get();
+    }
+
+    public SimpleObjectProperty<Locale> languageProperty() {
+        return language;
+    }
+
+    public void setLanguage(Locale language) {
+        this.language.set(language);
+    }
 
     public String getGameRootDir() {
         return gameRootDir.get();

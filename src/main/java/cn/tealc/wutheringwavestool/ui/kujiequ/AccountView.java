@@ -1,4 +1,4 @@
-package cn.tealc.wutheringwavestool.ui;
+package cn.tealc.wutheringwavestool.ui.kujiequ;
 
 import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;

@@ -27,6 +27,7 @@ import java.util.List;
  * @author: Leck
  * @create: 2024-07-06 14:24
  */
+@Deprecated
 public class GameRoleDataSaveTask extends Task<ResponseBody<List<Role>>> {
     private static final Logger LOG= LoggerFactory.getLogger(GameRoleDataSaveTask.class);
     private SignUserInfo signUserInfo;

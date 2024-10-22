@@ -47,7 +47,7 @@ public class MainApplication extends Application {
         System.setProperty("LcdFontSmoothing", "true");
         System.setProperty("prism.text", "t2k");
 
-        Config.language = ResourceBundle.getBundle("cn.tealc/wutheringwavestool/language/local",Locale.ENGLISH);
+        Config.language = ResourceBundle.getBundle("cn.tealc/wutheringwavestool/language/local",Config.setting.getLanguage());
         MvvmFX.setGlobalResourceBundle(Config.language);
 
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory

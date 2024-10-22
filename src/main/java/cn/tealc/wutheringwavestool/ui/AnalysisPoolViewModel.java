@@ -113,10 +113,11 @@ public class AnalysisPoolViewModel implements ViewModel {
         String dir = Config.setting.getGameRootDir();
         if (dir != null) {
             File file=null;
-            if (Config.setting.getGameRootDirSource() == SourceType.DEFAULT){
-                file=new File(dir + File.separator + "Wuthering Waves Game/Client/Saved/Logs/Client.log");
-            }else {
+            if (Config.setting.getGameRootDirSource() == SourceType.WE_GAME){
                 file=new File(dir + File.separator + "Client/Saved/Logs/Client.log");
+
+            }else {
+                file=new File(dir + File.separator + "Wuthering Waves Game/Client/Saved/Logs/Client.log");
             }
 
             if (file.exists()){
@@ -186,12 +187,6 @@ public class AnalysisPoolViewModel implements ViewModel {
      */
     private void savePoolData(Map<String, String> params){
         String playerId = params.get("playerId");
-
- /*       File userDataDir=new File(String.format("data/%s",playerId));
-        if (userDataDir.exists()){
-            userDataDir.lastModified()
-        }
-*/
         ObjectMapper mapper = new ObjectMapper();
         File poolJson=new File(String.format("data/%s/pool.json",playerId));
         File dateJson=new File(String.format("data/%s/data.json",playerId));
@@ -285,15 +280,6 @@ public class AnalysisPoolViewModel implements ViewModel {
         ssrList.setAll(analysis.getSsrDataList());
         //扇形图数据
         List<PieChart.Data> pieChartDataList=new ArrayList<>();
-/*        if (analysis.getSsrCount()!=0){
-            pieChartDataList.add(new PieChart.Data("SSR",analysis.getSsrCount()));
-        }
-        if (analysis.getSrCount()!=0){
-            pieChartDataList.add(new PieChart.Data("SR",analysis.getSrCount()));
-        }
-        if (analysis.getrCount()!=0){
-            pieChartDataList.add(new PieChart.Data("R",analysis.getrCount()));
-        }*/
         pieChartDataList.add(new PieChart.Data("SSR",analysis.getSsrCount()));
         pieChartDataList.add(new PieChart.Data("SR",analysis.getSrCount()));
         pieChartDataList.add(new PieChart.Data("R",analysis.getrCount()));
@@ -350,9 +336,11 @@ public class AnalysisPoolViewModel implements ViewModel {
                 }
                 totalCount+=cardInfos.size();
                 ssrData=new SsrData();
+                ssrData.setId(cardInfo.getResourceId());
                 ssrData.setDate(cardInfo.getTime());
                 ssrData.setName(cardInfo.getName());
                 ssrData.setCount(cardInfos.size());
+
                 ssrData.setEvent(!baseSSRList.contains(cardInfo.getName()));
                 ssrDataList.add(ssrData);
             }

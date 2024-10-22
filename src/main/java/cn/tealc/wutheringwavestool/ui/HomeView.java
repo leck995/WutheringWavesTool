@@ -8,6 +8,8 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.wutheringwavestool.util.GameResourcesManager;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
@@ -33,6 +35,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
@@ -253,17 +256,11 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @FXML
     void toAlbum(ActionEvent event) {
         try {
-            File file=null;
-            if (Config.setting.getGameRootDirSource() == SourceType.DEFAULT){
-                file=new File(Config.setting.getGameRootDir()+File.separator+"Wuthering Waves Game/Client/Saved/ScreenShot");
-            }else {
-                file=new File(Config.setting.getGameRootDir()+File.separator+"Client/Saved/ScreenShot");
-            }
-
-            if (file.exists()){
+            File file= GameResourcesManager.getGameScreenShoot();
+            if (file != null){
                 Desktop.getDesktop().open(file);
             }else {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"截图保存目录不存在"));
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,LanguageManager.getString("ui.home.message.type06")));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -273,11 +270,11 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @FXML
     void toGameDir(ActionEvent event) {
         try {
-            File file=new File(Config.setting.getGameRootDir());
-            if (file.exists()){
+            File file=GameResourcesManager.getGameDir();
+            if (file != null){
                 Desktop.getDesktop().open(file);
             }else {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"未设置游戏安装目录，请前往设置进行设置"));
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type04")));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

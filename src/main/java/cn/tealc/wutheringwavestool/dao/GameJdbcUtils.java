@@ -32,7 +32,6 @@ public class GameJdbcUtils {
             try {
                 File gameDB = GameResourcesManager.getGameDB();
                 if (gameDB != null) {
-                    System.out.println(gameDB.getAbsolutePath());
                     String url = String.format("jdbc:sqlite:%s",gameDB.getAbsolutePath());
                     connection = DriverManager.getConnection(url);
                 }

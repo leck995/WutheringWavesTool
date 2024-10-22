@@ -26,6 +26,10 @@ public class LocalResourcesManager {
     public static final String HOME_ROLE_DIR_TEMPLATE_2="assets/image/role/%s";
     public static final String HOME_BG_TEMPLATE="assets/image/bg/%s";
 
+
+    public static final String HEADER_TEMPLATE="assets/header/%d.png";
+
+
     static {
         File dir=new File("assets/cache/");
         if (!dir.exists()) {
@@ -90,6 +94,27 @@ public class LocalResourcesManager {
     }
 
 
+    /**
+     * @description: 获取角色武器头像
+     * @param:	url
+     * @param:	width
+     * @param:	height
+     * @return  javafx.scene.image.Image
+     * @date:   2024/10/22
+     */
+    public static Image header(int id,double width,double height){
+        File file=new File(String.format(HEADER_TEMPLATE,id));
+        if (file.exists()){
+            return new Image(file.toURI().toString(),width,height,true,true,true);
+        }else {
+            return null;
+        }
+    }
+
+
+
+
+
     public static String addHomeIcon(String roleName,String url){
         File file=new File(String.format(HOME_ICON_DIR_TEMPLATE,roleName,getSuffix(url)));
         if (!file.exists()){ //无缓存，获取并保存
@@ -143,6 +168,16 @@ public class LocalResourcesManager {
         return url.substring(index+1);
     }
 
+
+
+
+    /**
+     * @description: 对不存在缓存的图像资源进行缓存
+     * @param:	image
+     * @param:	file
+     * @return  void
+     * @date:   2024/10/22
+     */
     private static void saveImage(Image image, File file){
         Thread.startVirtualThread(()->{
             try {
@@ -160,4 +195,7 @@ public class LocalResourcesManager {
             }
         });
     }
+
+
+
 }

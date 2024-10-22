@@ -4,6 +4,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
@@ -73,17 +74,27 @@
                               </StackPane>
                            </children>
                         </VBox>
+                        <Label contentDisplay="RIGHT" styleClass="title-4" text="%ui.setting.default.language">
+                           <graphic>
+                              <Label styleClass="tip" text="%ui.setting.base.kujiequ.tip" />
+                           </graphic>
+                        </Label>
+                        <ComboBox fx:id="languageBox" prefWidth="150.0" />
                         <Label styleClass="title-3" text="%ui.setting.base.title" />
                         <VBox spacing="10.0">
                            <children>
-                              <Label styleClass="title-4" text="%ui.setting.base.titlebar" />
+                              <Label contentDisplay="RIGHT" styleClass="title-4" text="%ui.setting.base.titlebar">
+                                 <graphic>
+                                    <Label styleClass="tip" text="%ui.setting.base.titlebar.tip" />
+                                 </graphic></Label>
                               <ToggleSwitch fx:id="titlebarSwitch" labelPosition="RIGHT" text="%ui.setting.base.titlebar.switch" />
-                              <Label styleClass="tip" text="%ui.setting.base.titlebar.tip" />
                               <Label styleClass="title-4" text="%ui.setting.base.firstView" />
                               <CheckBox fx:id="startWithAnalysisView" mnemonicParsing="false" text="%ui.setting.base.firstView.card" />
-                              <Label styleClass="title-4" text="%ui.setting.base.kujiequ" />
+                              <Label contentDisplay="RIGHT" styleClass="title-4" text="%ui.setting.base.kujiequ">
+                                 <graphic>
+                                    <Label contentDisplay="RIGHT" styleClass="tip" text="%ui.setting.base.kujiequ.tip" />
+                                 </graphic></Label>
                               <ToggleSwitch fx:id="noKuJieQuSwitch" labelPosition="RIGHT" text="%ui.setting.base.kujiequ.switch" />
-                              <Label layoutX="10.0" layoutY="73.0" styleClass="tip" text="%ui.setting.base.kujiequ.tip" />
                               <Label styleClass="title-4" text="%ui.setting.base.background" />
                               <ToggleSwitch fx:id="diyBgSwitch" labelPosition="RIGHT" text="%ui.setting.base.background.switch" />
                               <StackPane fx:id="diyBgInputGroup" maxWidth="350.0" styleClass="input-group">

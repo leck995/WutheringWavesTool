@@ -38,5 +38,6 @@ open module cn.tealc.wutheringwavestool {
     exports cn.tealc.wutheringwavestool.ui;
     exports cn.tealc.wutheringwavestool.base;
     exports cn.tealc.wutheringwavestool.jna;
+    exports cn.tealc.wutheringwavestool.ui.kujiequ;
 
 }

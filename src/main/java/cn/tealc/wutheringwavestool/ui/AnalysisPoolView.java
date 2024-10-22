@@ -9,6 +9,7 @@ import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.DownloadHeadImgTask;
 import cn.tealc.wutheringwavestool.ui.component.PoolNameCell;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
+import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -208,10 +209,7 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
             getStyleClass().add("child");
             iv.setFitWidth(70.0);
             iv.setFitHeight(70.0);
-            File headFile=new File(String.format("assets/header/%s.png",ssrData.getName()));
-            if (headFile.exists()){
-                iv.setImage(new Image(headFile.toURI().toString(),70,70,true,true,true));
-            }
+            iv.setImage(LocalResourcesManager.header(ssrData.getId() ,70,70));
             count.setText(String.format("%02d",ssrData.getCount()));
             count.getStyleClass().add("count");
 
@@ -269,12 +267,7 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
         protected void updateItem(SsrData ssrData, boolean b) {
             super.updateItem(ssrData, b);
             if (!b){
-                File headFile=new File(String.format("assets/header/%s.png",ssrData.getName()));
-                if (headFile.exists()){
-                    iv.setImage(new Image(headFile.toURI().toString(),60,60,true,true,true));
-                }else {
-                    iv.setImage(null);
-                }
+                iv.setImage(LocalResourcesManager.header(ssrData.getId() ,60,60));
                 name.setText(ssrData.getName());
                 date.setText(ssrData.getDate());
                 count.setText(String.format("%02d",ssrData.getCount()));

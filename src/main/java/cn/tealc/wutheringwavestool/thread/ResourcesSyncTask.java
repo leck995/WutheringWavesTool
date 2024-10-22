@@ -35,11 +35,13 @@ import java.util.Map;
  */
 public class ResourcesSyncTask extends Task<String> {
     private static final Logger LOG = LoggerFactory.getLogger(ResourcesSyncTask.class);
-    private static final String ROOT_RESOURCE_URL_1="https://raw.githubusercontent.com/leck995/WutheringWavesToolResources/main/data/Root.json";
-    private static final String ROOT_RESOURCE_URL_2="https://gitee.com/tealc/WutheringWavesToolResources/raw/main/data/Root.json";
-    private static final String RESOURCE_TEMPLATE_1="https://raw.githubusercontent.com/leck995/WutheringWavesToolResources/main/%s";
-    private static final String RESOURCE_TEMPLATE_2="https://gitee.com/tealc/WutheringWavesToolResources/raw/main/%s";
+    private static final String ROOT_RESOURCE_URL_1="https://raw.githubusercontent.com/leck995/WutheringWavesToolResources/main-24.10.22/data/Root_%s.json";
+    private static final String ROOT_RESOURCE_URL_2="https://gitee.com/tealc/WutheringWavesToolResources/raw/main-24.10.22/data/Root_%s.json";
+    private static final String RESOURCE_TEMPLATE_1="https://raw.githubusercontent.com/leck995/WutheringWavesToolResources/main-24.10.22/%s";
+    private static final String RESOURCE_TEMPLATE_2="https://gitee.com/tealc/WutheringWavesToolResources/raw/main-24.10.22/%s";
 
+
+    private static final String LOCAL_ROOT_JSON="assets/data/Root_%s.json";
     private final String url;
     private final String resource_template;
     private ObjectMapper mapper = new ObjectMapper();
@@ -49,11 +51,11 @@ public class ResourcesSyncTask extends Task<String> {
     public ResourcesSyncTask() {
         switch (Config.setting.getResourceSource()){
             case 1 -> {
-                url =  ROOT_RESOURCE_URL_2;
+                url =  String.format(ROOT_RESOURCE_URL_2,Config.setting.getLanguage());
                 resource_template = RESOURCE_TEMPLATE_2;
             }
             default ->  {
-                url =  ROOT_RESOURCE_URL_1;
+                url =  String.format(ROOT_RESOURCE_URL_1,Config.setting.getLanguage());
                 resource_template = RESOURCE_TEMPLATE_1;
             }
         }
@@ -84,7 +86,7 @@ public class ResourcesSyncTask extends Task<String> {
             }
             RootResource remoteResource = mapper.readValue(row, RootResource.class);
             if (remoteResource != null) {
-                File localFile= new File("assets/data/Root.json");
+                File localFile= new File(String.format(LOCAL_ROOT_JSON,Config.setting.getLanguage()));
                 if (localFile.exists()){
                     RootResource localResources = mapper.readValue(localFile, RootResource.class);
                     if (localResources != null) {

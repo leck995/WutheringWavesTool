@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane prefHeight="800.0" prefWidth="1100.0" styleClass="tower" stylesheets="@../css/Tower.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.TowerView">
+<StackPane prefHeight="800.0" prefWidth="1100.0" styleClass="tower" stylesheets="@../../css/Tower.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.TowerView">
     <children>
         <AnchorPane prefHeight="200.0" prefWidth="200.0">
             <children>
