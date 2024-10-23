@@ -9,6 +9,7 @@ import cn.tealc.wutheringwavestool.model.analysis.SsrData;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.CardPoolRequestTask;
+import cn.tealc.wutheringwavestool.util.FileIO;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LogFileUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -21,8 +22,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.PieChart;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -32,6 +37,7 @@ import java.util.*;
  * @create: 2024-07-03 01:18
  */
 public class AnalysisPoolViewModel implements ViewModel {
+    private static final Logger LOG= LoggerFactory.getLogger(AnalysisPoolViewModel.class);
     private final List<String> baseSSRList;
 
     private SimpleStringProperty gameRootDir = new SimpleStringProperty();
@@ -190,6 +196,24 @@ public class AnalysisPoolViewModel implements ViewModel {
         ObjectMapper mapper = new ObjectMapper();
         File poolJson=new File(String.format("data/%s/pool.json",playerId));
         File dateJson=new File(String.format("data/%s/data.json",playerId));
+
+
+        if (poolJson.exists()){ //存在则备份
+            long time = poolJson.lastModified();
+            Calendar calendar = Calendar.getInstance();
+            calendar.set(Calendar.HOUR_OF_DAY, 0);
+            calendar.set(Calendar.MINUTE, 0);
+            calendar.set(Calendar.SECOND, 0);
+            calendar.set(Calendar.MILLISECOND, 0);
+            long todayStart = calendar.getTimeInMillis();
+            if (time < todayStart) {// 判断文件修改时间是否不是今天
+                LOG.info("文件的最后修改时间不是今天,进行备份");
+                FileIO.rename(poolJson,"pool.json.bak",true);
+            } else {
+                LOG.info("文件的最后修改时间是今天,跳过备份");
+            }
+        }
+        
         File parentDir = poolJson.getParentFile();
         File dataDir = parentDir.getParentFile();
         if (!dataDir.exists()){
