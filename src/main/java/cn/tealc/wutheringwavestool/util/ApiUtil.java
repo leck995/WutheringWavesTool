@@ -35,7 +35,7 @@ public class ApiUtil {
             return new String(decryptedData, StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException | IllegalBlockSizeException | IllegalArgumentException |
                  BadPaddingException e) {
-            LOG.info("数据解密出现错误，返回原内容{}",value);
+            LOG.debug("数据未加密，返回原内容{}",value);
             return value;
         }
     }

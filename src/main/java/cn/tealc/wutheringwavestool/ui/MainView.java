@@ -381,7 +381,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     void toSetting(ActionEvent event) {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
-            ViewTuple<SettingView, SettingViewModel> viewTuple = FluentViewLoader.fxmlView(SettingView.class).load();
+            ViewTuple<SettingView,SettingViewModel> viewTuple = FluentViewLoader.fxmlView(SettingView.class).load();
             bgPane.setVisible(false);
             child.getChildren().setAll(viewTuple.getView());
             startNavAnim();
@@ -455,9 +455,10 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         Image image =new Image(FXResourcesLoader.load("image/support.png"),350,320,true,true,true);
         ImageView iv = new ImageView(image);
 
+        StackPane imagePane =new StackPane(iv);
         Label tip2 =new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip02"));
         Label tip3 =new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip03"));
-        VBox center = new VBox(5.0,tip1,iv,tip2,tip3);
+        VBox center = new VBox(5.0,tip1,imagePane,tip2,tip3);
 
         Hyperlink browserBtn = new Hyperlink(LanguageManager.getString("ui.setting.sponsor.dialog.browser"));
         browserBtn.setOnAction(actionEvent -> {

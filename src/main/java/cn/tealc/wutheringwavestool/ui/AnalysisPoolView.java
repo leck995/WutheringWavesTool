@@ -88,6 +88,8 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
 
     @FXML
     private ToggleSwitch ssrModelSwitch;
+    @FXML
+    private HBox poolNameHBox;
 
     private boolean playerChange=false;//代码控制角色切换标志
     private boolean poolChange=false;//代码控制卡池切换标志
@@ -119,6 +121,10 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
         if (!poolListview.getItems().isEmpty()){
             poolListview.getSelectionModel().select(0);
         }
+
+
+
+
 
         pieChart.titleProperty().bind(viewModel.chartTitleProperty());
         pieChart.setData(viewModel.getPieChartData());

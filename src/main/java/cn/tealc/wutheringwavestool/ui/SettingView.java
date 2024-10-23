@@ -112,8 +112,13 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
 
     @FXML
     private ComboBox<Pair<String, Locale>> languageBox;
+
+    @FXML
+    private ToggleGroup fileSourceType;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
         gameDirField.textProperty().bindBidirectional(viewModel.gameDirProperty());
         startWithAnalysisView.selectedProperty().bindBidirectional(viewModel.startWithAnalysisProperty());
 
@@ -186,6 +191,9 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
                 return null;
             }
         });
+
+
+        fileSourceType.getToggles().get(Config.setting.getResourceSource()).setSelected(true);
 
     }
 
@@ -370,4 +378,20 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
         }
     }
 
+    @FXML
+    void setFileSource(ActionEvent event) {
+        Object source = event.getSource();
+        if (source instanceof RadioButton button) {
+            switch (button.getAccessibleText()) {
+                case "0" -> {
+                    Config.setting.setResourceSource(0);
+                }
+                case "1" -> {
+                    Config.setting.setResourceSource(1);
+                }
+            }
+        }
+
+        System.out.println(Config.setting.getResourceSource());
+    }
 }

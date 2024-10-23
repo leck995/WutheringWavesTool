@@ -15,10 +15,7 @@ import cn.tealc.wutheringwavestool.model.kujiequ.roleData.user.RoleInfo;
 import cn.tealc.wutheringwavestool.model.kujiequ.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
-import cn.tealc.wutheringwavestool.thread.api.SignTask;
-import cn.tealc.wutheringwavestool.thread.api.UserDailyDataTask;
-import cn.tealc.wutheringwavestool.thread.api.UserDataRefreshTask;
-import cn.tealc.wutheringwavestool.thread.api.UserInfoDataTask;
+import cn.tealc.wutheringwavestool.thread.api.*;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
@@ -78,6 +75,10 @@ public class HomeViewModel implements ViewModel {
             updateRoleData();
         });
     }
+
+
+
+
 
     /**
      * @description: 更新游玩时长

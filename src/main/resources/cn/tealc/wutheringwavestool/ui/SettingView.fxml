@@ -136,6 +136,17 @@
                               <Label styleClass="title-4" text="%ui.setting.other.check_version" />
                               <ToggleSwitch fx:id="versionCheckSwitch" labelPosition="RIGHT" text="%ui.setting.other.switch" />
                               <Label styleClass="tip" text="%ui.setting.other.check_version.tip" />
+                              <Label layoutX="10.0" layoutY="10.0" styleClass="title-4" text="%ui.setting.other.file_source" />
+                              <HBox spacing="15.0">
+                                 <children>
+                                    <RadioButton accessibleText="0" mnemonicParsing="false" onAction="#setFileSource" selected="true" text="%ui.setting.other.file_source.github">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="fileSourceType" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton accessibleText="1" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setFileSource" text="%ui.setting.other.file_source.gitee" toggleGroup="$fileSourceType" />
+                                 </children>
+                              </HBox>
                            </children>
                         </VBox>
                      </children>

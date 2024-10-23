@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.base;
 
 import cn.tealc.wutheringwavestool.model.Setting;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
@@ -15,15 +16,16 @@ import java.util.ResourceBundle;
  */
 public class Config {
     public static final String version="1.1.9";
-    public static final String appTitle="鸣潮助手";
+
     public static final String appAuthor="Leck";
     public static final String apiDecryptKey = "XSNLFgNCth8j8oJI3cNIdw==";
     public static final String URL_SUPPORT_LIST="https://www.yuque.com/chashuisuipian/sm05lg/ag7ct2or8ecz98cp";
 
-    public static ResourceBundle language;
+
     public static Setting setting;
     public static String currentRoleId;
-
+    public static ResourceBundle language;
+    public static String appTitle;
     static {
         ObjectMapper mapper=new ObjectMapper();
         File settingFile = new File("settings.json");
@@ -37,6 +39,10 @@ public class Config {
         if (setting == null){
             setting=new Setting();
         }
+
+        language = ResourceBundle.getBundle("cn.tealc/wutheringwavestool/language/local",setting.getLanguage());
+        appTitle = LanguageManager.getString("app.title");
+
     }
 
 

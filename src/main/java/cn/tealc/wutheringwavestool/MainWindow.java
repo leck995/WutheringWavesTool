@@ -90,11 +90,6 @@ public final class MainWindow extends AbstractNfxUndecoratedWindow{
         Config.setting.appHeightProperty().bind(scene.heightProperty());
         initFont();
 
-        String s = """
-                jpackage --type app-image -n gateway-converter -m "cn.tealc.wutheringwavestool/cn.tealc.wutheringwavestool.MainApplication" --icon "D:\\code\\gateway-converter\\src\\main\\r
-                esources\\logo.ico" --runtime-image ".\\target\\app" --dest ".\\target\\build-package"
-                """;
-
     }
 
 
@@ -103,15 +98,9 @@ public final class MainWindow extends AbstractNfxUndecoratedWindow{
         boolean contains = Font.getFamilies().contains("Microsoft YaHei");
         if (!contains){
             LOG.info("默认字体不存在，加载内置字体");
-            try {
-                FileInputStream fileInputStream=new FileInputStream("assets/font/HarmonyOS_Sans_SC_Regular.ttf");
-                Font.loadFonts(fileInputStream,12);
-                FileInputStream fileInputStream2=new FileInputStream("assets/font/HarmonyOS_Sans_SC_Bold.ttf");
-                Font.loadFonts(fileInputStream2,12);
-                window.getScene().getRoot().setStyle("-fx-font-family: \"HarmonyOS Sans SC\"");
-            } catch (FileNotFoundException e) {
-                LOG.error("加载自定义字体出现错误",e);
-            }
+            Font.loadFonts(FXResourcesLoader.loadStream("font/HarmonyOS_Sans_SC_Bold.ttf"),12);
+            Font.loadFonts(FXResourcesLoader.loadStream("font/HarmonyOS_Sans_SC_Bold.ttf"),12);
+            window.getScene().getRoot().setStyle("-fx-font-family: \"HarmonyOS Sans SC\"");
         }else {
             window.getScene().getRoot().setStyle("-fx-font-family: \"Microsoft YaHei\"");
         }

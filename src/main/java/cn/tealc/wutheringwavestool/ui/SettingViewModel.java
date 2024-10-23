@@ -6,6 +6,7 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.MvvmFX;
+import de.saxsys.mvvmfx.SceneLifecycle;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -30,7 +31,7 @@ import java.util.ResourceBundle;
  * @author: Leck
  * @create: 2024-07-03 20:21
  */
-public class SettingViewModel implements ViewModel {
+public class SettingViewModel implements ViewModel,SceneLifecycle {
     private static final Logger LOG= LoggerFactory.getLogger(SettingViewModel.class);
     private SimpleBooleanProperty changeTitlebar = new SimpleBooleanProperty();
     private SimpleStringProperty gameDir = new SimpleStringProperty();
@@ -78,6 +79,15 @@ public class SettingViewModel implements ViewModel {
     }
 
 
+    @Override
+    public void onViewAdded() {
+
+    }
+
+    @Override
+    public void onViewRemoved() {
+        Config.save();
+    }
 
     public void setFontFamily(String fontFamily) {
         MainApplication.window.getScene().getRoot().setStyle("-fx-font-family: \"" + fontFamily+"\"");

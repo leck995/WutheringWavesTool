@@ -9,6 +9,7 @@ import cn.tealc.wutheringwavestool.base.Config;
  * @create: 2024-10-20 22:19
  */
 public class LanguageManager {
+
     private static final String separate = "#";
     public static String getString(String key){
         return Config.language.getString(key);

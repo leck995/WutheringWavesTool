@@ -63,10 +63,6 @@ public class TowerDataDetailTask  extends Task<ResponseBody<DifficultyTotal>> {
                     ResponseBody<DifficultyTotal> responseBody = new ResponseBody<>(responseBodyForApi.getCode(), responseBodyForApi.getMsg(),responseBodyForApi.getSuccess());
                     String row = ApiUtil.decrypt(responseBodyForApi.getData());
                     LOG.debug(row);
-            /*        JsonNode jsonNode = mapper.readTree(row);
-                    JsonNode difficultyList = jsonNode.get("difficultyList");
-
-                    String s = difficultyList.textValue();*/
                     DifficultyTotal difficultyTotal = mapper.readValue(row, DifficultyTotal.class);
                     difficultyTotal.getDifficultyList().sort((o1, o2) -> {
                         if (o1.getDifficulty() == 3){
@@ -74,10 +70,8 @@ public class TowerDataDetailTask  extends Task<ResponseBody<DifficultyTotal>> {
                         }else {
                             return o2.getDifficulty() - o1.getDifficulty();
                         }
-
                     });
                     responseBody.setData(difficultyTotal);
-
 
                     /*把深渊数据保存到数据库中*/
                     GameTowerDataDao dataDao = new GameTowerDataDao();
@@ -97,7 +91,6 @@ public class TowerDataDetailTask  extends Task<ResponseBody<DifficultyTotal>> {
                                     String collect = floor.getRoleList().stream().map(role -> String.valueOf(role.getRoleId())).collect(Collectors.joining(","));
                                     data.setRoleList(collect);
                                 }
-
                                 long seasonEndTime = difficultyTotal.getSeasonEndTime();
                                 long date = System.currentTimeMillis() + seasonEndTime;
                                 data.setEndTime(convertToHourlyTimestamp(date));
@@ -135,19 +128,12 @@ public class TowerDataDetailTask  extends Task<ResponseBody<DifficultyTotal>> {
      * @date:   2024/10/16
      */
     public long convertToHourlyTimestamp(long timestamp) {
-        // 创建一个Calendar实例并设置时区为UTC（如果需要的话，可以设置为其他时区）
         Calendar calendar = Calendar.getInstance();
-
-        // 将时间戳设置为Calendar的时间
         calendar.setTimeInMillis(timestamp);
-
-        // 设置小时、分钟、秒和毫秒为指定值（在这个例子中是0点）
         calendar.set(Calendar.HOUR_OF_DAY, 4); // 这里设置为4表示早上4点
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
-
-        // 获取修改后的时间戳
         return calendar.getTimeInMillis();
     }
 

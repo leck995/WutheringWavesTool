@@ -231,7 +231,12 @@ public class AnalysisPoolViewModel implements ViewModel {
      * @date:   2024/7/4
      */
     private void init(){
-        poolNameList.setAll(data.keySet());
+        Platform.runLater(()->{
+            String[] alias = LanguageManager.getStringArray("ui.analysis.alias_pool");
+           // poolNameList.setAll(Arrays.asList(alias).subList(0, data.keySet().size()));
+            poolNameList.setAll(data.keySet());
+        });
+
         Thread.startVirtualThread(() -> {
             List<AnalysisData> list=new ArrayList<>();
             for (Map.Entry<String, List<CardInfo>> entry : data.entrySet()) {
@@ -341,7 +346,7 @@ public class AnalysisPoolViewModel implements ViewModel {
                 ssrData.setName(cardInfo.getName());
                 ssrData.setCount(cardInfos.size());
 
-                ssrData.setEvent(!baseSSRList.contains(cardInfo.getName()));
+                ssrData.setEvent(!baseSSRList.contains(String.valueOf(cardInfo.getResourceId())));
                 ssrDataList.add(ssrData);
             }
             double avg = totalCount / ssrIndexList.size();
