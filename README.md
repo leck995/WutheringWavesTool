@@ -1,3 +1,6 @@
+
+## [中文](https://github.com/leck995/WutheringWavesTool/blob/new-ui/README.md) | [ENGLISH](https://github.com/leck995/WutheringWavesTool/blob/new-ui/temp/README_EN.md)
+***
 ## 简介
 ***
 WutheringWavesTool是一款鸣潮的小工具，日常使用可以替代原生的启动器，同时提供一些有用的功能。需要注意的时，该助手若要有良好的体验，需要登录库街区(程序内添加账号时有具体教程)
