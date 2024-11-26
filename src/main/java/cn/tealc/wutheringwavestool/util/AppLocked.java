@@ -49,7 +49,7 @@ public class AppLocked{
                 fis = new FileInputStream(file);
             }
 
-            LOG.info("躲开检测通过");
+            LOG.info("多开检测通过");
         } catch (IOException e) {
             LOG.error(e.getMessage());
         }
