@@ -107,13 +107,14 @@ public class GameLogFileAnalysisTask extends Task<List<GameRecordForLog>>{
                                                 String accountUID = getAccountUID(line);
                                                 if (accountUID != null) { //游戏账号切换了
                                                     Long timestamp = getTimestamp(line);
-
                                                     if (list.isEmpty()){ //当是第一个玩家时，不切换
+                                                        record.setStartTime(timestamp);
                                                         record.setRoleId(accountUID);
                                                         list.add(record);
                                                     }else {//当是第二个玩家及以上时，切换
                                                         record.setCloseTime(timestamp); //当前玩家下线时间
                                                         record = new GameRecordForLog();//新玩家
+                                                        record.setStartTime(timestamp);
                                                         record.setRoleId(accountUID);
                                                         list.add(record);
                                                     }
@@ -139,6 +140,7 @@ public class GameLogFileAnalysisTask extends Task<List<GameRecordForLog>>{
                 }
             }
         }
+        record.setCloseTime(System.currentTimeMillis());
         saveData(list);
         return list;
     }

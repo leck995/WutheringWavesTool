@@ -18,9 +18,11 @@ import de.saxsys.mvvmfx.MvvmFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.text.SimpleDateFormat;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -133,32 +135,27 @@ public class GameAppListener implements WinUser.WinEventProc{
             save(record);
         }
     }
-
+    public String getDate(long timestamp) {
+        Date date = new Date(timestamp);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(date);
+    }
     private void save(GameRecordForLog record){
-        long endGameTime; //游戏结束时间
-        long startGameTimeForPlayer = startGameTime;
-        if (record.getCloseTime() == null){
-            endGameTime = System.currentTimeMillis();
-        }else {
-            endGameTime = record.getCloseTime();
-            startGameTime = record.getCloseTime();
-        }
-
+        long endGameTime = record.getCloseTime(); //游戏结束时间
+        long startGameTimeForPlayer = record.getStartTime();
+        LOG.info("玩家{}，开始时间{}，结束时间{}",record.getRoleId(),getDate(startGameTimeForPlayer),getDate(endGameTime));
         long totalGameTime = endGameTime - startGameTimeForPlayer;//总共游玩时间
-
-
-        LOG.info("{},开始时间{}",record.getRoleId(),startGameTimeForPlayer);
-        LOG.info("{},结束{}",record.getRoleId(),endGameTime);
-
         //获取游戏开始时间日期
-        Instant instant = Instant.ofEpochMilli(startGameTimeForPlayer);
         ZoneId zone = ZoneId.systemDefault();
-        ZonedDateTime zdt = instant.atZone(zone);
-        LocalDateTime startDateTime = zdt.toLocalDateTime();
-        LocalDate startDate = zdt.toLocalDate();
 
-        //获取结束日期
-        LocalDate endDate = LocalDate.now();
+        Instant startInstant = Instant.ofEpochMilli(startGameTimeForPlayer);
+        ZonedDateTime startZdt = startInstant.atZone(zone);
+        LocalDateTime startDateTime = startZdt.toLocalDateTime(); //开始时间
+        LocalDate startDate = startZdt.toLocalDate();//开始日期
+
+        Instant endInstant = Instant.ofEpochMilli(endGameTime);
+        ZonedDateTime endZdt = endInstant.atZone(zone);
+        LocalDate endDate = endZdt.toLocalDate(); //介绍日期
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         GameTimeDao dao=new GameTimeDao();

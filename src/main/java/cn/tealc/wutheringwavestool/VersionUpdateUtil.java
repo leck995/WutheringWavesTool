@@ -27,6 +27,7 @@ public class VersionUpdateUtil {
         update01();
         update02();
         update03();
+        update04();
     }
 
 
@@ -141,6 +142,20 @@ public class VersionUpdateUtil {
         });
 
     }
+
+    //1.2.0版本
+    public static void update04(){
+        Connection connection = JdbcUtils.getConnection();
+        try {
+            Statement st = connection.createStatement();
+            String sql = "DELETE FROM game_time WHERE duration < 0";
+            int rowsAffected = st.executeUpdate(sql);
+            st.close(); // 关闭Statement
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 
     public static void deleteFile(File file) {
         if(file.isFile()) {
