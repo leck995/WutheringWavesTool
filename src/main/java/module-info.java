@@ -31,7 +31,7 @@ open module cn.tealc.wutheringwavestool {
     exports com.kuro.kujiequ.model.roleData to com.fasterxml.jackson.databind;
     exports com.kuro.kujiequ.model.roleData.user to com.fasterxml.jackson.databind;
     exports cn.tealc.wutheringwavestool.model.analysis to com.fasterxml.jackson.databind;
-    exports com.kuro.kujiequ.model.sign to com.fasterxml.jackson.databind;
+    exports com.kuro.kujiequ.model.sign to com.fasterxml.jackson.databind, WutheringWavesTool, WutheringWavesTool_test;
     exports com.kuro.kujiequ.model.roleData.weight;
 
     exports cn.tealc.wutheringwavestool.base;
@@ -39,5 +39,9 @@ open module cn.tealc.wutheringwavestool {
     exports cn.tealc.wutheringwavestool.ui;
     exports cn.tealc.wutheringwavestool.ui.kujiequ;
     exports cn.tealc.wutheringwavestool.ui.game;
+    exports cn.tealc.wutheringwavestool.dao;
+    exports com.kuro.kujiequ.thread;
+    exports cn.tealc.wutheringwavestool.util;
+    exports com.kuro.game.model;
 
 }
