@@ -79,7 +79,17 @@ public class GameAppListener implements WinUser.WinEventProc{
 
     private void updateMainViewTime(){
         long endGameTime = System.currentTimeMillis(); // 游戏结束时间
-        long totalGameTime = endGameTime - startGameTime; // 总共游玩时间
+        LocalDate date1 = Instant.ofEpochMilli(startGameTime).atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate date2 = Instant.ofEpochMilli(endGameTime).atZone(ZoneId.systemDefault()).toLocalDate();
+        boolean sameDay = date1.isEqual(date2);
+        long totalGameTime;
+        if (sameDay) { //同天
+            totalGameTime = endGameTime - startGameTime; // 同一天，总共游玩时间
+        } else {//不同天，计算今天的开始时间
+            LocalDate today = LocalDate.now();
+            long startOfToday = today.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
+            totalGameTime = endGameTime - startOfToday; // 不同一天，从今天开始到结束的时间差
+        }
         if (totalGameTime > 60 * 1000) { // 过滤小于1分钟的时间
             MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_GAME_TIME_UPDATE, totalGameTime);
         }
@@ -92,8 +102,6 @@ public class GameAppListener implements WinUser.WinEventProc{
         GameLogFileAnalysisTask task = new GameLogFileAnalysisTask();
         task.setOnSucceeded(workerStateEvent -> {
             long startTime = startGameTime;
-            List<GameRecordForLog> list = task.getValue();
-            saveTime(list);
             exit(startTime);
         });
         Thread.startVirtualThread(task);
@@ -129,79 +137,6 @@ public class GameAppListener implements WinUser.WinEventProc{
         return user32.IsWindow(game);
     }
 
-
-    private void saveTime(List<GameRecordForLog> list){
-        for (GameRecordForLog record : list) {
-            save(record);
-        }
-    }
-    public String getDate(long timestamp) {
-        Date date = new Date(timestamp);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        return sdf.format(date);
-    }
-    private void save(GameRecordForLog record){
-        long endGameTime = record.getCloseTime(); //游戏结束时间
-        long startGameTimeForPlayer = record.getStartTime();
-        LOG.info("玩家{}，开始时间{}，结束时间{}",record.getRoleId(),getDate(startGameTimeForPlayer),getDate(endGameTime));
-        long totalGameTime = endGameTime - startGameTimeForPlayer;//总共游玩时间
-        //获取游戏开始时间日期
-        ZoneId zone = ZoneId.systemDefault();
-
-        Instant startInstant = Instant.ofEpochMilli(startGameTimeForPlayer);
-        ZonedDateTime startZdt = startInstant.atZone(zone);
-        LocalDateTime startDateTime = startZdt.toLocalDateTime(); //开始时间
-        LocalDate startDate = startZdt.toLocalDate();//开始日期
-
-        Instant endInstant = Instant.ofEpochMilli(endGameTime);
-        ZonedDateTime endZdt = endInstant.atZone(zone);
-        LocalDate endDate = endZdt.toLocalDate(); //介绍日期
-
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        GameTimeDao dao=new GameTimeDao();
-
-        if (startDate.isBefore(endDate)){ //跨天
-            LocalDateTime endOfDay = startDate.plusDays(1).atStartOfDay();
-            long millisecondsUntilEndOfDay = ChronoUnit.MILLIS.between(startDateTime, endOfDay);
-
-            //保存昨天游玩时间
-            GameTime gameTime1=new GameTime();
-            if (record.getRoleId() != null){ //基本上不可能存在空值
-                gameTime1.setRoleId(record.getRoleId());
-            }
-            gameTime1.setGameDate(dateTimeFormatter.format(startDate));
-            gameTime1.setStartTime(startGameTimeForPlayer);
-            gameTime1.setEndTime(startGameTimeForPlayer + millisecondsUntilEndOfDay);
-            gameTime1.setDuration(millisecondsUntilEndOfDay);
-            dao.addTime(gameTime1);
-            LOG.info("检测到鸣潮已经结束且跨天，保存昨天时间{}",gameTime1);
-
-            //保存今天游玩时间
-            GameTime gameTime=new GameTime();
-            if (record.getRoleId() != null){ //基本上不可能存在空值
-                gameTime.setRoleId(record.getRoleId());
-            }
-            gameTime.setGameDate(dateTimeFormatter.format(endDate));
-            long todayMillis = totalGameTime - millisecondsUntilEndOfDay;
-            gameTime.setStartTime(endGameTime-todayMillis);
-            gameTime.setEndTime(endGameTime);
-            gameTime.setDuration(todayMillis);
-            dao.addTime(gameTime);
-            LOG.info("检测到鸣潮已经结束且跨天，保存今天时间{}",gameTime);
-
-        }else {
-            GameTime gameTime=new GameTime();
-            if (record.getRoleId() != null){ //基本上不可能存在空值
-                gameTime.setRoleId(record.getRoleId());
-            }
-            gameTime.setGameDate(dateTimeFormatter.format(endDate));
-            gameTime.setStartTime(startGameTimeForPlayer);
-            gameTime.setEndTime(endGameTime);
-            gameTime.setDuration(totalGameTime);
-            dao.addTime(gameTime);
-            LOG.info("检测到鸣潮已经结束，保存时间{}",gameTime);
-        }
-    }
 
     public long getDuration() {
         if (start){
