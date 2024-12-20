@@ -25,6 +25,7 @@
             <HBox layoutX="1138.0" layoutY="10.0" spacing="20.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                <children>
                   <ComboBox fx:id="playerComboBox" prefWidth="150.0" />
+                  <Button layoutX="180.0" layoutY="10.0" mnemonicParsing="false" onAction="#export" text="%ui.analysis.export" />
                   <Button layoutX="180.0" layoutY="10.0" mnemonicParsing="false" onAction="#fresh" styleClass="accent" text="%ui.analysis.account.refresh" />
                   <Button mnemonicParsing="false" onAction="#load" styleClass="success" text="%ui.analysis.account.get" />
                </children>

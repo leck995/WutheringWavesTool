@@ -76,22 +76,33 @@ public class AnalysisPoolViewModel implements ViewModel {
     public AnalysisPoolViewModel() {
         baseSSRList = List.of(LanguageManager.getStringArray("ui.analysis.base_role"));
         gameRootDir.bindBidirectional(Config.setting.gameRootDirProperty());
-
-        Thread.startVirtualThread(()->{
-            //查看本地是否存有数据，有则加载
-            File dataDir=new File("data");
-            if (dataDir.exists()) {
-                String[] players = dataDir.list((dir, name) -> dir.isDirectory());
-                playerList.setAll(players);
-                if (!playerList.isEmpty()){
-                    player.set(playerList.getLast());
-                    updatePlayer();
-                }
-            }
-        });
-
+        loadFile();
     }
 
+    public void loadFile(){
+        //查看本地是否存有数据，有则加载
+        File dataDir=new File("data");
+        if (dataDir.exists()) {
+            String[] players = dataDir.list((dir, name) -> dir.isDirectory());
+            playerList.setAll(players);
+            if (!playerList.isEmpty()){
+                player.set(playerList.getLast());
+                updatePlayer();
+            }
+        }
+    }
+    public void loadFile(String playerId){
+        //查看本地是否存有数据，有则加载
+        File dataDir=new File("data");
+        if (dataDir.exists()) {
+            String[] players = dataDir.list((dir, name) -> dir.isDirectory());
+            playerList.setAll(players);
+            if (!playerList.isEmpty()){
+                player.set(playerId);
+                updatePlayer();
+            }
+        }
+    }
 
 
 
@@ -218,19 +229,23 @@ public class AnalysisPoolViewModel implements ViewModel {
 
     private void updatePlayer(){
         File poolJson=new File(String.format("data/%s/pool.json",player.get()));
-        File dateJson=new File(String.format("data/%s/data.json",player.get()));
-        if(poolJson.exists()){
-            Thread.startVirtualThread(()->{
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    data= mapper.readValue(poolJson, new TypeReference<Map<String, List<CardInfo>>>() {});
-                    playerParams=mapper.readValue(dateJson, new TypeReference<Map<String, String>>() {});
-                    init();
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
+        File dataJson=new File(String.format("data/%s/data.json",player.get()));
+
+        Thread.startVirtualThread(()->{
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                if(dataJson.exists()){
+                    playerParams=mapper.readValue(dataJson, new TypeReference<Map<String, String>>() {});
                 }
-            });
-        }
+                if (poolJson.exists()){
+                    data = mapper.readValue(poolJson, new TypeReference<Map<String, List<CardInfo>>>() {});
+                    init();
+                }
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     /**

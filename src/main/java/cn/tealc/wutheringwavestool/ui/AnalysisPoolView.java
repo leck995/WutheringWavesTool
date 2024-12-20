@@ -2,11 +2,14 @@ package cn.tealc.wutheringwavestool.ui;
 
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.controls.ToggleSwitch;
+import cn.tealc.fxplugin.FxPlugin;
+import cn.tealc.fxplugin.model.FxPluginType;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.analysis.SsrData;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
-import cn.tealc.wutheringwavestool.thread.DownloadHeadImgTask;
+import cn.tealc.wutheringwavestool.plugin.FxPluginManager;
 import cn.tealc.wutheringwavestool.ui.component.PoolNameCell;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
@@ -20,16 +23,14 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
-import java.io.File;
 import java.net.URL;
-import java.util.Random;
-import java.util.ResourceBundle;
+import java.util.*;
+import java.util.function.Consumer;
 
 public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolViewModel> {
     @InjectViewModel
@@ -202,7 +203,27 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
         viewModel.refresh();
     }
 
+    @FXML
+    void export(ActionEvent event) {
+        FxPluginManager instance = FxPluginManager.getInstance();
+        Optional<FxPlugin> plugin = instance.loadPlugins(1001);
+        if (plugin.isPresent()){ //插件存在
+            FxPlugin fxPlugin = plugin.get();
+            Map<String,Object> params = new HashMap<>();
+            fxPlugin.setOnFinished(o -> {
+                viewModel.loadFile((String) o);
+            });
+            Optional<Object> result = fxPlugin.run(params);
+            result.ifPresent(o -> {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,o);
+            });
+        }else { //不存在
+            NotificationManager.message(MessageInfo.warning(LanguageManager.getString("ui.analysis.message.type07")));
+        }
 
+
+
+    }
 
 
     class SsrChildView extends StackPane {
