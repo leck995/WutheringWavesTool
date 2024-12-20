@@ -2,32 +2,51 @@ package cn.tealc.wutheringwavestool.plugin;
 
 
 import cn.tealc.fxplugin.model.FxPluginType;
+import cn.tealc.wutheringwavestool.base.Config;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.util.Locale;
+import java.util.Map;
+
+/**
+ * @program: WutheringWavesTool
+ * @description: 插件配置信息类
+ * @author: Leck
+ * @create: 2024-12-21 01:06
+ */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FxPluginConfig {
-    private int id;
-    private String title; //从国际化的文件获取，没有则显示默认
+    private int id; //插件id，不为空，建议从1100开始，前100个留给开发者
     private String author;
     private String version;
-    private String description;
-    private String icon; //图标
-    private String path; //启动类
-    private String resourceBundleName; //国际化文件
+    private String icon; //图标,支持图片与ikonli,图片填写插件目录图片名称；ikonli则填写助手已使用的ikonli图标库的key
+    private String path; //jar的路径，plugins下的路径，例如wwt-pool-export/wwt-pool-export-1.0.jar,不能以/开头
+    private Map<Locale,FxPluginLanguage> languages;//国际化
+    private FxPluginType pluginType; //插件类型
+
+    /*以下无需填写*/
     private boolean ready;//标志已加载
 
-    private FxPluginType pluginType;
+    @JsonIgnore
+    public String getTitle(){
+        if (languages.containsKey(Config.setting.getLanguage())){
+            return languages.get(Config.setting.getLanguage()).getTitle();
+        }else {
+            return "Unknown";
+        }
+    }
+    @JsonIgnore
+    public String getDescription(){
+        if (languages.containsKey(Config.setting.getLanguage())){
+            return languages.get(Config.setting.getLanguage()).getDescription();
+        }else {
+            return "Unknown";
+        }
+    }
 
     public int getId() {
         return id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public String getAuthor() {
@@ -44,14 +63,6 @@ public class FxPluginConfig {
 
     public void setVersion(String version) {
         this.version = version;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getIcon() {
@@ -78,14 +89,6 @@ public class FxPluginConfig {
         this.ready = ready;
     }
 
-    public String getResourceBundleName() {
-        return resourceBundleName;
-    }
-
-    public void setResourceBundleName(String resourceBundleName) {
-        this.resourceBundleName = resourceBundleName;
-    }
-
     public FxPluginType getPluginType() {
         return pluginType;
     }
@@ -96,5 +99,13 @@ public class FxPluginConfig {
 
     public boolean isReady() {
         return ready;
+    }
+
+    public Map<Locale, FxPluginLanguage> getLanguages() {
+        return languages;
+    }
+
+    public void setLanguages(Map<Locale, FxPluginLanguage> languages) {
+        this.languages = languages;
     }
 }
