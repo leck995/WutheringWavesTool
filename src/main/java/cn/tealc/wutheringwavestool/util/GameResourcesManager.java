@@ -39,7 +39,6 @@ public class GameResourcesManager {
                 exe = new File(dir + File.separator + "Client/Saved/LocalStorage/LocalStorage.db");
             } else {
                 exe = new File(dir + File.separator + "Wuthering Waves Game/Client/Saved/LocalStorage/LocalStorage.db");
-
             }
             if (!exe.exists()) {
                 return null;
@@ -71,7 +70,6 @@ public class GameResourcesManager {
                 exe = new File(dir + File.separator + "Wuthering Waves.exe");
             } else {
                 exe = new File(dir + File.separator + "Wuthering Waves Game" + File.separator + "Wuthering Waves.exe");
-
             }
             if (!exe.exists()) {
                 return null;
