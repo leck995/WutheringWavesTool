@@ -377,6 +377,15 @@ public class HomeViewModel implements ViewModel {
             String[] mergedArray = Stream.concat(Stream.of(command2), Stream.of(params))
                     .toArray(String[]::new);
             ProcessBuilder processBuilder = new ProcessBuilder(mergedArray);
+            //设置工作目录，适配wwmi
+            File file = new File(params[0]);
+            if (file.exists()) {
+                File workingDirectory = file.getParentFile();
+                if (workingDirectory.exists()) {
+                    processBuilder.directory(workingDirectory);
+                }
+            }
+
             try {
                 processBuilder.start();
             } catch (IOException e) {
