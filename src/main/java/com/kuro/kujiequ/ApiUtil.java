@@ -1,4 +1,4 @@
-package cn.tealc.wutheringwavestool.util;
+package com.kuro.kujiequ;
 
 import cn.tealc.wutheringwavestool.base.Config;
 import org.slf4j.Logger;
