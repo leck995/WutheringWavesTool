@@ -2,8 +2,21 @@ package cn.tealc.wutheringwavestool.model;
 
 import ch.qos.logback.classic.Level;
 import cn.tealc.wutheringwavestool.base.Config;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
+import java.io.IOException;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -12,6 +25,7 @@ import java.util.Locale;
  * @author: Leck
  * @create: 2024-07-03 00:38
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Setting {
 
     private SimpleObjectProperty<Locale> language = new SimpleObjectProperty<>(Locale.getDefault());
@@ -52,11 +66,37 @@ public class Setting {
 
     /*=================高级启动相关===================*/
     private SimpleBooleanProperty userAdvanceGameSettings=new SimpleBooleanProperty(false); //使用高级启动
-    private SimpleStringProperty  appParams = new SimpleStringProperty(); //启动参数
+    private SimpleStringProperty appParams = new SimpleStringProperty(); //启动参数
+
+    @JsonSerialize(using = ObservableListSerializer.class)
+    @JsonDeserialize(using = ObservableListDeserializer.class)
+    private ObservableList<String> startUpParams = FXCollections.observableArrayList();
 
     /*=================签到相关===================*/
     private SimpleBooleanProperty autoKujieQuSign=new SimpleBooleanProperty(false); //使用高级启动
 
+    // 自定义序列化器
+    public static class ObservableListSerializer extends JsonSerializer<ObservableList<String>> {
+        @Override
+        public void serialize(ObservableList<String> value, JsonGenerator gen, com.fasterxml.jackson.databind.SerializerProvider serializers)
+                throws IOException {
+            gen.writeStartArray();
+            for (String item : value) {
+                gen.writeString(item);
+            }
+            gen.writeEndArray();
+        }
+    }
+
+    // 自定义反序列化器
+    public static class ObservableListDeserializer extends JsonDeserializer<ObservableList<String>> {
+        @Override
+        public ObservableList<String> deserialize(com.fasterxml.jackson.core.JsonParser p, DeserializationContext ctxt)
+                throws IOException {
+            List<String> list = p.readValueAs(List.class);
+            return FXCollections.observableArrayList(list);
+        }
+    }
 
     public Locale getLanguage() {
         return language.get();
@@ -369,5 +409,9 @@ public class Setting {
 
     public void setAutoKujieQuSign(boolean autoKujieQuSign) {
         this.autoKujieQuSign.set(autoKujieQuSign);
+    }
+
+    public ObservableList<String> getStartUpParams() {
+        return startUpParams;
     }
 }

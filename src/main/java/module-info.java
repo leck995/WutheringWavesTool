@@ -47,6 +47,7 @@ open module cn.tealc.wutheringwavestool {
     exports com.kuro.kujiequ.model.roleData.weight;
     exports com.kuro.kujiequ.thread;
     exports com.kuro.game.model;
+    exports com.kuro.kujiequ;
 
 
 }

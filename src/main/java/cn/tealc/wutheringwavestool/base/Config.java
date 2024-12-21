@@ -32,6 +32,10 @@ public class Config {
         if (settingFile.exists()){
             try {
                 setting=mapper.readValue(settingFile, Setting.class);
+                if (setting.getAppParams() != null){ //暂时解决启动参数变更，未来版本删除
+                    setting.getStartUpParams().addAll(setting.getAppParams().split(" "));
+                    setting.setAppParams(null);
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

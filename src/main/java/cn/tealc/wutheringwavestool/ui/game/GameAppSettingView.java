@@ -22,6 +22,7 @@ import java.util.ResourceBundle;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -31,6 +32,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
+import javafx.util.Callback;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2AL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -79,7 +83,8 @@ public class GameAppSettingView implements FxmlView<GameAppSettingViewModel>, In
 
     @FXML
     private TextField paramField;
-
+    @FXML
+    private ListView<String> paramListView;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -88,7 +93,7 @@ public class GameAppSettingView implements FxmlView<GameAppSettingViewModel>, In
         content.visibleProperty().bind(userAdvanceSettingSwitch.selectedProperty());
 
         gameStartAppField.textProperty().bindBidirectional(Config.setting.gameStarAppPathProperty());
-        paramField.textProperty().bindBidirectional(Config.setting.appParamsProperty());
+        //paramField.textProperty().bindBidirectional(Config.setting.appParamsProperty());
         gameStartAppField.positionCaret(gameStartAppField.getText().length());
         if (!Config.setting.isGameStartAppCustom()){
             gameStartAppToggleGroup.selectToggle(gameStartAppToggleGroup.getToggles().getFirst());
@@ -97,9 +102,10 @@ public class GameAppSettingView implements FxmlView<GameAppSettingViewModel>, In
         }
         gameStartAppGroup.disableProperty().bind(gameStartAppToggleGroup.selectedToggleProperty().isEqualTo(gameStartAppRadioDefault));
 
-        if (paramField.getText() != null && paramField.getText().contains("dx11")){
+        System.out.println(viewModel.isDx11());
+        if (viewModel.isDx11()){
             gameDxToggleGroup.selectToggle(gameDxToggleGroup.getToggles().getFirst());
-        }else if (paramField.getText() != null && paramField.getText().contains("dx12")){
+        }else if (viewModel.isDx12()){
             gameDxToggleGroup.selectToggle(gameDxToggleGroup.getToggles().getLast());
         }
 
@@ -114,7 +120,15 @@ public class GameAppSettingView implements FxmlView<GameAppSettingViewModel>, In
             }
         }
 
-
+        paramField.setOnAction(event -> {
+            String param = paramField.getText();
+            if (!param.trim().isEmpty()){
+                viewModel.addParam(paramField.getText());
+                paramField.clear();
+            }
+        });
+        paramListView.setItems(viewModel.getStartUpParams());
+        paramListView.setCellFactory(stringListView -> new ParamListCell());
 
     }
 
@@ -180,31 +194,13 @@ public class GameAppSettingView implements FxmlView<GameAppSettingViewModel>, In
     void setDX(ActionEvent event) {
         Object source = event.getSource();
         if (source instanceof RadioButton button) {
-            String text = paramField.getText();
             switch (button.getText()) {
                 case "DX11" -> {
-                    if (text != null && !text.contains("-dx")) {
-                        paramField.setText(paramField.getText() + " -dx11");
-                    }else if (text != null && text.contains("-dx")){
-                        String replace = text.replace("dx12", "dx11");
-                        paramField.setText(replace);
-                    }else if (text == null){
-                        paramField.setText("-dx11");
-                    }
-                    paramField.positionCaret(gameStartAppField.getText().length());
+                    viewModel.addDx11();
                 }
                 case "DX12" -> {
-                    if (text != null && !text.contains("-dx")) {
-                        paramField.setText(paramField.getText() + " -dx12");
-                    }else if (text != null && text.contains("-dx")){
-                        String replace = text.replace("dx11", "dx12");
-                        paramField.setText(replace);
-                    }else if (text == null){
-                        paramField.setText("-dx12");
-                    }
-                    paramField.positionCaret(gameStartAppField.getText().length());
+                    viewModel.addDx12();
                 }
-
             }
         }
     }
@@ -246,6 +242,38 @@ public class GameAppSettingView implements FxmlView<GameAppSettingViewModel>, In
             }
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,LanguageManager.getString("ui.game_app.engine.message")));
+        }
+    }
+
+    class ParamListCell extends ListCell<String>{
+        private final Button btn;
+        private final StackPane child;
+        private final Label row;
+        public ParamListCell() {
+            child = new StackPane();
+            row = new Label();
+            btn = new Button(null,new FontIcon(Material2AL.DELETE_OUTLINE));
+            btn.getStyleClass().addAll(Styles.BUTTON_ICON, Styles.FLAT, "delete-btn");
+            btn.setOnAction(event -> viewModel.deleteParam(getIndex()));
+            child.getChildren().addAll(row,btn);
+            StackPane.setAlignment(row, Pos.CENTER_LEFT);
+            StackPane.setAlignment(btn, Pos.CENTER_RIGHT);
+
+
+        }
+
+
+
+        @Override
+        protected void updateItem(String string, boolean b) {
+            super.updateItem(string, b);
+            if (!b){
+                setGraphic(child);
+                row.setText(string);
+            }else {
+                setGraphic(null);
+                row.setText(null);
+            }
         }
     }
 }

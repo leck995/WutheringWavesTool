@@ -5,6 +5,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
@@ -65,11 +66,12 @@
                               </HBox>
                               <StackPane maxWidth="350.0" minHeight="38.0" styleClass="input-group">
                                  <children>
-                                    <TextField fx:id="paramField" prefWidth="250.0" />
+                                    <TextField fx:id="paramField" prefWidth="250.0" promptText="%ui.game_app.params.add" />
                                  </children>
                               </StackPane>
                            </children>
                         </VBox>
+                        <ListView fx:id="paramListView" maxWidth="350.0" prefHeight="200.0" prefWidth="350.0" styleClass="param-list-view" />
                         <Label styleClass="tip" text="%ui.game_app.params.tip" />
                         <Label layoutX="10.0" layoutY="84.0" styleClass="title-3" text="%ui.game_app.setting" />
                         <VBox spacing="10.0">
