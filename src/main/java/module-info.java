@@ -1,5 +1,4 @@
 open module cn.tealc.wutheringwavestool {
-    requires javafx.controls;
     requires javafx.fxml;
     requires org.kordamp.ikonli.core;
     requires org.kordamp.ikonli.material2;
@@ -25,23 +24,29 @@ open module cn.tealc.wutheringwavestool {
     requires ch.qos.logback.core;
     requires ch.qos.logback.classic;
 
+    requires cn.tealc.fxplugin;
+
     exports cn.tealc.wutheringwavestool;
     exports cn.tealc.wutheringwavestool.model;
-    exports com.kuro.kujiequ.model.towerData;
-    exports com.kuro.kujiequ.model.roleData to com.fasterxml.jackson.databind;
-    exports com.kuro.kujiequ.model.roleData.user to com.fasterxml.jackson.databind;
     exports cn.tealc.wutheringwavestool.model.analysis to com.fasterxml.jackson.databind;
-    exports com.kuro.kujiequ.model.sign to com.fasterxml.jackson.databind, WutheringWavesTool, WutheringWavesTool_test;
-    exports com.kuro.kujiequ.model.roleData.weight;
-
     exports cn.tealc.wutheringwavestool.base;
     exports cn.tealc.wutheringwavestool.jna;
     exports cn.tealc.wutheringwavestool.ui;
     exports cn.tealc.wutheringwavestool.ui.kujiequ;
     exports cn.tealc.wutheringwavestool.ui.game;
     exports cn.tealc.wutheringwavestool.dao;
-    exports com.kuro.kujiequ.thread;
     exports cn.tealc.wutheringwavestool.util;
+    exports cn.tealc.wutheringwavestool.model.message;
+    exports cn.tealc.wutheringwavestool.plugin;
+
+
+    exports com.kuro.kujiequ.model.towerData;
+    exports com.kuro.kujiequ.model.roleData to com.fasterxml.jackson.databind;
+    exports com.kuro.kujiequ.model.roleData.user to com.fasterxml.jackson.databind;
+    exports com.kuro.kujiequ.model.sign to com.fasterxml.jackson.databind, WutheringWavesTool, WutheringWavesTool_test;
+    exports com.kuro.kujiequ.model.roleData.weight;
+    exports com.kuro.kujiequ.thread;
     exports com.kuro.game.model;
+
 
 }

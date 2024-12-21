@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.game;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.GameSettingDao;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
@@ -22,13 +23,15 @@ import java.io.File;
 public class GameAppSettingViewModel implements ViewModel {
     private SimpleStringProperty fps = new SimpleStringProperty();
     public GameAppSettingViewModel() {
-        GameSettingDao gameSettingDao = new GameSettingDao();
-        Pair<String, String> customFrameRate = gameSettingDao.getSettingValueByKey("CustomFrameRate");
-        if (customFrameRate != null) {
-            fps.set(customFrameRate.getValue());
+        if (hasDbFile()) {
+            GameSettingDao gameSettingDao = new GameSettingDao();
+            Pair<String, String> customFrameRate = gameSettingDao.getSettingValueByKey("CustomFrameRate");
+            if (customFrameRate != null) {
+                fps.set(customFrameRate.getValue());
+            }
+        }else {
+            NotificationManager.message(new MessageInfo(MessageType.WARNING,"无法找到配置数据库，请检测目录是否正确"));
         }
-
-
 
     }
 

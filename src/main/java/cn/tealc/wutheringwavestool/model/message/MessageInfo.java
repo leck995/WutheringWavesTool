@@ -11,6 +11,21 @@ public class MessageInfo {
     public static final Duration LONG=Duration.seconds(5.0);
     public static final Duration LONG_PLUS=Duration.seconds(7.0);
 
+
+    public static MessageInfo warning(String message) {
+        return new MessageInfo(MessageType.WARNING, message);
+    }
+    public static MessageInfo error(String message) {
+        return new MessageInfo(MessageType.ERROR, message);
+    }
+    public static MessageInfo success(String message) {
+        return new MessageInfo(MessageType.SUCCESS, message);
+    }
+    public static MessageInfo info(String message) {
+        return new MessageInfo(MessageType.INFO, message);
+    }
+
+
     public MessageInfo(MessageType type, String message) {
         this.type = type;
         this.message = message;

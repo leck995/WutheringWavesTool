@@ -40,7 +40,8 @@ public class Config {
             setting=new Setting();
         }
 
-        language = ResourceBundle.getBundle("cn.tealc/wutheringwavestool/language/local",setting.getLanguage());
+        language = ResourceBundle.getBundle("cn/tealc/wutheringwavestool/language/local",setting.getLanguage());
+
         appTitle = LanguageManager.getString("app.title");
 
     }
