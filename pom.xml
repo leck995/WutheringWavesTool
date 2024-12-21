@@ -20,31 +20,37 @@
             <artifactId>javafx-controls</artifactId>
             <version>22.0.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
             <version>22.0.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-swing</artifactId>
             <version>22.0.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-javafx</artifactId>
             <version>12.3.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-material2-pack</artifactId>
             <version>12.3.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-antdesignicons-pack</artifactId>
             <version>12.3.1</version>
         </dependency>
+
         <dependency>
             <groupId>io.github.mkpaz</groupId>
             <artifactId>atlantafx-base</artifactId>
@@ -57,6 +63,7 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
@@ -70,12 +77,19 @@
             <version>2.16.0</version>
         </dependency>
 
-        <!--https://github.com/leck995/teafx-->
+        <!--前往https://github.com/leck995/teafx下载编译-->
         <dependency>
             <groupId>cn.tealc</groupId>
             <artifactId>teafx</artifactId>
             <version>1.1.0</version>
         </dependency>
+        <!--前往https://github.com/leck995/fx-plugin下载编译-->
+        <dependency>
+            <groupId>cn.tealc.fxplugin</groupId>
+            <artifactId>fx-plugin</artifactId>
+            <version>1.0.2</version>
+        </dependency>
+
         <!--MVVM-->
         <dependency>
             <groupId>de.saxsys</groupId>
@@ -95,6 +109,7 @@
             <version>0.6.3</version>
         </dependency>
 
+
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -105,11 +120,13 @@
             <artifactId>log4j-core</artifactId>
             <version>2.24.2</version>
         </dependency>
+
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
             <version>1.5.7</version>
         </dependency>
+
         <dependency>
             <groupId>net.java.dev.jna</groupId>
             <artifactId>jna-platform-jpms</artifactId>
@@ -132,11 +149,13 @@
             <artifactId>commons-codec</artifactId>
             <version>1.17.1</version>
         </dependency>
+
         <dependency>
             <groupId>com.jhlabs</groupId>
             <artifactId>filters</artifactId>
             <version>2.0.235-1</version>
         </dependency>
+
         <dependency>
             <groupId>net.coobird</groupId>
             <artifactId>thumbnailator</artifactId>
@@ -149,19 +168,12 @@
             <version>2.2.2</version>
         </dependency>
 
-        <!--/libs下自己导入maven-->
+        <!--/libs下自己导入maven，https://github.com/xdsswar/nfx-lib -->
         <dependency>
             <groupId>xss.it.nfx</groupId>
             <artifactId>nfx-core</artifactId>
             <version>1.0.0</version>
         </dependency>
-
-        <dependency>
-            <groupId>cn.tealc.fxplugin</groupId>
-            <artifactId>fx-plugin</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-
     </dependencies>
 
     <build>
