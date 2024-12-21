@@ -1,8 +1,6 @@
 package cn.tealc.wutheringwavestool.model;
 
-import cn.tealc.wutheringwavestool.util.ApiUtil;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 
 /**
  * @program: WutheringWavesTool

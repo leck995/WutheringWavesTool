@@ -216,7 +216,7 @@ public class OwnRoleDetailViewModel implements ViewModel {
                         Map<String, Integer> subPropWeights = weight.getSubPropWeights();
                         int count= 0;
                         for (Phantom phantom : equipPhantomList) {
-                            if (phantom.getSubProps() == null){
+                            if (phantom == null || phantom.getSubProps() == null){
                                 continue;
                             }
                             int level3=0;
