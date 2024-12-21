@@ -27,6 +27,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,8 +40,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Date;
+import java.util.*;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -325,13 +325,11 @@ public class HomeViewModel implements ViewModel {
 
             if (exe != null) {
                 if (Config.setting.isUserAdvanceGameSettings()){ //使用高级启动设置
-                    String appParams = Config.setting.getAppParams();
-                    if (appParams != null && !appParams.isEmpty()) {
-                        String[] arrays = appParams.split(" ");
-                        String[] newArray = new String[arrays.length + 1];
-                        newArray[0] = exe.getAbsolutePath();
-                        // 复制原数组的元素到新数组
-                        System.arraycopy(arrays, 0, newArray, 1, arrays.length);
+                    List<String> paramsList = new ArrayList<String>(Config.setting.getStartUpParams());
+                    if (!paramsList.isEmpty()) {
+                        paramsList.addFirst(exe.getAbsolutePath());
+                        String[] newArray = new String[paramsList.size()];
+                        paramsList.toArray(newArray);
                         for (String s : newArray) {
                             System.out.println(s);
                         }
