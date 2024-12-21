@@ -21,11 +21,14 @@ public class GameResourcesManager {
     private static final Logger LOG = LoggerFactory.getLogger(GameResourcesManager.class);
 
     public static File getGameDir(){
-        File dir = new File(Config.setting.getGameRootDir());
-        if (!dir.exists()) {
-            return null;
+        if (Config.setting.getGameRootDir() != null) {
+            File dir = new File(Config.setting.getGameRootDir());
+            if (!dir.exists()) {
+                return null;
+            }
+            return dir;
         }
-        return dir;
+        return null;
     }
 
     public static File getGameDB(){
