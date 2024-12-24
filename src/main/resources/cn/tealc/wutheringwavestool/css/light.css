@@ -77,8 +77,14 @@
   -color-bg-inset: #f6f8fa;
 
   -color-bg-default-90: #ffffff90;
-  -color-bg-default-60: #ffffff60;
+  -color-bg-default-80: #ffffff60;
+  -color-bg-default-70: #ffffff40;
+  -color-bg-default-60: #ffffff90;
+  -color-bg-default-50: #ffffff60;
   -color-bg-default-40: #ffffff40;
+  -color-bg-default-30: #ffffff40;
+  -color-bg-default-20: #ffffff40;
+  -color-bg-default-10: #ffffff40;
 
   -color-border-default: #d0d7de;
   -color-border-muted: #ededed;
