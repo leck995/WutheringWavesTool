@@ -212,16 +212,16 @@
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
+
                 <version>0.0.8</version>
                 <executions>
                     <execution>
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>cn.tealc.wutheringwavestool/cn.tealc.wutheringwavestool.MainApplication
-                            </mainClass>
+                            <mainClass>cn.tealc.wutheringwavestool/cn.tealc.wutheringwavestool.MainApplication</mainClass>
                             <launcher>app</launcher>
-                            <jlinkImageName>app</jlinkImageName>
+                            <jlinkImageName>runtime</jlinkImageName>
                             <noManPages>true</noManPages>
                             <stripDebug>true</stripDebug>
                             <noHeaderFiles>true</noHeaderFiles>

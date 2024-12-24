@@ -40,6 +40,7 @@ public class Setting {
     private SimpleStringProperty homeViewRole=new SimpleStringProperty(); //主页人物
     private SimpleStringProperty logLevel=new SimpleStringProperty("INFO"); //日志等级
 
+    private SimpleStringProperty skipVersion=new SimpleStringProperty(Config.version);
 
     /*=================设置-首选===================*/
     private SimpleObjectProperty<SourceType> gameRootDirSource = new SimpleObjectProperty<>(SourceType.DEFAULT); //游戏来源类型
@@ -62,7 +63,7 @@ public class Setting {
     private SimpleBooleanProperty checkNewVersion=new SimpleBooleanProperty(true); //检查更新
 
     /*=============资源库=============*/
-    private SimpleIntegerProperty resourceSource = new SimpleIntegerProperty(getLanguage() == Locale.CHINA ? 1 : 0); //0代表Github，1代表码云
+    private SimpleIntegerProperty resourceSource = new SimpleIntegerProperty(getLanguage() == Locale.CHINA ? 1 : 0); //0代表Github，1代表码云或其他
 
     /*=================高级启动相关===================*/
     private SimpleBooleanProperty userAdvanceGameSettings=new SimpleBooleanProperty(false); //使用高级启动
@@ -413,5 +414,17 @@ public class Setting {
 
     public ObservableList<String> getStartUpParams() {
         return startUpParams;
+    }
+
+    public String getSkipVersion() {
+        return skipVersion.get();
+    }
+
+    public SimpleStringProperty skipVersionProperty() {
+        return skipVersion;
+    }
+
+    public void setSkipVersion(String skipVersion) {
+        this.skipVersion.set(skipVersion);
     }
 }

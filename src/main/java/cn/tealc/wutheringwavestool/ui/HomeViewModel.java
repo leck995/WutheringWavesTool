@@ -373,7 +373,7 @@ public class HomeViewModel implements ViewModel {
      */
     private void runExeByCustom(String... params) {
         Thread.startVirtualThread(()->{
-            String[] command2 = {"cmd.exe", "/c", "start", "\"\""}; //权限不够，提权
+            String[] command2 = {"cmd.exe", "/c", "start", "/b", "\"\""}; //权限不够，提权
             String[] mergedArray = Stream.concat(Stream.of(command2), Stream.of(params))
                     .toArray(String[]::new);
             ProcessBuilder processBuilder = new ProcessBuilder(mergedArray);

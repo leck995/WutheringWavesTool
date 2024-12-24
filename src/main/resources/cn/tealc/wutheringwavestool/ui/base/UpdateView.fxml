@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<StackPane fx:id="root" prefHeight="600.0" prefWidth="1000.0" styleClass="update" stylesheets="@../../css/Update.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.base.UpdateView">
+   <children>
+      <AnchorPane prefHeight="400.0" prefWidth="600.0">
+         <children>
+            <Label styleClass="title-1" text="%ui.update.title" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="30.0" />
+            <HBox fx:id="titlebar" alignment="CENTER_RIGHT" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+                     <children>
+                        <Button fx:id="minBtn" mnemonicParsing="false" styleClass="hit-btn">
+                           <graphic>
+                              <SVGPath content="M1 7L1 8L14 8L14 7Z" styleClass="shape" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="maxBtn" disable="true" mnemonicParsing="false" styleClass="hit-btn">
+                           <graphic>
+                              <SVGPath content="M2.5 2 A 0.50005 0.50005 0 0 0 2 2.5L2 13.5 A 0.50005 0.50005 0 0 0 2.5 14L13.5 14 A 0.50005 0.50005 0 0 0 14 13.5L14 2.5 A 0.50005 0.50005 0 0 0 13.5 2L2.5 2 z M 3 3L13 3L13 13L3 13L3 3 z" styleClass="shape" />
+                           </graphic>
+                        </Button>
+                        <Button fx:id="closeBtn" mnemonicParsing="false">
+                           <styleClass>
+                              <String fx:value="hit-btn" />
+                              <String fx:value="hit-close" />
+                           </styleClass>
+                           <graphic>
+                              <SVGPath content="M3.726563 3.023438L3.023438 3.726563L7.292969 8L3.023438 12.269531L3.726563 12.980469L8 8.707031L12.269531 12.980469L12.980469 12.269531L8.707031 8L12.980469 3.726563L12.269531 3.023438L8 7.292969Z" styleClass="shape" />
+                           </graphic>
+                        </Button>
+                     </children>
+                  </HBox>
+               </children>
+               <padding>
+                  <Insets left="10.0" right="10.0" />
+               </padding>
+            </HBox>
+            <VBox spacing="20.0" AnchorPane.leftAnchor="20.0" AnchorPane.topAnchor="120.0">
+               <children>
+                  <HBox spacing="10.0">
+                     <children>
+                        <Label prefWidth="80.0" styleClass="text-caption" text="%ui.update.left.grid.release" />
+                        <Label fx:id="version" styleClass="text-caption" text="v1.2.1 - v1.2.2" />
+                     </children>
+                  </HBox>
+                  <HBox spacing="10.0">
+                     <children>
+                        <Label prefWidth="80.0" styleClass="text-caption" text="%ui.update.left.grid.type" />
+                        <Label fx:id="type" styleClass="text-caption" text="%ui.update.left.grid.type.key01" />
+                     </children>
+                  </HBox>
+                  <HBox spacing="10.0">
+                     <children>
+                        <Label prefWidth="80.0" styleClass="text-caption" text="%ui.update.left.grid.data" />
+                        <Label fx:id="dateTime" styleClass="text-caption" text="2024-12.28 15：22：00" />
+                     </children>
+                  </HBox>
+                  <HBox spacing="10.0">
+                     <children>
+                        <Label prefWidth="80.0" styleClass="text-caption" text="%ui.update.left.grid.force" />
+                        <Label fx:id="forceLabel" layoutX="10.0" layoutY="10.0" styleClass="text-caption" text="%ui.update.left.grid.force.key02" />
+                     </children>
+                  </HBox>
+                  <HBox spacing="10.0">
+                     <children>
+                        <Label prefWidth="80.0" styleClass="text-caption" text="%ui.update.left.grid.website" />
+                        <Hyperlink onAction="#toReleaseWebsite" styleClass="text-caption" text="%ui.update.left.grid.website.key" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox alignment="TOP_CENTER" prefWidth="250.0" spacing="5.0" AnchorPane.bottomAnchor="20.0" AnchorPane.leftAnchor="20.0">
+               <children>
+                  <ProgressBar fx:id="progressBar" prefWidth="250.0" progress="0.74" styleClass="small" />
+                  <StackPane>
+                     <children>
+                        <Label fx:id="progressLabel" text="90%" StackPane.alignment="CENTER_LEFT" />
+                        <Label fx:id="packageSize" text="50m" StackPane.alignment="CENTER_RIGHT" />
+                     </children>
+                  </StackPane>
+                  <HBox alignment="CENTER_LEFT" prefHeight="70.0" spacing="20.0">
+                     <children>
+                        <Button fx:id="downloadBtn" mnemonicParsing="false" onAction="#startUpdate" styleClass="accent" text="%ui.update.left.download">
+                           <graphic>
+                              <FontIcon iconLiteral="mdoal-cloud_download" />
+                           </graphic></Button>
+                        <MenuButton fx:id="cancelBtn" styleClass="danger" text="%ui.update.left.cancel">
+                          <items>
+                              <MenuItem mnemonicParsing="false" onAction="#nextRemind" text="%ui.update.left.cancel.later" />
+                            <MenuItem mnemonicParsing="false" onAction="#skipUpdate" text="%ui.update.left.cancel.skip" />
+                          </items>
+                           <graphic>
+                              <FontIcon iconLiteral="mdoal-close" />
+                           </graphic>
+                        </MenuButton>
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox layoutX="300.0" spacing="40.0" styleClass="right" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="70.0">
+               <children>
+                  <Label styleClass="title-3" text="%ui.update.right.title" />
+                  <TextArea fx:id="descriptionArea" editable="false" prefHeight="200.0" prefWidth="200.0" wrapText="true" VBox.vgrow="ALWAYS" />
+               </children>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+               </padding>
+            </VBox>
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>

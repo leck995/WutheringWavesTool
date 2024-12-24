@@ -33,7 +33,13 @@ public class ResponseBody<T> {
     }
 
 
-
+    public static <T> ResponseBody<T> create(Integer code, String msg, T t) {
+        ResponseBody<T> responseBody = new ResponseBody<>();
+        responseBody.setCode(code);
+        responseBody.setMsg(msg);
+        responseBody.setData(t);
+        return responseBody;
+    }
 
 
 

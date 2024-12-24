@@ -23,7 +23,6 @@ open module cn.tealc.wutheringwavestool {
     requires nfx.core;
     requires ch.qos.logback.core;
     requires ch.qos.logback.classic;
-
     requires cn.tealc.fxplugin;
 
     exports cn.tealc.wutheringwavestool;

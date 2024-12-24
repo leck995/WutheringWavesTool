@@ -1,0 +1,11 @@
+.update{
+
+}
+.update .right{
+    -fx-background-color:   -color-bg-default-40;
+    -fx-background-radius: 10 0 0 10;
+}
+
+.update .right .text-area{
+    -fx-background-color: transparent;
+}

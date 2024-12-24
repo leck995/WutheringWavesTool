@@ -4,6 +4,7 @@ import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
+import cn.tealc.wutheringwavestool.model.release.Release;
 import cn.tealc.wutheringwavestool.thread.GameLogFileAnalysisTask;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.model.towerData.DifficultyTotal;
@@ -23,22 +24,34 @@ import javafx.application.Platform;
  * @create: 2024-07-03 18:59
  */
 public class MainViewModel implements ViewModel {
+    public static final String NOTIFICATION_SHOW_UPDATE= "SHOW_UPDATE";
     public MainViewModel() {
-        if (Config.setting.isCheckNewVersion()){
-            CheckVersionTask task = new CheckVersionTask();
-            task.setOnSucceeded(workerStateEvent -> {
-                if (task.getValue()==-1){
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.message.type01")));
-                }else if (task.getValue()==1){
-                    Platform.runLater(()->{
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.INFO,LanguageManager.getString("ui.main.message.type02")));
-                    });
-                }
-            });
-            Thread.startVirtualThread(task);
-        }
+        checkVersion();
         updateKujiequ();
     }
+
+
+    public void checkVersion(){
+        if (Config.setting.isCheckNewVersion()){
+            Platform.runLater(() -> {
+                CheckVersionTask task = new CheckVersionTask();
+                task.setOnSucceeded(workerStateEvent -> {
+                    ResponseBody<Release> value = task.getValue();
+                    if (value.getCode() == 200){
+                        Platform.runLater(()->{
+                            publish(NOTIFICATION_SHOW_UPDATE,value.getData());
+                            //MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.INFO,LanguageManager.getString("ui.main.message.type02")));
+                        });
+                    }else if (value.getCode() == -1){
+                        publish(NOTIFICATION_SHOW_UPDATE,value.getData());
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.message.type01")));
+                    }
+                });
+                Thread.startVirtualThread(task);
+            });
+        }
+    }
+
 
 
     private void updateKujiequ(){

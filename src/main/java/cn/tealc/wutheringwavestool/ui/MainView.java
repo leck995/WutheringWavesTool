@@ -3,6 +3,7 @@ package cn.tealc.wutheringwavestool.ui;
 import atlantafx.base.controls.Message;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
+import cn.tealc.teafx.utils.AnchorPaneUtil;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.MainApplication;
@@ -10,19 +11,17 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 
 import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.wutheringwavestool.model.release.Release;
 import cn.tealc.wutheringwavestool.thread.MainBackgroundTask;
 import cn.tealc.wutheringwavestool.ui.game.*;
 import cn.tealc.wutheringwavestool.ui.kujiequ.*;
-import cn.tealc.wutheringwavestool.ui.resource.UpdateView;
-import cn.tealc.wutheringwavestool.ui.resource.UpdateViewModel;
+import cn.tealc.wutheringwavestool.ui.base.UpdateView;
+import cn.tealc.wutheringwavestool.ui.base.UpdateViewModel;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialog;
 import com.jfoenixN.controls.JFXDialogLayout;
-import de.saxsys.mvvmfx.FluentViewLoader;
-import de.saxsys.mvvmfx.FxmlView;
-import de.saxsys.mvvmfx.MvvmFX;
-import de.saxsys.mvvmfx.ViewTuple;
+import de.saxsys.mvvmfx.*;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
@@ -65,6 +64,11 @@ import java.util.ResourceBundle;
  */
 public class MainView implements Initializable,FxmlView<MainViewModel> {
     private static final Logger LOG= LoggerFactory.getLogger(MainView.class);
+    @InjectViewModel
+    private MainViewModel viewModel;
+
+    @FXML
+    private AnchorPane content;
     @FXML
     private StackPane child;
     @FXML
@@ -108,8 +112,10 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
 
     @FXML
     private HBox titlebar;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
 
  /*       FontIcon fontIcon;
         if (Config.setting.isTheme()){
@@ -195,6 +201,9 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         bgPane03.visibleProperty().bind(bgPane.visibleProperty().not());
 
         updateBg();
+
+        viewModel.subscribe(MainViewModel.NOTIFICATION_SHOW_UPDATE,(s, objects) -> showUpdateView((Release) objects[0]));
+
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.MESSAGE,((s, objects) -> {
             showMessage((MessageInfo) objects[0]);
         }));
@@ -256,6 +265,17 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         }
         dialog.show();
     }
+
+    private void showUpdateView(Release release){
+        ViewTuple<UpdateView, UpdateViewModel> viewTuple = FluentViewLoader.fxmlView(UpdateView.class).viewModel(new UpdateViewModel(release)).load();
+        StackPane view = (StackPane) viewTuple.getView();
+        view.setBackground(bgPane02.getBackground());
+
+        //必须放在通知界面的后面
+        content.getChildren().add(content.getChildren().size()-1,view);
+        AnchorPaneUtil.setPosition(view,0,0,0,0);
+    }
+
 
     private void showDialog(Pane pane){
         JFXDialog dialog = new JFXDialog(root,pane,JFXDialog.DialogTransition.CENTER);
