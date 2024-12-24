@@ -202,8 +202,10 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
 
         updateBg();
 
-        viewModel.subscribe(MainViewModel.NOTIFICATION_SHOW_UPDATE,(s, objects) -> showUpdateView((Release) objects[0]));
 
+        MvvmFX.getNotificationCenter().subscribe(NotificationKey.NOTIFICATION_SHOW_UPDATE,((s, objects) -> {
+            showUpdateView((Release) objects[0]);
+        }));
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.MESSAGE,((s, objects) -> {
             showMessage((MessageInfo) objects[0]);
         }));

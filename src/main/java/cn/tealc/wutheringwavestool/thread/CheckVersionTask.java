@@ -26,6 +26,12 @@ public class CheckVersionTask extends Task<ResponseBody<Release>> {
     private static final String NET_URL="https://wwt.tealc.fun/release.json";
     private static final String TIP="发现新版本：%s,可在设置中获取更新详细信息";
     private static final String TIP_ERROR="检查版本更新失败，请检查网络状况";
+
+    private final boolean checkSkip;//是否检测跳过的版本,从设置中过来的无需检测跳过
+    public CheckVersionTask(boolean checkSkip) {
+        this.checkSkip = checkSkip;
+    }
+
     @Override
     protected ResponseBody<Release> call() throws Exception {
         try (HttpClient client = HttpClient.newHttpClient()){
@@ -43,7 +49,7 @@ public class CheckVersionTask extends Task<ResponseBody<Release>> {
                         String version = latestRelease.getVersion();
                         double net = Double.parseDouble(version.replace(".",""));
                         double now = Double.parseDouble(Config.version.replace(".",""));
-                        if (Config.setting.getSkipVersion() != null){
+                        if (checkSkip && Config.setting.getSkipVersion() != null){
                             double skip = Double.parseDouble(Config.setting.getSkipVersion().replace(".",""));
                             if (net <= skip){ //网络版本低于跳过版本
                                 LOG.info("检测到跳过版本更新");

@@ -269,6 +269,13 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
         }
     }
 
+
+    @FXML
+    void checkVersion(ActionEvent event) {
+        viewModel.checkVersion();
+    }
+
+
     @FXML
     void toWeb(ActionEvent event) {
         try {

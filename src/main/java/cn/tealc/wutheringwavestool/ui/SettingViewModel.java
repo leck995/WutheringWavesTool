@@ -3,11 +3,18 @@ package cn.tealc.wutheringwavestool.ui;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.SourceType;
+import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.wutheringwavestool.model.release.Release;
+import cn.tealc.wutheringwavestool.thread.CheckVersionTask;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.SceneLifecycle;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -111,8 +118,24 @@ public class SettingViewModel implements ViewModel,SceneLifecycle {
         } catch (IOException e) {
             LOG.error("IO ERROR",e);
         }
-
     }
+
+    public void checkVersion(){
+        CheckVersionTask task = new CheckVersionTask(false);
+        task.setOnSucceeded(workerStateEvent -> {
+            ResponseBody<Release> value = task.getValue();
+            if (value.getCode() == 200){
+                MvvmFX.getNotificationCenter().publish(NotificationKey.NOTIFICATION_SHOW_UPDATE,value.getData());
+            }else if (value.getCode() == 1){
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.setting.about.update.tip01")));
+            }else{
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.message.type01")));
+            }
+        });
+        Thread.startVirtualThread(task);
+    }
+
+
 
 
     public void setLanguages(Locale locale) {

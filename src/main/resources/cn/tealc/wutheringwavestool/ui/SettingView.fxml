@@ -170,7 +170,12 @@
                               </VBox>
                            </children>
                         </AnchorPane>
-                        <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#toWeb" prefWidth="200.0" styleClass="func-btn" text="%ui.setting.about.update">
+                        <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="141.0" mnemonicParsing="false" onAction="#checkVersion" prefWidth="200.0" styleClass="func-btn" text="%ui.setting.about.update">
+                           <graphic>
+                              <FontIcon iconLiteral="mdoal-cloud" />
+                           </graphic>
+                        </Button>
+                        <Button alignment="TOP_LEFT" mnemonicParsing="false" onAction="#toWeb" prefWidth="200.0" styleClass="func-btn" text="%ui.setting.about.github">
                            <graphic>
                               <FontIcon iconLiteral="anto-github" />
                            </graphic>
