@@ -289,11 +289,11 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
             } else{
                 startApp = new File(file.getAbsolutePath() + File.separator + "launcher.exe");
             }
-            if (startApp != null && startApp.exists()) {
+            if (startApp.exists()) {
                 gameDirField.setText(file.getAbsolutePath());
             }else {
                 gameDirField.setText(file.getAbsolutePath());
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"游戏根目录选择存在错误，请重新选择"));
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,LanguageManager.getString("ui.setting.message.01")));
             }
         }
     }

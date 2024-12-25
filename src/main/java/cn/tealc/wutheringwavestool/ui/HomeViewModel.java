@@ -391,7 +391,7 @@ public class HomeViewModel implements ViewModel {
             } catch (IOException e) {
                 MainApplication.window.show();
                 LOG.error("高级启动无法启动鸣潮",e);
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.ERROR,"高级启动,自定义参数方式启动失败:"+e.getMessage()));
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.ERROR,LanguageManager.getString("ui.home.message.type07")+e.getMessage()));
             }
         });
     }

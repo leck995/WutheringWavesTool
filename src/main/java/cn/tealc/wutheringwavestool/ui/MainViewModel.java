@@ -35,12 +35,10 @@ public class MainViewModel implements ViewModel {
             Platform.runLater(() -> {
                 CheckVersionTask task = new CheckVersionTask(true);
                 task.setOnSucceeded(workerStateEvent -> {
-
                     ResponseBody<Release> value = task.getValue();
                     if (value.getCode() == 200){
                         Platform.runLater(()->{
                             MvvmFX.getNotificationCenter().publish(NotificationKey.NOTIFICATION_SHOW_UPDATE,value.getData());
-                            //MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.INFO,LanguageManager.getString("ui.main.message.type02")));
                         });
                     }else if (value.getCode() == -1){
                         MvvmFX.getNotificationCenter().publish(NotificationKey.NOTIFICATION_SHOW_UPDATE,value.getData());
