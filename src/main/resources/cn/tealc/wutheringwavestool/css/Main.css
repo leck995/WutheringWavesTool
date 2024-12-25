@@ -3,8 +3,13 @@
 
 }
 .main-nav{
-    -fx-background-color: transparent;
+    -fx-background-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #ffffff30 0.0%, #ffffff00 100.0%);
 }
+.main-nav:hover{
+    -fx-background-radius: 0 10 10 0;
+    -fx-background-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #ffffff60 0.0%, #ffffff20 100.0%);
+}
+
 .main-nav .toggle-button,
 .main-nav .button{
     -fx-background-color: transparent;
@@ -44,17 +49,17 @@
     -fx-background-color: -color-accent-fg;
     -fx-text-fill: -color-selected-default;
 }
-
+.main-nav .nav-btn{
+    -fx-content-display:graphic-only;
+    -fx-pref-width: 36px;
+    -fx-padding: 5;
+    -fx-alignment: center;
+}
 .main-nav .nav-btn:hover{
     -fx-background-color: -color-hover-muted;
 }
 .main-nav .nav-btn:selected{
     -fx-background-color: transparent;
-    -fx-text-fill: #181616;
-    -fx-content-display:graphic-only;
-    -fx-pref-width: 36px;
-    -fx-padding: 5;
-    -fx-alignment: center;
 }
 .main-nav .nav-btn:selected .ikonli-font-icon{
     -fx-icon-color: #181616;

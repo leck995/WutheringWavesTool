@@ -161,12 +161,18 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         navBtn.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
             if (!t1){
                 for (Toggle toggle : navToggleGroup.getToggles()) {
+                    if (toggle == navBtn) {
+                        return;
+                    }
                     ToggleButton toggleButton = (ToggleButton) toggle;
                     toggleButton.getStyleClass().remove("icon-only");
                 }
                 supportBtn.getStyleClass().remove("icon-only");
             }else {
                 for (Toggle toggle : navToggleGroup.getToggles()) {
+                    if (toggle == navBtn) {
+                        return;
+                    }
                     ToggleButton toggleButton = (ToggleButton) toggle;
                     toggleButton.getStyleClass().add("icon-only");
                 }
