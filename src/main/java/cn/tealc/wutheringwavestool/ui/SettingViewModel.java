@@ -16,8 +16,10 @@ import de.saxsys.mvvmfx.SceneLifecycle;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.text.Font;
@@ -38,7 +40,7 @@ import java.util.ResourceBundle;
  * @author: Leck
  * @create: 2024-07-03 20:21
  */
-public class SettingViewModel implements ViewModel,SceneLifecycle {
+public class SettingViewModel implements ViewModel ,SceneLifecycle {
     private static final Logger LOG= LoggerFactory.getLogger(SettingViewModel.class);
     private SimpleBooleanProperty changeTitlebar = new SimpleBooleanProperty();
     private SimpleStringProperty gameDir = new SimpleStringProperty();
@@ -46,12 +48,16 @@ public class SettingViewModel implements ViewModel,SceneLifecycle {
     private SimpleBooleanProperty exitWhenGameOver = new SimpleBooleanProperty();
     private SimpleBooleanProperty hideWhenGameStart = new SimpleBooleanProperty();
     private ObservableList<String> fontFamilyList= FXCollections.observableArrayList();
-    private SimpleBooleanProperty diyHomeBg=new SimpleBooleanProperty();
-    private SimpleStringProperty diyHomeBgName=new SimpleStringProperty();
+
     private SimpleObjectProperty<SourceType> gameRootDirSource=new SimpleObjectProperty<>();
     private SimpleStringProperty gameAppStartPath=new SimpleStringProperty();
     private SimpleBooleanProperty gameAppStartCustom=new SimpleBooleanProperty();
     private SimpleBooleanProperty checkNewVersion=new SimpleBooleanProperty();
+
+    private SimpleBooleanProperty diyHomeBg=new SimpleBooleanProperty();
+    private SimpleStringProperty diyHomeBgName=new SimpleStringProperty();
+    private SimpleIntegerProperty homeBgType=new SimpleIntegerProperty();
+    private SimpleStringProperty homeBgDir = new SimpleStringProperty();
 
     private ObservableList<Pair<String, Locale>> languages=FXCollections.observableArrayList();
     public SettingViewModel() {
@@ -67,16 +73,20 @@ public class SettingViewModel implements ViewModel,SceneLifecycle {
         diyHomeBg.bindBidirectional(Config.setting.diyHomeBgProperty());
         diyHomeBgName.bindBidirectional(Config.setting.diyHomeBgNameProperty());
         checkNewVersion.bindBidirectional(Config.setting.checkNewVersionProperty());
-        diyHomeBg.addListener((observableValue, aBoolean, t1) -> {
-            if (t1){
-              if (getDiyHomeBgName()!= null){
-                  MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
-              }
-            }else {
+        homeBgType.bindBidirectional(Config.setting.diyHomeBgTypeProperty());
+        homeBgDir.bindBidirectional(Config.setting.diyHomeBgDirProperty());
+
+        diyHomeBgName.addListener((observableValue, s1, s2) -> {
+            if (getDiyHomeBgName()!= null){
                 MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
             }
         });
 
+        homeBgDir.addListener((observableValue, s1, s2) -> {
+            if (getHomeBgDir()!= null){
+                MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
+            }
+        });
 
         languages.setAll(
                 List.of(
@@ -84,6 +94,11 @@ public class SettingViewModel implements ViewModel,SceneLifecycle {
                         new Pair<>("English",Locale.ENGLISH)
                 ));
     }
+
+    public void changeBackground(){
+        MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
+    }
+
 
 
     @Override
@@ -256,5 +271,29 @@ public class SettingViewModel implements ViewModel,SceneLifecycle {
 
     public ObservableList<Pair<String, Locale>> getLanguages() {
         return languages;
+    }
+
+    public int getHomeBgType() {
+        return homeBgType.get();
+    }
+
+    public SimpleIntegerProperty homeBgTypeProperty() {
+        return homeBgType;
+    }
+
+    public void setHomeBgType(int homeBgType) {
+        this.homeBgType.set(homeBgType);
+    }
+
+    public String getHomeBgDir() {
+        return homeBgDir.get();
+    }
+
+    public SimpleStringProperty homeBgDirProperty() {
+        return homeBgDir;
+    }
+
+    public void setHomeBgDir(String homeBgDir) {
+        this.homeBgDir.set(homeBgDir);
     }
 }

@@ -49,11 +49,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.ResourceBundle;
 
 /**
@@ -225,7 +227,9 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
 
     private void updateBg(){
         Image image=null;
-        if(Config.setting.isDiyHomeBg()){
+        if (Config.setting.getDiyHomeBgType() == 0){
+            image = new Image(FXResourcesLoader.load("image/bg.png"));
+        }else if (Config.setting.getDiyHomeBgType() == 1){
             image= LocalResourcesManager.getHomeBg(Config.setting.getDiyHomeBgName());
             if (image == null){
                 image = new Image(FXResourcesLoader.load("image/bg.png"));
@@ -233,26 +237,47 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
                 Config.setting.setDiyHomeBgName(null);
                 LOG.warn("自定义壁纸出现问题，取消自定义");
             }
-        }else {
-            image = new Image(FXResourcesLoader.load("image/bg.png"));
+        }else if (Config.setting.getDiyHomeBgType() == 2){
+            image = getImageFormBgDir();
+            if (image == null){
+                image = new Image(FXResourcesLoader.load("image/bg.png"));
+            }
         }
-        bgPane.setBackground(
-                new Background(
-                        new BackgroundImage(
-                                image,
-                                BackgroundRepeat.NO_REPEAT,
-                                BackgroundRepeat.NO_REPEAT,
-                                BackgroundPosition.CENTER,
-                                new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, true, true))));
+        if (image != null){
+            bgPane.setBackground(
+                    new Background(
+                            new BackgroundImage(
+                                    image,
+                                    BackgroundRepeat.NO_REPEAT,
+                                    BackgroundRepeat.NO_REPEAT,
+                                    BackgroundPosition.CENTER,
+                                    new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, true, true))));
 
-        //bgPane02用于显示高斯模糊的背景
-        MainBackgroundTask task = new MainBackgroundTask(image);
-        task.setOnSucceeded(workerStateEvent -> {
-            bgPane02.setBackground(task.getValue());
-        });
-
-        Thread.startVirtualThread(task);
+            //bgPane02用于显示高斯模糊的背景
+            MainBackgroundTask task = new MainBackgroundTask(image);
+            task.setOnSucceeded(workerStateEvent -> {
+                bgPane02.setBackground(task.getValue());
+            });
+            Thread.startVirtualThread(task);
+        }
     }
+
+    private Image getImageFormBgDir(){
+        File bgDir = new File(Config.setting.getDiyHomeBgDir());
+        if (bgDir.exists()){
+            File[] bgs=bgDir.listFiles((dir, name) -> name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".gif"));
+            if (bgs != null && bgs.length > 0) {
+                Random random = new Random();
+                int i = random.nextInt(bgs.length);
+                return new Image(bgs[i].toURI().toString(),2560,1440,true,true,false);
+            }
+        }
+
+        return null;
+    }
+
+
+
 
     private void showDialog(JFXDialogLayout container){
         JFXDialog dialog = new JFXDialog(root,container,JFXDialog.DialogTransition.CENTER);

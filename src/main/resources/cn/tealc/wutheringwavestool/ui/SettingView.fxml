@@ -96,7 +96,17 @@
                                  </graphic></Label>
                               <ToggleSwitch fx:id="noKuJieQuSwitch" labelPosition="RIGHT" text="%ui.setting.base.kujiequ.switch" />
                               <Label styleClass="title-4" text="%ui.setting.base.background" />
-                              <ToggleSwitch fx:id="diyBgSwitch" labelPosition="RIGHT" text="%ui.setting.base.background.switch" />
+                              <HBox spacing="20.0">
+                                 <children>
+                                    <RadioButton mnemonicParsing="false" text="%ui.setting.base.background.type01">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="homeBgType" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="%ui.setting.base.background.type02" toggleGroup="$homeBgType" />
+                                    <RadioButton layoutX="119.0" layoutY="10.0" mnemonicParsing="false" text="%ui.setting.base.background.type03" toggleGroup="$homeBgType" />
+                                 </children>
+                              </HBox>
                               <StackPane fx:id="diyBgInputGroup" maxWidth="350.0" styleClass="input-group">
                                  <children>
                                     <TextField fx:id="diyBgField" prefWidth="250.0" />
@@ -107,6 +117,17 @@
                                     </Button>
                                  </children>
                               </StackPane>
+                              <StackPane fx:id="diyBgDirInputGroup" layoutX="10.0" layoutY="256.0" maxWidth="350.0" styleClass="input-group">
+                                 <children>
+                                    <TextField fx:id="diyBgDirField" prefWidth="250.0" />
+                                    <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setBgFile" StackPane.alignment="CENTER_RIGHT">
+                                       <graphic>
+                                          <FontIcon iconLiteral="mdoal-image" />
+                                       </graphic>
+                                    </Button>
+                                 </children>
+                              </StackPane>
+                              <Label styleClass="tip" text="%ui.setting.base.background.tip" />
                               <Label layoutX="10.0" layoutY="266.0" styleClass="title-4" text="%ui.setting.base.close_event" />
                               <HBox prefHeight="100.0" prefWidth="200.0" spacing="15.0">
                                  <children>

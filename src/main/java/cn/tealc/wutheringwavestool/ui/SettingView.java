@@ -6,6 +6,7 @@ import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
@@ -15,6 +16,7 @@ import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.MvvmFX;
+import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -53,7 +55,7 @@ import java.util.ResourceBundle;
  * @author: Leck
  * @create: 2024-07-03 20:20
  */
-public class SettingView implements Initializable, FxmlView<SettingViewModel> {
+public class SettingView implements FxmlView<SettingViewModel>,Initializable {
     private static final Logger LOG= LoggerFactory.getLogger(SettingView.class);
     @InjectViewModel
     private SettingViewModel viewModel;
@@ -85,9 +87,6 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
 
     @FXML
     private StackPane diyBgInputGroup;
-
-    @FXML
-    private ToggleSwitch diyBgSwitch;
     @FXML
     private ToggleSwitch titlebarSwitch;
     @FXML
@@ -115,6 +114,12 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
 
     @FXML
     private ToggleGroup fileSourceType;
+    @FXML
+    private ToggleGroup homeBgType;
+    @FXML
+    private TextField diyBgDirField;
+    @FXML
+    private StackPane diyBgDirInputGroup;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -125,10 +130,34 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
         hideWhenGameStart.setSkin(new ToggleSwitchSkin(hideWhenGameStart));
         hideWhenGameStart.selectedProperty().bindBidirectional(viewModel.hideWhenGameStartProperty());
         exitWhenGameOver.selectedProperty().bindBidirectional(viewModel.exitWhenGameOverProperty());
+
         diyBgField.textProperty().bindBidirectional(viewModel.diyHomeBgNameProperty());
-        diyBgSwitch.selectedProperty().bindBidirectional(viewModel.diyHomeBgProperty());
-        diyBgInputGroup.managedProperty().bind(diyBgSwitch.selectedProperty());
-        diyBgInputGroup.visibleProperty().bind(diyBgSwitch.selectedProperty());
+        diyBgInputGroup.managedProperty().bind(Bindings.equal(1,viewModel.homeBgTypeProperty()));
+        diyBgInputGroup.visibleProperty().bind(Bindings.equal(1,viewModel.homeBgTypeProperty()));
+        diyBgDirField.textProperty().bindBidirectional(viewModel.homeBgDirProperty());
+        diyBgDirInputGroup.managedProperty().bind(Bindings.equal(2,viewModel.homeBgTypeProperty()));
+        diyBgDirInputGroup.visibleProperty().bind(Bindings.equal(2,viewModel.homeBgTypeProperty()));
+
+
+        homeBgType.selectToggle(homeBgType.getToggles().get(viewModel.getHomeBgType()));
+
+        homeBgType.selectedToggleProperty().addListener((observableValue, toggle, t1) -> {
+            int index= homeBgType.getToggles().indexOf(t1);
+            if (index == 0){
+                viewModel.setHomeBgType(0);
+                viewModel.changeBackground();
+            }else if (index == 1){
+                viewModel.setHomeBgType(1);
+                if (viewModel.getDiyHomeBgName()!= null){
+                    viewModel.changeBackground();
+                }
+            }else if (index == 2){
+                viewModel.setHomeBgType(2);
+                if (viewModel.getHomeBgDir() != null){
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
+                }
+            }
+        });
 
 
         noKuJieQuSwitch.selectedProperty().bindBidirectional(Config.setting.noKuJieQuProperty());
@@ -289,14 +318,30 @@ public class SettingView implements Initializable, FxmlView<SettingViewModel> {
 
     @FXML
     void setBgFile(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(LanguageManager.getString("ui.setting.file.background.title"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("jpg,jpeg,png,bmp","*.png","*.jpg","*.jpeg","*.bmp"));
-        File file = fileChooser.showOpenDialog(gameDirField.getScene().getWindow());
-        if (file != null) {
-            viewModel.setBgFile(file);
-
+        int index = homeBgType.getToggles().indexOf(homeBgType.getSelectedToggle());
+        if (index == 1) {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle(LanguageManager.getString("ui.setting.file.background.title"));
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("jpg,jpeg,png,bmp","*.png","*.jpg","*.jpeg","*.bmp"));
+            File file = fileChooser.showOpenDialog(gameDirField.getScene().getWindow());
+            if (file != null) {
+                viewModel.setBgFile(file);
+            }
+        }else if (index == 2) {
+            DirectoryChooser chooser = new DirectoryChooser();
+            chooser.setTitle(LanguageManager.getString("ui.setting.file.background.title"));
+            File file = chooser.showDialog(gameDirField.getScene().getWindow());
+            if (file != null) {
+                File[] files = file.listFiles();
+                if (files != null && files.length > 0) {
+                    viewModel.setHomeBgDir(file.getAbsolutePath());
+                }else {
+                    NotificationManager.message(MessageInfo.warning("选中文件夹为空，无法设置为背景文件夹"));
+                }
+            }
         }
+
+
     }
 
     @FXML

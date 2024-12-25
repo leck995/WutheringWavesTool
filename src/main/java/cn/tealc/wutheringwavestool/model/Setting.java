@@ -53,6 +53,9 @@ public class Setting {
     private SimpleBooleanProperty firstViewWithPoolAnalysis=new SimpleBooleanProperty(false);//启动页设置为抽卡分析
     private SimpleBooleanProperty diyHomeBg=new SimpleBooleanProperty(false); //启用自定义背景
     private SimpleStringProperty diyHomeBgName=new SimpleStringProperty(); //自定义背景文件名称
+    private SimpleIntegerProperty diyHomeBgType=new SimpleIntegerProperty(); // 0为默认，1为指定背景，2为背景文件夹
+    private SimpleStringProperty diyHomeBgDir=new SimpleStringProperty();
+
     private SimpleBooleanProperty noKuJieQu = new SimpleBooleanProperty(getLanguage() != Locale.CHINA); //不使用库街区
     private SimpleIntegerProperty closeEvent = new SimpleIntegerProperty(0); //关闭主界面行为，0选择，1退出，2最小化
     /*=================设置-游戏行为===================*/
@@ -426,5 +429,29 @@ public class Setting {
 
     public void setSkipVersion(String skipVersion) {
         this.skipVersion.set(skipVersion);
+    }
+
+    public int getDiyHomeBgType() {
+        return diyHomeBgType.get();
+    }
+
+    public SimpleIntegerProperty diyHomeBgTypeProperty() {
+        return diyHomeBgType;
+    }
+
+    public void setDiyHomeBgType(int diyHomeBgType) {
+        this.diyHomeBgType.set(diyHomeBgType);
+    }
+
+    public String getDiyHomeBgDir() {
+        return diyHomeBgDir.get();
+    }
+
+    public SimpleStringProperty diyHomeBgDirProperty() {
+        return diyHomeBgDir;
+    }
+
+    public void setDiyHomeBgDir(String diyHomeBgDir) {
+        this.diyHomeBgDir.set(diyHomeBgDir);
     }
 }

@@ -158,13 +158,14 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         Circle circle = new Circle(30,30,30);
         headIV.setClip(circle);
 
-/*        MainBackgroundTask task = new MainBackgroundTask();
-        task.setOnSucceeded(workerStateEvent -> {
 
-            root.setBackground(task.getValue());
-        });
-
-        Thread.startVirtualThread(task);*/
+        if (Config.setting.getDiyHomeBgType() == 2){
+            root.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2){
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
+                }
+            });
+        }
 
     }
 

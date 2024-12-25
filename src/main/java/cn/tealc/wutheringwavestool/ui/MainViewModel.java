@@ -35,6 +35,7 @@ public class MainViewModel implements ViewModel {
             Platform.runLater(() -> {
                 CheckVersionTask task = new CheckVersionTask(true);
                 task.setOnSucceeded(workerStateEvent -> {
+
                     ResponseBody<Release> value = task.getValue();
                     if (value.getCode() == 200){
                         Platform.runLater(()->{

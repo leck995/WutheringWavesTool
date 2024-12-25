@@ -152,12 +152,13 @@ public class LocalResourcesManager {
     public static Image getHomeBg(String filename){
         File file=new File(String.format(HOME_BG_TEMPLATE,filename));
         if (file.exists()){
-
             return new Image(file.toURI().toString(),2560,1440,true,true,false);
         }else {
             return null;
         }
     }
+
+
 
     public static String getName(String url){
         int index=url.lastIndexOf("/");
