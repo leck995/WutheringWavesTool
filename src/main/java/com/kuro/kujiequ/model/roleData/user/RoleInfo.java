@@ -30,7 +30,9 @@ public class RoleInfo {
     private int smallCount;
     private int achievementCount;
     private int achievementStar;
+    private List<BoxInfo> phantomBoxList;
     private List<BoxInfo> boxList;
+    private List<BoxInfo> treasureBoxList;
     private boolean showToGuest;
 
     public String getName() {
@@ -191,5 +193,21 @@ public class RoleInfo {
 
     public void setAchievementStar(int achievementStar) {
         this.achievementStar = achievementStar;
+    }
+
+    public List<BoxInfo> getPhantomBoxList() {
+        return phantomBoxList;
+    }
+
+    public void setPhantomBoxList(List<BoxInfo> phantomBoxList) {
+        this.phantomBoxList = phantomBoxList;
+    }
+
+    public List<BoxInfo> getTreasureBoxList() {
+        return treasureBoxList;
+    }
+
+    public void setTreasureBoxList(List<BoxInfo> treasureBoxList) {
+        this.treasureBoxList = treasureBoxList;
     }
 }

@@ -187,7 +187,7 @@ public class HomeViewModel implements ViewModel {
                 gameLifeText.set(String.format(template, roleInfo.getActiveDays()));
                 levelText.set(String.format("LV.%d", roleInfo.getLevel()));
                 String[] chests = LanguageManager.getStringArray("ui.home.label.chest.types");
-                for (BoxInfo boxInfo : roleInfo.getBoxList()) {
+                for (BoxInfo boxInfo : roleInfo.getTreasureBoxList()) {
                     if (boxInfo.getBoxName().equals(chests[0])) {
                         box1Text.set(String.valueOf(boxInfo.getNum()));
                     } else if (boxInfo.getBoxName().equals(chests[1])) {
