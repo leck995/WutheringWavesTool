@@ -72,6 +72,10 @@ public class Setting {
     private SimpleBooleanProperty userAdvanceGameSettings=new SimpleBooleanProperty(false); //使用高级启动
     private SimpleStringProperty appParams = new SimpleStringProperty(); //启动参数
 
+    /*=================抽卡分析相关===================*/
+    private SimpleStringProperty gachaCurrentPlayerId=new SimpleStringProperty(); //当前玩家
+    private SimpleBooleanProperty gachaListModel=new SimpleBooleanProperty(true); //抽卡界面显示模式
+
     @JsonSerialize(using = ObservableListSerializer.class)
     @JsonDeserialize(using = ObservableListDeserializer.class)
     private ObservableList<String> startUpParams = FXCollections.observableArrayList();
@@ -453,5 +457,33 @@ public class Setting {
 
     public void setDiyHomeBgDir(String diyHomeBgDir) {
         this.diyHomeBgDir.set(diyHomeBgDir);
+    }
+
+    public String getGachaCurrentPlayerId() {
+        return gachaCurrentPlayerId.get();
+    }
+
+    public SimpleStringProperty gachaCurrentPlayerIdProperty() {
+        return gachaCurrentPlayerId;
+    }
+
+    public void setGachaCurrentPlayerId(String gachaCurrentPlayerId) {
+        this.gachaCurrentPlayerId.set(gachaCurrentPlayerId);
+    }
+
+    public boolean isGachaListModel() {
+        return gachaListModel.get();
+    }
+
+    public SimpleBooleanProperty gachaListModelProperty() {
+        return gachaListModel;
+    }
+
+    public void setGachaListModel(boolean gachaListModel) {
+        this.gachaListModel.set(gachaListModel);
+    }
+
+    public void setStartUpParams(ObservableList<String> startUpParams) {
+        this.startUpParams = startUpParams;
     }
 }

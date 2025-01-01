@@ -71,11 +71,14 @@ public class AnalysisPoolViewModel implements ViewModel {
     private SimpleStringProperty ssrMaxText=new SimpleStringProperty();
     private SimpleStringProperty ssrEventAvgText=new SimpleStringProperty(); //限定平均抽数
 
-    private SimpleBooleanProperty ssrModel=new SimpleBooleanProperty(true);
+    private SimpleBooleanProperty ssrModel=new SimpleBooleanProperty();
+
 
     public AnalysisPoolViewModel() {
         baseSSRList = List.of(LanguageManager.getStringArray("ui.analysis.base_role"));
         gameRootDir.bindBidirectional(Config.setting.gameRootDirProperty());
+        player.bindBidirectional(Config.setting.gachaCurrentPlayerIdProperty());
+        ssrModel.bindBidirectional(Config.setting.gachaListModelProperty());
         loadFile();
     }
 
@@ -91,9 +94,13 @@ public class AnalysisPoolViewModel implements ViewModel {
                 playerList.setAll(directoryNames);
             }
 
-            if (!playerList.isEmpty()){
-                player.set(playerList.getLast());
+            if (getPlayer() != null && !playerList.isEmpty() && playerList.contains(getPlayer())) {
                 updatePlayer();
+            }else {
+                if (!playerList.isEmpty()){
+                    player.set(playerList.getLast());
+                    updatePlayer();
+                }
             }
         }
     }
@@ -109,9 +116,13 @@ public class AnalysisPoolViewModel implements ViewModel {
                 playerList.setAll(directoryNames);
             }
 
-            if (!playerList.isEmpty()){
-                player.set(playerId);
+            if (getPlayer() != null && !playerList.isEmpty() && playerList.contains(getPlayer())) {
                 updatePlayer();
+            }else {
+                if (!playerList.isEmpty()){
+                    player.set(playerList.getLast());
+                    updatePlayer();
+                }
             }
         }
     }
