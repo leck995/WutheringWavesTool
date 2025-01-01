@@ -75,9 +75,14 @@
                                     <FontIcon iconLiteral="mdmz-navigation" />
                                  </graphic>
                               </ToggleButton>
-                              <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="314.0" mnemonicParsing="false" onAction="#toUpdate" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type08" textOverrun="CLIP" toggleGroup="$navToggleGroup" visible="false">
+                              <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="314.0" mnemonicParsing="false" onAction="#toPlugin" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type13" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
-                                    <FontIcon iconLiteral="mdmz-move_to_inbox" />
+                                    <FontIcon iconLiteral="mdal-extension" />
+                                 </graphic>
+                              </ToggleButton>
+                              <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="314.0" mnemonicParsing="false" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type13" textOverrun="CLIP" toggleGroup="$navToggleGroup" visible="false">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdoal-extension" />
                                  </graphic>
                               </ToggleButton>
                               <Spacer VBox.vgrow="ALWAYS" />

@@ -2,6 +2,7 @@ package cn.tealc.wutheringwavestool.ui;
 
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.controls.ToggleSwitch;
+import atlantafx.base.theme.Styles;
 import cn.tealc.fxplugin.FxPlugin;
 import cn.tealc.fxplugin.model.FxPluginType;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
@@ -13,6 +14,7 @@ import cn.tealc.wutheringwavestool.plugin.FxPluginManager;
 import cn.tealc.wutheringwavestool.ui.component.PoolNameCell;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
+import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -220,11 +222,26 @@ public class AnalysisPoolView implements Initializable, FxmlView<AnalysisPoolVie
         }else { //不存在
             NotificationManager.message(MessageInfo.warning(LanguageManager.getString("ui.analysis.message.type07")));
         }
-
-
+    }
+    @FXML
+    void delete(ActionEvent event) {
+        JFXDialogLayout layout = new JFXDialogLayout();
+        Label title = new Label(LanguageManager.getString("ui.common.warning"));
+        title.setStyle(Styles.TITLE_2);
+        layout.setHeading(title);
+        Label tip=new Label(String.format(LanguageManager.getString("ui.analysis.delete.tip.content"),viewModel.getPlayer()));
+        layout.setBody(tip);
+        Button okBtn=new Button(LanguageManager.getString("ui.common.ok"));
+        Button cancelBtn=new Button(LanguageManager.getString("ui.common.cancel"));
+        okBtn.setOnAction(event1 -> {
+            viewModel.delete();
+            cancelBtn.fireEvent(event1);
+        });
+        cancelBtn.setCancelButton(true);
+        layout.setActions(okBtn,cancelBtn);
+        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,layout);
 
     }
-
 
     class SsrChildView extends StackPane {
         private ImageView iv=new ImageView();

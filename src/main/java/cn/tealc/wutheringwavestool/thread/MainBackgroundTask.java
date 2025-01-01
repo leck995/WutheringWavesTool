@@ -46,6 +46,7 @@ public class MainBackgroundTask extends Task<Background> {
                     .of(SwingFXUtils.fromFXImage(image,null))
                     .size(128,72)
                     .asBufferedImage();
+           // ImageIO.write(bufferedImage,"png",new File("bg/"+System.currentTimeMillis()+".png"));
         } catch (IOException e) {
             LOG.error("Error", e);
         }

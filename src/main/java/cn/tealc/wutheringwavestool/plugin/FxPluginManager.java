@@ -88,7 +88,7 @@ public class FxPluginManager {
      * @return
      */
     private Optional<FxPlugin> initPlugin(FxPluginConfig config){
-        File file = new File("plugins/"+config.getPath());
+        File file = new File("plugins/"+config.getJarPath());
         FxPluginLoader fxPluginLoader = new FxPluginLoader();
         try {
             Optional<FxPlugin> plugin = fxPluginLoader.loadPlugin(file.getAbsolutePath());
@@ -98,5 +98,9 @@ public class FxPluginManager {
             LOG.error("加载插件失败",e);
         }
         return Optional.empty();
+    }
+
+    public Map<Integer, FxPluginConfig> getPlugins() {
+        return plugins;
     }
 }

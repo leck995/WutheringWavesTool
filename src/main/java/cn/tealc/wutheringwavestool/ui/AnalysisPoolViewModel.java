@@ -2,6 +2,7 @@ package cn.tealc.wutheringwavestool.ui;
 
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.CardInfo;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.SourceType;
@@ -30,6 +31,7 @@ import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @program: WutheringWavesTool
@@ -43,8 +45,6 @@ public class AnalysisPoolViewModel implements ViewModel {
 
     private SimpleStringProperty gameRootDir = new SimpleStringProperty();
     private ObservableList<String> poolNameList= FXCollections.observableArrayList();
-
-
 
     private ObservableList<CardInfo> cardInfoList= FXCollections.observableArrayList();
     private ObservableList<PieChart.Data> pieChartData= FXCollections.observableArrayList();
@@ -83,8 +83,14 @@ public class AnalysisPoolViewModel implements ViewModel {
         //查看本地是否存有数据，有则加载
         File dataDir=new File("data");
         if (dataDir.exists()) {
-            String[] players = dataDir.list((dir, name) -> dir.isDirectory());
-            playerList.setAll(players);
+            File[] players = dataDir.listFiles(File::isDirectory);
+            if (players != null) {
+                List<String> directoryNames = Arrays.stream(players)
+                        .map(File::getName)
+                        .collect(Collectors.toList());
+                playerList.setAll(directoryNames);
+            }
+
             if (!playerList.isEmpty()){
                 player.set(playerList.getLast());
                 updatePlayer();
@@ -95,8 +101,14 @@ public class AnalysisPoolViewModel implements ViewModel {
         //查看本地是否存有数据，有则加载
         File dataDir=new File("data");
         if (dataDir.exists()) {
-            String[] players = dataDir.list((dir, name) -> dir.isDirectory());
-            playerList.setAll(players);
+            File[] players = dataDir.listFiles(File::isDirectory);
+            if (players != null) {
+                List<String> directoryNames = Arrays.stream(players)
+                        .map(File::getName)
+                        .collect(Collectors.toList());
+                playerList.setAll(directoryNames);
+            }
+
             if (!playerList.isEmpty()){
                 player.set(playerId);
                 updatePlayer();
@@ -130,6 +142,30 @@ public class AnalysisPoolViewModel implements ViewModel {
                     new MessageInfo(MessageType.WARNING,LanguageManager.getString("ui.analysis.message.type03")));
         }
     }
+
+
+    public boolean delete(){
+        File dataDir=new File("data/"+getPlayer());
+        if (dataDir.exists()) {
+            boolean isSuccess = FileIO.deleteDirectory(dataDir);
+            if (isSuccess){
+                playerList.remove(getPlayer());
+                if (!playerList.isEmpty()){
+                    player.set(playerList.getLast());
+                    updatePlayer();
+                }else {
+                    clearPoolDate();
+                }
+                NotificationManager.message(MessageInfo.success(LanguageManager.getString("ui.analysis.message.type08")));
+            }else {
+                NotificationManager.message(MessageInfo.error(LanguageManager.getString("ui.analysis.message.type09")));
+            }
+            return isSuccess;
+        }
+        return false;
+    }
+
+
 
 
     public void load() {
@@ -314,7 +350,26 @@ public class AnalysisPoolViewModel implements ViewModel {
         pieChartDataList.add(new PieChart.Data("R",analysis.getrCount()));
         pieChartData.setAll(pieChartDataList);
     }
-
+    private void clearPoolDate(){
+        totalText.set(null);
+        totalCostText.set(null);
+        currentText.set(null);
+        ssrText1.set(null);
+        ssrText2.set(null);
+        srText1.set(null);
+        srText2.set(null);
+        rText1.set(null);
+        rText2.set(null);
+        chartTitle.set(null);
+        ssrAvgText.set(null);
+        ssrMaxText.set(null);
+        ssrMinText.set(null);
+        ssrEventAvgText.set(null);
+        ssrList.clear();
+        pieChartData.clear();
+        poolNameList.clear();
+        analysisDataList.clear();
+    }
     private AnalysisData analysis(String name,List<CardInfo> cardInfoList){
         AnalysisData analysisData=new AnalysisData();
         analysisData.setTotalCount(cardInfoList.size());

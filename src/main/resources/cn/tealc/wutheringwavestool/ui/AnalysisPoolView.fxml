@@ -26,6 +26,7 @@
                <children>
                   <ComboBox fx:id="playerComboBox" prefWidth="150.0" />
                   <Button layoutX="180.0" layoutY="10.0" mnemonicParsing="false" onAction="#export" text="%ui.analysis.export" />
+                  <Button layoutX="252.0" layoutY="10.0" mnemonicParsing="false" onAction="#delete" styleClass="danger" text="%ui.analysis.delete" />
                   <Button layoutX="180.0" layoutY="10.0" mnemonicParsing="false" onAction="#fresh" styleClass="accent" text="%ui.analysis.account.refresh" />
                   <Button mnemonicParsing="false" onAction="#load" styleClass="success" text="%ui.analysis.account.get" />
                </children>

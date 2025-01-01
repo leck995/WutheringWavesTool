@@ -355,15 +355,15 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
 
     private void showExitDialog(){
         JFXDialogLayout dialogLayout = new JFXDialogLayout();
-        Label title = new Label("关闭提示");
+        Label title = new Label(LanguageManager.getString("ui.main.exit.header"));
         title.getStyleClass().add("title-2");
         dialogLayout.setHeading(title);
-        Label tip=new Label("确认退出吗？");
+        Label tip=new Label(LanguageManager.getString("ui.main.exit.body"));
         dialogLayout.setBody(tip);
 
-        Button exitBtn=new Button("退出");
-        Button iconBtn=new Button("隐藏至托盘");
-        Button cancelBtn=new Button("取消");
+        Button exitBtn=new Button(LanguageManager.getString("ui.main.exit.btn01"));
+        Button iconBtn=new Button(LanguageManager.getString("ui.main.exit.btn02"));
+        Button cancelBtn=new Button(LanguageManager.getString("ui.main.exit.btn03"));
 
         dialogLayout.setActions(iconBtn,exitBtn,cancelBtn);
         JFXDialog jfxDialog = new JFXDialog(root,dialogLayout,JFXDialog.DialogTransition.CENTER);
@@ -510,7 +510,18 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             toggleButton.setSelected(true);
         }
     }
-
+    @FXML
+    void toPlugin(ActionEvent event) {
+        ToggleButton toggleButton= (ToggleButton) event.getSource();
+        if (toggleButton.isSelected()){
+            ViewTuple<PluginView, PluginViewModel> viewTuple = FluentViewLoader.fxmlView(PluginView.class).load();
+            bgPane.setVisible(false);
+            child.getChildren().setAll(viewTuple.getView());
+            startNavAnim();
+        }else {
+            toggleButton.setSelected(true);
+        }
+    }
 
     @FXML
     void toSupport(ActionEvent event) {

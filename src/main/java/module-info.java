@@ -1,5 +1,10 @@
 open module cn.tealc.wutheringwavestool {
     requires javafx.fxml;
+    requires javafx.controls;
+    requires javafx.base;
+    requires javafx.graphics;
+    requires javafx.media;
+    requires javafx.swing;
     requires org.kordamp.ikonli.core;
     requires org.kordamp.ikonli.material2;
     requires org.kordamp.ikonli.javafx;
@@ -17,7 +22,6 @@ open module cn.tealc.wutheringwavestool {
     requires org.xerial.sqlitejdbc;
     requires com.sun.jna;
     requires filters;
-    requires javafx.swing;
     requires net.coobird.thumbnailator;
     requires com.github.kwhat.jnativehook;
     requires nfx.core;

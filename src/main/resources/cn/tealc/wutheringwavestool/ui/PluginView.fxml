@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane fx:id="root" styleClass="plugin" stylesheets="@../css/Plugin.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.PluginView">
+   <children>
+      <AnchorPane prefHeight="720.0" prefWidth="1280.0">
+         <children>
+            <Label styleClass="title-2" text="%ui.plugin.label.title" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
+            <ScrollPane fitToHeight="true" fitToWidth="true" layoutY="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
+               <content>
+                  <FlowPane fx:id="localPluginPane" hgap="20.0" prefHeight="200.0" prefWidth="200.0" vgap="10.0" />
+               </content>
+            </ScrollPane>
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>

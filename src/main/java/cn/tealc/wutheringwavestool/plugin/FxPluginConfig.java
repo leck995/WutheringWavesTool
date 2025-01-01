@@ -6,6 +6,7 @@ import cn.tealc.wutheringwavestool.base.Config;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.io.File;
 import java.util.Locale;
 import java.util.Map;
 
@@ -21,11 +22,14 @@ public class FxPluginConfig {
     private String author;
     private String version;
     private String icon; //图标,支持图片与ikonli,图片填写插件目录图片名称；ikonli则填写助手已使用的ikonli图标库的key
-    private String path; //jar的路径，plugins下的路径，例如wwt-pool-export/wwt-pool-export-1.0.jar,不能以/开头
+    private String path; //plugins下的路径，例如wwt-pool-export,不能以/开头
+    private String jarName; //jar的名字
+    private Level level;//插件等级，0为系统级插件，无法卸载，1为重要插件，不建议卸载。2为不重要插件
     private Map<Locale,FxPluginLanguage> languages;//国际化
     private FxPluginType pluginType; //插件类型
 
     /*以下无需填写*/
+    @JsonIgnore
     private boolean ready;//标志已加载
 
     @JsonIgnore
@@ -44,6 +48,14 @@ public class FxPluginConfig {
             return "Unknown";
         }
     }
+
+    public File getIconFile(){
+        return new File("plugins/"+path+"/"+icon);
+    }
+    public File getJarPath(){
+        return new File(path+"/"+jarName);
+    }
+
 
     public int getId() {
         return id;
@@ -107,5 +119,27 @@ public class FxPluginConfig {
 
     public void setLanguages(Map<Locale, FxPluginLanguage> languages) {
         this.languages = languages;
+    }
+
+    public String getJarName() {
+        return jarName;
+    }
+
+    public void setJarName(String jarName) {
+        this.jarName = jarName;
+    }
+
+    public Level getLevel() {
+        return level;
+    }
+
+    public void setLevel(Level level) {
+        this.level = level;
+    }
+
+    public enum Level{
+        SYSTEM,
+        IMPORTANT,
+        DEFAULT;
     }
 }

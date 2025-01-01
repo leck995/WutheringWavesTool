@@ -33,9 +33,12 @@ public class CreateJson {
         config.setLanguages(languageMap);
         config.setId(1001);
         config.setAuthor("leck");
-        config.setPath("wwt-pool-export/wwt-pool-export-1.0.jar");
+        config.setPath("wwt-pool-export");
         config.setVersion("1.0.0");
-        config.setPluginType(FxPluginType.VIEW);
+        config.setIcon("icon.png");
+        config.setJarName("wwt-pool-export-1.0.jar");
+        config.setLevel(FxPluginConfig.Level.IMPORTANT);
+        config.setPluginType(FxPluginType.DIALOG);
 
         ObjectMapper mapper = new ObjectMapper();
         mapper.writerWithDefaultPrettyPrinter().writeValue(new File("plugins/wwt-pool-export/config.json"), config);
