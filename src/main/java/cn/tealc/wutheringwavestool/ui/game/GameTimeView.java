@@ -30,7 +30,7 @@ public class GameTimeView implements FxmlView<GameTimeViewModel>, Initializable 
     @InjectViewModel
     private GameTimeViewModel viewModel;
     @FXML
-    private ComboBox<UserInfo> accountComboBox;
+    private ComboBox<String> accountComboBox;
 
     @FXML
     private Label allTotalTimeLabel;
@@ -76,7 +76,6 @@ public class GameTimeView implements FxmlView<GameTimeViewModel>, Initializable 
         if (!Config.setting.isNoKuJieQu()){
             accountComboBox.setItems(viewModel.getUserInfoList());
             accountComboBox.getSelectionModel().select(viewModel.getUserIndex());
-            viewModel.userIndexProperty().bind(accountComboBox.getSelectionModel().selectedIndexProperty());
         }else {
             accountComboBox.setVisible(false);
         }
@@ -90,11 +89,7 @@ public class GameTimeView implements FxmlView<GameTimeViewModel>, Initializable 
         //currentDayLabel.textProperty().bind(viewModel.currentDayTextProperty());
         currentProgress.progressProperty().bind(viewModel.currentProgressValueProperty());
         allTotalTimeLabel.textProperty().bind(viewModel.allTotalTimeTextProperty());
-
         totalProgress.progressProperty().bind(viewModel.totalProgressValueProperty());
-
-
-
-
+        accountComboBox.getSelectionModel().selectedIndexProperty().addListener((observableValue, number, t1) -> viewModel.updateIndex(t1.intValue()));
     }
 }

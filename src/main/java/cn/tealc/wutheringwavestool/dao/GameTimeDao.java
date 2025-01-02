@@ -3,9 +3,7 @@ package cn.tealc.wutheringwavestool.dao;
 
 import cn.tealc.wutheringwavestool.model.game.GameTime;
 import org.apache.commons.dbutils.*;
-import org.apache.commons.dbutils.handlers.BeanHandler;
-import org.apache.commons.dbutils.handlers.BeanListHandler;
-import org.apache.commons.dbutils.handlers.ScalarHandler;
+import org.apache.commons.dbutils.handlers.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +49,24 @@ public class GameTimeDao {
             return null;
         }
     }
+
+    /**
+     * description: 获取所有用户ID
+     *
+     * @return
+     */
+    public List<String> getAllRoleId() {
+        QueryRunner qr = new QueryRunner();
+        String sql = "SELECT DISTINCT role_id FROM game_time WHERE role_id IS NOT NULL";
+        try {
+            return qr.query(con, sql, new org.apache.commons.dbutils.handlers.ColumnListHandler<>("role_id"));
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(), e);
+            return null;
+        }
+    }
+
+
     public List<GameTime> getAllTime(){
         QueryRunner qr=new QueryRunner();
         String sql="SELECT * FROM game_time";

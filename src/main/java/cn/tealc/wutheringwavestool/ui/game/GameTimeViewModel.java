@@ -26,62 +26,61 @@ import java.util.*;
  */
 public class GameTimeViewModel implements ViewModel {
     private final ObservableList<XYChart.Series<String,Double>> chartData= FXCollections.observableArrayList();
-    //private SimpleStringProperty todayGameTimeText=new SimpleStringProperty();
-    private final ObservableList<UserInfo> userInfoList= FXCollections.observableArrayList();
+    private final ObservableList<String> userInfoList= FXCollections.observableArrayList();
     private final SimpleIntegerProperty userIndex = new SimpleIntegerProperty(-1);
-
     private final SimpleStringProperty allTotalTimeText=new SimpleStringProperty();
     private final SimpleStringProperty currentTotalTimeText=new SimpleStringProperty();
     private final SimpleStringProperty currentDayText=new SimpleStringProperty();
     private final SimpleStringProperty currentTimeText=new SimpleStringProperty();
     private final SimpleStringProperty currentUserName=new SimpleStringProperty();
     private final SimpleDoubleProperty currentProgressValue=new SimpleDoubleProperty();
-
     private final SimpleDoubleProperty totalProgressValue=new SimpleDoubleProperty();
-
-
-    //private final SimpleBooleanProperty noKuJieQu = new SimpleBooleanProperty(false);
-
     public GameTimeViewModel() {
+        GameTimeDao gameTimeDao = new GameTimeDao();
+        List<String> allRoleId = gameTimeDao.getAllRoleId();
+        userInfoList.addAll(allRoleId);
         if (!Config.setting.isNoKuJieQu()){
             UserInfoDao dao = new UserInfoDao();
-            List<UserInfo> userInfos = dao.getAll();
-            userInfoList.setAll(userInfos);
             UserInfo main = dao.getMain();
             if (main != null) {
+                boolean hasUser =false;
                 for (int i = 0; i < userInfoList.size(); i++) {
-                    if (Objects.equals(userInfoList.get(i).getId(), main.getId())) {
-                        userIndex.set(i);
+                    if (Objects.equals(userInfoList.get(i), main.getRoleId())) {
+                        updateIndex(i);
+                        hasUser = true;
                         break;
                     }
                 }
-                freshWithAccount();
+               if (!hasUser) {
+                   updateIndex(0);
+               }
             }
-
-            userIndex.addListener((observableValue, number, t1) -> {
-                if (t1 != null) {
-                    freshWithAccount();
-                }
-            });
         }else {
-            freshWithoutAccount();
+            if (!userInfoList.isEmpty()) {
+                updateIndex(0);
+            }
         }
-
-
-
-
     }
 
-
-
+    /**
+     * @description: 更新当前选择的用户
+     * @param:	index
+     * @return  void
+     * @date:   2025/1/2
+     */
+    public void updateIndex(int index){
+        userIndex.set(index);
+        freshWithAccount();
+    }
 
     /**
-     * @description: 使用库街区账号时
+     * @description: 更新用户数据
      * @param:
      * @return  void
      * @date:   2024/10/8
      */
     private void freshWithAccount() {
+        chartData.clear();
         GameTimeDao gameTimeDao = new GameTimeDao();
         //统计所有账号全部时长
         List<GameTime> gameTimeList = gameTimeDao.getAllTime();
@@ -89,8 +88,8 @@ public class GameTimeViewModel implements ViewModel {
         double totalTime = sunTime(allTimeMap);
         allTotalTimeText.set(String.format("%.2f", totalTime));
 
-        UserInfo userInfo = userInfoList.get(userIndex.get());
-        List<GameTime> timeListByRoleId = gameTimeDao.getTimeListByRoleId(userInfo.getRoleId());
+        String roleId = userInfoList.get(userIndex.get());
+        List<GameTime> timeListByRoleId = gameTimeDao.getTimeListByRoleId(roleId);
         Map<String, List<GameTime>> mainMap = getMap(timeListByRoleId);
 
         currentDayText.set(String.format(LanguageManager.getString("ui.game_time.account.days"), mainMap.keySet().size()));
@@ -102,40 +101,15 @@ public class GameTimeViewModel implements ViewModel {
         double currentTotalTime = sunTime(mainMap);
         currentTotalTimeText.set(String.format("%.2f", currentTotalTime));
 
-        currentUserName.set(userInfo.getRoleName());
 
-        totalProgressValue.set(currentTotalTime/totalTime);
+        UserInfoDao dao = new UserInfoDao();
+        UserInfo userInfo = dao.getUserByRoleId(roleId);
+        if (userInfo != null) {
+            currentUserName.set(userInfo.getRoleName());
+        }else {
+            currentUserName.set(roleId);
+        }
 
-        updateCurrentGameTime();
-    }
-
-
-    /**
-     * @description: 不使用库街区时
-     * @param:
-     * @return  void
-     * @date:   2024/10/8
-     */
-    private void freshWithoutAccount() {
-        GameTimeDao gameTimeDao = new GameTimeDao();
-        //统计所有账号全部时长
-        List<GameTime> gameTimeList = gameTimeDao.getAllTime();
-        Map<String, List<GameTime>> allTimeMap = getMap(gameTimeList);
-        double totalTime = sunTime(allTimeMap);
-        allTotalTimeText.set(String.format("%.2f", totalTime));
-
-
-
-        currentDayText.set(String.format(LanguageManager.getString("ui.game_time.account.days"), allTimeMap.keySet().size()));
-
-        Map<String, List<GameTime>> mapInWeek = getMapInWeek(gameTimeList);
-        //统计七日时长图表
-        updateChartDate(mapInWeek,LanguageManager.getString("ui.game_time.total.charts.title"));
-        //统计当前账号全部时长
-        double currentTotalTime = sunTime(allTimeMap);
-        currentTotalTimeText.set(String.format("%.2f", currentTotalTime));
-
-        currentUserName.set(LanguageManager.getString("ui.game_time.account.unknown"));
 
         totalProgressValue.set(currentTotalTime/totalTime);
 
@@ -151,8 +125,6 @@ public class GameTimeViewModel implements ViewModel {
      */
     private Map<String,List<GameTime>> getMapInWeek(List<GameTime> list){
         Map<String,List<GameTime>> map = new LinkedHashMap<>();
-
-
         for (int i = list.size() - 1; i >= 0; i--) {
             GameTime gameTime=list.get(i);
             String key=gameTime.getGameDate();
@@ -183,6 +155,7 @@ public class GameTimeViewModel implements ViewModel {
         }
         return map;
     }
+
     /**
      * @description: 更新图表
      * @param:	map
@@ -202,7 +175,6 @@ public class GameTimeViewModel implements ViewModel {
             series.getData().add(new XYChart.Data<>(key, minute));
         }
         FXCollections.reverse(series.getData());
-
         chartData.add(series);
     }
 
@@ -239,9 +211,7 @@ public class GameTimeViewModel implements ViewModel {
             long sum = list.stream().mapToLong(GameTime::getDuration).sum();
             int hour = (int) (sum / (1000 * 60 * 60));
             int minute = (int) ((sum % (1000 * 60 * 60)) / (1000 * 60));
-
             currentProgressValue.set(sum / (1000.0 * 60.0 * 60.0)/24.0);
-
             currentTimeText.set(String.format(LanguageManager.getString("ui.game_time.account.duration"),hour,minute));
         }
     }
@@ -306,7 +276,7 @@ public class GameTimeViewModel implements ViewModel {
         return totalProgressValue;
     }
 
-    public ObservableList<UserInfo> getUserInfoList() {
+    public ObservableList<String> getUserInfoList() {
         return userInfoList;
     }
 
