@@ -28,14 +28,13 @@ public class ApiUtil {
         byte[] key = Base64.getDecoder().decode(keyBase64);
         byte[] encryptedData = Base64.getDecoder().decode(value);
         SecretKeySpec secretKey = new SecretKeySpec(key, "AES");
-
             Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             byte[] decryptedData = cipher.doFinal(encryptedData);
             return new String(decryptedData, StandardCharsets.UTF_8);
         } catch (NoSuchAlgorithmException | InvalidKeyException | NoSuchPaddingException | IllegalBlockSizeException | IllegalArgumentException |
                  BadPaddingException e) {
-            LOG.debug("数据未加密，返回原内容{}",value);
+            LOG.debug("数据未加密，返回原内容");
             return value;
         }
     }
