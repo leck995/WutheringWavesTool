@@ -82,6 +82,20 @@ public class UpdateViewModel implements ViewModel {
      */
     private void startUpdate(){
         Thread thread = new Thread(() -> {
+            File batFile = new File("Update.exe");
+            ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c","start", "/b", "\"\"" ,batFile.getAbsolutePath());
+            try {
+                processBuilder.start();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        });
+        thread.start();
+    }
+
+/*
+    private void startUpdate(){
+        Thread thread = new Thread(() -> {
             LOG.debug("复制update.bat至项目目录");
             InputStream batInputStream = this.getClass().getResourceAsStream("/update.bat");
             assert batInputStream != null;
@@ -98,7 +112,7 @@ public class UpdateViewModel implements ViewModel {
             }
 
             LOG.debug("启动update.bat");
-            ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c","start" ,batFile.getAbsolutePath());
+            ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c","start", "/b", "\"\"" ,batFile.getAbsolutePath());
             try {
                 processBuilder.start();
             } catch (IOException e) {
@@ -107,7 +121,7 @@ public class UpdateViewModel implements ViewModel {
         });
         thread.start();
     }
-
+*/
 
     public void setSkipVersion(){
         Config.setting.setSkipVersion(release.getVersion());
