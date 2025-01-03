@@ -17,7 +17,7 @@
 
 鸣潮助手主打轻快简洁，解压即用，故以免安装压缩包发布，不提供安装版。
 
-前往 [Github发布页](https://github.com/leck995/WutheringWavesTool/releases)，下载最新的 WutheringWavesTool.zip，下载解压压缩包后，启动 **WutheringWavesTool.exe**
+前往 [Github发布页](https://github.com/leck995/WutheringWavesTool/releases)，下载最新的 WutheringWavesTool.zip，下载解压后，启动 **WutheringWavesTool.exe**
 
 *当然，你也可以通过使用  **App.exe**  启动助手，这是助手内置的第二种启动方式，但并不推荐，只有当WutheringWavesTool.exe启动有问题时，使用此方法启动*
 
@@ -134,6 +134,10 @@ WeGame暂时不支持直接通过助手启动，需要额外的操作，受限�
 #### 15. 使用助手启动游戏会导致卡顿
 
 助手会以官方默认DX方式(依电脑配置与启动程序而定)启动游戏，可以在高级启动中指定DX版本。
+
+#### 16. 助手使用库街区后，提示“账号失效需要重新登录”
+
+由于库街区的Token失效，重新在账号添加库街区账号即可。
 
 
 
