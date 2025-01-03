@@ -15,7 +15,7 @@ import java.util.ResourceBundle;
  * @create: 2024-07-03 00:37
  */
 public class Config {
-    public static final String version="1.2.0";
+    public static final String version="1.2.1";
 
     public static final String appAuthor="Leck";
     public static final String apiDecryptKey = "XSNLFgNCth8j8oJI3cNIdw==";

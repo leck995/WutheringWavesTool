@@ -1,7 +1,9 @@
 .game-record{
      -color-bg-default-90: #ffffff40;
  }
-
+.game-record .update-tip{
+    -fx-text-fill: -color-font-subtle;
+}
 .game-record .item{
     -fx-background-color: -color-bg-default-90;
     -fx-background-radius: 5;

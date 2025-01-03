@@ -42,7 +42,7 @@ set "targetDir=%baseDir%"
 rem ���ԴĿ¼�Ƿ����
 if exist "%sourceDir%" (
 rem �����ļ���Ŀ¼��������
-robocopy %sourceDir% %targetDir% /E /MOVE
+robocopy %sourceDir% %targetDir% /MOVE /E /V
 )
 
 if exist "%baseDir%update.zip" (

@@ -73,7 +73,6 @@ public class ResourcesSyncTask extends Task<String> {
                 resource_template = RESOURCE_TEMPLATE_1;
             }
         }
-
     }
 
 
