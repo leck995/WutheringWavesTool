@@ -56,13 +56,37 @@ public class GameRecordDao {
             return null;
         }
     }
-
+    /**
+     * description: 获取所有用户ID
+     *
+     * @return
+     */
+    public List<String> getAllRoleId() {
+        QueryRunner qr = new QueryRunner();
+        String sql = "SELECT DISTINCT role_id FROM game_record WHERE role_id IS NOT NULL";
+        try {
+            return qr.query(con, sql, new org.apache.commons.dbutils.handlers.ColumnListHandler<>("role_id"));
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(), e);
+            return null;
+        }
+    }
 
     public List<GameRecord> getRecordListByDate(String date){
         QueryRunner qr=new QueryRunner();
         String sql="SELECT * FROM game_record WHERE create_date=?";
         try {
             return qr.query(con,sql,new BeanListHandler<>(GameRecord.class,getRowProcessor()),date);
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(),e);
+            return null;
+        }
+    }
+    public List<GameRecord> getRecordListByRoleIdAndDate(String roleId,String date){
+        QueryRunner qr=new QueryRunner();
+        String sql="SELECT * FROM game_record WHERE  role_id=? and create_date=?";
+        try {
+            return qr.query(con,sql,new BeanListHandler<>(GameRecord.class,getRowProcessor()),roleId,date);
         } catch (SQLException e) {
             LOG.error(e.getMessage(),e);
             return null;

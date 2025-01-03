@@ -2,17 +2,21 @@ package cn.tealc.wutheringwavestool.ui.game;
 
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.dao.GameRecordDao;
+import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.game.GameRecord;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.Objects;
 
 
 /**
@@ -22,7 +26,8 @@ import java.util.Locale;
  * @create: 2024-11-16 22:44
  */
 public class GameRecordViewModel implements ViewModel {
-
+    private final ObservableList<String> roleIdList= FXCollections.observableArrayList();
+    private final SimpleIntegerProperty roleIdIndex= new SimpleIntegerProperty();
     private final SimpleIntegerProperty battle = new SimpleIntegerProperty();
     private final SimpleIntegerProperty paralysis = new SimpleIntegerProperty();
     private final SimpleIntegerProperty parry = new SimpleIntegerProperty();
@@ -45,35 +50,48 @@ public class GameRecordViewModel implements ViewModel {
 
     public GameRecordViewModel() {
         GameRecordDao recordDao = new GameRecordDao();
-        String today = getToday();
-
-        List<GameRecord> list = recordDao.getRecordListByDate(today);
-        updateTodayData(list);
-        List<GameRecord> allRecordList = recordDao.getAllRecordList();
-
-        updateTotalData(allRecordList);
-
-
-        //后续考虑进行区分
-  /*      if (Config.setting.getGameRootDirSource() == SourceType.GLOBAL){ //国际服
-            List<GameRecord> list = recordDao.getRecordListByDate(today);
-            updateTodayData(list);
-            List<GameRecord> allRecordList = recordDao.getAllRecordList();
-            updateTodayData(allRecordList);
-        }else { //国服
-            UserInfoDao userInfoDao = new UserInfoDao();
-            UserInfo main = userInfoDao.getMain();
+        List<String> roleIds = recordDao.getAllRoleId();
+        roleIdList.addAll(roleIds);
+        if (!Config.setting.isNoKuJieQu()){
+            UserInfoDao dao = new UserInfoDao();
+            UserInfo main = dao.getMain();
             if (main != null) {
-                GameRecord record = recordDao.getRecordByRoleIdAndDate(main.getRoleId(), today);
-                updateTodayData(List.of(record));
+                boolean hasUser =false;
+                for (int i = 0; i < roleIdList.size(); i++) {
+                    if (Objects.equals(roleIdList.get(i), main.getRoleId())) {
+                        updateIndex(i);
+                        hasUser = true;
+                        break;
+                    }
+                }
+                if (!hasUser) {
+                    updateIndex(0);
+                }
             }
-        }*/
-
-
-
-
-
+        }else {
+            if (!roleIdList.isEmpty()) {
+                updateIndex(0);
+            }
+        }
     }
+
+    /**
+     * @description: 更新当前选择的用户
+     * @param:	index
+     * @return  void
+     * @date:   2025/1/2
+     */
+    public void updateIndex(int index){
+        roleIdIndex.set(index);
+        GameRecordDao recordDao = new GameRecordDao();
+        String today = getToday();
+        String roleId = roleIdList.get(getRoleIdIndex());
+        List<GameRecord> list = recordDao.getRecordListByRoleIdAndDate(roleId,today);
+        updateTodayData(list);
+        List<GameRecord> allRecordList = recordDao.getRecordListByRoleId(roleId);
+        updateTotalData(allRecordList);
+    }
+
 
     private void updateTodayData(List<GameRecord> list) {
         roleChange.set(0);
@@ -344,5 +362,17 @@ public class GameRecordViewModel implements ViewModel {
 
     public void setTransfer(int transfer) {
         this.transfer.set(transfer);
+    }
+
+    public ObservableList<String> getRoleIdList() {
+        return roleIdList;
+    }
+
+    public int getRoleIdIndex() {
+        return roleIdIndex.get();
+    }
+
+    public SimpleIntegerProperty roleIdIndexProperty() {
+        return roleIdIndex;
     }
 }

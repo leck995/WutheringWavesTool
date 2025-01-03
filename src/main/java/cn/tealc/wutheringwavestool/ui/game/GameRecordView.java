@@ -4,6 +4,7 @@ import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 
 import java.net.URL;
@@ -19,6 +20,9 @@ public class GameRecordView implements FxmlView<GameRecordViewModel>, Initializa
 
     @InjectViewModel
     private GameRecordViewModel viewModel;
+
+    @FXML
+    private ComboBox<String> accountComboBox;
     @FXML
     private Label battle;
 
@@ -94,6 +98,11 @@ public class GameRecordView implements FxmlView<GameRecordViewModel>, Initializa
         totalTransfer.textProperty().bind(viewModel.totalTransferProperty().asString());
         totalParry.textProperty().bind(viewModel.totalParryProperty().asString());
         totalParryAttack.textProperty().bind(viewModel.totalParryAttackProperty().asString());
+
+
+        accountComboBox.setItems(viewModel.getRoleIdList());
+        accountComboBox.getSelectionModel().select(viewModel.getRoleIdIndex());
+        accountComboBox.getSelectionModel().selectedIndexProperty().addListener((observableValue, number, t1) -> viewModel.updateIndex(t1.intValue()));
 
 
     }
