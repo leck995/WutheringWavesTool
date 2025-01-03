@@ -27,6 +27,7 @@ import java.nio.file.StandardCopyOption;
 import java.time.Duration;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * @program: WutheringWavesTool
@@ -36,163 +37,163 @@ import java.util.Map;
  */
 public class ResourcesSyncTask extends Task<String> {
     private static final Logger LOG = LoggerFactory.getLogger(ResourcesSyncTask.class);
-    private static final String ROOT_RESOURCE_URL_1="https://raw.githubusercontent.com/leck995/WutheringWavesToolResources/main-24.10.22/data/Root_%s.json";
-    private static final String ROOT_RESOURCE_URL_2="https://gitee.com/tealc/WutheringWavesToolResources/raw/main-24.10.22/data/Root_%s.json";
-    private static final String RESOURCE_TEMPLATE_1="https://raw.githubusercontent.com/leck995/WutheringWavesToolResources/main-24.10.22/%s";
-    private static final String RESOURCE_TEMPLATE_2="https://gitee.com/tealc/WutheringWavesToolResources/raw/main-24.10.22/%s";
+    private static final String ROOT_RESOURCE_URL_1 = "https://raw.githubusercontent.com/leck995/WutheringWavesToolResources/main-24.10.22/data/Root_%s.json";
+    private static final String ROOT_RESOURCE_URL_2 = "https://gitee.com/tealc/WutheringWavesToolResources/raw/main-24.10.22/data/Root_%s.json";
+    private static final String RESOURCE_TEMPLATE_1 = "https://raw.githubusercontent.com/leck995/WutheringWavesToolResources/main-24.10.22/%s";
+    private static final String RESOURCE_TEMPLATE_2 = "https://gitee.com/tealc/WutheringWavesToolResources/raw/main-24.10.22/%s";
 
 
-    private static final String LOCAL_ROOT_JSON="assets/data/Root_%s.json";
+    private static final String LOCAL_ROOT_JSON = "assets/data/Root_%s.json";
     private final String url;
     private final String resource_template;
     private final ObjectMapper mapper = new ObjectMapper();
 
-    private  int filesSize = 0;
+    private int filesSize = 0;
 
     public ResourcesSyncTask() {
         Locale locale = Config.setting.getLanguage();
         String language = null;
 
-        if (locale.getLanguage().equals("zh")){
-            if (locale.getCountry().equals("CN")){
+        if (locale.getLanguage().equals("zh")) {
+            if (locale.getCountry().equals("CN")) {
                 language = locale.toString();
-            }else{
+            } else {
                 language = Locale.SIMPLIFIED_CHINESE.toString();
             }
-        }else {
+        } else {
             language = Locale.ENGLISH.toString();
         }
 
-        switch (Config.setting.getResourceSource()){
-            case 1 -> {
-                url =  String.format(ROOT_RESOURCE_URL_2,language);
-                resource_template = RESOURCE_TEMPLATE_2;
-            }
-            default ->  {
-                url =  String.format(ROOT_RESOURCE_URL_1,language);
-                resource_template = RESOURCE_TEMPLATE_1;
-            }
+        if (Config.setting.getResourceSource() == 1) {
+            url = String.format(ROOT_RESOURCE_URL_2, language);
+            resource_template = RESOURCE_TEMPLATE_2;
+        } else {
+            url = String.format(ROOT_RESOURCE_URL_1, language);
+            resource_template = RESOURCE_TEMPLATE_1;
         }
     }
 
-
-    /**
-     * @description:
-     * @param:
-     * @return  void
-     * @date:   2024/10/6
-     */
-    private synchronized void minusFileSize() {
-        filesSize--;
-        if (filesSize == 0) {
-            updateMessage("success");
-        }
-    }
 
     @Override
-    protected String call(){
+    protected String call() {
+        String row = readJsonFile(url);
+        if (row == null) {
+            updateMessage("error");
+            return null;
+        }
         try {
-            String row = readJsonFile(url);
-            if (row == null){
-                updateMessage("error");
-                return null;
-            }
             RootResource remoteResource = mapper.readValue(row, RootResource.class);
             if (remoteResource != null) {
-                File localFile= new File(String.format(LOCAL_ROOT_JSON,Config.setting.getLanguage()));
-                if (localFile.exists()){
+                File localFile = new File(String.format(LOCAL_ROOT_JSON, Config.setting.getLanguage()));
+                if (localFile.exists()) {
                     RootResource localResources = mapper.readValue(localFile, RootResource.class);
                     if (localResources != null) {
-                        if (localResources.getVersion().equals(remoteResource.getVersion())){
-                            LOG.debug("远程仓库无更新");
+                        if (localResources.getVersion().equals(remoteResource.getVersion())) {
+                            LOG.debug("资源更新：远程仓库无更新");
                             return null;
-                        }else {
+                        } else {
                             updateMessage("start");
                             updateDateFile(remoteResource);
-                            downloadFile(url,localFile.getPath());
+                            downloadFile(url, localFile.getPath());
                         }
                     }
-                }else {
+                } else {
                     updateMessage("start");
                     updateDateFile(remoteResource);
-                    downloadFile(url,localFile.getPath());
+                    downloadFile(url, localFile.getPath());
+                    updateMessage("success");
                 }
-            }else {
-                LOG.warn("获取资源文件更新失败");
+            } else {
+                LOG.warn("资源更新：获取资源文件更新失败");
             }
         } catch (IOException e) {
-            LOG.error("错误",e);
+            LOG.error("资源更新：错误", e);
         }
-
-        LOG.debug("同步结束");
-        //updateMessage("更新资源完成");
-        return "";
+        LOG.debug("资源更新：同步结束");
+        return "资源同步完成";
     }
 
 
-    private void updateDateFile(RootResource remoteResource){
+
+
+
+
+
+    private void updateDateFile(RootResource remoteResource) {
         filesSize = remoteResource.getResources().size();
+        CountDownLatch latch = new CountDownLatch(remoteResource.getResources().size()); // 等待任务完成
         for (Resource resource : remoteResource.getResources().values()) {
-            Thread.startVirtualThread(()->{
+            Thread.startVirtualThread(() -> {
                 boolean same = checkLocalFile(resource);
                 if (!same) {
-                    LOG.info("================{} 的MD5与本地不同================",resource.getName());
+                    LOG.info("资源更新：{}有新的更新内容，准备下载", resource.getName());
                     try {
                         String url = String.format(resource_template, resource.getFilePath());
                         String row = readJsonFile(url);
-                        if (row != null){
+                        if (row != null) {
                             Map<String, Resource> map = mapper.readValue(row, new TypeReference<Map<String, Resource>>() {
                             });
                             for (Resource value : map.values()) {
                                 boolean checked = checkLocalFile(value);
                                 if (!checked) {
-                                    LOG.info("{} 下的 {} 的MD5与本地不同",resource.getName(),value.getName());
+                                    LOG.debug("资源更新：{} 下的 {} 的MD5与本地不同", resource.getName(), value.getName());
                                     String fileUrl = String.format(resource_template, value.getFilePath());
-                                    downloadFile(fileUrl,value.getAimPath());
+                                    downloadFile(fileUrl, value.getAimPath());
                                     Thread.sleep(50);
                                 }
                             }
                             String fileUrl = String.format(resource_template, resource.getFilePath());
-                            LOG.debug("子项更新完毕，开始更新JSON {}",resource.getName());
-                            downloadFile(fileUrl,resource.getAimPath());
-                        }else {
-                            LOG.warn("分类JSON {} 无法下载",resource.getName());
+                            LOG.debug("资源更新：子项更新完毕，开始更新JSON {}", resource.getName());
+                            downloadFile(fileUrl, resource.getAimPath());
+                        } else {
+                            LOG.warn("资源更新：分类JSON {} 无法下载", resource.getName());
                         }
                     } catch (IOException | InterruptedException e) {
-                        LOG.error("ERROR",e);
+                        LOG.error("ERROR", e);
                     }
+                }else {
+                    LOG.info("资源更新：{}没有新的更新内容跳过",resource.getName());
                 }
-                minusFileSize();
+                latch.countDown();
             });
         }
 
+        try {
+            latch.await(); // 等待所有任务完成
+        } catch (InterruptedException e) {
+            LOG.error("资源更新：更新下载线程执行失败", e);
+        }
     }
 
 
     /**
+     * @return boolean
      * @description: 检查MD5是否一致
-     * @param:	resource
-     * @return  boolean
-     * @date:   2024/10/6
+     * @param: resource
+     * @date: 2024/10/6
      */
-    private boolean checkLocalFile(Resource resource){
+    private boolean checkLocalFile(Resource resource) {
         File local = new File(resource.getAimPath());
         if (local.exists()) {
-            try {
-                FileInputStream fileInputStream = new FileInputStream(local);
+            try (FileInputStream fileInputStream = new FileInputStream(local)){
                 String md5Hex = DigestUtils.md5Hex(fileInputStream);
-                LOG.debug("远程MD5:{},本地{}",resource.getMd5(),md5Hex);
                 fileInputStream.close();
                 return md5Hex.equals(resource.getMd5());
-            }catch (Exception e){
+            } catch (Exception e) {
                 LOG.error(e.getMessage());
-                return false;
             }
         }
         return false;
     }
 
 
+    /**
+     * @description: 下载指定url的文件
+     * @param:	fileUrl	下载url
+     * @param:	savePath	保存位置
+     * @return  void
+     * @date:   2025/1/3
+     */
     public void downloadFile(String fileUrl, String savePath) {
         System.out.println(fileUrl);
         HttpClient client = HttpClient.newHttpClient();
@@ -211,11 +212,18 @@ public class ResourcesSyncTask extends Task<String> {
             }
             Files.copy(response.body(), outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             String md5Hex = DigestUtils.md5Hex(new FileInputStream(outputFile));
-            LOG.info("文件已下载并保存到:{},当前MD5：{}" ,savePath,md5Hex);
+            LOG.debug("资源更新：文件已下载并保存到:{},当前MD5：{}", savePath, md5Hex);
         } catch (IOException | InterruptedException e) {
-            LOG.error("downloadFile ERROR",e);
+            LOG.error("资源更新：", e);
         }
     }
+
+    /**
+     * description: 对于保存下载文件具体信息的json进行访问读取，转为String进行处理
+     *
+     * @param fileUrl 保存下载文件具体信息的json
+     * @return
+     */
     public String readJsonFile(String fileUrl) {
         System.out.println(fileUrl);
         HttpClient client = HttpClient.newHttpClient();
@@ -227,14 +235,13 @@ public class ResourcesSyncTask extends Task<String> {
                 .build();
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
             if (response.statusCode() == 200) {
                 return response.body();
-            }else {
+            } else {
                 return null;
             }
         } catch (IOException | InterruptedException e) {
-            LOG.error("readJsonFile ERROR",e);
+            LOG.error("资源更新：读取网络JSON失败", e);
         }
         return null;
     }
