@@ -73,13 +73,6 @@ public class GameTimeView implements FxmlView<GameTimeViewModel>, Initializable 
             headImageView.setImage(new Image(FXResourcesLoader.load("image/icon.png"),80,80,true,true,true));
         }
 
-        if (!Config.setting.isNoKuJieQu()){
-            accountComboBox.setItems(viewModel.getUserInfoList());
-            accountComboBox.getSelectionModel().select(viewModel.getUserIndex());
-        }else {
-            accountComboBox.setVisible(false);
-        }
-
 
         lineChart.setData(viewModel.getChartData());
         currentDayLabel.textProperty().bind(viewModel.currentDayTextProperty());
@@ -90,6 +83,8 @@ public class GameTimeView implements FxmlView<GameTimeViewModel>, Initializable 
         currentProgress.progressProperty().bind(viewModel.currentProgressValueProperty());
         allTotalTimeLabel.textProperty().bind(viewModel.allTotalTimeTextProperty());
         totalProgress.progressProperty().bind(viewModel.totalProgressValueProperty());
+        accountComboBox.setItems(viewModel.getUserInfoList());
+        accountComboBox.getSelectionModel().select(viewModel.getUserIndex());
         accountComboBox.getSelectionModel().selectedIndexProperty().addListener((observableValue, number, t1) -> viewModel.updateIndex(t1.intValue()));
     }
 }
