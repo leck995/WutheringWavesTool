@@ -91,8 +91,13 @@ public class FxPluginManager {
         File file = new File("plugins/"+config.getJarPath());
         FxPluginLoader fxPluginLoader = new FxPluginLoader();
         try {
+            LOG.info("准备加载插件： {}",config.getTitle());
             Optional<FxPlugin> plugin = fxPluginLoader.loadPlugin(file.getAbsolutePath());
-            LOG.info("成功加载插件： {}",config.getTitle());
+            if (plugin.isPresent()) {
+                LOG.info("成功加载插件： {}",config.getTitle());
+            }else {
+                LOG.info("加载插件失败： {}",config.getTitle());
+            }
             return plugin;
         } catch (Exception e) {
             LOG.error("加载插件失败",e);

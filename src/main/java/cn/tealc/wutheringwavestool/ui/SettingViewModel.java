@@ -3,11 +3,13 @@ package cn.tealc.wutheringwavestool.ui;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.release.Release;
+import cn.tealc.wutheringwavestool.thread.CheckGameConfigTask;
 import cn.tealc.wutheringwavestool.thread.CheckVersionTask;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
@@ -108,8 +110,27 @@ public class SettingViewModel implements ViewModel ,SceneLifecycle {
 
     @Override
     public void onViewRemoved() {
+        checkGameLogOpen();
         Config.save();
     }
+
+
+    /**
+     * description: 检测游戏日志是否被关闭
+     */
+    private void checkGameLogOpen(){
+        CheckGameConfigTask task = new CheckGameConfigTask();
+        task.setOnSucceeded(workerStateEvent -> {
+            Boolean value = task.getValue();
+            if (!value){ //游戏日志可能被关闭了
+                Platform.runLater(()->{
+                    NotificationManager.message(MessageInfo.success(LanguageManager.getString("ui.main.sync.message.log.close")));
+                });
+            }
+        });
+        Thread.startVirtualThread(task);
+    }
+
 
     public void setFontFamily(String fontFamily) {
         MainApplication.window.getScene().getRoot().setStyle("-fx-font-family: \"" + fontFamily+"\"");

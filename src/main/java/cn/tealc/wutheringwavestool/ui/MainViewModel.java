@@ -2,9 +2,11 @@ package cn.tealc.wutheringwavestool.ui;
 
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.release.Release;
+import cn.tealc.wutheringwavestool.thread.CheckGameConfigTask;
 import cn.tealc.wutheringwavestool.thread.GameLogFileAnalysisTask;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.model.towerData.DifficultyTotal;
@@ -26,6 +28,7 @@ import javafx.application.Platform;
 public class MainViewModel implements ViewModel {
     public MainViewModel() {
         checkVersion();
+        checkGameLogOpen();
         updateKujiequ();
     }
 
@@ -51,6 +54,18 @@ public class MainViewModel implements ViewModel {
     }
 
 
+    private void checkGameLogOpen(){
+        CheckGameConfigTask task = new CheckGameConfigTask();
+        task.setOnSucceeded(workerStateEvent -> {
+            Boolean value = task.getValue();
+            if (!value){ //游戏日志可能被关闭了
+                Platform.runLater(()->{
+                    NotificationManager.message(MessageInfo.success(LanguageManager.getString("ui.main.sync.message.log.close")));
+                });
+            }
+        });
+        Thread.startVirtualThread(task);
+    }
 
     private void updateKujiequ(){
         if (!Config.setting.isNoKuJieQu()){

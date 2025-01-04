@@ -238,6 +238,7 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
                 case "wegame" -> {
                     viewModel.setGameRootDirSource(SourceType.WE_GAME);
                     noKuJieQuSwitch.setSelected(false);
+                    NotificationManager.message(new MessageInfo(MessageType.WARNING,"WeGame暂时无法直接启动，需要替换文件，具体请前往设置加群获取教程",Duration.seconds(5)));
                 }
                 case "global" -> {
                     viewModel.setGameRootDirSource(SourceType.GLOBAL);
