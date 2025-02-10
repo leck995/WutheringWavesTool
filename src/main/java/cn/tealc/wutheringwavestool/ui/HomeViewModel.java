@@ -141,7 +141,7 @@ public class HomeViewModel implements ViewModel {
      */
     public void updateRoleData() {
         if (Config.setting.isNoKuJieQu()){
-            hasSign.set(false);
+            hasSign.set(true);
             return;
         }
 
@@ -335,7 +335,7 @@ public class HomeViewModel implements ViewModel {
                         }
                         runExeByCustom(newArray);
                     }else {
-                        runExeByCustom(exe.getAbsolutePath());
+                        runExe(exe);
                     }
                     //runExeByCustom(exe.getAbsolutePath(),"-dx11","-SkipSplash");
                 }else { //默认启动
@@ -373,19 +373,21 @@ public class HomeViewModel implements ViewModel {
      */
     private void runExeByCustom(String... params) {
         Thread.startVirtualThread(()->{
-            String[] command2 = {"cmd.exe", "/c", "start", "/b", "\"\""}; //权限不够，提权
+            String[] command2 = {"cmd.exe", "/c", "start", "\"\""}; //权限不够，提权
             String[] mergedArray = Stream.concat(Stream.of(command2), Stream.of(params))
                     .toArray(String[]::new);
             ProcessBuilder processBuilder = new ProcessBuilder(mergedArray);
-            //设置工作目录，适配wwmi
-            File file = new File(params[0]);
-            if (file.exists()) {
-                File workingDirectory = file.getParentFile();
-                if (workingDirectory.exists()) {
-                    processBuilder.directory(workingDirectory);
+            String path = params[0];
+            if (path.contains("WWMI Loader.exe")){
+                //设置工作目录，适配wwmi
+                File file = new File(path);
+                if (file.exists()) {
+                    File workingDirectory = file.getParentFile();
+                    if (workingDirectory.exists()) {
+                        processBuilder.directory(workingDirectory);
+                    }
                 }
             }
-
             try {
                 processBuilder.start();
             } catch (IOException e) {

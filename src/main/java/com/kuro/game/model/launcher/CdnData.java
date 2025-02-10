@@ -1,4 +1,4 @@
-package com.kuro.game.model;
+package com.kuro.game.model.launcher;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

@@ -1,4 +1,4 @@
-package com.kuro.game.model;
+package com.kuro.game.model.launcher;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -16,8 +16,9 @@ public class UpdateData {
     private List<CdnData> cdnList; //cdn
     private String resources; //resource.json地址
     private String resourcesBasePath; //下载地址前缀
+    public ResourceChunk resourceChunk;
+    public ResourcesDiff resourcesDiff;
     private String version; //资源版本
-
 
     /**
      * @description:

@@ -49,8 +49,10 @@ open module cn.tealc.wutheringwavestool {
     exports com.kuro.kujiequ.model.sign to com.fasterxml.jackson.databind, WutheringWavesTool, WutheringWavesTool_test;
     exports com.kuro.kujiequ.model.roleData.weight;
     exports com.kuro.kujiequ.thread;
-    exports com.kuro.game.model;
+
     exports com.kuro.kujiequ;
+    exports com.kuro.game.model.game;
+    exports com.kuro.game.model.launcher;
 
 
 }
