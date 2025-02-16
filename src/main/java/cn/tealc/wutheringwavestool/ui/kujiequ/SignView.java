@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ;
 
 import atlantafx.base.controls.ToggleSwitch;
+import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.Config;
 import com.kuro.kujiequ.model.sign.SignGood;
 import com.kuro.kujiequ.model.sign.SignRecord;
@@ -16,10 +17,12 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.scene.text.Font;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -84,24 +87,26 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
     }
 
     public Pane createGoodCell(SignGood signGood) {
-        ImageView imageView=new ImageView();
-        imageView.setFitHeight(60);
-        imageView.setFitWidth(60);
-        Label name=new Label("已签");
+        System.out.println(Font.getDefault().getSize());
+        ImageView goodIv=new ImageView();
+
+        ImageView signedIv= new ImageView(new Image(FXResourcesLoader.load("image/signed.png"),20,20,true,true));
         Label num=new Label();
         Label index=new Label();
-        name.getStyleClass().add("name");
-        index.getStyleClass().add("index");
-        num.getStyleClass().add("num");
-        name.setVisible(signGood.getSign());
-        imageView.setImage(LocalResourcesManager.imageBuffer(signGood.getGoodsUrl(),60,60,true,true));
+
+        signedIv.setVisible(signGood.getSign());
+        goodIv.setImage(LocalResourcesManager.imageBuffer(signGood.getGoodsUrl(),60,60,true,true));
         num.setText(String.format("x%d",signGood.getGoodsNum()));
         index.setText(String.format("%02d",signGood.getSerialNum()+1));
-        StackPane stackPane=new StackPane(imageView,num,index,name);
+        StackPane stackPane=new StackPane(goodIv,num,index,signedIv);
+        StackPane.setAlignment(signedIv,Pos.TOP_RIGHT);
         StackPane.setAlignment(num, Pos.BOTTOM_RIGHT);
         StackPane.setAlignment(index, Pos.TOP_LEFT);
-        stackPane.setPrefSize(70,90);
-        stackPane.setPadding(new Insets(3));
+
+        index.getStyleClass().add("index");
+        num.getStyleClass().add("num");
+        goodIv.getStyleClass().add("pic");
+        signedIv.getStyleClass().add("signed-pic");
         stackPane.getStyleClass().add("goods");
         return stackPane;
     }

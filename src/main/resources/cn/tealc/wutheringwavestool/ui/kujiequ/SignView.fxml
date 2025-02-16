@@ -28,7 +28,7 @@
             <Button mnemonicParsing="false" onAction="#sign" styleClass="accent" text="签到" />
          </children>
       </HBox>
-      <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="200.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="280.0" AnchorPane.topAnchor="50.0">
+      <ScrollPane fitToHeight="true" fitToWidth="true" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="100.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="280.0" AnchorPane.topAnchor="50.0">
          <content>
             <FlowPane fx:id="goodsView" hgap="8.0" prefHeight="200.0" prefWidth="200.0" vgap="8.0">
                <padding>
@@ -37,8 +37,8 @@
             </FlowPane>
          </content>
       </ScrollPane>
-      <TextArea fx:id="logArea" editable="false" prefHeight="120.0" prefWidth="200.0" styleClass="log" AnchorPane.bottomAnchor="60.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="280.0" />
-      <VBox alignment="CENTER" layoutX="790.0" layoutY="120.0" spacing="5.0" styleClass="history" AnchorPane.bottomAnchor="100.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="100.0">
+      <TextArea fx:id="logArea" editable="false" prefHeight="85.0" prefWidth="200.0" styleClass="log" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="280.0" />
+      <VBox alignment="CENTER" layoutX="790.0" layoutY="120.0" spacing="5.0" styleClass="history" AnchorPane.bottomAnchor="100.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0">
          <children>
             <Label styleClass="title-4" text="签到统计" />
             <ListView fx:id="signHistoryListView" prefHeight="200.0" prefWidth="160.0" VBox.vgrow="ALWAYS" />
