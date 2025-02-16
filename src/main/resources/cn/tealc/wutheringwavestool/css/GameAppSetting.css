@@ -1,7 +1,4 @@
 .game-setting{
-    -color-bg-default-60: #ffffff60;
-    -color-bg-default-40: #ffffff40;
-    -color-bg-default-30: #ffffff30;
 }
 
 .game-setting .scroll-bar{
@@ -10,7 +7,7 @@
 }
 .game-setting .scroll-bar:vertical .thumb{
     -fx-background-color: transparent;
-    -fx-background-insets: 1;
+    -fx-background-insets: 0.071em; /* 1px */
 }
 .game-setting:hover .scroll-bar:vertical .thumb{
     -fx-background-color: -color-bg-default-60;
@@ -18,9 +15,9 @@
 
 
 .game-setting .tip{
-    -fx-font-size: 12;
+    -fx-font-size: 0.857em; /* 12px */
     -fx-text-fill: -color-font-muted;
-    -fx-padding: 0 0 10 0;
+    -fx-padding: 0 0 0.714em 0; /* 10px */
 }
 .game-setting .left{
 
@@ -32,11 +29,11 @@
 
 
 .game-setting .left .title-3{
-    -fx-padding: 25 0 5 0;
+    -fx-padding: 1.786em 0 0.357em 0; /* 25px 0 5px 0 */
 }
 
 .game-setting .left  .title-3{
-    -fx-padding: 25 0 5 0;
+    -fx-padding: 1.786em 0 0.357em 0; /* 25px 0 5px 0 */
 }
 .game-setting .left  .title-4 {
     -fx-font-size: 1.05em;
@@ -44,20 +41,20 @@
 }
 
 .game-setting .left .input-group{
-    -fx-background-radius: 20;
-    -fx-padding: 5 10 5 10;
+    -fx-background-radius: 1.429em; /* 20px */
+    -fx-padding: 0.357em 0.714em 0.357em 0.714em; /* 5px 10px */
     -fx-background-color: -color-bg-default-60;
 }
 .game-setting .left .input-group >.text-field{
     -fx-background-color: transparent;
-    -fx-padding: 0 40 0 0;
+    -fx-padding: 0 2.85em 0 0; /* 0 40px 0 0 */
 }
 .game-setting .left .input-group:hover{
     -fx-background-color: -color-bg-default-90;
 }
 .game-setting .left .input-group > .button{
     -fx-background-color: transparent;
-    -fx-padding: 5;
+    -fx-padding: 0.35em; /* 5px */
 }
 .game-setting .left .input-group > .button:hover .ikonli-font-icon{
     -fx-icon-color: -color-accent-emphasis;
@@ -65,11 +62,11 @@
 
 .game-setting .left .param-list-view{
     -fx-background-color: -color-bg-default-40;
-    -fx-background-radius: 8;
+    -fx-background-radius: 0.57em; /* 8px */
     -fx-border-color: transparent;
 }
 .game-setting .left .param-list-view .list-cell{
-    -fx-padding: 2,2,2,0;
+    -fx-padding: 0.14em 0.14em 0.14em 0; /* 2px */
 }
 .game-setting .left .param-list-view .list-cell,
 .game-setting .left .param-list-view .list-cell:selected{
@@ -98,14 +95,11 @@
 }
 .game-setting .left .param-list-view .scroll-bar:vertical .thumb{
     -fx-background-color: transparent;
-    -fx-background-insets: 1;
+    -fx-background-insets: 0.071em; /* 1px */
 }
 .game-setting .left .param-list-view:hover .scroll-bar:vertical .thumb{
     -fx-background-color: -color-bg-default-30;
 }
-
-
-
 
 .game-setting .right{
 
@@ -113,5 +107,3 @@
 .game-setting .right .func-btn{
     -fx-background-color: -color-bg-default-60;
 }
-
-
