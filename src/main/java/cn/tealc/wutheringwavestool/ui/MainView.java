@@ -35,12 +35,16 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
@@ -114,35 +118,11 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
 
     @FXML
     private HBox titlebar;
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
-
- /*       FontIcon fontIcon;
-        if (Config.setting.isTheme()){
-            fontIcon = new FontIcon(Material2AL.BEDTIME);
-        }else {
-            fontIcon = new FontIcon(Material2MZ.WB_SUNNY);
-        }
-
-
-        ToggleButton skinBtn=new ToggleButton(null,fontIcon);
-        skinBtn.selectedProperty().bindBidirectional(Config.setting.themeProperty());
-        skinBtn.setOnAction(event -> {
-            if (skinBtn.isSelected()) {
-                fontIcon.setIconCode(Material2AL.BEDTIME);
-                Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
-            }else {
-                fontIcon.setIconCode(Material2MZ.WB_SUNNY);
-                Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());
-            }
-        });*/
-
         Circle circle=new Circle(18,18,18);
         icon.setClip(circle);
         icon.setImage(new Image(FXResourcesLoader.load("image/icon.png"),45,45,true,true));
-
 
         //禁用库街区，系统语言为英文也会默认禁用库街区
         if (Config.setting.isNoKuJieQu()){
@@ -156,7 +136,6 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
                 }
             }
         }
-
 
         navBtn.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
             if (!t1){
@@ -184,10 +163,6 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
 
         supportBtn.visibleProperty().bind(Config.setting.supportProperty().not());
 
-
-
-
-
         if (Config.setting.isFirstViewWithPoolAnalysis()){
             ViewTuple<AnalysisPoolView, AnalysisPoolViewModel> viewTuple = FluentViewLoader.fxmlView(AnalysisPoolView.class).load();
             child.getChildren().setAll(viewTuple.getView());
@@ -207,6 +182,19 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         bgPane.setClip(rectangle);
         bgPane02.visibleProperty().bind(bgPane.visibleProperty().not());
         bgPane03.visibleProperty().bind(bgPane.visibleProperty().not());
+
+
+        // 创建亚克力效果层
+        Rectangle acrylicLayer = new Rectangle();
+        acrylicLayer.widthProperty().bind(bgPane02.widthProperty());
+        acrylicLayer.heightProperty().bind(bgPane02.heightProperty());
+        acrylicLayer.setFill(Color.rgb(247, 249, 253, 0.5));// 半透明白色基底
+        // 添加噪点纹理（可选）
+        Rectangle noiseTexture = new Rectangle();
+        noiseTexture.setFill(Color.rgb(0, 0, 0, 0.03)); // 黑色噪点
+        noiseTexture.widthProperty().bind(bgPane02.widthProperty());
+        noiseTexture.heightProperty().bind(bgPane02.heightProperty());
+        bgPane02.getChildren().addAll(acrylicLayer, noiseTexture);
 
         updateBg();
 
@@ -258,11 +246,12 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
                                     BackgroundRepeat.NO_REPEAT,
                                     BackgroundPosition.CENTER,
                                     new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, true, true))));
-
+           // bgPane02.setBackground(bgPane.getBackground());
             //bgPane02用于显示高斯模糊的背景
             MainBackgroundTask task = new MainBackgroundTask(image);
             task.setOnSucceeded(workerStateEvent -> {
                 bgPane02.setBackground(task.getValue());
+
             });
             Thread.startVirtualThread(task);
         }
@@ -438,6 +427,19 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
             ViewTuple<SettingView,SettingViewModel> viewTuple = FluentViewLoader.fxmlView(SettingView.class).load();
+            bgPane.setVisible(false);
+            child.getChildren().setAll(viewTuple.getView());
+            startNavAnim();
+        }else {
+            toggleButton.setSelected(true);
+        }
+    }
+
+    @FXML
+    void toGameManager(ActionEvent event) {
+        ToggleButton toggleButton= (ToggleButton) event.getSource();
+        if (toggleButton.isSelected()){
+            ViewTuple<GameManagerView,GameManagerViewModel> viewTuple = FluentViewLoader.fxmlView(GameManagerView.class).load();
             bgPane.setVisible(false);
             child.getChildren().setAll(viewTuple.getView());
             startNavAnim();
