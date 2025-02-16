@@ -18,14 +18,14 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<StackPane fx:id="root" styleClass="main" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.MainView">
+<StackPane fx:id="root" prefHeight="720.0" prefWidth="1280.0" styleClass="main" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.MainView">
    <children>
-      <Pane fx:id="bgPane" prefHeight="200.0" prefWidth="200.0" />
-      <Pane fx:id="bgPane02" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" />
-      <Pane fx:id="bgPane03" layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" style="-fx-background-color: #d6d2d250;" visible="false" />
-      <AnchorPane fx:id="content" prefHeight="750.0" prefWidth="1250.0">
+      <Pane fx:id="bgPane" />
+      <Pane fx:id="bgPane02" layoutX="10.0" layoutY="10.0" />
+      <Pane fx:id="bgPane03" layoutX="10.0" layoutY="10.0" style="-fx-background-color: #d6d2d250;" visible="false" />
+      <AnchorPane fx:id="content">
          <children>
-            <HBox prefHeight="100.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <StackPane>
                      <children>
@@ -43,6 +43,11 @@
                                  </toggleGroup>
                                  <graphic>
                                     <FontIcon iconLiteral="mdral-home" styleClass="hit-btn" />
+                                 </graphic>
+                              </ToggleButton>
+                              <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="314.0" mnemonicParsing="false" onAction="#toGameManager" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type14" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdsmz-videogame_asset" />
                                  </graphic>
                               </ToggleButton>
                               <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="104.0" mnemonicParsing="false" onAction="#toStartAppSetting" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type03" textOverrun="CLIP" toggleGroup="$navToggleGroup">
@@ -80,11 +85,6 @@
                                     <FontIcon iconLiteral="mdal-extension" />
                                  </graphic>
                               </ToggleButton>
-                              <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="314.0" mnemonicParsing="false" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type13" textOverrun="CLIP" toggleGroup="$navToggleGroup" visible="false">
-                                 <graphic>
-                                    <FontIcon iconLiteral="mdoal-extension" />
-                                 </graphic>
-                              </ToggleButton>
                               <Spacer VBox.vgrow="ALWAYS" />
                               <ToggleButton fx:id="supportBtn" alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="668.0" mnemonicParsing="false" onAction="#toSupport" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type09" textOverrun="CLIP">
                                  <graphic>
@@ -108,11 +108,11 @@
                         </VBox>
                      </children>
                   </StackPane>
-                  <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+                  <VBox HBox.hgrow="ALWAYS">
                      <children>
-                        <HBox fx:id="titlebar">
+                        <HBox fx:id="titlebar" styleClass="title-bar">
                            <children>
-                              <HBox alignment="CENTER_LEFT" prefHeight="50.0" spacing="10.0">
+                              <HBox alignment="CENTER_LEFT" spacing="10.0">
                                  <children>
                                     <ImageView fx:id="icon" fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
@@ -122,7 +122,7 @@
                                     <Label styleClass="title" text="%ui.main.label.title" />
                                  </children>
                               </HBox>
-                              <Pane prefHeight="0.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                              <Pane HBox.hgrow="ALWAYS" />
                               <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
                                  <children>
                                     <Button fx:id="minBtn" mnemonicParsing="false" styleClass="hit-btn">
@@ -145,6 +145,9 @@
                                        </graphic>
                                     </Button>
                                  </children>
+                                 <HBox.margin>
+                                    <Insets right="2.0" top="2.0" />
+                                 </HBox.margin>
                               </HBox>
                            </children>
                            <padding>
@@ -153,7 +156,7 @@
                         </HBox>
                         <HBox VBox.vgrow="ALWAYS">
                            <children>
-                              <StackPane fx:id="child" prefHeight="150.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                              <StackPane fx:id="child" HBox.hgrow="ALWAYS">
                                  <HBox.margin>
                                     <Insets left="20.0" />
                                  </HBox.margin>

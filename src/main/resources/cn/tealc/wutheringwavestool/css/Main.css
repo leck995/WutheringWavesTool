@@ -1,91 +1,77 @@
 .main{
     -fx-background-color: #7a7a7a;
-
 }
-.main-nav{
+/*侧边导航栏*/
+.main .main-nav{
     -fx-background-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #ffffff30 0.0%, #ffffff00 100.0%);
 }
-.main-nav:hover{
+.main .main-nav:hover{
     -fx-background-radius: 0 10 10 0;
     -fx-background-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #ffffff60 0.0%, #ffffff20 100.0%);
 }
-
-.main-nav .toggle-button,
-.main-nav .button{
+.main .main-nav .toggle-button,
+.main .main-nav .button{
     -fx-background-color: transparent;
     -fx-font-size: 14;
     -fx-font-weight: bold;
-    -fx-text-fill: #181616;
+    -fx-text-fill: -color-font-default;
     -fx-background-radius: 10;
     -fx-graphic-text-gap: 15;
     -fx-padding: 5 5 5 5;
     -fx-content-display:left;
     -fx-alignment: center-left;
-
 }
-
-.main-nav .toggle-button.icon-only{
+.main .main-nav .toggle-button.icon-only{
+    -fx-text-fill: -color-font-default;
     -fx-content-display:graphic-only;
     -fx-pref-width: 36px;
     -fx-padding: 5;
     -fx-alignment: center;
 }
-
-
-
-.main-nav .toggle-button .ikonli-font-icon{
-    -fx-icon-color: #181616;
+.main .main-nav .toggle-button .ikonli-font-icon{
+    -fx-icon-color: -color-font-default;
     -fx-icon-size:22px;
 }
-
-
-.main-nav .toggle-button:hover{
+.main .main-nav .toggle-button:hover{
     -fx-background-color: -color-hover-muted;
 }
-.main-nav .toggle-button:selected .ikonli-font-icon{
+.main .main-nav .toggle-button:selected .ikonli-font-icon{
     -fx-icon-color: -color-selected-default;
 }
-.main-nav .toggle-button:selected{
+.main .main-nav .toggle-button:selected{
     -fx-background-color: -color-accent-fg;
     -fx-text-fill: -color-selected-default;
 }
-.main-nav .nav-btn{
+.main .main-nav .nav-btn{
     -fx-content-display:graphic-only;
     -fx-pref-width: 36px;
     -fx-padding: 5;
     -fx-alignment: center;
 }
-.main-nav .nav-btn:hover{
+.main .main-nav .nav-btn:hover{
     -fx-background-color: -color-hover-muted;
 }
-.main-nav .nav-btn:selected{
+.main .main-nav .nav-btn:selected{
     -fx-background-color: transparent;
 }
-.main-nav .nav-btn:selected .ikonli-font-icon{
-    -fx-icon-color: #181616;
+.main .main-nav .nav-btn:selected .ikonli-font-icon{
+    -fx-icon-color:  -color-font-default;
 }
-.nav-bg{
-
-}
-
-.main-nav .icon-1 > .ikonli-font-icon{
+.main .main-nav .icon-1 > .ikonli-font-icon{
     -fx-icon-color: #cd7e7e;
 }
-.main-nav .icon-2 > .ikonli-font-icon{
+.main .main-nav .icon-2 > .ikonli-font-icon{
     -fx-icon-color: #ddc66f;
 }
-.main-nav .icon-3 > .ikonli-font-icon{
+.main .main-nav .icon-3 > .ikonli-font-icon{
     -fx-icon-color: #34d2b1;
 }
-.main-nav .icon-4 > .ikonli-font-icon{
+.main .main-nav .icon-4 > .ikonli-font-icon{
     -fx-icon-color: #bfa07d;
 }
-.main-nav .icon-5 > .ikonli-font-icon{
+.main .main-nav .icon-5 > .ikonli-font-icon{
     -fx-icon-color: #41aec5;
 }
-
-
-
 
 .split-pane .split-pane-divider,
 .split-pane > .split-pane-divider > .horizontal-grabber{
@@ -93,43 +79,44 @@
 }
 
 
-.title{
-    -fx-font-size: 18;
-    -fx-text-fill: #181616;
+
+.main .title-bar{
+    -fx-pref-height: 3.8em;
+    -fx-min-height: 3.3em;
+}
+
+.main .title-bar .title{
+    -fx-font-size: 1.4em;
+    -fx-text-fill: -color-fg-default;
     -fx-font-weight: bold;
 }
 
 
 
 .hit-btn{
-    -fx-min-width: 35;
-    -fx-max-width: 35;
-    -fx-pref-width: 35;
-    -fx-min-height: 35;
-    -fx-pref-height: 35;
-    -fx-max-height: 35;
+    -fx-min-width: 2.5em;
+    -fx-max-width: 2.5em;
+    -fx-pref-width: 2.5em;
+    -fx-min-height: 2.5em;
+    -fx-pref-height: 2.5em;
+    -fx-max-height: 2.5em;
     -fx-border-radius: 0;
     -fx-background-radius: 3;
     -fx-background-insets: 0;
     -fx-background-color: transparent;
 }
-
 .hit-hovered,
 .hit-btn:hover{
     -fx-background-color: rgba(150, 150, 150, 0.32);
 }
-
 .hit-close-btn,
 .hit-close:hover{
     -fx-background-color: #C42B1C;
     -fx-text-fill: #ffffff;
 }
-
-
 .shape{
     -fx-fill: #464646;
 }
-
 .shape-close-hovered{
     -fx-fill: #F9F9F9;
 }
