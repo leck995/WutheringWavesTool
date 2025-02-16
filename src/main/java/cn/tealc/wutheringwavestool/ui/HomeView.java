@@ -96,17 +96,15 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @FXML
     private Label livenessLabel;
 
-    @FXML
-    private ImageView roleIV;
 
     @FXML
     private Label roleNameLabel;
 
     @FXML
-    private AnchorPane rolePane;
+    private VBox rolePane;
 
     @FXML
-    private AnchorPane root;
+    private BorderPane root;
 
     @FXML
     private Label gameTimeLabel;

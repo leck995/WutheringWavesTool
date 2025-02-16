@@ -1,124 +1,119 @@
 .home{
-    -color-bg-default-90: #ffffff90;
+
 }
 
-
-
-.home .menu-button.func-btn{
-    -fx-background-radius: 20;
+.home .menu-button.func-btn {
+    -fx-background-radius: 1.4286em; /* 20px */
     -fx-background-color: -color-bg-default;
-    -fx-padding: 0 5 0 5;
+    -fx-padding: 0 0.3571em 0 0.3571em; /* 0 5px */
 }
-.home .button.func-btn{
-    -fx-background-radius: 20;
-    -fx-padding: 8 18 8 18;
+
+.home .button.func-btn {
+    -fx-background-radius: 1.4286em; /* 20px */
+    -fx-padding: 0.5714em 1.2857em 0.5714em 1.2857em; /* 8 18px */
     -fx-background-color: -color-bg-default;
 }
 
-
-
-
-.home .start-btn{
-    -fx-background-radius: 20;
-    -fx-padding: 8 18 8 18;
+.home .start-btn {
+    -fx-background-radius: 1.4286em; /* 20px */
+    -fx-padding: 0.6em 1em 0.6em 1em; /* 0.6em 1em */
 }
-
 .home .refresh-btn{
+    -fx-background-color: transparent;
+}
+
+.home .refresh-btn:hover{
     -fx-background-color: -color-bg-default-90;
 }
 
 
-.home .sign-label{
-    -fx-text-fill: -color-danger-3;
-    -fx-background-color: -color-bg-default-90;
-    -fx-font-size: 14;
-    -fx-padding: 5;
-    -fx-background-radius: 5;
 
-}
-.game-time{
-    -fx-background-color: -color-bg-default-90;
-    -fx-background-radius: 5;
-    -fx-padding: 10;
 
-    -fx-pref-width: 280;
+
+.home .role {
+    -fx-pref-width: 20em; /* 20em */
+    -fx-max-width: 20em;
 }
 
-.game-time .detail{
+.home .role .role-data,
+.home .role .daily-data,
+.home .role .box-data,
+.home .game-time {
+    -fx-background-color: -color-bg-default-90;
+    -fx-background-radius: 0.3571em; /* 5px */
+    -fx-padding: 0.7143em; /* 10px */
+    -fx-pref-width: 20em; /* 20em */
+    -fx-pref-height: 4.5em;
+}
+
+
+.home .role .role-data .data-label-1 {
     -fx-text-fill: -color-font-muted;
-    -fx-font-size: 16;
-    -fx-graphic-text-gap: 10;
-}
-.game-time .tip{
-    -fx-text-fill: -color-font-subtle;
-    -fx-font-size: 12;
-}
-.game-time .icon{
-    -fx-icon-size:22;
-}
-
-.role{
-
-}
-.role .daily-data{
-    -fx-background-color: -color-bg-default-90;
-    -fx-background-radius: 5;
-    -fx-padding: 10;
-
-    -fx-pref-width: 280;
-}
-.role .daily-data .data-label-1{
-    -fx-text-fill: -color-font-muted;
-    -fx-font-size: 16;
-    -fx-graphic-text-gap: 3;
-}
-.role .daily-data .data-label-2{
-    -fx-text-fill: -color-font-subtle;
-    -fx-font-size: 12;
-}
-.role .daily-data .progress-bar > .bar{
-    -fx-background-color: #998f82;
-    -fx-padding: 2px;
-}
-.role .daily-data .progress-bar > .track{
-    -fx-background-color: #cfc6b2;
-}
-
-.role .role-data{
-    -fx-background-color: -color-bg-default-90;
-    -fx-background-radius: 5;
-    -fx-padding: 10;
-
-    -fx-pref-width: 280;
-}
-.role .role-data .data-label-1{
-    -fx-text-fill: -color-font-muted;
-    -fx-font-size: 20;
+    -fx-font-size: 1.4286em; /* 20px */
     -fx-font-weight: bold;
+}
 
-}
-.role .role-data .data-label-2{
+.home .role .role-data .data-label-2 {
     -fx-text-fill: -color-font-subtle;
-    -fx-font-size: 14;
+    -fx-font-size: 1em; /* 14px */
 }
-.role .role-data .level{
+
+.home .role .role-data .level {
     -fx-text-fill: -color-font-muted;
-    -fx-font-size: 16;
+    -fx-font-size: 1em; /* 16px */
     -fx-alignment: center-left;
     -fx-font-weight: bold;
 }
-.role .box-data{
-    -fx-background-color: -color-bg-default-90;
-    -fx-background-radius: 5;
-    -fx-padding: 10;
-    -fx-pref-width: 280;
-}
-.role .box-data .data-label-1{
+
+.home .role .daily-data .data-label-1 {
     -fx-text-fill: -color-font-muted;
-    -fx-font-size: 16;
-    -fx-graphic-text-gap: 3;
+    -fx-font-size: 1.1429em; /* 16px */
+    -fx-graphic-text-gap: 0.2143em; /* 3px */
 }
-.role .box-data .data-label-2{
+
+.home .role .daily-data .data-label-2 {
     -fx-text-fill: -color-font-subtle;
-    -fx-font-size: 12;
+    -fx-font-size: 0.8571em; /* 12px */
+}
+
+.home .role .daily-data .progress-bar > .bar {
+    -fx-background-color: #998f82;
+    -fx-padding: 0.1429em; /* 2px */
+}
+
+.home .role .daily-data .progress-bar > .track {
+    -fx-background-color: #cfc6b2;
+}
+
+.home .role .box-data .data-label-1 {
+    -fx-text-fill: -color-font-muted;
+    -fx-font-size: 1.1429em; /* 16px */
+    -fx-graphic-text-gap: 0.2143em; /* 3px */
+}
+
+.home .role .box-data .data-label-2 {
+    -fx-text-fill: -color-font-subtle;
+    -fx-font-size: 0.8571em; /* 12px */
+}
+.home .role .sign-label {
+    -fx-text-fill: -color-danger-3;
+    -fx-background-color: -color-bg-default-90;
+    -fx-font-size: 1em; /* 14px */
+    -fx-padding: 0.3571em; /* 5px */
+    -fx-background-radius: 0.3571em; /* 5px */
+}
+
+.home .role .game-time .detail {
+    -fx-text-fill: -color-font-muted;
+    -fx-font-size: 1.1429em; /* 16px */
+    -fx-graphic-text-gap: 0.7143em; /* 10px */
+}
+
+.home .role .game-time .tip {
+    -fx-text-fill: -color-font-subtle;
+    -fx-font-size: 0.8571em; /* 12px */
+}
+
+.home .role .game-time .icon {
+    -fx-icon-size: 1em; /* 22px */
 }

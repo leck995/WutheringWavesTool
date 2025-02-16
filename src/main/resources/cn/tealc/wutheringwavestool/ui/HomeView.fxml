@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import atlantafx.base.controls.Spacer?>
 <?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
@@ -9,18 +11,18 @@
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane fx:id="root" prefHeight="700.0" prefWidth="1200.0" stylesheets="@../css/Home.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.HomeView">
-   <children>
-      <AnchorPane fx:id="rolePane" layoutX="708.0" layoutY="50.0" AnchorPane.bottomAnchor="220.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
+
+<BorderPane fx:id="root" prefHeight="648.0" prefWidth="1100.0" styleClass="home" stylesheets="@../css/Home.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.HomeView">
+   <right>
+      <VBox alignment="CENTER_RIGHT" prefHeight="200.0" prefWidth="100.0" spacing="8.0" styleClass="role" BorderPane.alignment="CENTER">
          <children>
-            <VBox layoutX="2.0" spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <VBox fx:id="rolePane" spacing="8.0">
                <children>
-                  <Label layoutX="10.0" layoutY="105.0" styleClass="title-3" text="%ui.home.label.role" />
                   <HBox fx:id="rolePane2" alignment="CENTER_LEFT" spacing="15.0" styleClass="role-data">
                      <children>
                         <ImageView fx:id="headIV" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
@@ -28,82 +30,91 @@
                               <Image url="@../image/icon.png" />
                            </image>
                         </ImageView>
-                        <VBox alignment="CENTER_LEFT" spacing="2.0">
+                        <VBox alignment="CENTER_LEFT" spacing="2.0" HBox.hgrow="ALWAYS">
                            <children>
-                              <Label fx:id="roleNameLabel" styleClass="data-label-1" text="角色名" />
+                              <HBox>
+                                 <children>
+                                    <Label fx:id="roleNameLabel" styleClass="data-label-1" text="角色名" />
+                                    <Spacer />
+                                    <Button mnemonicParsing="false" onAction="#refreshRoleData">
+                                       <graphic>
+                                          <FontIcon iconLiteral="mdmz-refresh" />
+                                       </graphic>
+                                       <styleClass>
+                                          <String fx:value="button-circle" />
+                                          <String fx:value="refresh-btn" />
+                                       </styleClass>
+                                    </Button>
+                                 </children>
+                              </HBox>
                               <HBox alignment="CENTER_LEFT">
                                  <children>
                                     <Label fx:id="levelLabel" styleClass="level" text="LV.48" />
-                                    <Label fx:id="gameLifeLabel" alignment="CENTER_RIGHT" prefWidth="120.0" styleClass="data-label-2" text="已游玩48天" />
+                                    <Spacer />
+                                    <Label fx:id="gameLifeLabel" alignment="CENTER_RIGHT" styleClass="data-label-2" text="已游玩48天" />
                                  </children>
                               </HBox>
                            </children>
                         </VBox>
                      </children>
                   </HBox>
-                  <Label styleClass="title-3" text="%ui.home.label.daily" />
-                  <VBox styleClass="daily-data">
+                  <HBox spacing="20.0" styleClass="daily-data">
                      <children>
-                        <HBox spacing="20.0">
+                        <HBox alignment="CENTER_LEFT" spacing="5.0">
                            <children>
-                              <HBox alignment="CENTER_LEFT" spacing="5.0">
+                              <ImageView fx:id="energyIv" fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true" />
+                              <VBox alignment="CENTER">
                                  <children>
-                                    <ImageView fx:id="energyIv" fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true" />
-                                    <VBox alignment="CENTER">
-                                       <children>
-                                          <Label fx:id="energyLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="192/240" />
-                                          <Label fx:id="energyTimeLabel" styleClass="data-label-2" text="今日已满" />
-                                       </children>
-                                    </VBox>
+                                    <Label fx:id="energyLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="192/240" />
+                                    <Label fx:id="energyTimeLabel" styleClass="data-label-2" text="今日已满" />
                                  </children>
-                              </HBox>
-                              <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="5.0">
-                                 <children>
-                                    <ImageView fx:id="livenessIV" fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true" />
-                                    <VBox alignment="CENTER">
-                                       <children>
-                                          <Label fx:id="livenessLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="100" />
-                                          <Label styleClass="data-label-2" text="%ui.home.label.daily.activity" />
-                                       </children>
-                                    </VBox>
-                                 </children>
-                              </HBox>
+                              </VBox>
                            </children>
                         </HBox>
-                        <HBox layoutX="10.0" layoutY="10.0" prefHeight="40.0" spacing="20.0">
+                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="5.0">
                            <children>
-                              <HBox alignment="CENTER_LEFT" spacing="10.0">
+                              <ImageView fx:id="livenessIV" fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true" />
+                              <VBox alignment="CENTER">
                                  <children>
-                                    <ImageView fx:id="battlePassIV" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" translateY="3.0" />
-                                    <VBox alignment="CENTER_LEFT">
-                                       <children>
-                                          <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                             <children>
-                                                <HBox alignment="CENTER_LEFT">
-                                                   <children>
-                                                      <Label contentDisplay="BOTTOM" layoutX="10.0" layoutY="10.0" styleClass="data-label-1" text="%ui.home.label.station" />
-                                                      <Label fx:id="battlePassLevelLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="(LV.16)" />
-                                                   </children>
-                                                </HBox>
-                                                <HBox alignment="CENTER_LEFT">
-                                                   <children>
-                                                      <Label fx:id="battlePassNumLabel1" contentDisplay="BOTTOM" layoutX="10.0" layoutY="10.0" styleClass="data-label-2" text="%ui.home.label.station.num" />
-                                                      <Label fx:id="battlePassNumLabel" contentDisplay="BOTTOM" styleClass="data-label-2" text="1200/1200" />
-                                                   </children>
-                                                </HBox>
-                                             </children>
-                                          </HBox>
-                                          <ProgressBar fx:id="battlePassProgress" prefWidth="200.0" progress="0.0" />
-                                       </children>
-                                    </VBox>
+                                    <Label fx:id="livenessLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="100" />
+                                    <Label styleClass="data-label-2" text="%ui.home.label.daily.activity" />
                                  </children>
-                              </HBox>
+                              </VBox>
                            </children>
                         </HBox>
                      </children>
-                  </VBox>
-                  <Label layoutX="10.0" layoutY="105.0" styleClass="title-3" text="%ui.home.label.chest" />
-                  <HBox alignment="CENTER" spacing="10.0" styleClass="box-data">
+                  </HBox>
+                  <HBox prefWidth="65.0" spacing="20.0" styleClass="daily-data">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                           <children>
+                              <ImageView fx:id="battlePassIV" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" translateY="3.0" />
+                              <VBox alignment="CENTER_LEFT">
+                                 <children>
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                       <children>
+                                          <HBox alignment="CENTER_LEFT">
+                                             <children>
+                                                <Label contentDisplay="BOTTOM" layoutX="10.0" layoutY="10.0" styleClass="data-label-1" text="%ui.home.label.station" />
+                                                <Label fx:id="battlePassLevelLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="(LV.16)" />
+                                             </children>
+                                          </HBox>
+                                          <HBox alignment="CENTER_LEFT">
+                                             <children>
+                                                <Label fx:id="battlePassNumLabel1" contentDisplay="BOTTOM" layoutX="10.0" layoutY="10.0" styleClass="data-label-2" text="%ui.home.label.station.num" />
+                                                <Label fx:id="battlePassNumLabel" contentDisplay="BOTTOM" styleClass="data-label-2" text="1200/1200" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </HBox>
+                                    <ProgressBar fx:id="battlePassProgress" prefWidth="200.0" progress="0.0" />
+                                 </children>
+                              </VBox>
+                           </children>
+                        </HBox>
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" prefWidth="65.0" spacing="10.0" styleClass="box-data">
                      <children>
                         <VBox alignment="CENTER" spacing="2.0">
                            <children>
@@ -133,37 +144,28 @@
                   </HBox>
                </children>
             </VBox>
-            <Button mnemonicParsing="false" onAction="#refreshRoleData" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-               <graphic>
-                  <FontIcon iconLiteral="mdmz-refresh" />
-               </graphic>
-               <styleClass>
-                  <String fx:value="button-circle" />
-                  <String fx:value="refresh-btn" />
-               </styleClass>
-            </Button>
-         </children>
-      </AnchorPane>
-      <VBox layoutX="710.0" layoutY="475.0" prefWidth="280.0" spacing="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="460.0">
-         <children>
-            <Label styleClass="title-3" text="%ui.home.label.time" />
-            <HBox alignment="CENTER" spacing="10.0" styleClass="game-time">
+            <Spacer VBox.vgrow="ALWAYS" />
+            <VBox spacing="10.0">
                <children>
-                  <FontIcon iconLiteral="mdal-desktop_mac" styleClass="icon" />
-                  <VBox alignment="CENTER">
+                  <HBox alignment="CENTER" spacing="10.0" styleClass="game-time">
                      <children>
-                        <Label fx:id="gameTimeLabel" styleClass="detail" text="%ui.home.label.time.total" />
-                        <Label fx:id="gameTimeTipLabel" layoutX="93.0" layoutY="20.0" styleClass="tip" text="%ui.home.label.space.time.other01" />
+                        <FontIcon iconLiteral="mdal-desktop_mac" styleClass="icon" />
+                        <VBox alignment="CENTER">
+                           <children>
+                              <Label fx:id="gameTimeLabel" styleClass="detail" text="%ui.home.label.time.total" />
+                              <Label fx:id="gameTimeTipLabel" layoutX="93.0" layoutY="20.0" styleClass="tip" text="%ui.home.label.space.time.other01" />
+                           </children>
+                        </VBox>
                      </children>
-                  </VBox>
+                  </HBox>
                </children>
-            </HBox>
+            </VBox>
+            <Label fx:id="hasSignLabel" styleClass="sign-label" text="%ui.home.label.sign.no" />
          </children>
       </VBox>
-      <Label styleClass="title-2" text="%ui.home.label.title" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-      <ImageView fx:id="roleIV" fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" />
-      <Label fx:id="hasSignLabel" styleClass="sign-label" text="%ui.home.label.sign.no" AnchorPane.bottomAnchor="70.0" AnchorPane.rightAnchor="40.0" />
-      <HBox spacing="15.0" AnchorPane.bottomAnchor="20.0" AnchorPane.rightAnchor="30.0">
+   </right>
+   <bottom>
+      <HBox alignment="CENTER_RIGHT" spacing="15.0" BorderPane.alignment="CENTER">
          <children>
             <MenuButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" popupSide="TOP" styleClass="func-btn" text="%ui.home.button.browser">
                <items>
@@ -213,12 +215,19 @@
                <styleClass>
                   <String fx:value="accent" />
                   <String fx:value="start-btn" />
-               </styleClass></Button>
+               </styleClass>
+            </Button>
          </children>
       </HBox>
-   </children>
-   <styleClass>
-      <String fx:value="role" />
-      <String fx:value="home" />
-   </styleClass>
-</AnchorPane>
+   </bottom>
+   <top>
+      <HBox BorderPane.alignment="CENTER">
+         <children>
+            <Label styleClass="title-2" text="%ui.home.label.title" />
+         </children>
+      </HBox>
+   </top>
+   <padding>
+      <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
+   </padding>
+</BorderPane>
