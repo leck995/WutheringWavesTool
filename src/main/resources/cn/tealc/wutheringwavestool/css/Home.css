@@ -41,7 +41,7 @@
 .home .game-time {
     -fx-background-color: -color-bg-default-90;
     -fx-background-radius: 0.3571em; /* 5px */
-    -fx-padding: 0.7143em; /* 10px */
+    -fx-padding: 0 0.7em 0 0.7em; /* 10px */
     -fx-pref-width: 20em; /* 20em */
     -fx-pref-height: 4.5em;
 }

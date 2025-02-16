@@ -54,6 +54,9 @@ public class HomeViewModel implements ViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(HomeViewModel.class);private SignUserInfo userInfo;
     private SimpleStringProperty energyText = new SimpleStringProperty();
     private SimpleStringProperty energyTimeText = new SimpleStringProperty();
+
+    private SimpleStringProperty weeklyInstCountText= new SimpleStringProperty();
+    private SimpleStringProperty storeEnergyText = new SimpleStringProperty();
     private SimpleStringProperty livenessText = new SimpleStringProperty();
     private SimpleStringProperty battlePassLevelText = new SimpleStringProperty();
     private SimpleStringProperty battlePassNumText = new SimpleStringProperty();
@@ -186,6 +189,10 @@ public class HomeViewModel implements ViewModel {
                 String template = LanguageManager.getString("ui.home.label.role.day");
                 gameLifeText.set(String.format(template, roleInfo.getActiveDays()));
                 levelText.set(String.format("LV.%d", roleInfo.getLevel()));
+
+                weeklyInstCountText.set(String.format("%d/%d",roleInfo.getWeeklyInstCount(),roleInfo.getWeeklyInstCountLimit()));
+                storeEnergyText.set(String.format("%d/%d",roleInfo.getStoreEnergy(),roleInfo.getStoreEnergyLimit()));
+
                 String[] chests = LanguageManager.getStringArray("ui.home.label.chest.types");
                 for (BoxInfo boxInfo : roleInfo.getTreasureBoxList()) {
                     if (boxInfo.getBoxName().equals(chests[0])) {
@@ -642,5 +649,21 @@ public class HomeViewModel implements ViewModel {
 
     public SimpleBooleanProperty hasSignProperty() {
         return hasSign;
+    }
+
+    public String getStoreEnergyText() {
+        return storeEnergyText.get();
+    }
+
+    public SimpleStringProperty storeEnergyTextProperty() {
+        return storeEnergyText;
+    }
+
+    public String getWeeklyInstCountText() {
+        return weeklyInstCountText.get();
+    }
+
+    public SimpleStringProperty weeklyInstCountTextProperty() {
+        return weeklyInstCountText;
     }
 }

@@ -96,7 +96,10 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @FXML
     private Label livenessLabel;
 
-
+    @FXML
+    private Label weeklyInstCountLabel;
+    @FXML
+    private Label storeEnergyLabel;
     @FXML
     private Label roleNameLabel;
 
@@ -117,16 +120,13 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         energyTimeLabel.textProperty().bind(viewModel.energyTimeTextProperty());
-        energyIv.setImage(new Image(MainApplication.class.getResource("image/energy.png").toExternalForm(),true));
         energyLabel.textProperty().bind(viewModel.energyTextProperty());
-        livenessIV.setImage(new Image(MainApplication.class.getResource("image/liveness.png").toExternalForm(),true));
+        storeEnergyLabel.textProperty().bind(viewModel.storeEnergyTextProperty());
+        weeklyInstCountLabel.textProperty().bind(viewModel.weeklyInstCountTextProperty());
         livenessLabel.textProperty().bind(viewModel.livenessTextProperty());
-        battlePassIV.setImage(new Image(MainApplication.class.getResource("image/battle-pass.png").toExternalForm(),true));
-
         battlePassProgress.progressProperty().bind(viewModel.battlePassProgressProperty());
         battlePassLevelLabel.textProperty().bind(viewModel.battlePassLevelTextProperty());
         battlePassNumLabel.textProperty().bind(viewModel.battlePassNumTextProperty());
-
 
         rolePane.visibleProperty().bind(viewModel.rolePaneVisibleProperty());
         roleNameLabel.textProperty().bind(viewModel.roleNameTextProperty());

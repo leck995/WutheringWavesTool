@@ -30,6 +30,10 @@ public class RoleInfo {
     private int smallCount;
     private int achievementCount;
     private int achievementStar;
+    private int weeklyInstCount;
+    private int weeklyInstCountLimit;
+    private int storeEnergy;
+    private int storeEnergyLimit;
     private List<BoxInfo> phantomBoxList;
     private List<BoxInfo> boxList;
     private List<BoxInfo> treasureBoxList;
@@ -209,5 +213,37 @@ public class RoleInfo {
 
     public void setTreasureBoxList(List<BoxInfo> treasureBoxList) {
         this.treasureBoxList = treasureBoxList;
+    }
+
+    public int getWeeklyInstCount() {
+        return weeklyInstCount;
+    }
+
+    public void setWeeklyInstCount(int weeklyInstCount) {
+        this.weeklyInstCount = weeklyInstCount;
+    }
+
+    public int getWeeklyInstCountLimit() {
+        return weeklyInstCountLimit;
+    }
+
+    public void setWeeklyInstCountLimit(int weeklyInstCountLimit) {
+        this.weeklyInstCountLimit = weeklyInstCountLimit;
+    }
+
+    public int getStoreEnergy() {
+        return storeEnergy;
+    }
+
+    public void setStoreEnergy(int storeEnergy) {
+        this.storeEnergy = storeEnergy;
+    }
+
+    public int getStoreEnergyLimit() {
+        return storeEnergyLimit;
+    }
+
+    public void setStoreEnergyLimit(int storeEnergyLimit) {
+        this.storeEnergyLimit = storeEnergyLimit;
     }
 }
