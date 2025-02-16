@@ -9,30 +9,31 @@
 .default-color6.chart-pie { -fx-pie-color: #c62b00; }
 .default-color7.chart-pie { -fx-pie-color: #ff5700; }
 
+
 .ssr-label{
     -fx-text-fill: #f1d358;
-    -fx-font-size: 15;
+    -fx-font-size: 1em;
     -fx-font-weight: bold;
 }
 .sr-label{
     -fx-text-fill: #933fb1;
-    -fx-font-size: 15;
+    -fx-font-size: 1em;
     -fx-font-weight: bold;
 }
 .r-label{
     -fx-text-fill: #04b6c6;
-    -fx-font-size: 15;
+    -fx-font-size: 1em;
     -fx-font-weight: bold;
 }
 .total-label{
     -fx-text-fill: #ff6666;
-    -fx-font-size: 15;
+    -fx-font-size: 1em;
     -fx-font-weight: bold;
     -fx-padding: 0 5 0 5;
 }
 .current-label{
     -fx-text-fill: #ff6666;
-    -fx-font-size: 15;
+    -fx-font-size: 1em;
     -fx-font-weight: bold;
     -fx-padding: 0 5 0 5;
 
@@ -41,27 +42,24 @@
 
 .tip{
     -fx-text-fill: -color-font-subtle;
-    -fx-font-size: 12;
+    -fx-font-size: 0.857em;  /* 12px */
 }
-
 
 .left{
-    -fx-background-radius: 8px;
-    -fx-padding: 10;
+    -fx-background-radius: 0.571em;  /* 8px */
+    -fx-padding: 0.714em;
 }
-
 
 .list-view{
     -fx-border-color: transparent;
-    -fx-background-radius: 4px;
-    -fx-padding: 10;
-
+    -fx-background-radius: 0.286em;  /* 4px */
+    -fx-padding: 0.714em;
 }
 
 .list-view .list-cell{
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-padding: 5;
+    -fx-padding: 0.357em;
 }
 .list-view .list-cell:hover,
 .list-view .list-cell:selected{
@@ -87,25 +85,25 @@
 
 
 .role-pane{
-    -fx-padding: 10;
-    -fx-background-radius: 8;
+    -fx-padding: 0.714em;            /* 10px */
+    -fx-background-radius: 0.571em;  /* 8px */
     -fx-background-color: -color-bg-default-50;
 }
 .role-pane .role-name{
-    -fx-font-size: 17;
+    -fx-font-size: 1.214em;
 }
 .role-pane .role-date{
     -fx-text-fill: -color-font-subtle;
 }
 .role-pane .role-desc{
-    -fx-font-size: 20;
     -fx-font-weight: bold;
     -fx-wrap-text: true;
-    -fx-pref-width: 25;
+    -fx-font-size: 1.429em;          /* 20px */
+    -fx-pref-width: 1.786em;
 }
 
 .role-pane  .progress-bar > .bar{
-    -fx-padding: 4px;
+    -fx-padding: 0.286em;
 }
 .role-pane  .progress-bar > .track{
     -fx-background-color: #dfdede;
@@ -136,21 +134,21 @@
 
 
 .select-listview .list-cell{
-    -fx-font-size: 14;
-    -fx-padding: 5;
+    -fx-font-size: 1em;              /* 14px */
+    -fx-padding: 0.357em;
 }
 .select-listview .list-cell:selected .label{
     -fx-text-fill:#ffffff;
     -fx-background-color: #0969da;
 }
 .select-listview .list-cell .label{
-    -fx-max-height: 70;
-    -fx-pref-height: 60;
-    -fx-pref-width: 100;
-    -fx-font-size: 14;
+    -fx-max-height: 5em;             /* 70px */
+    -fx-pref-height: 4.286em;        /* 60px */
+    -fx-pref-width: 7.143em;         /* 100px */
+    -fx-font-size: 1em;              /* 14px */
+    -fx-padding: 0.214em;
     -fx-background-color: -color-bg-default-50;
     -fx-background-radius: 5;
-    -fx-padding: 3;
 }
 
 
@@ -187,15 +185,14 @@
 
 .analysis-pool .data-child{
     -fx-background-color: -color-bg-default-30;
-    -fx-background-radius: 5;
-    -fx-padding: 5 10 5 10;
+    -fx-background-radius: 0.357em;  /* 5px */
+    -fx-padding: 0.357em 0.714em;    /* 5px 10px */
     -fx-spacing: 5;
 
 }
 .analysis-pool .data-child .title{
-    -fx-font-size: 18;
+    -fx-font-size: 1.286em;
     -fx-font-weight: bold;
-
 }
 
 
