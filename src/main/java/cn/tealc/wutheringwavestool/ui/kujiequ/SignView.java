@@ -87,13 +87,10 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
     }
 
     public Pane createGoodCell(SignGood signGood) {
-        System.out.println(Font.getDefault().getSize());
         ImageView goodIv=new ImageView();
-
-        ImageView signedIv= new ImageView(new Image(FXResourcesLoader.load("image/signed.png"),20,20,true,true));
+        ImageView signedIv= new ImageView(new Image(FXResourcesLoader.load("image/kujiequ/signed.png"),20,20,true,true));
         Label num=new Label();
         Label index=new Label();
-
         signedIv.setVisible(signGood.getSign());
         goodIv.setImage(LocalResourcesManager.imageBuffer(signGood.getGoodsUrl(),60,60,true,true));
         num.setText(String.format("x%d",signGood.getGoodsNum()));
@@ -102,7 +99,6 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
         StackPane.setAlignment(signedIv,Pos.TOP_RIGHT);
         StackPane.setAlignment(num, Pos.BOTTOM_RIGHT);
         StackPane.setAlignment(index, Pos.TOP_LEFT);
-
         index.getStyleClass().add("index");
         num.getStyleClass().add("num");
         goodIv.getStyleClass().add("pic");
@@ -110,9 +106,6 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
         stackPane.getStyleClass().add("goods");
         return stackPane;
     }
-
-
-
 
 
     class SignHistoryListCell extends ListCell<SignRecord> {

@@ -153,7 +153,7 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
     }
 
     static class AreaCell extends VBox {
-        private static final Image STAR_IMAGE = new Image(FXResourcesLoader.load("image/star01.png"),30,30,true,true,true);
+        private static final Image STAR_IMAGE = new Image(FXResourcesLoader.load("image/kujiequ/star01.png"),30,30,true,true,true);
         private final Label title;
         private TowerArea towerArea;
 
