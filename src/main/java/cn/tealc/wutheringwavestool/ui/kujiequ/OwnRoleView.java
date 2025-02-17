@@ -110,24 +110,6 @@ public class OwnRoleView implements FxmlView<OwnRoleViewModel>, Initializable {
         StackPane.setAlignment(thumb, Pos.BOTTOM_CENTER);
 
         item.getStyleClass().add("role-cell");
-
-        item.setOnContextMenuRequested(contextMenuEvent -> {
-            Menu main= new Menu("主页");
-            MenuItem menuItem01=new MenuItem("设为头像");
-            main.getItems().addAll(menuItem01);
-
-            menuItem01.setOnAction(event -> {
-                String filename = LocalResourcesManager.addHomeIcon(role.getRoleName(), role.getRoleIconUrl());
-                Config.setting.setHomeViewIcon(filename);
-            });
-
-            ContextMenu contextMenu=new ContextMenu();
-            contextMenu.getItems().addAll(main);
-            contextMenu.show(item,contextMenuEvent.getScreenX(),contextMenuEvent.getScreenY());
-        });
-
-
-
         item.setOnMouseClicked(mouseEvent -> {
             if (mouseEvent.getButton()== MouseButton.PRIMARY){
                 if (imageViews.size()==viewModel.getRoleList().size()){
