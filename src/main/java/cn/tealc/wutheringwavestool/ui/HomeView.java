@@ -113,8 +113,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     private Label gameTimeLabel;
     @FXML
     private Label gameTimeTipLabel;
-    @FXML
-    private Label hasSignLabel;
+
 
 
     @Override
@@ -139,50 +138,48 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
         gameTimeLabel.textProperty().bind(viewModel.gameTimeTextProperty());
         gameTimeTipLabel.textProperty().bind(viewModel.gameTimeTipTextProperty());
-        hasSignLabel.visibleProperty().bind(viewModel.hasSignProperty().isNotEqualTo(viewModel.rolePaneVisibleProperty()));
 
 
-        if (Config.setting.getHomeViewIcon() != null){
+
+        if (Config.setting.getHomeViewIcon() != null) {
             File roleIVFile = LocalResourcesManager.homeIcon();
-            if (roleIVFile.exists()){
-                headIV.setImage(new Image(roleIVFile.toURI().toString(),60,60,true,true,true));
-            }else {
-                headIV.setImage(new Image(FXResourcesLoader.load("image/icon.png"),60,60,true,true,true));
+            if (roleIVFile.exists()) {
+                headIV.setImage(new Image(roleIVFile.toURI().toString(), 60, 60, true, true, true));
+            } else {
+                headIV.setImage(new Image(FXResourcesLoader.load("image/icon.png"), 60, 60, true, true, true));
             }
-        }else {
-            headIV.setImage(new Image(FXResourcesLoader.load("image/icon.png"),60,60,true,true,true));
+        } else {
+            headIV.setImage(new Image(FXResourcesLoader.load("image/icon.png"), 60, 60, true, true, true));
         }
 
-        Circle circle = new Circle(30,30,30);
+        Circle circle = new Circle(30, 30, 30);
         headIV.setClip(circle);
 
 
-        if (Config.setting.getDiyHomeBgType() == 2){
+        if (Config.setting.getDiyHomeBgType() == 2) {
             root.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2){
+                if (event.getClickCount() == 2) {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
                 }
             });
         }
-
     }
-
 
 
     @FXML
     void startGame(ActionEvent event) {
-        if (viewModel.isHasSign()){
+        if (viewModel.isHasSign()) {
             viewModel.startGame();
-        }else {
+        } else {
             JFXDialogLayout dialogLayout = new JFXDialogLayout();
             Label title = new Label("签到提醒");
             title.getStyleClass().add(Styles.TITLE_2);
             dialogLayout.setHeading(title);
             dialogLayout.setBody(new Label("检测到还没有签到，是否签到并启动游戏?"));
 
-            Button okBtn=new Button("签到并启动");
-            Button directBtn=new Button("启动");
-            Button cancelBtn=new Button("取消");
+            Button okBtn = new Button("签到并启动");
+            Button directBtn = new Button("启动");
+            Button cancelBtn = new Button("取消");
 
             okBtn.setOnAction(event1 -> {
                 viewModel.signAndGame();
@@ -194,9 +191,9 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
             });
 
             cancelBtn.setCancelButton(true);
-            dialogLayout.setActions(okBtn,directBtn,cancelBtn);
+            dialogLayout.setActions(okBtn, directBtn, cancelBtn);
 
-            MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
+            MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, dialogLayout);
         }
 
 
@@ -206,15 +203,17 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     void startUpdate(ActionEvent event) {
         viewModel.startUpdate();
     }
+
     @FXML
     void refreshRoleData(ActionEvent event) {
         Button button = (Button) event.getSource();
         Node graphic = button.getGraphic();
-        RotateTransition transition=new RotateTransition(Duration.millis(300),graphic);
+        RotateTransition transition = new RotateTransition(Duration.millis(300), graphic);
         transition.setByAngle(360);
         transition.play();
         viewModel.updateRoleData();
     }
+
     @FXML
     void toWiki01(ActionEvent event) {
         try {
@@ -255,11 +254,11 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @FXML
     void toAlbum(ActionEvent event) {
         try {
-            File file= GameResourcesManager.getGameScreenShoot();
-            if (file != null){
+            File file = GameResourcesManager.getGameScreenShoot();
+            if (file != null) {
                 Desktop.getDesktop().open(file);
-            }else {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,LanguageManager.getString("ui.home.message.type06")));
+            } else {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type06")));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -269,11 +268,11 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @FXML
     void toGameDir(ActionEvent event) {
         try {
-            File file=GameResourcesManager.getGameDir();
-            if (file != null){
+            File file = GameResourcesManager.getGameDir();
+            if (file != null) {
                 Desktop.getDesktop().open(file);
-            }else {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type04")));
+            } else {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type04")));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

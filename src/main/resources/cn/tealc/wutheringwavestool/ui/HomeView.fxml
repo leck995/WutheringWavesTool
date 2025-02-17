@@ -92,7 +92,7 @@
                   </HBox>
                   <HBox layoutX="10.0" layoutY="98.0" styleClass="daily-data">
                      <children>
-                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" spacing="5.0" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" prefWidth="150.0" spacing="5.0" HBox.hgrow="ALWAYS">
                            <children>
                               <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
@@ -107,9 +107,9 @@
                               </VBox>
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER_LEFT" spacing="5.0" HBox.hgrow="ALWAYS">
+                        <HBox alignment="CENTER_LEFT" prefWidth="150.0" spacing="5.0" HBox.hgrow="ALWAYS">
                            <children>
-                              <ImageView fx:id="livenessIV" fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true" translateX="5.0">
+                              <ImageView fx:id="livenessIV" fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image preserveRatio="true" requestedHeight="45.0" requestedWidth="45.0" url="@../image/kujiequ/liveness.png" />
                                  </image></ImageView>
@@ -202,7 +202,6 @@
                   </HBox>
                </children>
             </VBox>
-            <Label fx:id="hasSignLabel" styleClass="sign-label" text="%ui.home.label.sign.no" />
          </children>
       </VBox>
    </right>
