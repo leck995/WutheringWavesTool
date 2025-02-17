@@ -78,9 +78,14 @@ public class HomeViewModel implements ViewModel {
         updateRoleData();
         updateGameTime(GameAppListener.getInstance().getDuration());
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_GAME_TIME_UPDATE, (s, objects) -> {
-            long playTime = (long) objects[0];
-            updateGameTime(playTime);
-            updateRoleData();
+            if (objects.length > 0){
+                long playTime = (long) objects[0];
+                updateGameTime(playTime);
+                updateRoleData();
+            }else {
+                updateGameTime(0);
+                updateRoleData();
+            }
         });
     }
 

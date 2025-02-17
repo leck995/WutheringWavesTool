@@ -1,5 +1,7 @@
 package cn.tealc.wutheringwavestool.ui;
 
+import atlantafx.base.controls.Popover;
+import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
@@ -8,6 +10,8 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.wutheringwavestool.ui.component.StackPopup;
+import cn.tealc.wutheringwavestool.ui.item.PlayTimeAlertItemView;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
@@ -19,14 +23,18 @@ import javafx.animation.RotateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
+import javafx.geometry.Side;
 import javafx.scene.Node;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
+import javafx.stage.Popup;
 import javafx.util.Duration;
 
 import java.awt.*;
@@ -110,10 +118,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     private BorderPane root;
 
     @FXML
-    private Label gameTimeLabel;
-    @FXML
-    private Label gameTimeTipLabel;
-
+    private Button gameTimeBtn;
 
 
     @Override
@@ -136,11 +141,12 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         box3Label.textProperty().bind(viewModel.box3TextProperty());
         box4Label.textProperty().bind(viewModel.box4TextProperty());
 
-        gameTimeLabel.textProperty().bind(viewModel.gameTimeTextProperty());
-        gameTimeTipLabel.textProperty().bind(viewModel.gameTimeTipTextProperty());
 
+        Tooltip gameTimeTip = new Tooltip();
+        gameTimeTip.textProperty().bind(viewModel.gameTimeTipTextProperty());
+        gameTimeBtn.setTooltip(gameTimeTip);
 
-
+        gameTimeBtn.textProperty().bind(viewModel.gameTimeTextProperty());
         if (Config.setting.getHomeViewIcon() != null) {
             File roleIVFile = LocalResourcesManager.homeIcon();
             if (roleIVFile.exists()) {
@@ -163,6 +169,8 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
                 }
             });
         }
+
+
     }
 
 
@@ -195,6 +203,15 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
             MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, dialogLayout);
         }
+
+
+    }
+
+    @FXML
+    void showGameTimerAlert(ActionEvent event) {
+        PlayTimeAlertItemView view = new PlayTimeAlertItemView();
+        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, view);
+
 
 
     }

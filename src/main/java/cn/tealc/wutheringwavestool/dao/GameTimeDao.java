@@ -50,6 +50,32 @@ public class GameTimeDao {
         }
     }
 
+    public boolean deleteTimeByData(String date) {
+        QueryRunner qr = new QueryRunner();
+        String sql = "DELETE FROM game_time WHERE game_date = ?";
+        try {
+            int update = qr.update(con, sql, date);
+            LOG.info("成功删除指定时间的所有数据: {}", date);
+            return true;
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(), e);
+            return false;
+        }
+    }
+
+    public boolean deleteTimeByDataAndRoleId(String date, String roleId) {
+        QueryRunner qr = new QueryRunner();
+        String sql = "DELETE FROM game_time WHERE game_date = ? AND role_id = ?";
+        try {
+            int update = qr.update(con, sql, date, roleId);
+            LOG.info("成功删除指定时间和用户的所有数据: {} 用户ID: {}", date, roleId);
+            return true;
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(), e);
+            return false;
+        }
+    }
+
     /**
      * description: 获取所有用户ID
      *

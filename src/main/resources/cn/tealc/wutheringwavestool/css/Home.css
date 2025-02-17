@@ -30,72 +30,82 @@
 
 
 
-.home .role {
+.home .right {
     -fx-pref-width: 20em; /* 20em */
     -fx-max-width: 20em;
+    -fx-padding: 0 0 2em 0;
 }
 
-.home .role .role-data,
-.home .role .daily-data,
-.home .role .box-data,
-.home .game-time {
+.home .right .role,
+.home .right .game-time {
     -fx-background-color: -color-bg-default-90;
     -fx-background-radius: 0.3571em; /* 5px */
-    -fx-padding: 0 0.7em 0 0.7em; /* 10px */
+    -fx-padding: 0.5em 0.7em 0.5em 0.7em; /* 10px */
     -fx-pref-width: 20em; /* 20em */
     -fx-pref-height: 4.5em;
+    -fx-spacing: 10;
+}
+.home .right .role .separator{
+    -fx-padding: 0 2em 0 2em;
+    -fx-min-height: 0;
+}
+.home .right .role .separator > .line{
+    -fx-border-color: linear-gradient(from 0.0% 0.0%  to 100.0% 0.0%,#77767600 0.0%, #8f8e8e 50.0%, #77767600 100.0%) transparent transparent transparent;
+    -fx-border-insets: 1px 0 0 0;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
 }
 
 
-.home .role .role-data .data-label-1 {
+.home .right .role-data .data-label-1 {
     -fx-text-fill: -color-font-muted;
     -fx-font-size: 1.4286em; /* 20px */
     -fx-font-weight: bold;
 }
 
-.home .role .role-data .data-label-2 {
+.home .right .role-data .data-label-2 {
     -fx-text-fill: -color-font-subtle;
     -fx-font-size: 1em; /* 14px */
 }
 
-.home .role .role-data .level {
+.home .right .role-data .level {
     -fx-text-fill: -color-font-muted;
     -fx-font-size: 1em; /* 16px */
     -fx-alignment: center-left;
     -fx-font-weight: bold;
 }
 
-.home .role .daily-data .data-label-1 {
+.home .right .daily-data .data-label-1 {
     -fx-text-fill: -color-font-muted;
     -fx-font-size: 1.1429em; /* 16px */
     -fx-graphic-text-gap: 0.2143em; /* 3px */
 }
 
-.home .role .daily-data .data-label-2 {
+.home .right .daily-data .data-label-2 {
     -fx-text-fill: -color-font-subtle;
     -fx-font-size: 0.8571em; /* 12px */
 }
 
-.home .role .daily-data .progress-bar > .bar {
+.home .right .daily-data .progress-bar > .bar {
     -fx-background-color: #998f82;
     -fx-padding: 0.1429em; /* 2px */
 }
 
-.home .role .daily-data .progress-bar > .track {
+.home .right .daily-data .progress-bar > .track {
     -fx-background-color: #cfc6b2;
 }
 
-.home .role .box-data .data-label-1 {
+.home .right .box-data .data-label-1 {
     -fx-text-fill: -color-font-muted;
     -fx-font-size: 1.1429em; /* 16px */
     -fx-graphic-text-gap: 0.2143em; /* 3px */
 }
 
-.home .role .box-data .data-label-2 {
+.home .right .box-data .data-label-2 {
     -fx-text-fill: -color-font-subtle;
     -fx-font-size: 0.8571em; /* 12px */
 }
-.home .role .sign-label {
+.home .right .sign-label {
     -fx-text-fill: -color-danger-3;
     -fx-background-color: -color-bg-default-90;
     -fx-font-size: 1em; /* 14px */
@@ -103,17 +113,21 @@
     -fx-background-radius: 0.3571em; /* 5px */
 }
 
-.home .role .game-time .detail {
+.home .right .game-time .detail {
     -fx-text-fill: -color-font-muted;
     -fx-font-size: 1.1429em; /* 16px */
     -fx-graphic-text-gap: 0.7143em; /* 10px */
 }
 
-.home .role .game-time .tip {
+.home .right .game-time .tip {
     -fx-text-fill: -color-font-subtle;
     -fx-font-size: 0.8571em; /* 12px */
 }
 
-.home .role .game-time .icon {
+.home .right .game-time .icon {
     -fx-icon-size: 1em; /* 22px */
+}
+
+.home .bottom{
+    -fx-pref-height: 5em;
 }

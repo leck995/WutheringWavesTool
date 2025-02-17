@@ -9,6 +9,7 @@
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -18,9 +19,9 @@
 
 <BorderPane fx:id="root" prefHeight="648.0" prefWidth="1100.0" styleClass="home" stylesheets="@../css/Home.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.HomeView">
    <right>
-      <VBox alignment="CENTER_RIGHT" prefHeight="200.0" prefWidth="100.0" spacing="8.0" styleClass="role" BorderPane.alignment="CENTER">
+      <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" spacing="8.0" styleClass="right" BorderPane.alignment="CENTER">
          <children>
-            <VBox fx:id="rolePane" spacing="8.0">
+            <VBox fx:id="rolePane" spacing="8.0" styleClass="role">
                <children>
                   <HBox fx:id="rolePane2" alignment="CENTER_LEFT" spacing="15.0" styleClass="role-data">
                      <children>
@@ -57,6 +58,7 @@
                         </VBox>
                      </children>
                   </HBox>
+                  <Separator prefWidth="200.0" />
                   <HBox styleClass="daily-data">
                      <children>
                         <HBox alignment="CENTER_LEFT" spacing="5.0" HBox.hgrow="ALWAYS">
@@ -156,6 +158,7 @@
                         </HBox>
                      </children>
                   </HBox>
+                  <Separator prefWidth="200.0" />
                   <HBox alignment="CENTER" prefWidth="65.0" spacing="10.0" styleClass="box-data">
                      <children>
                         <VBox alignment="CENTER" spacing="2.0">
@@ -186,27 +189,11 @@
                   </HBox>
                </children>
             </VBox>
-            <Spacer VBox.vgrow="ALWAYS" />
-            <VBox spacing="10.0">
-               <children>
-                  <HBox alignment="CENTER" spacing="10.0" styleClass="game-time">
-                     <children>
-                        <FontIcon iconLiteral="mdal-desktop_mac" styleClass="icon" />
-                        <VBox alignment="CENTER">
-                           <children>
-                              <Label fx:id="gameTimeLabel" styleClass="detail" text="%ui.home.label.time.total" />
-                              <Label fx:id="gameTimeTipLabel" layoutX="93.0" layoutY="20.0" styleClass="tip" text="%ui.home.label.space.time.other01" />
-                           </children>
-                        </VBox>
-                     </children>
-                  </HBox>
-               </children>
-            </VBox>
          </children>
       </VBox>
    </right>
    <bottom>
-      <HBox alignment="CENTER_RIGHT" spacing="15.0" BorderPane.alignment="CENTER">
+      <HBox alignment="CENTER_RIGHT" spacing="15.0" styleClass="bottom" BorderPane.alignment="CENTER">
          <children>
             <MenuButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" popupSide="TOP" styleClass="func-btn" text="%ui.home.button.browser">
                <items>
@@ -247,6 +234,11 @@
             <Button layoutX="122.0" layoutY="10.0" mnemonicParsing="false" onAction="#startUpdate" styleClass="func-btn" text="%ui.home.button.start_update">
                <graphic>
                   <FontIcon iconLiteral="mdsal-cloud_download" />
+               </graphic>
+            </Button>
+            <Button fx:id="gameTimeBtn" layoutX="841.0" layoutY="10.0" mnemonicParsing="false" onAction="#showGameTimerAlert" styleClass="func-btn" text="01小时15分钟">
+               <graphic>
+                  <FontIcon iconLiteral="mdsmz-timer" />
                </graphic>
             </Button>
             <Button mnemonicParsing="false" onAction="#startGame" text="%ui.home.button.start_game">
