@@ -2,29 +2,7 @@
 
 }
 
-.home .menu-button.func-btn {
-    -fx-background-radius: 1.4286em; /* 20px */
-    -fx-background-color: -color-bg-default;
-    -fx-padding: 0 0.3571em 0 0.3571em; /* 0 5px */
-}
 
-.home .button.func-btn {
-    -fx-background-radius: 1.4286em; /* 20px */
-    -fx-padding: 0.5714em 1.2857em 0.5714em 1.2857em; /* 8 18px */
-    -fx-background-color: -color-bg-default;
-}
-
-.home .start-btn {
-    -fx-background-radius: 1.4286em; /* 20px */
-    -fx-padding: 0.6em 1em 0.6em 1em; /* 0.6em 1em */
-}
-.home .refresh-btn{
-    -fx-background-color: transparent;
-}
-
-.home .refresh-btn:hover{
-    -fx-background-color: -color-bg-default-90;
-}
 
 
 
@@ -130,4 +108,36 @@
 
 .home .bottom{
     -fx-pref-height: 5em;
+    -fx-spacing: 8px;
+}
+
+.home .bottom .start-btn{
+    -fx-background-radius: 1.4286em; /* 20px */
+    -fx-padding: 0.6em 1em 0.6em 1em; /* 0.6em 1em */
+    -fx-pref-height: 2.6em;
+    -fx-pref-width: 10em;
+}
+
+
+.home .menu-button.func-btn {
+    -fx-background-radius: 1.4286em; /* 20px */
+    -fx-background-color: -color-bg-default;
+    -fx-padding: 0 0.3571em 0 0.3571em; /* 0 5px */
+    -fx-pref-height: 2.6em;
+}
+
+.home .button.func-btn {
+    -fx-background-radius: 1.4286em; /* 20px */
+    -fx-padding: 0.5714em 1.2857em 0.5714em 1.2857em; /* 8 18px */
+    -fx-background-color: -color-bg-default;
+    -fx-pref-height: 2.6em;
+}
+
+
+.home .refresh-btn{
+    -fx-background-color: transparent;
+}
+
+.home .refresh-btn:hover{
+    -fx-background-color: -color-bg-default-90;
 }

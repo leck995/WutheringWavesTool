@@ -193,65 +193,69 @@
       </VBox>
    </right>
    <bottom>
-      <HBox alignment="CENTER_RIGHT" spacing="15.0" styleClass="bottom" BorderPane.alignment="CENTER">
+      <VBox BorderPane.alignment="CENTER">
          <children>
-            <MenuButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" popupSide="TOP" styleClass="func-btn" text="%ui.home.button.browser">
-               <items>
-                  <MenuItem mnemonicParsing="false" onAction="#toAlbum" text="%ui.home.button.browser.screenshot_dir">
+            <HBox alignment="CENTER_RIGHT" spacing="15.0" styleClass="bottom">
+               <children>
+                  <Button layoutX="122.0" layoutY="10.0" mnemonicParsing="false" onAction="#startUpdate" styleClass="func-btn" text="%ui.home.button.start_update" visible="false">
                      <graphic>
-                        <FontIcon iconLiteral="mdal-image" />
+                        <FontIcon iconLiteral="mdsal-cloud_download" />
                      </graphic>
-                  </MenuItem>
-                  <MenuItem mnemonicParsing="false" onAction="#toGameDir" text="%ui.home.button.browser.install_dir">
+                  </Button>
+                  <MenuButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" popupSide="TOP" styleClass="func-btn" text="%ui.home.button.browser">
+                     <items>
+                        <MenuItem mnemonicParsing="false" onAction="#toAlbum" text="%ui.home.button.browser.screenshot_dir">
+                           <graphic>
+                              <FontIcon iconLiteral="mdal-image" />
+                           </graphic>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#toGameDir" text="%ui.home.button.browser.install_dir">
+                           <graphic>
+                              <FontIcon iconLiteral="mdsmz-snippet_folder" />
+                           </graphic>
+                        </MenuItem>
+                     </items>
                      <graphic>
-                        <FontIcon iconLiteral="mdsmz-snippet_folder" />
+                        <FontIcon iconLiteral="mdsal-folder" />
                      </graphic>
-                  </MenuItem>
-               </items>
-               <graphic>
-                  <FontIcon iconLiteral="mdsal-folder" />
-               </graphic>
-            </MenuButton>
-            <MenuButton mnemonicParsing="false" popupSide="TOP" styleClass="func-btn" text="%ui.home.button.wiki">
-              <items>
-                  <Menu mnemonicParsing="false" text="%ui.home.button.wiki.kujiequ">
+                  </MenuButton>
+                  <MenuButton mnemonicParsing="false" popupSide="TOP" styleClass="func-btn" text="%ui.home.button.wiki">
                     <items>
-                      <MenuItem mnemonicParsing="false" onAction="#toWiki01" text="%ui.home.button.wiki.kujiequ.website" />
-                      <MenuItem mnemonicParsing="false" onAction="#toWikiMap01" text="%ui.home.button.wiki.kujiequ.map" />
+                        <Menu mnemonicParsing="false" text="%ui.home.button.wiki.kujiequ">
+                          <items>
+                            <MenuItem mnemonicParsing="false" onAction="#toWiki01" text="%ui.home.button.wiki.kujiequ.website" />
+                            <MenuItem mnemonicParsing="false" onAction="#toWikiMap01" text="%ui.home.button.wiki.kujiequ.map" />
+                          </items>
+                        </Menu>
+                        <Menu mnemonicParsing="false" text="%ui.home.button.wiki.gamekee">
+                          <items>
+                            <MenuItem mnemonicParsing="false" onAction="#toWiki02" text="%ui.home.button.wiki.gamekee.website" />
+                            <MenuItem mnemonicParsing="false" onAction="#toWikiMap02" text="%ui.home.button.wiki.gamekee.map" />
+                          </items>
+                        </Menu>
                     </items>
-                  </Menu>
-                  <Menu mnemonicParsing="false" text="%ui.home.button.wiki.gamekee">
-                    <items>
-                      <MenuItem mnemonicParsing="false" onAction="#toWiki02" text="%ui.home.button.wiki.gamekee.website" />
-                      <MenuItem mnemonicParsing="false" onAction="#toWikiMap02" text="%ui.home.button.wiki.gamekee.map" />
-                    </items>
-                  </Menu>
-              </items>
-               <graphic>
-                  <FontIcon iconLiteral="mdal-book" />
-               </graphic>
-            </MenuButton>
-            <Button layoutX="122.0" layoutY="10.0" mnemonicParsing="false" onAction="#startUpdate" styleClass="func-btn" text="%ui.home.button.start_update">
-               <graphic>
-                  <FontIcon iconLiteral="mdsal-cloud_download" />
-               </graphic>
-            </Button>
-            <Button fx:id="gameTimeBtn" layoutX="841.0" layoutY="10.0" mnemonicParsing="false" onAction="#showGameTimerAlert" styleClass="func-btn" text="01小时15分钟">
-               <graphic>
-                  <FontIcon iconLiteral="mdsmz-timer" />
-               </graphic>
-            </Button>
-            <Button mnemonicParsing="false" onAction="#startGame" text="%ui.home.button.start_game">
-               <graphic>
-                  <FontIcon iconLiteral="mdral-games" />
-               </graphic>
-               <styleClass>
-                  <String fx:value="accent" />
-                  <String fx:value="start-btn" />
-               </styleClass>
-            </Button>
+                     <graphic>
+                        <FontIcon iconLiteral="mdal-book" />
+                     </graphic>
+                  </MenuButton>
+                  <Button fx:id="gameTimeBtn" layoutX="841.0" layoutY="10.0" mnemonicParsing="false" onAction="#showGameTimerAlert" styleClass="func-btn" text="01小时15分钟">
+                     <graphic>
+                        <FontIcon iconLiteral="mdsmz-timer" />
+                     </graphic>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#startGame" text="%ui.home.button.start_game">
+                     <graphic>
+                        <FontIcon iconLiteral="mdral-games" />
+                     </graphic>
+                     <styleClass>
+                        <String fx:value="accent" />
+                        <String fx:value="start-btn" />
+                     </styleClass>
+                  </Button>
+               </children>
+            </HBox>
          </children>
-      </HBox>
+      </VBox>
    </bottom>
    <top>
       <HBox BorderPane.alignment="CENTER">
