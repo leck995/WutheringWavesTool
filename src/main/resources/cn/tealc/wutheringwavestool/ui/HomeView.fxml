@@ -25,7 +25,7 @@
                <children>
                   <HBox fx:id="rolePane2" alignment="CENTER_LEFT" spacing="15.0" styleClass="role-data">
                      <children>
-                        <ImageView fx:id="headIV" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="headIV" fitHeight="60.0" fitWidth="60.0" onMouseClicked="#changeHeaderImage" pickOnBounds="true" preserveRatio="true" styleClass="header">
                            <image>
                               <Image backgroundLoading="true" requestedHeight="60.0" requestedWidth="60.0" url="@../image/icon.png" />
                            </image>

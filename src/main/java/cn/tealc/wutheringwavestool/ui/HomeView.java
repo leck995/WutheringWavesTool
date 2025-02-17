@@ -11,6 +11,7 @@ import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.ui.component.StackPopup;
+import cn.tealc.wutheringwavestool.ui.item.HeaderImageSelectView;
 import cn.tealc.wutheringwavestool.ui.item.PlayTimeAlertItemView;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
@@ -32,6 +33,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.Popup;
@@ -145,8 +147,43 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         Tooltip gameTimeTip = new Tooltip();
         gameTimeTip.textProperty().bind(viewModel.gameTimeTipTextProperty());
         gameTimeBtn.setTooltip(gameTimeTip);
-
         gameTimeBtn.textProperty().bind(viewModel.gameTimeTextProperty());
+
+
+        Circle circle = new Circle(30, 30, 30);
+        headIV.setClip(circle);
+        changeHeaderIv();
+
+        setChangeBgEnable();
+
+        MvvmFX.getNotificationCenter().subscribe(NotificationKey.CHANGE_HEADER,((s, objects) -> changeHeaderIv()));
+    }
+
+
+    /**
+     * @description: 启动切换背景
+     * @param:
+     * @return  void
+     * @date:   2025/2/18
+     */
+    private void setChangeBgEnable() {
+        if (Config.setting.getDiyHomeBgType() == 2) {
+            root.setOnMouseClicked(event -> {
+                if (event.getClickCount() == 2) {
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
+                }
+            });
+        }
+    }
+
+
+    /**
+     * @description: 改变头像
+     * @param:
+     * @return  void
+     * @date:   2025/2/18
+     */
+    private void changeHeaderIv(){
         if (Config.setting.getHomeViewIcon() != null) {
             File roleIVFile = LocalResourcesManager.homeIcon();
             if (roleIVFile.exists()) {
@@ -157,22 +194,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         } else {
             headIV.setImage(new Image(FXResourcesLoader.load("image/icon.png"), 60, 60, true, true, true));
         }
-
-        Circle circle = new Circle(30, 30, 30);
-        headIV.setClip(circle);
-
-
-        if (Config.setting.getDiyHomeBgType() == 2) {
-            root.setOnMouseClicked(event -> {
-                if (event.getClickCount() == 2) {
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
-                }
-            });
-        }
-
-
     }
-
 
     @FXML
     void startGame(ActionEvent event) {
@@ -211,10 +233,15 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     void showGameTimerAlert(ActionEvent event) {
         PlayTimeAlertItemView view = new PlayTimeAlertItemView();
         MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, view);
-
-
-
     }
+
+
+    @FXML
+    void changeHeaderImage(MouseEvent event) {
+        HeaderImageSelectView view = new HeaderImageSelectView();
+        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, view);
+    }
+
 
     @FXML
     void startUpdate(ActionEvent event) {

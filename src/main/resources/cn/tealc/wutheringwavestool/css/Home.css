@@ -14,6 +14,8 @@
     -fx-padding: 0 0 2em 0;
 }
 
+
+
 .home .right .role,
 .home .right .game-time {
     -fx-background-color: -color-bg-default-90;
@@ -34,7 +36,9 @@
     -fx-padding: 0;
 }
 
-
+.home .right .role .header:hover{
+    -fx-cursor: hand;
+}
 .home .right .role-data .data-label-1 {
     -fx-text-fill: -color-font-muted;
     -fx-font-size: 1.4286em; /* 20px */
@@ -116,6 +120,7 @@
     -fx-padding: 0.6em 1em 0.6em 1em; /* 0.6em 1em */
     -fx-pref-height: 2.6em;
     -fx-pref-width: 10em;
+    -fx-cursor: hand;
 }
 
 
@@ -124,6 +129,7 @@
     -fx-background-color: -color-bg-default;
     -fx-padding: 0 0.3571em 0 0.3571em; /* 0 5px */
     -fx-pref-height: 2.6em;
+    -fx-cursor: hand;
 }
 
 .home .button.func-btn {
@@ -131,11 +137,13 @@
     -fx-padding: 0.5714em 1.2857em 0.5714em 1.2857em; /* 8 18px */
     -fx-background-color: -color-bg-default;
     -fx-pref-height: 2.6em;
+    -fx-cursor: hand;
 }
 
 
 .home .refresh-btn{
     -fx-background-color: transparent;
+    -fx-cursor: hand;
 }
 
 .home .refresh-btn:hover{
