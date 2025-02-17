@@ -72,7 +72,7 @@ public class HomeViewModel implements ViewModel {
     private SimpleStringProperty gameTimeText = new SimpleStringProperty();
     private SimpleStringProperty gameTimeTipText = new SimpleStringProperty();
     private SimpleObjectProperty<Image> headImg = new SimpleObjectProperty<>();
-    private SimpleBooleanProperty hasSign = new SimpleBooleanProperty(false);
+    private SimpleBooleanProperty hasSign = new SimpleBooleanProperty(true);
     private SimpleStringProperty signText = new SimpleStringProperty();
     public HomeViewModel() {
         updateRoleData();
