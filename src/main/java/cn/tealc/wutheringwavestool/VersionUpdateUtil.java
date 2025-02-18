@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool;
 
+import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import com.kuro.kujiequ.model.sign.SignUserInfo;
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -28,6 +30,7 @@ public class VersionUpdateUtil {
         update02();
         update03();
         update04();
+        update05();
     }
 
 
@@ -154,6 +157,16 @@ public class VersionUpdateUtil {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    //助手1.3.0版本，更改游戏根目录
+    public static void update05(){
+        String dirPath = Config.setting.getGameRootDir();
+        File dir = new File(dirPath,"Wuthering Waves Game");
+        if (dir.exists() && dir.isDirectory()){
+            Config.setting.setGameRootDir(dir.getAbsolutePath());
+        }
+
     }
 
 

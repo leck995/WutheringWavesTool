@@ -284,16 +284,10 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
         directoryChooser.setTitle(LanguageManager.getString("ui.setting.file.game_dir.title"));
         File file = directoryChooser.showDialog(gameDirField.getScene().getWindow());
         if (file != null) {
-            File startApp = null;
-            if (Config.setting.getGameRootDirSource() == SourceType.WE_GAME){
-                startApp = new File(file.getAbsolutePath() + File.separator + "Wuthering Waves.exe");
-            } else{
-                startApp = new File(file.getAbsolutePath() + File.separator + "launcher.exe");
-            }
+            File startApp = new File(file.getAbsolutePath() + File.separator + "Wuthering Waves.exe");
             if (startApp.exists()) {
                 gameDirField.setText(file.getAbsolutePath());
             }else {
-                gameDirField.setText(file.getAbsolutePath());
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,LanguageManager.getString("ui.setting.message.01")));
             }
         }
