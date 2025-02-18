@@ -22,7 +22,7 @@ public class LocalResourcesManager {
     public static final String BUFFER_DIR_TEMPLATE="assets/cache/%s";
     public static final String HOME_ICON_DIR_TEMPLATE="assets/image/icon/%s.%s";
     public static final String HOME_ROLE_DIR_TEMPLATE="assets/image/role/%s.%s";
-    public static final String HOME_ICON_DIR_TEMPLATE_2="assets/image/icon/%s";
+    public static final String HOME_ICON_DIR_TEMPLATE_2="assets/header/%s";
     public static final String HOME_ROLE_DIR_TEMPLATE_2="assets/image/role/%s";
     public static final String HOME_BG_TEMPLATE="assets/image/bg/%s";
 
@@ -115,6 +115,7 @@ public class LocalResourcesManager {
 
 
 
+    @Deprecated
     public static String addHomeIcon(String roleName,String url){
         File file=new File(String.format(HOME_ICON_DIR_TEMPLATE,roleName,getSuffix(url)));
         if (!file.exists()){ //无缓存，获取并保存
@@ -125,6 +126,7 @@ public class LocalResourcesManager {
         }
         return file.getName();
     }
+
 
     public static String addHomeRole(String roleName,String url){
         File file=new File(String.format(HOME_ROLE_DIR_TEMPLATE,roleName,getSuffix(url)));
