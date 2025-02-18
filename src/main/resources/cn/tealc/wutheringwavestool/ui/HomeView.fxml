@@ -258,11 +258,7 @@
       </VBox>
    </bottom>
    <top>
-      <HBox BorderPane.alignment="CENTER">
-         <children>
-            <Label styleClass="title-2" text="%ui.home.label.title" />
-         </children>
-      </HBox>
+      <HBox BorderPane.alignment="CENTER" />
    </top>
    <padding>
       <Insets bottom="15.0" left="15.0" right="15.0" top="15.0" />
