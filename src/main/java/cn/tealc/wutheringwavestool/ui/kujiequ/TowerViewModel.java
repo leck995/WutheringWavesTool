@@ -15,6 +15,7 @@ import javafx.util.Pair;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -69,17 +70,22 @@ public class TowerViewModel implements ViewModel {
                 GameTowerDataDao dataDao = new GameTowerDataDao();
                 List<Long> endTimeList = dataDao.getEndTimeList();
 
-
-
                 SimpleDateFormat endFormat = new SimpleDateFormat("yyyy.MM.dd");
                 DateTimeFormatter startFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+                // 定义一个截止日期
+                LocalDate cutoffDate = LocalDate.of(2025, 2, 3);
                 endTimeList.forEach(endTime -> {
                     Instant instant = Instant.ofEpochMilli(endTime);
-                    ZonedDateTime zonedDateTime = instant.atZone(ZoneId.systemDefault());
-                    ZonedDateTime fifteenDaysAgo = zonedDateTime.minusDays(14);
-                    // 格式化日期
-                    String startDay = startFormat.format(fifteenDaysAgo);
+                    ZonedDateTime endDate = instant.atZone(ZoneId.systemDefault());
+                    ZonedDateTime startDate;
+                    // 根据截止日期选择时间间隔,2025-02-03后深塔刷新时间改了，由14天改为28天
+                    if (endDate.toLocalDate().isAfter(cutoffDate)) {
+                        startDate = endDate.minusDays(28);
+                    } else {
+                        startDate = endDate.minusDays(14);
+                    }
                     Date date =new Date(endTime);
+                    String startDay = startFormat.format(startDate);
                     String endDay = endFormat.format(date);
                     towerHistoryList.add(new Pair<>(endTime, new Pair<>(startDay, endDay)));
                 });
