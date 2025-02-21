@@ -3,11 +3,16 @@ package cn.tealc.wutheringwavestool.jna;
 import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.game.GameRecordForLog;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
+import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.GameLogFileAnalysisTask;
+import cn.tealc.wutheringwavestool.thread.NewGameLogFileAnalysisTask;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
@@ -38,6 +43,7 @@ public class GameAppListener implements WinUser.WinEventProc{
     private boolean start = false;//标记游戏打开了
     private final User32 user32 = User32.INSTANCE;
     private long startGameTime;
+    private boolean startFromApp = false;
 
 
     private GameAppListener(){
@@ -64,6 +70,14 @@ public class GameAppListener implements WinUser.WinEventProc{
                 start = true;
                 startGameTime = System.currentTimeMillis();
                 LOG.info("检测到鸣潮已经启动");
+                if (!startFromApp) {
+                    LOG.info("检测到鸣潮并非通过助手启动");
+                    NotificationManager.message(
+                            new MessageInfo(MessageType.WARNING,
+                                    LanguageManager.getString("ui.game_time.total.tip01"),
+                                    false)
+                    );
+                }
             }
         }else {
             // 处理其他情况
@@ -76,6 +90,10 @@ public class GameAppListener implements WinUser.WinEventProc{
             }
         }
     }
+
+
+
+
 
     private void updateMainViewTime(){
         long endGameTime = System.currentTimeMillis(); // 游戏结束时间
@@ -99,12 +117,15 @@ public class GameAppListener implements WinUser.WinEventProc{
     private void onEnd() {
         LOG.info("检测到鸣潮已经结束");
         start = false;
-        GameLogFileAnalysisTask task = new GameLogFileAnalysisTask();
-        task.setOnSucceeded(workerStateEvent -> {
-            long startTime = startGameTime;
-            exit(startTime);
-        });
-        Thread.startVirtualThread(task);
+        if (startFromApp){
+            NewGameLogFileAnalysisTask task = new NewGameLogFileAnalysisTask();
+            task.setOnSucceeded(workerStateEvent -> {
+                long startTime = startGameTime;
+                exit(startTime);
+            });
+            Thread.startVirtualThread(task);
+            setStartFromApp(false);
+        }
     }
 
 
@@ -144,5 +165,13 @@ public class GameAppListener implements WinUser.WinEventProc{
             return endGameTime - startGameTime;
         }
         return 0;
+    }
+
+    public boolean isStartFromApp() {
+        return startFromApp;
+    }
+
+    public void setStartFromApp(boolean startFromApp) {
+        this.startFromApp = startFromApp;
     }
 }

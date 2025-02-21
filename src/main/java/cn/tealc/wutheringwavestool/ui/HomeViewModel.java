@@ -401,9 +401,11 @@ public class HomeViewModel implements ViewModel {
                 }
             }
             try {
+                GameAppListener.getInstance().setStartFromApp(true);
                 processBuilder.start();
             } catch (IOException e) {
                 MainApplication.window.show();
+                GameAppListener.getInstance().setStartFromApp(false);
                 LOG.error("高级启动无法启动鸣潮",e);
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.ERROR,LanguageManager.getString("ui.home.message.type07")+e.getMessage()));
             }
@@ -419,11 +421,13 @@ public class HomeViewModel implements ViewModel {
      */
     private void runExe(File exe){
         try {
+            GameAppListener.getInstance().setStartFromApp(true);
             Desktop.getDesktop().open(exe);
             if (Config.setting.isHideWhenGameStart()) {
                 MainApplication.window.hide();
             }
         } catch (IOException e) {
+            GameAppListener.getInstance().setStartFromApp(false);
             LOG.info("启动游戏错误", e);
             MainApplication.window.show();
         }
