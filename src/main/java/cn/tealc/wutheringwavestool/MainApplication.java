@@ -8,8 +8,10 @@ import cn.tealc.wutheringwavestool.jna.GameAppListener;
 import cn.tealc.wutheringwavestool.jna.GlobalKeyListener;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.wutheringwavestool.theme.Light;
+import cn.tealc.wutheringwavestool.theme.ThemeManager;
 import cn.tealc.wutheringwavestool.util.AppLocked;
-import cn.tealc.wutheringwavestool.thread.ResourcesSyncTask;
+import cn.tealc.wutheringwavestool.thread.system.ResourcesSyncTask;
 import cn.tealc.wutheringwavestool.ui.tray.NewFxTrayIcon;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.github.kwhat.jnativehook.GlobalScreen;
@@ -54,8 +56,6 @@ public class MainApplication extends Application {
         root.setLevel(Level.toLevel(Config.setting.getLogLevel()));
 
         Platform.setImplicitExit(false);
-
-
         appLocked = new AppLocked();
 
     }
@@ -64,15 +64,11 @@ public class MainApplication extends Application {
     public void start(Stage stage) throws IOException {
         JdbcUtils.init();
         VersionUpdateUtil.update();
-        if (!Config.setting.isChangeTitlebar()){
-            window = new MainWindow();
-            window.show();
-        }else {
-            window = new MainWindow2();
-            window.show();
-        }
+        window = new MainWindow();
+        ThemeManager.getInstance().setScene(window.getScene());
+        ThemeManager.getInstance().setTheme(new Light());
 
-
+        window.show();
         if (Config.setting.isTheme()){
             //Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
         }else {

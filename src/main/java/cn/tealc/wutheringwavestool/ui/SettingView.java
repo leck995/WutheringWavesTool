@@ -190,7 +190,6 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
         appIconIv.setFitHeight(80);
         appIconIv.setImage(new Image(FXResourcesLoader.load("image/icon.png"),80,80,true,true,true));
 
-        titlebarSwitch.selectedProperty().bindBidirectional(viewModel.changeTitlebarProperty());
         versionCheckSwitch.selectedProperty().bindBidirectional(viewModel.checkNewVersionProperty());
 
 

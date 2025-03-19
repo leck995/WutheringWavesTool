@@ -9,8 +9,8 @@ import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.release.Release;
-import cn.tealc.wutheringwavestool.thread.CheckGameConfigTask;
-import cn.tealc.wutheringwavestool.thread.CheckVersionTask;
+import cn.tealc.wutheringwavestool.thread.system.CheckGameConfigTask;
+import cn.tealc.wutheringwavestool.thread.system.CheckVersionTask;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -21,7 +21,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.text.Font;
@@ -44,7 +43,6 @@ import java.util.ResourceBundle;
  */
 public class SettingViewModel implements ViewModel ,SceneLifecycle {
     private static final Logger LOG= LoggerFactory.getLogger(SettingViewModel.class);
-    private SimpleBooleanProperty changeTitlebar = new SimpleBooleanProperty();
     private SimpleStringProperty gameDir = new SimpleStringProperty();
     private SimpleBooleanProperty startWithAnalysis = new SimpleBooleanProperty();
     private SimpleBooleanProperty exitWhenGameOver = new SimpleBooleanProperty();
@@ -63,7 +61,6 @@ public class SettingViewModel implements ViewModel ,SceneLifecycle {
 
     private ObservableList<Pair<String, Locale>> languages=FXCollections.observableArrayList();
     public SettingViewModel() {
-        changeTitlebar.bindBidirectional(Config.setting.changeTitlebarProperty());
         gameDir.bindBidirectional(Config.setting.gameRootDirProperty());
         startWithAnalysis.bindBidirectional(Config.setting.firstViewWithPoolAnalysisProperty());
         exitWhenGameOver.bindBidirectional(Config.setting.exitWhenGameOverProperty());
@@ -254,13 +251,6 @@ public class SettingViewModel implements ViewModel ,SceneLifecycle {
         this.gameRootDirSource.set(gameRootDirSource);
     }
 
-    public boolean isChangeTitlebar() {
-        return changeTitlebar.get();
-    }
-
-    public SimpleBooleanProperty changeTitlebarProperty() {
-        return changeTitlebar;
-    }
 
     public boolean isCheckNewVersion() {
         return checkNewVersion.get();

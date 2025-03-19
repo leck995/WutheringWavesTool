@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane prefHeight="800.0" prefWidth="1200.0" styleClass="setting" stylesheets="@../css/Setting.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.SettingView">
+<AnchorPane prefHeight="800.0" prefWidth="1200.0" styleClass="setting" stylesheets="@../css/Setting.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.SettingView">
    <children>
       <Label styleClass="title-1" text="%ui.setting.title" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0" />
       <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0" />
@@ -87,7 +87,7 @@
                                  <graphic>
                                     <Label styleClass="tip" text="%ui.setting.base.titlebar.tip" />
                                  </graphic></Label>
-                              <ToggleSwitch fx:id="titlebarSwitch" labelPosition="RIGHT" text="%ui.setting.base.titlebar.switch" />
+                              <ToggleSwitch fx:id="titlebarSwitch" disable="true" labelPosition="RIGHT" selected="true" text="%ui.setting.base.titlebar.switch" />
                               <Label styleClass="title-4" text="%ui.setting.base.firstView" />
                               <CheckBox fx:id="startWithAnalysisView" mnemonicParsing="false" text="%ui.setting.base.firstView.card" />
                               <Label contentDisplay="RIGHT" styleClass="title-4" text="%ui.setting.base.kujiequ">

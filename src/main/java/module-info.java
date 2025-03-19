@@ -24,7 +24,6 @@ open module cn.tealc.wutheringwavestool {
     requires filters;
     requires net.coobird.thumbnailator;
     requires com.github.kwhat.jnativehook;
-    requires nfx.core;
     requires ch.qos.logback.core;
     requires ch.qos.logback.classic;
     requires cn.tealc.fxplugin;

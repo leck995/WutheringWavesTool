@@ -14,6 +14,8 @@
         <junit.version>5.10.0</junit.version>
     </properties>
 
+
+
     <dependencies>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -54,7 +56,11 @@
             <artifactId>ikonli-antdesignicons-pack</artifactId>
             <version>12.3.1</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.kordamp.ikonli</groupId>
+            <artifactId>ikonli-fluentui-pack</artifactId>
+            <version>12.3.1</version>
+        </dependency>
         <dependency>
             <groupId>io.github.mkpaz</groupId>
             <artifactId>atlantafx-base</artifactId>
@@ -81,20 +87,21 @@
             <version>2.16.0</version>
         </dependency>
 
-        <!--前往https://github.com/leck995/teafx下载编译-->
+        <!--有需要，可前往https://github.com/leck995/Teafx下载-->
         <dependency>
-            <groupId>cn.tealc</groupId>
+            <groupId>com.github.leck995</groupId>
             <artifactId>teafx</artifactId>
-            <version>1.1.0</version>
+            <version>1.2.0</version>
         </dependency>
-        <!--前往https://github.com/leck995/fx-plugin下载编译-->
+
+        <!--有需要，前往https://github.com/leck995/Fx-plugin下载-->
         <dependency>
-            <groupId>cn.tealc.fxplugin</groupId>
+            <groupId>com.github.leck995</groupId>
             <artifactId>fx-plugin</artifactId>
             <version>1.0.2</version>
         </dependency>
 
-        <!--MVVM-->
+        <!--MVVM START 以下使用jlink时需要自己添加模块信息-->
         <dependency>
             <groupId>de.saxsys</groupId>
             <artifactId>mvvmfx</artifactId>
@@ -112,7 +119,7 @@
             <artifactId>typetools</artifactId>
             <version>0.6.3</version>
         </dependency>
-
+        <!--MVVM END-->
 
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -170,13 +177,6 @@
             <groupId>com.github.kwhat</groupId>
             <artifactId>jnativehook</artifactId>
             <version>2.2.2</version>
-        </dependency>
-
-        <!--/libs下自己导入maven，https://github.com/xdsswar/nfx-lib -->
-        <dependency>
-            <groupId>xss.it.nfx</groupId>
-            <artifactId>nfx-core</artifactId>
-            <version>1.0.0</version>
         </dependency>
     </dependencies>
 
@@ -240,11 +240,8 @@
     </build>
     <repositories>
         <repository>
-            <id>sonatype-snapshots</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 </project>
