@@ -17,6 +17,7 @@ import com.kuro.kujiequ.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
+import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.thread.SignTask;
 import com.kuro.kujiequ.thread.UserDailyDataTask;
 import com.kuro.kujiequ.thread.UserDataRefreshTask;
@@ -51,7 +52,7 @@ import java.util.stream.Stream;
  * @create: 2024-07-03 19:57
  */
 public class HomeViewModel implements ViewModel {
-    private static final Logger LOG = LoggerFactory.getLogger(HomeViewModel.class);private SignUserInfo userInfo;
+    private static final Logger LOG = LoggerFactory.getLogger(HomeViewModel.class);
     private SimpleStringProperty energyText = new SimpleStringProperty();
     private SimpleStringProperty energyTimeText = new SimpleStringProperty();
 
@@ -75,16 +76,16 @@ public class HomeViewModel implements ViewModel {
     private SimpleBooleanProperty hasSign = new SimpleBooleanProperty(true);
     private SimpleStringProperty signText = new SimpleStringProperty();
     public HomeViewModel() {
-        updateRoleData();
+        updateKujiequRoleData();
         updateGameTime(GameAppListener.getInstance().getDuration());
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_GAME_TIME_UPDATE, (s, objects) -> {
             if (objects.length > 0){
                 long playTime = (long) objects[0];
                 updateGameTime(playTime);
-                updateRoleData();
+                updateKujiequRoleData();
             }else {
                 updateGameTime(0);
-                updateRoleData();
+                updateKujiequRoleData();
             }
         });
     }
@@ -94,7 +95,7 @@ public class HomeViewModel implements ViewModel {
 
 
     /**
-     * @description: 更新游玩时长
+     * @description: 更新游玩时长；会对数据库与time进行相加处理，并显示
      * @param:	time	尚未保存到数据库中的时长
      * @return  void
      * @date:   2024/10/8
@@ -141,50 +142,56 @@ public class HomeViewModel implements ViewModel {
 
 
 
+
+
+
     /**
-     * @description: 刷新角色数据
+     * @description: 刷新库街区的角色数据
      * @param:
      * @return  void
      * @date:   2024/10/8
      */
-    public void updateRoleData() {
+    public void updateKujiequRoleData() {
         if (Config.setting.isNoKuJieQu()){
             hasSign.set(true);
             return;
         }
 
-        if (userInfo != null) {
-            UserDataRefreshTask task = new UserDataRefreshTask(userInfo);
-            task.setOnSucceeded(workerStateEvent -> {
-                ResponseBody<String> responseBody = task.getValue();
-                if (responseBody.getCode() == 200) {
-                    getDailyData();
-                    getRoleData();
-                }else {
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING, responseBody.getMsg()));
-                }
-            });
-            Thread.startVirtualThread(task);
+        UserInfoDao dao = new UserInfoDao();
+        UserInfo userInfo = dao.getMain();
+        if (userInfo == null){
+            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                    new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type01")));
+            return;
+        }
 
-            if (Config.setting.isAutoKujieQuSign()){
-                sign();
-            }
+        Config.currentRoleId = userInfo.getRoleId();
 
-        } else {
-            UserInfoDao dao = new UserInfoDao();
-            userInfo = dao.getMain();
-            if (userInfo != null) {
-                Config.currentRoleId = userInfo.getRoleId();
-                updateRoleData();
-            } else {
+        UserDataRefreshTask task = new UserDataRefreshTask(userInfo);
+        task.setOnSucceeded(workerStateEvent -> {
+            ResponseBody<String> responseBody = task.getValue();
+            if (responseBody.getCode() == 200) {
+                getDailyData(userInfo);
+                getRoleData(userInfo);
+            }else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type01")));
+                        new MessageInfo(MessageType.WARNING, responseBody.getMsg()));
+                LOG.error(responseBody.getMsg());
             }
+        });
+        Thread.startVirtualThread(task);
+
+        if (Config.setting.isAutoKujieQuSign()){
+            startKujiequDailySign();
         }
     }
 
-    private void getRoleData() {
+
+    /**
+     * 获取角色的基本数据，如宝箱数量
+     * @param userInfo
+     */
+    private void getRoleData(UserInfo userInfo) {
         UserInfoDataTask userInfoDataTask = new UserInfoDataTask(userInfo);
         userInfoDataTask.setOnSucceeded(workerStateEvent -> {
             ResponseBody<RoleInfo> responseBody = userInfoDataTask.getValue();
@@ -220,7 +227,11 @@ public class HomeViewModel implements ViewModel {
         Thread.startVirtualThread(userInfoDataTask);
     }
 
-    private void getDailyData() {
+    /**
+     * 获取角色的日常数据，如体力;鉴于getRoleData方法每次都是同时调用，故失败请求不再弹出消息显示。
+     * @param userInfo
+     */
+    private void getDailyData(UserInfo userInfo) {
         UserDailyDataTask userDailyDataTask = new UserDailyDataTask(userInfo);
         userDailyDataTask.setOnSucceeded(workerStateEvent -> {
             ResponseBody<RoleDailyData> responseBody = userDailyDataTask.getValue();
@@ -230,10 +241,10 @@ public class HomeViewModel implements ViewModel {
                     energyText.set(String.format("%d/%d", data.getEnergyData().getCur(), data.getEnergyData().getTotal()));
 
                     String[] strengths = LanguageManager.getStringArray("ui.home.label.daily.strength");
-                    if (data.getEnergyData().getRefreshTimeStamp() == 0) { //体力已
+                    if (data.getEnergyData().getRefreshTimeStamp() == 0) { //体力
                         energyTimeText.set(strengths[2]);
                     } else {
-                        long timestamp = data.getEnergyData().getRefreshTimeStamp() * 1000; // 仅为示例，实际应替换为具体的时间戳
+                        long timestamp = data.getEnergyData().getRefreshTimeStamp() * 1000;
                         Date date = new Date(timestamp);
                         Instant instant = Instant.ofEpochMilli(timestamp);
                         LocalDate dateFromTimestamp = instant.atZone(ZoneId.systemDefault()).toLocalDate();
@@ -257,14 +268,10 @@ public class HomeViewModel implements ViewModel {
                     rolePaneVisible.set(true);
                 }else {
                     rolePaneVisible.set(false);
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING, responseBody.getMsg()));
                 }
             }
         });
         Thread.startVirtualThread(userDailyDataTask);
-
-
     }
 
 
@@ -294,14 +301,19 @@ public class HomeViewModel implements ViewModel {
     }
 
 
-
+    /**
+     * 签到并启动鸣潮
+     */
     public void signAndGame() {
-        sign();
+        startKujiequDailySign();
         startGame();
     }
 
 
-    public void sign(){
+    /**
+     * 开始进行库街区鸣潮签到
+     */
+    public void startKujiequDailySign(){
         SignTask task = new SignTask();
         task.setOnSucceeded(workerStateEvent -> {
             hasSign.set(true);
@@ -311,10 +323,13 @@ public class HomeViewModel implements ViewModel {
         signText.set(LanguageManager.getString("ui.home.label.sign.ing"));
     }
 
+
+    /**
+     * 启动鸣潮，先删除旧日志，然后判断是否启动参数，并进行启动
+     */
     public void startGame() {
         //先删除游戏过去的日志
         deleteLogFiles();
-
 
         String dir = Config.setting.getGameRootDir();
         if (dir != null) {
@@ -342,9 +357,6 @@ public class HomeViewModel implements ViewModel {
                         paramsList.addFirst(exe.getAbsolutePath());
                         String[] newArray = new String[paramsList.size()];
                         paramsList.toArray(newArray);
-                        for (String s : newArray) {
-                            System.out.println(s);
-                        }
                         runExeByCustom(newArray);
                     }else {
                         runExe(exe);
@@ -389,6 +401,8 @@ public class HomeViewModel implements ViewModel {
             String[] mergedArray = Stream.concat(Stream.of(command2), Stream.of(params))
                     .toArray(String[]::new);
             ProcessBuilder processBuilder = new ProcessBuilder(mergedArray);
+            processBuilder.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+            processBuilder.redirectError(ProcessBuilder.Redirect.DISCARD);
             String path = params[0];
             if (path.contains("WWMI Loader.exe")){
                 //设置工作目录，适配wwmi

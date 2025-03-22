@@ -4,16 +4,11 @@ import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.dao.GameTimeDao;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
-import cn.tealc.wutheringwavestool.model.game.GameRecordForLog;
-import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
-import cn.tealc.wutheringwavestool.thread.GameLogFileAnalysisTask;
-import cn.tealc.wutheringwavestool.thread.NewGameLogFileAnalysisTask;
+import cn.tealc.wutheringwavestool.thread.system.GameLogFileAnalysisTask;
+import cn.tealc.wutheringwavestool.thread.system.NewGameLogFileAnalysisTask;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
-import com.kuro.kujiequ.model.sign.UserInfo;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
@@ -23,12 +18,7 @@ import de.saxsys.mvvmfx.MvvmFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.text.SimpleDateFormat;
 import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @program: WutheringWavesTool
@@ -80,11 +70,15 @@ public class GameAppListener implements WinUser.WinEventProc{
                 }
             }
         }else {
-            // 处理其他情况
-            if (start) { // 只要游戏启动过，start必为true
-                updateMainViewTime();
+            //只要游戏启动过，start必为true
+            if (start) {
+                //同时当主窗口为鸣潮助手时，刷新时间
+                if (title.equals("鸣潮助手")){
+                    updateMainViewTime();
+                }
+                //检查是否结束
                 boolean isAlive = gameIsAlive();
-                if (!isAlive) { //游戏结束
+                if (!isAlive) {
                     onEnd();
                 }
             }
@@ -92,9 +86,9 @@ public class GameAppListener implements WinUser.WinEventProc{
     }
 
 
-
-
-
+    /**
+     * 通知主界面更新游戏时长
+     */
     private void updateMainViewTime(){
         long endGameTime = System.currentTimeMillis(); // 游戏结束时间
         LocalDate date1 = Instant.ofEpochMilli(startGameTime).atZone(ZoneId.systemDefault()).toLocalDate();
@@ -114,11 +108,15 @@ public class GameAppListener implements WinUser.WinEventProc{
     }
 
 
+    /**
+     * 游戏进程结束时，执行相应操作
+     */
     private void onEnd() {
         LOG.info("检测到鸣潮已经结束");
         start = false;
+        LOG.debug("是否是通过助手启动: {}",startFromApp);
         if (startFromApp){
-            NewGameLogFileAnalysisTask task = new NewGameLogFileAnalysisTask();
+            GameLogFileAnalysisTask task = new GameLogFileAnalysisTask();
             task.setOnSucceeded(workerStateEvent -> {
                 long startTime = startGameTime;
                 exit(startTime);
@@ -128,6 +126,15 @@ public class GameAppListener implements WinUser.WinEventProc{
         }
     }
 
+
+    public void test(){
+        NewGameLogFileAnalysisTask task = new NewGameLogFileAnalysisTask();
+        task.setOnSucceeded(workerStateEvent -> {
+            long startTime = startGameTime;
+            exit(startTime);
+        });
+        Thread.startVirtualThread(task);
+    }
 
     /**
      * @description: 最后执行，判断是否需要自动退出助手

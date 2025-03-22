@@ -255,7 +255,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         RotateTransition transition = new RotateTransition(Duration.millis(300), graphic);
         transition.setByAngle(360);
         transition.play();
-        viewModel.updateRoleData();
+        viewModel.updateKujiequRoleData();
     }
 
     @FXML
