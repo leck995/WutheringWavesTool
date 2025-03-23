@@ -3,8 +3,6 @@
 <?import atlantafx.base.controls.ToggleSwitch?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.PieChart?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
@@ -17,26 +15,16 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane prefHeight="700.0" prefWidth="1200.0" styleClass="background" stylesheets="@../css/AnalysisPool.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.AnalysisPoolView">
+<StackPane prefHeight="700.0" prefWidth="1200.0" styleClass="detail-child" stylesheets="@../../css/cardpool/CardPool.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.cardpool.CardDetailAnalysisView">
    <children>
-  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+  <AnchorPane fx:id="contentPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
          <children>
-            <Label styleClass="title-2" text="%ui.analysis.title" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
-            <HBox layoutX="1138.0" layoutY="10.0" spacing="20.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <StackPane layoutX="146.0" layoutY="96.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <ComboBox fx:id="playerComboBox" prefWidth="150.0" />
-                  <Button layoutX="180.0" layoutY="10.0" mnemonicParsing="false" onAction="#export" text="%ui.analysis.export" />
-                  <Button layoutX="252.0" layoutY="10.0" mnemonicParsing="false" onAction="#delete" styleClass="danger" text="%ui.analysis.delete" />
-                  <Button layoutX="180.0" layoutY="10.0" mnemonicParsing="false" onAction="#fresh" styleClass="accent" text="%ui.analysis.account.refresh" />
-                  <Button mnemonicParsing="false" onAction="#load" styleClass="success" text="%ui.analysis.account.get" />
-               </children>
-            </HBox>
-            <StackPane layoutX="146.0" layoutY="96.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
-               <children>
-                  <ListView fx:id="poolListview" maxWidth="820.0" orientation="HORIZONTAL" prefHeight="70.0" prefWidth="820.0" styleClass="select-listview" />
+                  <ListView fx:id="poolListview" maxWidth="820.0" orientation="HORIZONTAL" prefHeight="50.0" prefWidth="820.0" styleClass="select-listview" />
                </children>
             </StackPane>
-            <StackPane layoutY="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="160.0">
+            <StackPane layoutY="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="80.0">
                <children>
                   <HBox fx:id="children" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="100.0">
                      <children>
@@ -116,7 +104,7 @@
                                     <FlowPane fx:id="ssrFlowPane" hgap="10.0" prefHeight="200.0" prefWidth="200.0" styleClass="ssr-thumb" vgap="10.0" />
                                  </content>
                               </ScrollPane>
-                              <ListView fx:id="ssrListView" maxWidth="400.0" minWidth="400.0" prefWidth="400.0" />
+                              <ListView fx:id="ssrListView" maxWidth="400.0" minWidth="400.0" prefWidth="400.0" styleClass="ssr-list-view" />
                            </children>
                         </StackPane>
                      </children>
@@ -126,9 +114,13 @@
                   </HBox>
                </children>
             </StackPane>
-            <ToggleSwitch fx:id="ssrModelSwitch" selected="true" text="%ui.analysis.role.switch" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="75.0" />
-            <Label styleClass="tip" text="%ui.analysis.account.tip" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0" />
+            <ToggleSwitch fx:id="ssrModelSwitch" selected="true" text="%ui.analysis.role.switch" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0" />
          </children>
       </AnchorPane>
+      <StackPane fx:id="emptyPane" prefHeight="150.0" prefWidth="200.0">
+         <children>
+            <Label styleClass="title-3" text="当前无数据，请先使用 获取 功能" translateY="-50.0" />
+         </children>
+      </StackPane>
    </children>
 </StackPane>

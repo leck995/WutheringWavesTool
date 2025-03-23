@@ -12,13 +12,30 @@ public class AnalysisData {
     private String poolName;
     private Integer totalCount; //总抽数
     private Integer currentCount; //当前未出货抽数
+    private Integer noUpSsrCount; //当前未出货抽数
+    private Integer noUpSrCount; //当前未出货抽数
+    private Integer noUpRCount; //当前未出货抽数
+
     private List<SsrData> ssrDataList; //五星
+    private List<SsrData> srDataList; //四星
+    private List<SsrData> rDataList; //三星
+
     private Integer ssrCount; //五星数量
     private Integer srCount;
     private Integer rCount;
+
     private Double ssrAvg; //五星平均抽数
     private Integer ssrMin;//五星最小抽数
     private Integer ssrMax;//五星最大抽数
+    private Double srAvg; //四星平均抽数
+    private Integer srMin;//四星最小抽数
+    private Integer srMax;//四星最大抽数
+    private Double rAvg; //三星平均抽数
+    private Integer rMin;//三星最小抽数
+    private Integer rMax;//三星最大抽数
+
+    private String startDate;
+    private String endDate;
 
     public String getPoolName() {
         return poolName;
@@ -98,5 +115,109 @@ public class AnalysisData {
 
     public void setSsrMax(Integer ssrMax) {
         this.ssrMax = ssrMax;
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(String startDate) {
+        this.startDate = startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(String endDate) {
+        this.endDate = endDate;
+    }
+
+    public Integer getNoUpSsrCount() {
+        return noUpSsrCount;
+    }
+
+    public void setNoUpSsrCount(Integer noUpSsrCount) {
+        this.noUpSsrCount = noUpSsrCount;
+    }
+
+    public Integer getNoUpSrCount() {
+        return noUpSrCount;
+    }
+
+    public void setNoUpSrCount(Integer noUpSrCount) {
+        this.noUpSrCount = noUpSrCount;
+    }
+
+    public Integer getNoUpRCount() {
+        return noUpRCount;
+    }
+
+    public void setNoUpRCount(Integer noUpRCount) {
+        this.noUpRCount = noUpRCount;
+    }
+
+    public List<SsrData> getSrDataList() {
+        return srDataList;
+    }
+
+    public void setSrDataList(List<SsrData> srDataList) {
+        this.srDataList = srDataList;
+    }
+
+    public List<SsrData> getrDataList() {
+        return rDataList;
+    }
+
+    public void setrDataList(List<SsrData> rDataList) {
+        this.rDataList = rDataList;
+    }
+
+    public Double getSrAvg() {
+        return srAvg;
+    }
+
+    public void setSrAvg(Double srAvg) {
+        this.srAvg = srAvg;
+    }
+
+    public Integer getSrMin() {
+        return srMin;
+    }
+
+    public void setSrMin(Integer srMin) {
+        this.srMin = srMin;
+    }
+
+    public Integer getSrMax() {
+        return srMax;
+    }
+
+    public void setSrMax(Integer srMax) {
+        this.srMax = srMax;
+    }
+
+    public Double getrAvg() {
+        return rAvg;
+    }
+
+    public void setrAvg(Double rAvg) {
+        this.rAvg = rAvg;
+    }
+
+    public Integer getrMin() {
+        return rMin;
+    }
+
+    public void setrMin(Integer rMin) {
+        this.rMin = rMin;
+    }
+
+    public Integer getrMax() {
+        return rMax;
+    }
+
+    public void setrMax(Integer rMax) {
+        this.rMax = rMax;
     }
 }

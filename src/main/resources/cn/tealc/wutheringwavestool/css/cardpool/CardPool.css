@@ -1,0 +1,342 @@
+.list-view{
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+.list-view:hover{
+    -fx-padding: 0;
+}
+.list-view .list-cell{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+.list-view .list-cell:hover,
+.list-view .list-cell:selected{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.list-view  > .virtual-flow > .scroll-bar{
+    -fx-background-color: transparent;
+}
+
+.list-view  > .virtual-flow > .scroll-bar:vertical .thumb,
+.list-view  > .virtual-flow > .scroll-bar:vertical .track{
+    -fx-background-color: transparent;
+}
+.list-view:hover  > .virtual-flow > .scroll-bar:vertical .thumb {
+    -fx-background-color: -color-hover-emphasis;
+}
+.list-view > .virtual-flow > .scroll-bar:horizontal .thumb{
+    -fx-background-color: -color-hover-emphasis;
+}
+
+
+
+/*==============================base============================================*/
+.card-pool{
+
+}
+
+.card-pool .separator {
+    -fx-padding: 6 0 6 0;
+}
+.card-pool .separator > .line{
+    -fx-border-color: #00000070;
+    -fx-border-insets: 1px 0 0 0;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+}
+.card-pool .child-select{
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-font-muted;
+    -fx-font-weight: bold;
+    -fx-graphic-text-gap: 2;
+    -fx-padding: 3;
+    -fx-cursor: hand;
+}
+.card-pool .child-select:hover{
+    -fx-text-fill: -color-accent-fg;
+}
+.card-pool .child-select > Pane{
+    -fx-pref-width: 25;
+    -fx-pref-height: 3;
+    -fx-background-radius: 3px;
+    -fx-background-color: transparent;
+}
+
+
+.card-pool .toggle-button:selected > Pane{
+    -fx-background-color: -color-accent-fg;
+}
+
+
+
+
+/*==============================detail============================================*/
+.detail-child{
+
+}
+/*卡池名称列表*/
+.detail-child .select-listview .list-cell{
+    -fx-font-size: 1em;              /* 14px */
+    -fx-padding: 0.357em;
+}
+.detail-child .select-listview .list-cell:selected .label{
+    -fx-text-fill:#ffffff;
+    -fx-background-color: #0969da;
+}
+.detail-child .select-listview .list-cell .label{
+    -fx-max-height: 5em;             /* 70px */
+    -fx-pref-height: 4.286em;        /* 60px */
+    -fx-pref-width: 7.143em;         /* 100px */
+    -fx-font-size: 1em;              /* 14px */
+    -fx-padding: 0.214em;
+    -fx-background-color: -color-bg-default-50;
+    -fx-background-radius: 5;
+}
+
+
+
+
+.detail-child .default-color0.chart-pie { -fx-pie-color: #f1d358; }
+.detail-child .default-color1.chart-pie { -fx-pie-color: #C48FD8; }
+.detail-child .default-color2.chart-pie { -fx-pie-color: #22bad9; }
+.detail-child .default-color3.chart-pie { -fx-pie-color: #0181e2; }
+.detail-child .default-color4.chart-pie { -fx-pie-color: #2f357f; }
+.detail-child .default-color5.chart-pie { -fx-pie-color: #860061; }
+.detail-child .default-color6.chart-pie { -fx-pie-color: #c62b00; }
+.detail-child .default-color7.chart-pie { -fx-pie-color: #ff5700; }
+
+
+.detail-child .ssr-label{
+    -fx-text-fill: #f1d358;
+    -fx-font-size: 1em;
+    -fx-font-weight: bold;
+}
+.detail-child .sr-label{
+    -fx-text-fill: #933fb1;
+    -fx-font-size: 1em;
+    -fx-font-weight: bold;
+}
+.detail-child .r-label{
+    -fx-text-fill: #04b6c6;
+    -fx-font-size: 1em;
+    -fx-font-weight: bold;
+}
+.detail-child .total-label{
+    -fx-text-fill: #ff6666;
+    -fx-font-size: 1em;
+    -fx-font-weight: bold;
+    -fx-padding: 0 5 0 5;
+}
+.detail-child .current-label{
+    -fx-text-fill: #ff6666;
+    -fx-font-size: 1em;
+    -fx-font-weight: bold;
+    -fx-padding: 0 5 0 5;
+}
+
+
+.detail-child  .tip{
+    -fx-text-fill: -color-font-subtle;
+    -fx-font-size: 0.857em;  /* 12px */
+}
+
+.detail-child .left{
+    -fx-background-radius: 0.571em;  /* 8px */
+    -fx-padding: 0.714em;
+}
+
+.detail-child .ssr-list-view{
+    -fx-border-color: transparent;
+    -fx-background-radius: 0.286em;  /* 4px */
+}
+
+.detail-child .ssr-list-view .list-cell{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0.357em;
+}
+.detail-child .ssr-list-view .list-cell:hover,
+.detail-child .ssr-list-view .list-cell:selected{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.detail-child .role-pane{
+    -fx-padding: 0.714em;            /* 10px */
+    -fx-background-radius: 0.571em;  /* 8px */
+    -fx-background-color: -color-bg-default-50;
+}
+.detail-child .role-pane .role-name{
+    -fx-font-size: 1.214em;
+}
+.detail-child .role-pane .role-date{
+    -fx-text-fill: -color-font-subtle;
+}
+.detail-child .role-pane .role-desc{
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+    -fx-font-size: 1.429em;
+    -fx-pref-width: 1.786em;
+}
+
+.detail-child .role-pane  .progress-bar > .bar{
+    -fx-padding: 0.286em;
+}
+.detail-child .role-pane  .progress-bar > .track{
+    -fx-background-color: #dfdede;
+}
+
+
+
+
+
+
+
+.detail-child .scroll-pane .scroll-bar{
+    -fx-background-color: transparent;
+}
+.detail-child .scroll-pane .scroll-bar:vertical .thumb,
+.detail-child .scroll-pane .scroll-bar:vertical .track{
+    -fx-background-color: transparent;
+
+}
+.detail-child .scroll-pane:hover .scroll-bar:vertical .thumb {
+    -fx-background-color: -color-hover-emphasis;
+}
+.detail-child .scroll-pane .scroll-bar:horizontal .thumb{
+    -fx-background-color: transparent;
+}
+
+
+
+.detail-child .analysis-pool .separator{
+    -fx-padding: 4 0 8 0;
+}
+.detail-child .analysis-pool .separator > .line{
+    -fx-border-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #77767680 0.0%, #77767600 100.0%) transparent transparent transparent;
+    -fx-border-insets: 1px 0 0 0;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+}
+
+.detail-child .analysis-pool .data-show{
+    -fx-background-radius: 8px;
+}
+
+.detail-child .analysis-pool .data-child{
+    -fx-background-color: -color-bg-default-30;
+    -fx-background-radius: 0.357em;  /* 5px */
+    -fx-padding: 0.357em 0.714em;    /* 5px 10px */
+    -fx-spacing: 5;
+
+}
+.detail-child .analysis-pool .data-child .title{
+    -fx-font-size: 1.286em;
+    -fx-font-weight: bold;
+}
+
+
+/*网格视图子项样式*/
+.detail-child .ssr-thumb .child{
+    -fx-background-radius: 8;
+    -fx-background-color: -color-bg-default-40;
+}
+.detail-child .ssr-thumb .child .count{
+    -fx-font-size: 14;
+}
+
+
+
+
+
+/*==============================common============================================*/
+.common-child{
+
+}
+.common-child .pool-pane{
+    -fx-padding: 8px;
+    -fx-background-radius: 10px;
+    -fx-background-color: -color-bg-default-50;
+}
+.common-child .pool-pane .separator{
+    -fx-padding: 4 0 8 0;
+}
+.common-child .pool-pane .separator > .line{
+    -fx-border-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #cccbcb70 0.0%,#cccbcb 50.0%, #cccbcb70 100.0%) transparent transparent transparent;
+    -fx-border-insets: 1px 0 0 0;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+}
+.common-child .pool-pane > .date{
+    -fx-text-fill: -color-font-subtle;
+    -fx-font-size: 1.0em;
+}
+
+.common-child .pool-pane > StackPane.conclusion > .label{
+    -fx-text-fill: -color-fg-muted;
+    -fx-font-weight: bold;
+    -fx-font-size: 1.1em;
+}
+
+.common-child .list-view{
+    -fx-padding: 5 0 0 0;
+}
+.common-child .list-view .list-cell{
+    -fx-padding: 0.15em 0 0.15em 0;
+}
+
+
+.common-child .list-view > .virtual-flow > .scroll-bar:vertical {
+    -fx-pref-width: 3px;
+}
+
+
+.common-child .role-cell{
+    -fx-padding: 0.2em 0.2em 0 0.2em;            /* 10px */
+    -fx-background-radius: 0.571em;  /* 8px */
+    -fx-background-color: -color-bg-default-50;
+}
+.common-child .role-cell .role-name{
+    -fx-font-size: 1.1em;
+    -fx-font-weight: bold;
+}
+.common-child .role-cell .role-name.up{
+    -fx-text-fill: #ca3e3e;
+}
+.common-child .role-cell .role-name.unup{
+    -fx-text-fill: #269578;
+}
+
+
+.common-child .role-cell .role-date{
+    -fx-text-fill: -color-font-subtle;
+    -fx-font-size: 1.0em;
+}
+.common-child .role-cell .role-desc{
+    -fx-font-weight: bold;
+    -fx-font-size: 1.1em;          /* 20px */
+    -fx-pref-width: 1.786em;
+    -fx-rotate: 15;
+}
+/*.common-child .role-cell .role-desc.up{
+    -fx-text-fill: #ffbe79;
+}
+.common-child .role-cell .role-desc.unup{
+    -fx-text-fill: #f1305c;
+}
+
+*/
+.common-child .role-cell .progress-bar > .track {
+    -fx-background-color: transparent;
+}
+.common-child .role-cell .progress-bar > .bar {
+    -fx-padding: 1px;
+}
+.common-child .role-cell .progress-bar.up > .bar {
+    -fx-background-color: #ca3e3e;
+}
+.common-child .role-cell .progress-bar.unup > .bar {
+    -fx-background-color: #269578;
+}
