@@ -33,7 +33,9 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.io.IOException;
-
+/**
+* 自1.3.0以后不再支持使用此类启动程序
+* */
 public class MainApplication extends Application {
     private static final Logger LOG=LoggerFactory.getLogger(MainApplication.class);
     public static Stage window;
@@ -44,20 +46,13 @@ public class MainApplication extends Application {
     private static AppLocked appLocked;
 
     public MainApplication() {
-        System.setProperty("prism.lcdtext", "false");
-        System.setProperty("LcdFontSmoothing", "true");
-        System.setProperty("prism.text", "t2k");
-
-
         MvvmFX.setGlobalResourceBundle(Config.language);
         MvvmFX.setGlobalResourceBundle(Config.language);
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory
                 .getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.toLevel(Config.setting.getLogLevel()));
-
         Platform.setImplicitExit(false);
         appLocked = new AppLocked();
-
     }
 
     @Override
@@ -145,10 +140,6 @@ public class MainApplication extends Application {
         window.close();
         appLocked.release();
         System.exit(0);
-    }
-
-    public static void main(String[] args) {
-        launch();
     }
 
     private void createTrayIcon() {

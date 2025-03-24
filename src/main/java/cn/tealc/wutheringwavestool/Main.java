@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool;
 
+import cn.tealc.wutheringwavestool.base.Config;
 import javafx.application.Application;
 
 import java.io.File;
@@ -12,6 +13,14 @@ import java.io.File;
  */
 public class Main {
     public static void main(String[] args) {
+        System.setProperty("prism.lcdtext", "false");
+        System.setProperty("LcdFontSmoothing", "true");
+        System.setProperty("prism.text", "t2k");
+
+        if (Config.setting.getUiScale() != 100){
+            System.setProperty("glass.win.uiScale", Config.setting.getUiScale() + "%");
+        }
+
         Application.launch(MainApplication.class,args);
     }
 

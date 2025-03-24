@@ -62,7 +62,29 @@
 .setting .left .input-group > .button:hover .ikonli-font-icon{
     -fx-icon-color: -color-accent-emphasis;
 }
+.setting .left .spinner{
+    -fx-pref-width: 150;
+    -fx-background-radius: 20;
+    -fx-padding: 2 12 2 5;
+    -fx-background-color: -color-bg-default-60;
+    -fx-border-color: transparent;
+}
+.setting .left .spinner > .text-field{
+    -fx-background-color: transparent;
+}
 
+.setting .left .spinner > .decrement-arrow-button,
+.setting .left .spinner > .increment-arrow-button{
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0 0 4px 0;
+    -fx-padding: 5px;
+}
+.setting .left .spinner > .decrement-arrow-button:hover,
+.setting .left .spinner > .increment-arrow-button:hover{
+    -fx-background-color: -color-base-2;
+    -fx-cursor: hand;
+}
 
 
 .setting .right{

@@ -8,6 +8,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.ImageView?>
@@ -83,11 +84,11 @@
                         <Label styleClass="title-3" text="%ui.setting.base.title" />
                         <VBox spacing="10.0">
                            <children>
-                              <Label contentDisplay="RIGHT" styleClass="title-4" text="%ui.setting.base.titlebar">
+                              <Label contentDisplay="RIGHT" styleClass="title-4" text="%ui.setting.base.ui_scale">
                                  <graphic>
-                                    <Label styleClass="tip" text="%ui.setting.base.titlebar.tip" />
+                                    <Label styleClass="tip" text="%ui.setting.base.ui_scale.tip" />
                                  </graphic></Label>
-                              <ToggleSwitch fx:id="titlebarSwitch" disable="true" labelPosition="RIGHT" selected="true" text="%ui.setting.base.titlebar.switch" />
+                              <Spinner fx:id="uiScaleSpinner" />
                               <Label styleClass="title-4" text="%ui.setting.base.firstView" />
                               <CheckBox fx:id="startWithAnalysisView" mnemonicParsing="false" text="%ui.setting.base.firstView.card" />
                               <Label contentDisplay="RIGHT" styleClass="title-4" text="%ui.setting.base.kujiequ">

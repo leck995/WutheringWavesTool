@@ -88,8 +88,6 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
     @FXML
     private StackPane diyBgInputGroup;
     @FXML
-    private ToggleSwitch titlebarSwitch;
-    @FXML
     private ToggleSwitch versionCheckSwitch;
     @FXML
     private ToggleSwitch noKuJieQuSwitch;
@@ -121,8 +119,17 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
     @FXML
     private StackPane diyBgDirInputGroup;
 
+    @FXML
+    private Spinner<Integer> uiScaleSpinner;
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(75, 125,  Config.setting.getUiScale(), 5);
+        uiScaleSpinner.setValueFactory(valueFactory);
+        uiScaleSpinner.valueProperty().addListener((observableValue, integer, t1) -> {
+            if (t1 != null) {
+                Config.setting.setUiScale(t1);
+            }
+        });
 
         gameDirField.textProperty().bindBidirectional(viewModel.gameDirProperty());
         startWithAnalysisView.selectedProperty().bindBidirectional(viewModel.startWithAnalysisProperty());
@@ -353,7 +360,7 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
     void toQQGroup(ActionEvent event) {
         Clipboard clipboard = Clipboard.getSystemClipboard();
         ClipboardContent content = new ClipboardContent();
-        content.putString("234294078");
+        content.putString(LanguageManager.getString("ui.setting.communication.QQ"));
         clipboard.setContent(content);
         MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,LanguageManager.getString("ui.setting.communication.QQ.tip")));
     }

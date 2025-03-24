@@ -31,6 +31,7 @@ public class Setting {
     private SimpleObjectProperty<Locale> language = new SimpleObjectProperty<>(Locale.getDefault());
     private SimpleDoubleProperty appWidth=new SimpleDoubleProperty(1280.0);
     private SimpleDoubleProperty appHeight=new SimpleDoubleProperty(760.0);
+    private SimpleIntegerProperty uiScale=new SimpleIntegerProperty(100);
 
     private SimpleBooleanProperty leftBarShow=new SimpleBooleanProperty(true); //左侧菜单栏是否关闭
     private SimpleBooleanProperty theme=new SimpleBooleanProperty(false); //主题，false为亮色
@@ -485,5 +486,17 @@ public class Setting {
 
     public void setStartUpParams(ObservableList<String> startUpParams) {
         this.startUpParams = startUpParams;
+    }
+
+    public int getUiScale() {
+        return uiScale.get();
+    }
+
+    public SimpleIntegerProperty uiScaleProperty() {
+        return uiScale;
+    }
+
+    public void setUiScale(int uiScale) {
+        this.uiScale.set(uiScale);
     }
 }
