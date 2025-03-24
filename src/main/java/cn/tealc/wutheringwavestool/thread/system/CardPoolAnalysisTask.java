@@ -44,7 +44,12 @@ public class CardPoolAnalysisTask extends Task<ResponseBody<List<AnalysisData>>>
                 });
                 List<AnalysisData> list = new ArrayList<>();
                 for (Map.Entry<String, List<CardInfo>> entry : poolData.entrySet()) {
-                    list.add(analysis(entry.getKey(), entry.getValue().stream().toList()));
+                    if (!entry.getValue().isEmpty()){
+                        list.add(analysis(entry.getKey(), entry.getValue().stream().toList()));
+                    }else {
+                        list.add(analysis(entry.getKey(), new ArrayList<>()));
+                    }
+
                 }
                 return ResponseBody.create(200,"分析完成", list);
             }
@@ -60,6 +65,12 @@ public class CardPoolAnalysisTask extends Task<ResponseBody<List<AnalysisData>>>
         AnalysisData analysisData = new AnalysisData();
         analysisData.setTotalCount(cardInfoList.size());
         analysisData.setPoolName(name);
+
+        if (cardInfoList.isEmpty()){
+            analysisData.setEmpty(true);
+            return analysisData;
+        }
+        analysisData.setEmpty(false);
         analysisData.setStartDate(getStartDate(cardInfoList));
         analysisData.setEndDate(getEndDate(cardInfoList));
 

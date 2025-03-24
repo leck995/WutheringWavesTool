@@ -133,57 +133,109 @@ public class CardCommonAnalysisViewModel implements ViewModel {
     }
 
     private void updatePlayer(List<AnalysisData> list) {
-        updateRoleEvent(list.get(0));
-        updateWeaponEvent(list.get(1));
-        updateRoleBase(list.get(2));
-        updateWeaponBase(list.get(3));
+        if (list.size() > 0) {
+            updateRoleEvent(list.get(0));
+        }
+        if (list.size() > 1) {
+            updateWeaponEvent(list.get(1));
+        }
+        if (list.size() > 2) {
+            updateRoleBase(list.get(2));
+        }
+        if (list.size() > 3) {
+            updateWeaponBase(list.get(3));
+        }
     }
 
     private static final String AVG_TEMPLATE = "%.0f";
     private static final String PERCENT_TEMPLATE = "%d  [%05.2f%%]";
     private void updateRoleEvent(AnalysisData data){
         roleEventTitleLabel.set(data.getPoolName());
-        roleEventTimeLabel.set(data.getStartDate() +" - "+ data.getEndDate());
         roleEventTotalTimeLabel.set(String.valueOf(data.getTotalCount()));
-        roleEventSsrNoUpLabel.set(String.valueOf(data.getNoUpSsrCount()));
-        roleEventSrNoUpLabel.set(String.valueOf(data.getNoUpSrCount()));
-        roleEventSsrAvgLabel.set(String.format(AVG_TEMPLATE,data.getSsrAvg()));
-        roleEventSsrCountLabel.set(String.format(PERCENT_TEMPLATE,data.getSsrCount(),(double)data.getSsrCount() / data.getTotalCount() * 100.0));
-        roleEventSrCountLabel.set(String.format(PERCENT_TEMPLATE,data.getSrCount(),(double)data.getSrCount() / data.getTotalCount() * 100));
-        roleEventSsrList.setAll(data.getSsrDataList());
+        if (data.isEmpty()){
+            roleEventTimeLabel.set("No Data");
+            roleEventSsrNoUpLabel.set("0");
+            roleEventSrNoUpLabel.set("0");
+            roleEventSsrAvgLabel.set("0");
+            roleEventSsrCountLabel.set("0");
+            roleEventSrCountLabel.set("0");
+            roleEventSsrList.clear();
+        }else {
+            roleEventTimeLabel.set(data.getStartDate() +" - "+ data.getEndDate());
+            roleEventSsrNoUpLabel.set(String.valueOf(data.getNoUpSsrCount()));
+            roleEventSrNoUpLabel.set(String.valueOf(data.getNoUpSrCount()));
+            roleEventSsrAvgLabel.set(String.format(AVG_TEMPLATE,data.getSsrAvg()));
+            roleEventSsrCountLabel.set(String.format(PERCENT_TEMPLATE,data.getSsrCount(),(double)data.getSsrCount() / data.getTotalCount() * 100.0));
+            roleEventSrCountLabel.set(String.format(PERCENT_TEMPLATE,data.getSrCount(),(double)data.getSrCount() / data.getTotalCount() * 100));
+            roleEventSsrList.setAll(data.getSsrDataList());
+        }
     }
     private void updateRoleBase(AnalysisData data){
         roleBaseTitleLabel.set(data.getPoolName());
-        roleBaseTimeLabel.set(data.getStartDate() +" - "+ data.getEndDate());
         roleBaseTotalTimeLabel.set(String.valueOf(data.getTotalCount()));
-        roleBaseSsrNoUpLabel.set(String.valueOf(data.getNoUpSsrCount()));
-        roleBaseSrNoUpLabel.set(String.valueOf(data.getNoUpSrCount()));
-        roleBaseSsrAvgLabel.set(String.format(AVG_TEMPLATE,data.getSsrAvg()));
-        roleBaseSsrCountLabel.set(String.format(PERCENT_TEMPLATE,data.getSsrCount(),(double)data.getSsrCount() / data.getTotalCount() * 100));
-        roleBaseSrCountLabel.set(String.format(PERCENT_TEMPLATE,data.getSrCount(),(double)data.getSrCount() / data.getTotalCount() * 100));
-        roleBaseSsrList.setAll(data.getSsrDataList());
+        if (data.isEmpty()){
+            roleBaseTimeLabel.set("No Data");
+            roleBaseSsrNoUpLabel.set("0");
+            roleBaseSrNoUpLabel.set("0");
+            roleBaseSsrAvgLabel.set("0");
+            roleBaseSsrCountLabel.set("0");
+            roleBaseSrCountLabel.set("0");
+            roleBaseSsrList.clear();
+        }else {
+            roleBaseTimeLabel.set(data.getStartDate() +" - "+ data.getEndDate());
+            roleBaseSsrNoUpLabel.set(String.valueOf(data.getNoUpSsrCount()));
+            roleBaseSrNoUpLabel.set(String.valueOf(data.getNoUpSrCount()));
+            roleBaseSsrAvgLabel.set(String.format(AVG_TEMPLATE,data.getSsrAvg()));
+            roleBaseSsrCountLabel.set(String.format(PERCENT_TEMPLATE,data.getSsrCount(),(double)data.getSsrCount() / data.getTotalCount() * 100));
+            roleBaseSrCountLabel.set(String.format(PERCENT_TEMPLATE,data.getSrCount(),(double)data.getSrCount() / data.getTotalCount() * 100));
+            roleBaseSsrList.setAll(data.getSsrDataList());
+        }
+
     }
     private void updateWeaponEvent(AnalysisData data){
         weaponEventTitleLabel.set(data.getPoolName());
-        weaponEventTimeLabel.set(data.getStartDate() +" - "+ data.getEndDate());
         weaponEventTotalTimeLabel.set(String.valueOf(data.getTotalCount()));
-        weaponEventSsrNoUpLabel.set(String.valueOf(data.getNoUpSsrCount()));
-        weaponEventSrNoUpLabel.set(String.valueOf(data.getNoUpSrCount()));
-        weaponEventSsrAvgLabel.set(String.format(AVG_TEMPLATE,data.getSsrAvg()));
-        weaponEventSsrCountLabel.set(String.format(PERCENT_TEMPLATE,data.getSsrCount(),(double)data.getSsrCount() / data.getTotalCount() * 100));
-        weaponEventSrCountLabel.set(String.format(PERCENT_TEMPLATE,data.getSrCount(),(double)data.getSrCount() / data.getTotalCount() * 100));
-        weaponEventSsrList.setAll(data.getSsrDataList());
+        if (data.isEmpty()){
+            weaponEventTimeLabel.set("No Data");
+            weaponEventSsrNoUpLabel.set("0");
+            weaponEventSrNoUpLabel.set("0");
+            weaponEventSsrAvgLabel.set("0");
+            weaponEventSsrCountLabel.set("0");
+            weaponEventSrCountLabel.set("0");
+            weaponEventSsrList.clear();
+        }else {
+            weaponEventTimeLabel.set(data.getStartDate() +" - "+ data.getEndDate());
+            weaponEventSsrNoUpLabel.set(String.valueOf(data.getNoUpSsrCount()));
+            weaponEventSrNoUpLabel.set(String.valueOf(data.getNoUpSrCount()));
+            weaponEventSsrAvgLabel.set(String.format(AVG_TEMPLATE,data.getSsrAvg()));
+            weaponEventSsrCountLabel.set(String.format(PERCENT_TEMPLATE,data.getSsrCount(),(double)data.getSsrCount() / data.getTotalCount() * 100));
+            weaponEventSrCountLabel.set(String.format(PERCENT_TEMPLATE,data.getSrCount(),(double)data.getSrCount() / data.getTotalCount() * 100));
+            weaponEventSsrList.setAll(data.getSsrDataList());
+        }
+
     }
     private void updateWeaponBase(AnalysisData data){
         weaponBaseTitleLabel.set(data.getPoolName());
-        weaponBaseTimeLabel.set(data.getStartDate() +" - "+ data.getEndDate());
         weaponBaseTotalTimeLabel.set(String.valueOf(data.getTotalCount()));
-        weaponBaseSsrNoUpLabel.set(String.valueOf(data.getNoUpSsrCount()));
-        weaponBaseSrNoUpLabel.set(String.valueOf(data.getNoUpSrCount()));
-        weaponBaseSsrAvgLabel.set(String.format(AVG_TEMPLATE,data.getSsrAvg()));
-        weaponBaseSsrCountLabel.set(String.format(PERCENT_TEMPLATE,data.getSsrCount(),(double)data.getSsrCount() / data.getTotalCount() * 100));
-        weaponBaseSrCountLabel.set(String.format(PERCENT_TEMPLATE,data.getSrCount(),(double)data.getSrCount() / data.getTotalCount() * 100));
-        weaponBaseSsrList.setAll(data.getSsrDataList());
+        if (data.isEmpty()){
+            weaponBaseTimeLabel.set("No Data");
+            weaponBaseTotalTimeLabel.set("0");
+            weaponBaseSsrNoUpLabel.set("0");
+            weaponBaseSrNoUpLabel.set("0");
+            weaponBaseSsrAvgLabel.set("0");
+            weaponBaseSsrCountLabel.set("0");
+            weaponBaseSrCountLabel.set("0");
+            weaponBaseSsrList.clear();
+        }else {
+            weaponBaseTimeLabel.set(data.getStartDate() +" - "+ data.getEndDate());
+            weaponBaseTotalTimeLabel.set(String.valueOf(data.getTotalCount()));
+            weaponBaseSsrNoUpLabel.set(String.valueOf(data.getNoUpSsrCount()));
+            weaponBaseSrNoUpLabel.set(String.valueOf(data.getNoUpSrCount()));
+            weaponBaseSsrAvgLabel.set(String.format(AVG_TEMPLATE,data.getSsrAvg()));
+            weaponBaseSsrCountLabel.set(String.format(PERCENT_TEMPLATE,data.getSsrCount(),(double)data.getSsrCount() / data.getTotalCount() * 100));
+            weaponBaseSrCountLabel.set(String.format(PERCENT_TEMPLATE,data.getSrCount(),(double)data.getSrCount() / data.getTotalCount() * 100));
+            weaponBaseSsrList.setAll(data.getSsrDataList());
+        }
     }
 
 

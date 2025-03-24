@@ -24,32 +24,32 @@
                   <Separator prefWidth="200.0" />
                   <StackPane styleClass="conclusion">
                      <children>
-                        <Label text="4☆已垫" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.sr.noup" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="roleEventSrNoUpLabel" text="15" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
                   <StackPane layoutX="10.0" layoutY="82.0" styleClass="conclusion">
                      <children>
-                        <Label text="5☆已垫" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.ssr.noup" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="roleEventSsrNoUpLabel" text="15" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
                   <StackPane layoutX="10.0" layoutY="101.0" styleClass="conclusion">
                      <children>
-                        <Label text="5☆平均" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.ssr.avg" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="roleEventSsrAvgLabel" text="15" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
                   <Separator layoutX="10.0" layoutY="57.0" prefWidth="200.0" />
                   <StackPane layoutX="10.0" layoutY="120.0" styleClass="conclusion">
                      <children>
-                        <Label text="5☆统计" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.ssr.count" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="roleEventSsrCountLabel" text="3  [01.84%]" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
                   <StackPane layoutX="10.0" layoutY="139.0" styleClass="conclusion">
                      <children>
-                        <Label text="4☆统计" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.sr.count" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="roleEventSrCountLabel" text="12  [01.84%]" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
@@ -68,32 +68,32 @@
                   <Separator prefWidth="200.0" />
                   <StackPane styleClass="conclusion">
                      <children>
-                        <Label text="4☆已垫" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.sr.noup" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="weaponEventSrNoUpLabel" text="15" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
                   <StackPane layoutX="10.0" layoutY="82.0" styleClass="conclusion">
                      <children>
-                        <Label text="5☆已垫" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.ssr.noup" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="weaponEventSsrNoUpLabel" text="15" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
                   <StackPane layoutX="10.0" layoutY="101.0" styleClass="conclusion">
                      <children>
-                        <Label text="5☆平均" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.ssr.avg" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="weaponEventSsrAvgLabel" text="15" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
                   <Separator layoutX="10.0" layoutY="57.0" prefWidth="200.0" />
                   <StackPane layoutX="10.0" layoutY="120.0" styleClass="conclusion">
                      <children>
-                        <Label text="5☆统计" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.ssr.count" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="weaponEventSsrCountLabel" text="3  [01.84%]" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
                   <StackPane layoutX="10.0" layoutY="139.0" styleClass="conclusion">
                      <children>
-                        <Label text="4☆统计" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.sr.count" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="weaponEventSrCountLabel" text="12  [01.84%]" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
@@ -112,32 +112,32 @@
                   <Separator prefWidth="200.0" />
                   <StackPane styleClass="conclusion">
                      <children>
-                        <Label text="4☆已垫" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.sr.noup" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="roleBaseSrNoUpLabel" text="15" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
                   <StackPane layoutX="10.0" layoutY="82.0" styleClass="conclusion">
                      <children>
-                        <Label text="5☆已垫" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.ssr.noup" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="roleBaseSsrNoUpLabel" text="15" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
                   <StackPane layoutX="10.0" layoutY="101.0" styleClass="conclusion">
                      <children>
-                        <Label text="5☆平均" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.ssr.avg" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="roleBaseSsrAvgLabel" text="15" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
                   <Separator layoutX="10.0" layoutY="57.0" prefWidth="200.0" />
                   <StackPane layoutX="10.0" layoutY="120.0" styleClass="conclusion">
                      <children>
-                        <Label text="5☆统计" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.ssr.count" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="roleBaseSsrCountLabel" text="3  [01.84%]" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
                   <StackPane layoutX="10.0" layoutY="139.0" styleClass="conclusion">
                      <children>
-                        <Label text="4☆统计" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.sr.count" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="roleBaseSrCountLabel" text="12  [01.84%]" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
@@ -156,32 +156,32 @@
                   <Separator prefWidth="200.0" />
                   <StackPane styleClass="conclusion">
                      <children>
-                        <Label text="4☆已垫" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.sr.noup" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="weaponBaseSrNoUpLabel" text="15" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
                   <StackPane layoutX="10.0" layoutY="82.0" styleClass="conclusion">
                      <children>
-                        <Label text="5☆已垫" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.ssr.noup" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="weaponBaseSsrNoUpLabel" text="15" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
                   <StackPane layoutX="10.0" layoutY="101.0" styleClass="conclusion">
                      <children>
-                        <Label text="5☆平均" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.ssr.avg" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="weaponBaseSsrAvgLabel" text="15" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
                   <Separator layoutX="10.0" layoutY="57.0" prefWidth="200.0" />
                   <StackPane layoutX="10.0" layoutY="120.0" styleClass="conclusion">
                      <children>
-                        <Label text="5☆统计" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.ssr.count" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="weaponBaseSsrCountLabel" text="3  [01.84%]" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
                   <StackPane layoutX="10.0" layoutY="139.0" styleClass="conclusion">
                      <children>
-                        <Label text="4☆统计" StackPane.alignment="CENTER_LEFT" />
+                        <Label text="%ui.analysis.common.sr.count" StackPane.alignment="CENTER_LEFT" />
                         <Label fx:id="weaponBaseSrCountLabel" text="12  [01.84%]" StackPane.alignment="CENTER_RIGHT" />
                      </children>
                   </StackPane>
@@ -190,7 +190,7 @@
             </VBox>
          </children>
       </HBox>
-      <StackPane fx:id="emptyPane" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <StackPane fx:id="emptyPane" prefHeight="150.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <Label styleClass="title-3" text="当前无数据，请先使用 获取 功能" translateY="-50.0" />
          </children>

@@ -45,6 +45,9 @@ public class CardAnalysisBaseViewModel implements ViewModel {
         loadFile(player.get());
     }
 
+
+
+
     public void loadFile(String playerId) {
         //查看本地是否存有数据，有则加载
         File dataDir = new File("data");
@@ -57,6 +60,7 @@ public class CardAnalysisBaseViewModel implements ViewModel {
                 playerList.setAll(directoryNames);
             }
             if (playerId != null && !playerList.isEmpty() && playerList.contains(playerId)) {
+                player.set(playerId);
                 analysis(playerId);
             } else {
                 if (!playerList.isEmpty()) {

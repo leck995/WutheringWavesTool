@@ -112,6 +112,11 @@
                         <Insets left="200.0" right="100.0" />
                      </padding>
                   </HBox>
+                  <StackPane fx:id="poolEmptyPane" prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <Label styleClass="title-3" text="%ui.analysis.pool.tip.empty02" />
+                     </children>
+                  </StackPane>
                </children>
             </StackPane>
             <ToggleSwitch fx:id="ssrModelSwitch" selected="true" text="%ui.analysis.role.switch" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0" />
@@ -119,7 +124,7 @@
       </AnchorPane>
       <StackPane fx:id="emptyPane" prefHeight="150.0" prefWidth="200.0">
          <children>
-            <Label styleClass="title-3" text="当前无数据，请先使用 获取 功能" translateY="-50.0" />
+            <Label styleClass="title-3" text="%ui.analysis.pool.tip.empty01" translateY="-50.0" />
          </children>
       </StackPane>
    </children>

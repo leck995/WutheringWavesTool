@@ -64,7 +64,7 @@ public class CardDetailAnalysisViewModel implements ViewModel {
 
     private SimpleBooleanProperty ssrModel=new SimpleBooleanProperty();
     private SimpleBooleanProperty empty = new SimpleBooleanProperty(true);
-
+    private SimpleBooleanProperty poolEmpty = new SimpleBooleanProperty(true);
     public CardDetailAnalysisViewModel() {
         ssrModel.bindBidirectional(Config.setting.gachaListModelProperty());
         NotificationManager.subscribe(NotificationKey.CARD_POOL_USER_UPDATE,(s, objects) -> {
@@ -95,7 +95,14 @@ public class CardDetailAnalysisViewModel implements ViewModel {
      */
     public void changePool(int index){
         AnalysisData analysis = analysisDataList.get(index);
-        updatePoolDate(analysis);
+        if (analysis.isEmpty()){
+            poolEmpty.set(true);
+            resetCurrentPool();
+        }else {
+            poolEmpty.set(false);
+            updatePoolDate(analysis);
+        }
+
     }
 
     /**
@@ -108,7 +115,7 @@ public class CardDetailAnalysisViewModel implements ViewModel {
         //文本
         totalText.set(String.valueOf(analysis.getTotalCount()));
         totalCostText.set(String.valueOf(analysis.getTotalCount() * 160));
-        currentText.set(String.valueOf(analysis.getCurrentCount()));
+        currentText.set(String.valueOf(analysis.getNoUpSsrCount()));
         ssrText1.set(String.format("SSR: %d",analysis.getSsrCount()));
         ssrText2.set(String.format("[ %.3f ]",((double)analysis.getSsrCount()/(double)analysis.getTotalCount())));
         srText1.set(String.format("SR: %d",analysis.getSrCount()));
@@ -136,7 +143,12 @@ public class CardDetailAnalysisViewModel implements ViewModel {
         pieChartDataList.add(new PieChart.Data("R",analysis.getrCount()));
         pieChartData.setAll(pieChartDataList);
     }
-    private void reset(){
+
+
+    /**
+     * 当当前卡池为空时，清除残余数据
+     */
+    private void resetCurrentPool(){
         totalText.set(null);
         totalCostText.set(null);
         currentText.set(null);
@@ -153,6 +165,14 @@ public class CardDetailAnalysisViewModel implements ViewModel {
         ssrEventAvgText.set(null);
         ssrList.clear();
         pieChartData.clear();
+    }
+
+
+    /**
+     * 当无用户数据，清空所有数据
+     */
+    private void reset(){
+        resetCurrentPool();
         poolNameList.clear();
         analysisDataList.clear();
     }
@@ -329,5 +349,13 @@ public class CardDetailAnalysisViewModel implements ViewModel {
 
     public SimpleBooleanProperty emptyProperty() {
         return empty;
+    }
+
+    public boolean isPoolEmpty() {
+        return poolEmpty.get();
+    }
+
+    public SimpleBooleanProperty poolEmptyProperty() {
+        return poolEmpty;
     }
 }

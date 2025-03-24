@@ -9,30 +9,31 @@ import java.util.List;
  * @create: 2024-07-03 11:37
  */
 public class AnalysisData {
+    private boolean isEmpty;
+
     private String poolName;
-    private Integer totalCount; //总抽数
-    private Integer currentCount; //当前未出货抽数
-    private Integer noUpSsrCount; //当前未出货抽数
-    private Integer noUpSrCount; //当前未出货抽数
-    private Integer noUpRCount; //当前未出货抽数
+    private Integer totalCount = 0; //总抽数
+    private Integer noUpSsrCount = 0; //当前未出货抽数
+    private Integer noUpSrCount = 0; //当前未出货抽数
+    private Integer noUpRCount = 0; //当前未出货抽数
 
     private List<SsrData> ssrDataList; //五星
     private List<SsrData> srDataList; //四星
     private List<SsrData> rDataList; //三星
 
-    private Integer ssrCount; //五星数量
-    private Integer srCount;
-    private Integer rCount;
+    private Integer ssrCount = 0; //五星数量
+    private Integer srCount = 0;
+    private Integer rCount = 0;
 
-    private Double ssrAvg; //五星平均抽数
-    private Integer ssrMin;//五星最小抽数
-    private Integer ssrMax;//五星最大抽数
-    private Double srAvg; //四星平均抽数
-    private Integer srMin;//四星最小抽数
-    private Integer srMax;//四星最大抽数
-    private Double rAvg; //三星平均抽数
-    private Integer rMin;//三星最小抽数
-    private Integer rMax;//三星最大抽数
+    private Double ssrAvg = 0.0; //五星平均抽数
+    private Integer ssrMin = 0;//五星最小抽数
+    private Integer ssrMax = 0;//五星最大抽数
+    private Double srAvg = 0.0; //四星平均抽数
+    private Integer srMin = 0;//四星最小抽数
+    private Integer srMax = 0;//四星最大抽数
+    private Double rAvg = 0.0; //三星平均抽数
+    private Integer rMin = 0;//三星最小抽数
+    private Integer rMax = 0;//三星最大抽数
 
     private String startDate;
     private String endDate;
@@ -51,14 +52,6 @@ public class AnalysisData {
 
     public void setTotalCount(Integer totalCount) {
         this.totalCount = totalCount;
-    }
-
-    public Integer getCurrentCount() {
-        return currentCount;
-    }
-
-    public void setCurrentCount(Integer currentCount) {
-        this.currentCount = currentCount;
     }
 
     public List<SsrData> getSsrDataList() {
@@ -219,5 +212,13 @@ public class AnalysisData {
 
     public void setrMax(Integer rMax) {
         this.rMax = rMax;
+    }
+
+    public boolean isEmpty() {
+        return isEmpty;
+    }
+
+    public void setEmpty(boolean empty) {
+        isEmpty = empty;
     }
 }

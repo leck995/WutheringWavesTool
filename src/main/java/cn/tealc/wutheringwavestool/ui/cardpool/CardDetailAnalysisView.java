@@ -78,12 +78,16 @@ public class CardDetailAnalysisView implements Initializable, FxmlView<CardDetai
 
     @FXML
     private StackPane emptyPane;
+
+    @FXML
+    private StackPane poolEmptyPane;
     private boolean poolChange=false;//代码控制卡池切换标志
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         contentPane.visibleProperty().bind(viewModel.emptyProperty().not());
         emptyPane.visibleProperty().bind(viewModel.emptyProperty());
-
+        poolEmptyPane.visibleProperty().bind(viewModel.poolEmptyProperty());
+        children.visibleProperty().bind(viewModel.poolEmptyProperty().not());
         ssrModelSwitch.selectedProperty().bindBidirectional(viewModel.ssrModelProperty());
         totalCountLabel.textProperty().bind(viewModel.totalTextProperty());
         totalCostLabel.textProperty().bind(viewModel.totalCostTextProperty());
@@ -171,7 +175,6 @@ public class CardDetailAnalysisView implements Initializable, FxmlView<CardDetai
             iv.setImage(LocalResourcesManager.header(ssrData.getId() ,70,70));
             count.setText(String.format("%02d",ssrData.getCount()));
             count.getStyleClass().add("count");
-
         }
     }
 

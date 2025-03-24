@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <StackPane prefHeight="700.0" prefWidth="1200.0" stylesheets="@../../css/cardpool/CardPool.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.cardpool.CardAnalysisBaseView">
@@ -41,6 +42,11 @@
                   </HBox>
                   <Spacer layoutX="252.0" layoutY="10.0" />
                   <ComboBox fx:id="playerComboBox" prefWidth="150.0" />
+                  <Button layoutX="826.0" layoutY="10.0" mnemonicParsing="false" onAction="#snapshot" text="%ui.analysis.snapshot">
+                     <graphic>
+                        <FontIcon iconLiteral="mdoal-insert_photo" />
+                     </graphic>
+                  </Button>
                   <Button layoutX="180.0" layoutY="10.0" mnemonicParsing="false" onAction="#export" text="%ui.analysis.export">
                      <graphic>
                         <FontIcon iconLiteral="mdomz-save" />
@@ -59,7 +65,10 @@
                      </graphic></Button>
                </children>
             </HBox>
-            <Label styleClass="text-subtle" text="%ui.analysis.account.tip" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0" />
+            <Label styleClass="text-subtle" text="%ui.analysis.account.tip" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
+               <font>
+                  <Font size="11.0" />
+               </font></Label>
             <StackPane fx:id="content" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0" />
          </children>
       </AnchorPane>
