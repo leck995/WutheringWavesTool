@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="root" prefHeight="800.0" prefWidth="1300.0" styleClass="game-statistics" stylesheets="@../../css/GameStatistics.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.game.GameStatisticsView">
+<AnchorPane fx:id="root" prefHeight="800.0" prefWidth="1300.0" styleClass="game-statistics" stylesheets="@../../css/game/GameStatistics.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.game.GameStatisticsView">
    <children>
       <Label styleClass="title-2" text="%ui.game_statistics.title" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="10.0" />
       <VBox prefWidth="200.0" spacing="5.0" styleClass="left" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.topAnchor="60.0">

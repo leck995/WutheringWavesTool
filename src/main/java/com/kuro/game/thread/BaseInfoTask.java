@@ -24,6 +24,7 @@ import java.time.Duration;
  * @author: Leck
  * @create: 2024-10-26 22:55
  */
+@Deprecated
 public class BaseInfoTask extends Task<ResponseBody<UpdateData>> {
     private static final Logger LOG = LoggerFactory.getLogger(BaseInfoTask.class);
 

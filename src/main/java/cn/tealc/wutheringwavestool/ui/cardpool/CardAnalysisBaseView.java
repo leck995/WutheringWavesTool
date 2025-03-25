@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.cardpool;
 
 import atlantafx.base.theme.Styles;
+import atlantafx.base.util.Animations;
 import cn.tealc.fxplugin.FxPlugin;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
@@ -25,6 +26,7 @@ import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 
 import java.awt.image.BufferedImage;
 import java.net.URL;
@@ -62,7 +64,7 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
         });
 
 
-       toCommonChild();
+        createCommonChild();
 
 
     }
@@ -123,7 +125,8 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
     void toCommonChild(ActionEvent event) {
         if (event.getSource() instanceof ToggleButton toggleButton){
             if (toggleButton.isSelected()) {
-               toCommonChild();
+                createCommonChild();
+                Animations.slideInLeft(commonChild, Duration.millis(300)).play();
                 if (viewModel.getPoolData() != null) {
                     NotificationManager.publish(NotificationKey.CARD_POOL_USER_UPDATE, viewModel.getPoolData());
                 }
@@ -134,12 +137,13 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
     }
 
 
-    private void toCommonChild(){
+    private void createCommonChild(){
         if (commonChild == null) {
             ViewTuple<CardCommonAnalysisView, CardCommonAnalysisViewModel> viewTuple = FluentViewLoader.fxmlView(CardCommonAnalysisView.class).load();
             commonChild = viewTuple.getView();
         }
         content.getChildren().setAll(commonChild);
+
     }
 
     @FXML
@@ -151,9 +155,11 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
                     detailChild = viewTuple.getView();
                 }
                 content.getChildren().setAll(detailChild);
+
                 if (viewModel.getPoolData() != null) {
                     NotificationManager.publish(NotificationKey.CARD_POOL_USER_UPDATE, viewModel.getPoolData());
                 }
+                Animations.slideInRight(detailChild, Duration.millis(300)).play();
             } else {
                 toggleButton.setSelected(true);
             }

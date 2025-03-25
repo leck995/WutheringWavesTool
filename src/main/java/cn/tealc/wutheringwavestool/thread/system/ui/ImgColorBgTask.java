@@ -1,11 +1,8 @@
-package cn.tealc.wutheringwavestool.thread;
+package cn.tealc.wutheringwavestool.thread.system.ui;
 
 import cn.tealc.teafx.utils.colorThief.ColorMap;
 import cn.tealc.teafx.utils.colorThief.ColorThief;
 import javafx.concurrent.Task;
-import javafx.embed.swing.SwingFXUtils;
-import javafx.geometry.Insets;
-import javafx.scene.image.Image;
 import javafx.scene.layout.Background;
 import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.CornerRadii;
@@ -17,7 +14,6 @@ import javafx.scene.paint.Stop;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.net.URI;
-import java.net.URL;
 import java.util.List;
 
 /**

@@ -1,0 +1,21 @@
+.game-statistics{
+    -color-bg-default-60: #ffffff60;
+    -color-bg-default-40: #ffffff40;
+    -color-bg-default-30: #ffffff30;
+}
+
+.game-statistics .left .toggle-button{
+    -fx-padding: 8,20,8,20;
+    -fx-spacing: 15;
+    -fx-background-radius: 8;
+    -fx-pref-height: 35;
+    -fx-font-size: 15;
+    -fx-background-color: transparent;
+
+}
+
+.game-statistics .left .toggle-button:hover,
+.game-statistics .left .toggle-button:selected{
+    -fx-background-color: -color-bg-default-40;
+    -fx-text-fill: black;
+}

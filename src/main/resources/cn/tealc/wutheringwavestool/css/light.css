@@ -52,7 +52,7 @@
   -color-danger-8: #660018;
   -color-danger-9: #4c0014;
 
-  -color-font-default: #ffffff;
+  -color-font-default: #24292f;
   -color-font-muted: #3d465a;
   -color-font-subtle: #787878;
   -color-font-emphasis: #ffffff;
@@ -77,14 +77,14 @@
   -color-bg-inset: #f6f8fa;
 
   -color-bg-default-90: #ffffff90;
-  -color-bg-default-80: #ffffff60;
-  -color-bg-default-70: #ffffff40;
-  -color-bg-default-60: #ffffff90;
-  -color-bg-default-50: #ffffff60;
+  -color-bg-default-80: #ffffff80;
+  -color-bg-default-70: #ffffff70;
+  -color-bg-default-60: #ffffff60;
+  -color-bg-default-50: #ffffff50;
   -color-bg-default-40: #ffffff40;
-  -color-bg-default-30: #ffffff40;
-  -color-bg-default-20: #ffffff40;
-  -color-bg-default-10: #ffffff40;
+  -color-bg-default-30: #ffffff30;
+  -color-bg-default-20: #ffffff20;
+  -color-bg-default-10: #ffffff10;
 
   -color-border-default: #d0d7de;
   -color-border-muted: #ededed;
@@ -3463,16 +3463,19 @@ Add support for NO_HEADER tweak in tables .table-view.no-header > .column-header
 }
 
 .popover {
-  -fx-background-color: -color-bg-overlay;
-  -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 6px, 0.3, 0, 2);
+  -fx-background-color: transparent;
+  -fx-background-radius: 10px;
+ /* -fx-effect: dropshadow(three-pass-box, -color-shadow-default, 1px, 0.3, 0, 2);*/
 }
 .popover > .border {
   -fx-stroke: -color-border-default;
-  -fx-stroke-width: 1px;
+  -fx-stroke-width: 0px;
   -fx-fill: -color-bg-overlay;
+  -fx-opacity: 0.95;
 }
 .popover > .content {
   -fx-padding: 10px 10px 10px 10px;
+  -fx-background-color: transparent;
 }
 .popover > .content > .title {
   -fx-padding: 0 0 1em 0;

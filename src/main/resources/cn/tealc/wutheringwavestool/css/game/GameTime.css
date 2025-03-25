@@ -1,0 +1,34 @@
+.gametime{
+    -color-bg-default-90: #ffffff40;
+}
+
+.gametime .item{
+    -fx-background-color: -color-bg-default-90;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+}
+
+.gametime .item .header{
+    -fx-font-size: 16;
+    -fx-text-fill: -color-font-muted;
+}
+
+.gametime .item .content .label{
+    -fx-font-size: 16;
+    -fx-text-fill: -color-font-muted;
+}
+
+.gametime .chart{
+    -fx-background-color: -color-bg-default-90;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+}
+.gametime .chart > .chart-content > .chart-plot-background {
+    -fx-background-color: transparent;
+}
+.gametime  .progress-bar > .bar{
+    -fx-padding: 4px;
+}
+.gametime  .progress-bar > .track{
+    -fx-background-color: #dfdede;
+}

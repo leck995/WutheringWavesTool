@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.Optional;
 
 /**
  * @program: WutheringWavesTool
@@ -116,5 +117,29 @@ public class GameResourcesManager {
             file=new File(dir + File.separator + "Client/Saved/Logs/Client.log");
         }
         return file;
+    }
+
+
+    public static Optional<SourceType> getServerType(){
+        File gameDir = getGameDir();
+        if (gameDir != null) {
+            File bilibili = new File(gameDir,"Client/Binaries/Win64/ThirdParty/KrPcSdk_Mainland/KRSDKRes/Bilibili");
+            if (bilibili.exists()) {
+                return Optional.of(SourceType.BILIBILI);
+            }
+            File WeGame = new File(gameDir,"Client/Binaries/Win64/ThirdParty/KrPcSdk_Mainland/KRSDKRes/wegame");
+            if (WeGame.exists()) {
+                return Optional.of(SourceType.WE_GAME);
+            }
+            File global = new File(gameDir,"Client/Binaries/Win64/ThirdParty/KrPcSdk_Global");
+            if (global.exists()) {
+                return Optional.of(SourceType.GLOBAL);
+            }
+            File official = new File(gameDir,"Client/Binaries/Win64/ThirdParty/KrPcSdk_Mainland");
+            if (official.exists()) {
+                return Optional.of(SourceType.DEFAULT);
+            }
+        }
+        return Optional.empty();
     }
 }

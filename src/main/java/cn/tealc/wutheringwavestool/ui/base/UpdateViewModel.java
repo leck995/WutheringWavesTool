@@ -5,7 +5,7 @@ import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.release.Release;
-import cn.tealc.wutheringwavestool.thread.download.DownloadUpdateTask;
+import cn.tealc.wutheringwavestool.thread.system.DownloadUpdateTask;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleBooleanProperty;

@@ -8,6 +8,7 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.system.GameLogFileAnalysisTask;
 import cn.tealc.wutheringwavestool.thread.system.NewGameLogFileAnalysisTask;
+import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
@@ -18,7 +19,9 @@ import de.saxsys.mvvmfx.MvvmFX;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.time.*;
+import java.util.Arrays;
 
 /**
  * @program: WutheringWavesTool
@@ -43,7 +46,6 @@ public class GameAppListener implements WinUser.WinEventProc{
         if (gameAppListener==null){
             gameAppListener=new GameAppListener();
         }
-
         return gameAppListener;
     }
 
@@ -62,11 +64,13 @@ public class GameAppListener implements WinUser.WinEventProc{
                 LOG.info("检测到鸣潮已经启动");
                 if (!startFromApp) {
                     LOG.info("检测到鸣潮并非通过助手启动");
-                    NotificationManager.message(
+                    deleteLogFiles();
+                    startFromApp = true;
+         /*           NotificationManager.message(
                             new MessageInfo(MessageType.WARNING,
                                     LanguageManager.getString("ui.game_time.total.tip01"),
                                     false)
-                    );
+                    );*/
                 }
             }
         }else {
@@ -81,6 +85,22 @@ public class GameAppListener implements WinUser.WinEventProc{
                 if (!isAlive) {
                     onEnd();
                 }
+            }
+        }
+    }
+
+    /**
+     * @description: 删除游戏日志，用于保证每次启动日志都是最新的，不重复的
+     * @param:
+     * @return  void
+     * @date:   2024/11/16
+     */
+    private void deleteLogFiles(){
+        File dir = GameResourcesManager.getGameLogDir();
+        if (dir != null) {
+            File[] files = dir.listFiles();
+            if (files != null) {
+                Arrays.stream(files).forEach(File::delete);
             }
         }
     }

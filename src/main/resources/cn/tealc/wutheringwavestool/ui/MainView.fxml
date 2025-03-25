@@ -18,7 +18,7 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<StackPane fx:id="root" prefHeight="720.0" prefWidth="1280.0" styleClass="main" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.MainView">
+<StackPane fx:id="root" prefHeight="720.0" prefWidth="1280.0" styleClass="main" stylesheets="@../css/Main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.MainView">
    <children>
       <Pane fx:id="bgPane" />
       <Pane fx:id="bgPane02" layoutX="10.0" layoutY="10.0" />
@@ -47,17 +47,7 @@
                               </ToggleButton>
                               <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="314.0" mnemonicParsing="false" onAction="#toGameManager" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type14" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
-                                    <FontIcon iconLiteral="mdsmz-videogame_asset" />
-                                 </graphic>
-                              </ToggleButton>
-                              <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="104.0" mnemonicParsing="false" onAction="#toStartAppSetting" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type03" textOverrun="CLIP" toggleGroup="$navToggleGroup">
-                                 <graphic>
-                                    <FontIcon iconLiteral="mdmz-widgets" />
-                                 </graphic>
-                              </ToggleButton>
-                              <ToggleButton fx:id="signBtn" accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" onAction="#toSign" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type04" textOverrun="CLIP" toggleGroup="$navToggleGroup">
-                                 <graphic>
-                                    <FontIcon iconLiteral="mdral-beenhere" />
+                                    <FontIcon iconLiteral="mdmz-sports_esports" />
                                  </graphic>
                               </ToggleButton>
                               <ToggleButton fx:id="analysisBtn" alignment="CENTER_LEFT" ellipsisString="" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#toAnalysis" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type05" textOverrun="CLIP" toggleGroup="$navToggleGroup">
@@ -67,7 +57,7 @@
                               </ToggleButton>
                               <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="30.0" layoutY="718.0" mnemonicParsing="false" onAction="#toGameTime" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type06" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
-                                    <FontIcon iconLiteral="mdal-broken_image" />
+                                    <FontIcon iconLiteral="mdral-leaderboard" />
                                  </graphic>
                               </ToggleButton>
                               <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="30.0" layoutY="104.0" mnemonicParsing="false" onAction="#toOwnRole" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type07" textOverrun="CLIP" toggleGroup="$navToggleGroup">
@@ -78,6 +68,11 @@
                               <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="230.0" mnemonicParsing="false" onAction="#toTower" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type08" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
                                     <FontIcon iconLiteral="mdmz-navigation" />
+                                 </graphic>
+                              </ToggleButton>
+                              <ToggleButton fx:id="signBtn" accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="10.0" layoutY="64.0" mnemonicParsing="false" onAction="#toSign" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type04" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdral-beenhere" />
                                  </graphic>
                               </ToggleButton>
                               <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="314.0" mnemonicParsing="false" onAction="#toPlugin" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type13" textOverrun="CLIP" toggleGroup="$navToggleGroup">

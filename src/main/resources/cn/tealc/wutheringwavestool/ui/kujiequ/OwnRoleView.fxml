@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.StackPane?>
 
 
-<StackPane fx:id="root" styleClass="own-role" stylesheets="@../../css/OwnRole.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.OwnRoleView">
+<StackPane fx:id="root" styleClass="own-role" stylesheets="@../../css/kujiequ/OwnRole.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.OwnRoleView">
    <children>
       <AnchorPane fx:id="child" prefHeight="700.0" prefWidth="1000.0">
          <children>

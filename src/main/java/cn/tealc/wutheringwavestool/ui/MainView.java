@@ -12,8 +12,16 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.release.Release;
-import cn.tealc.wutheringwavestool.thread.MainBackgroundTask;
+import cn.tealc.wutheringwavestool.thread.system.ui.MainBackgroundTask;
+import cn.tealc.wutheringwavestool.ui.cardpool.CardDetailAnalysisView;
+import cn.tealc.wutheringwavestool.ui.cardpool.CardDetailAnalysisViewModel;
+import cn.tealc.wutheringwavestool.ui.cardpool.CardAnalysisBaseView;
+import cn.tealc.wutheringwavestool.ui.cardpool.CardAnalysisBaseViewModel;
 import cn.tealc.wutheringwavestool.ui.game.*;
+import cn.tealc.wutheringwavestool.ui.game.manage.GameAdvanceSettingView;
+import cn.tealc.wutheringwavestool.ui.game.manage.GameAdvanceSettingViewModel;
+import cn.tealc.wutheringwavestool.ui.game.manage.GameManagerView;
+import cn.tealc.wutheringwavestool.ui.game.manage.GameManagerViewModel;
 import cn.tealc.wutheringwavestool.ui.kujiequ.*;
 import cn.tealc.wutheringwavestool.ui.base.UpdateView;
 import cn.tealc.wutheringwavestool.ui.base.UpdateViewModel;
@@ -35,16 +43,13 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.effect.BoxBlur;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyCode;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Font;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
@@ -164,7 +169,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         supportBtn.visibleProperty().bind(Config.setting.supportProperty().not());
 
         if (Config.setting.isFirstViewWithPoolAnalysis()){
-            ViewTuple<AnalysisPoolView, AnalysisPoolViewModel> viewTuple = FluentViewLoader.fxmlView(AnalysisPoolView.class).load();
+            ViewTuple<CardDetailAnalysisView, CardDetailAnalysisViewModel> viewTuple = FluentViewLoader.fxmlView(CardDetailAnalysisView.class).load();
             child.getChildren().setAll(viewTuple.getView());
             navToggleGroup.selectToggle(analysisBtn);
             bgPane.setVisible(false);
@@ -374,7 +379,10 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     void toAnalysis(ActionEvent event) {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
-            ViewTuple<AnalysisPoolView, AnalysisPoolViewModel> viewTuple = FluentViewLoader.fxmlView(AnalysisPoolView.class).load();
+            ViewTuple<CardAnalysisBaseView, CardAnalysisBaseViewModel> viewTuple = FluentViewLoader.fxmlView(CardAnalysisBaseView.class).load();
+
+
+            //ViewTuple<AnalysisPoolView, AnalysisPoolViewModel> viewTuple = FluentViewLoader.fxmlView(AnalysisPoolView.class).load();
             child.getChildren().setAll(viewTuple.getView());
             startNavAnim();
             bgPane.setVisible(false);
@@ -439,7 +447,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     void toGameManager(ActionEvent event) {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
-            ViewTuple<GameManagerView,GameManagerViewModel> viewTuple = FluentViewLoader.fxmlView(GameManagerView.class).load();
+            ViewTuple<GameManagerView, GameManagerViewModel> viewTuple = FluentViewLoader.fxmlView(GameManagerView.class).load();
             bgPane.setVisible(false);
             child.getChildren().setAll(viewTuple.getView());
             startNavAnim();
@@ -486,19 +494,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             toggleButton.setSelected(true);
         }
     }
-
-    @FXML
-    void toStartAppSetting(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
-        if (toggleButton.isSelected()){
-            ViewTuple<GameAppSettingView, GameAppSettingViewModel> viewTuple = FluentViewLoader.fxmlView(GameAppSettingView.class).load();
-            bgPane.setVisible(false);
-            child.getChildren().setAll(viewTuple.getView());
-            startNavAnim();
-        }else {
-            toggleButton.setSelected(true);
-        }
-    }
+    
 
     @FXML
     void toUpdate(ActionEvent event) {

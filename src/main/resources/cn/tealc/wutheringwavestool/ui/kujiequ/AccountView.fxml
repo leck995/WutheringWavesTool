@@ -8,7 +8,7 @@
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 
-<AnchorPane prefHeight="600.0" prefWidth="1000.0" styleClass="account" stylesheets="@../../css/Account.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.AccountView">
+<AnchorPane prefHeight="600.0" prefWidth="1000.0" styleClass="account" stylesheets="@../../css/kujiequ/Account.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.AccountView">
    <children>
       <Label styleClass="title-2" text="账号" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
       <ListView fx:id="accountListView" prefHeight="200.0" prefWidth="300.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="60.0" />

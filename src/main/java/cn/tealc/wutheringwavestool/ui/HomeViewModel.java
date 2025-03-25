@@ -361,7 +361,6 @@ public class HomeViewModel implements ViewModel {
                     }else {
                         runExe(exe);
                     }
-                    //runExeByCustom(exe.getAbsolutePath(),"-dx11","-SkipSplash");
                 }else { //默认启动
                     runExe(exe);
                 }

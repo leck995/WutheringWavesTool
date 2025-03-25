@@ -5,7 +5,7 @@ import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.kuro.kujiequ.model.roleData.*;
 import com.kuro.kujiequ.model.roleData.weight.PhantomWeight;
 import com.kuro.kujiequ.model.sign.SignUserInfo;
-import cn.tealc.wutheringwavestool.thread.ImgColorBgTask;
+import cn.tealc.wutheringwavestool.thread.system.ui.ImgColorBgTask;
 import com.kuro.kujiequ.thread.role.GameRoleDetailTask;
 import cn.tealc.wutheringwavestool.util.LocalDataManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;

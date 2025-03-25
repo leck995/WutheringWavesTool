@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1000.0" styleClass="gametime" stylesheets="@../../css/GameTime.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.game.GameTimeView">
+<AnchorPane prefHeight="700.0" prefWidth="1000.0" styleClass="gametime" stylesheets="@../../css/game/GameTime.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.game.GameTimeView">
    <children>
       <Label styleClass="title-2" text="%ui.game_time.title" visible="false" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
       <HBox alignment="CENTER_LEFT" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
