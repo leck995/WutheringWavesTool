@@ -32,12 +32,9 @@
 
 
 .setting .left .title-3{
-    -fx-padding: 25 0 5 0;
+    -fx-padding: 0 0 5 0;
 }
 
-.setting .left  .title-3{
-    -fx-padding: 25 0 5 0;
-}
 .setting .left  .title-4 {
     -fx-font-size: 1.05em;
     -fx-font-weight: normal;

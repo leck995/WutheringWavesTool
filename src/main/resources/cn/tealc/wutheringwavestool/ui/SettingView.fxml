@@ -18,7 +18,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<AnchorPane prefHeight="800.0" prefWidth="1200.0" styleClass="setting" stylesheets="@../css/Setting.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.SettingView">
+<AnchorPane fx:id="root" prefHeight="800.0" prefWidth="1200.0" styleClass="setting" stylesheets="@../css/Setting.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.SettingView">
    <children>
       <Label styleClass="title-1" text="%ui.setting.title" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0" />
       <StackPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0" />
@@ -28,60 +28,13 @@
                <children>
                   <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="left" HBox.hgrow="ALWAYS">
                      <children>
-                        <VBox prefHeight="0.0" prefWidth="100.0" spacing="10.0">
-                           <children>
-                              <Label styleClass="title-4" text="%ui.setting.default.game_dir" />
-                              <HBox spacing="15.0">
-                                 <children>
-                                    <RadioButton accessibleText="default" mnemonicParsing="false" onAction="#setSelectedGameType" selected="true" text="%ui.setting.default.game_dir.radio01">
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="gameSourceType" />
-                                       </toggleGroup>
-                                    </RadioButton>
-                                    <RadioButton accessibleText="wegame" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio02" toggleGroup="$gameSourceType" />
-                                    <RadioButton accessibleText="global" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio03" toggleGroup="$gameSourceType" />
-                                 </children>
-                              </HBox>
-                              <StackPane maxWidth="350.0" styleClass="input-group">
-                                 <children>
-                                    <TextField fx:id="gameDirField" prefWidth="250.0" />
-                                    <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setGameDir" StackPane.alignment="CENTER_RIGHT">
-                                       <graphic>
-                                          <FontIcon iconLiteral="mdoal-folder" />
-                                       </graphic>
-                                    </Button>
-                                 </children>
-                              </StackPane>
-                              <Label layoutX="10.0" layoutY="10.0" styleClass="title-4" text="%ui.setting.default.app_path" />
-                              <HBox layoutX="10.0" layoutY="39.0" spacing="15.0">
-                                 <children>
-                                    <RadioButton fx:id="gameStartAppRadioDefault" accessibleText="default" mnemonicParsing="false" onAction="#setAppPathModel" selected="true" text="%ui.setting.default.app_path.radio01">
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="gameStartAppType" />
-                                       </toggleGroup>
-                                    </RadioButton>
-                                    <RadioButton accessibleText="custom" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setAppPathModel" text="%ui.setting.default.app_path.radio02" toggleGroup="$gameStartAppType" />
-                                 </children>
-                              </HBox>
-                              <StackPane fx:id="gameStartAppGroup" layoutX="10.0" layoutY="70.0" maxWidth="350.0" styleClass="input-group">
-                                 <children>
-                                    <TextField fx:id="gameStartAppField" prefWidth="250.0" />
-                                    <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setGameApp" StackPane.alignment="CENTER_RIGHT">
-                                       <graphic>
-                                          <FontIcon iconLiteral="mdoal-folder" />
-                                       </graphic>
-                                    </Button>
-                                 </children>
-                              </StackPane>
-                           </children>
-                        </VBox>
+                        <Label styleClass="title-3" text="%ui.setting.base.title" />
                         <Label contentDisplay="RIGHT" styleClass="title-4" text="%ui.setting.default.language">
                            <graphic>
-                              <Label styleClass="tip" text="%ui.setting.base.kujiequ.tip" />
+                              <Label styleClass="tip" text="%ui.setting.default.language.tip" />
                            </graphic>
                         </Label>
-                        <ComboBox fx:id="languageBox" prefWidth="150.0" />
-                        <Label styleClass="title-3" text="%ui.setting.base.title" />
+                        <ComboBox fx:id="languageBox" disable="true" prefWidth="150.0" />
                         <VBox spacing="10.0">
                            <children>
                               <Label contentDisplay="RIGHT" styleClass="title-4" text="%ui.setting.base.ui_scale">
@@ -96,7 +49,24 @@
                                     <Label contentDisplay="RIGHT" styleClass="tip" text="%ui.setting.base.kujiequ.tip" />
                                  </graphic></Label>
                               <ToggleSwitch fx:id="noKuJieQuSwitch" labelPosition="RIGHT" text="%ui.setting.base.kujiequ.switch" />
-                              <Label styleClass="title-4" text="%ui.setting.base.background" />
+                              <Label styleClass="title-4" text="%ui.setting.base.close_event" />
+                              <HBox prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                                 <children>
+                                    <RadioButton accessibleText="0" mnemonicParsing="false" onAction="#setCloseEvent" text="%ui.setting.base.close_event.type01">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="closeEventToggleGroup" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton accessibleText="1" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setCloseEvent" text="%ui.setting.base.close_event.type02" toggleGroup="$closeEventToggleGroup" />
+                                    <RadioButton accessibleText="2" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setCloseEvent" text="%ui.setting.base.close_event.type03" toggleGroup="$closeEventToggleGroup" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <Label styleClass="title-3" text="%ui.setting.base.diy.title" />
+                        <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                           <children>
+                              <Label styleClass="title-4" text="%ui.setting.base.background.diy" />
                               <HBox spacing="20.0">
                                  <children>
                                     <RadioButton mnemonicParsing="false" text="%ui.setting.base.background.type01">
@@ -118,7 +88,7 @@
                                     </Button>
                                  </children>
                               </StackPane>
-                              <StackPane fx:id="diyBgDirInputGroup" layoutX="10.0" layoutY="256.0" maxWidth="350.0" styleClass="input-group">
+                              <StackPane fx:id="diyBgDirInputGroup" maxWidth="350.0" styleClass="input-group">
                                  <children>
                                     <TextField fx:id="diyBgDirField" prefWidth="250.0" />
                                     <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setBgFile" StackPane.alignment="CENTER_RIGHT">
@@ -129,18 +99,6 @@
                                  </children>
                               </StackPane>
                               <Label styleClass="tip" text="%ui.setting.base.background.tip" />
-                              <Label layoutX="10.0" layoutY="266.0" styleClass="title-4" text="%ui.setting.base.close_event" />
-                              <HBox prefHeight="100.0" prefWidth="200.0" spacing="15.0">
-                                 <children>
-                                    <RadioButton accessibleText="0" mnemonicParsing="false" onAction="#setCloseEvent" text="%ui.setting.base.close_event.type01">
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="closeEventToggleGroup" />
-                                       </toggleGroup>
-                                    </RadioButton>
-                                    <RadioButton accessibleText="1" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setCloseEvent" text="%ui.setting.base.close_event.type02" toggleGroup="$closeEventToggleGroup" />
-                                    <RadioButton accessibleText="2" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setCloseEvent" text="%ui.setting.base.close_event.type03" toggleGroup="$closeEventToggleGroup" />
-                                 </children>
-                              </HBox>
                            </children>
                         </VBox>
                         <Label layoutX="10.0" layoutY="84.0" styleClass="title-3" text="%ui.setting.game" />

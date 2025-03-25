@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<AnchorPane prefHeight="600.0" prefWidth="1000.0" styleClass="game-choose" stylesheets="@../../../css/game/manage/GameDirChoose.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.game.manage.GameDirChooseView">
+   <children>
+      <StackPane fx:id="content" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <StackPane fx:id="selectedChild" layoutX="10.0" layoutY="10.0">
+               <children>
+                  <VBox alignment="CENTER" fillWidth="false" maxHeight="400.0" maxWidth="400.0" prefHeight="200.0" prefWidth="100.0" spacing="20.0" StackPane.alignment="CENTER">
+                     <children>
+                        <HBox spacing="20.0">
+                           <children>
+                              <Button mnemonicParsing="false" onAction="#toLocalChild" styleClass="accent" text="已下载？设置安装游戏目录" />
+                              <Button mnemonicParsing="false" onAction="#toDownloadChild" styleClass="danger" text="未下载？下载新游戏" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </StackPane>
+            <StackPane fx:id="downloadChild" layoutX="10.0" layoutY="10.0" visible="false">
+               <children>
+                  <VBox alignment="CENTER" fillWidth="false" maxHeight="400.0" maxWidth="400.0" prefHeight="200.0" prefWidth="100.0" spacing="20.0" StackPane.alignment="CENTER">
+                     <children>
+                        <Label layoutX="147.0" layoutY="119.0" styleClass="title-3" text="设置下载安装目录" />
+                        <Label styleClass="title-4" text="选取安装目录" />
+                        <StackPane maxWidth="350.0" styleClass="input-group">
+                           <children>
+                              <TextField fx:id="installDirField" editable="false" prefWidth="400.0" />
+                              <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setInstallDir" StackPane.alignment="CENTER_RIGHT">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdoal-folder" />
+                                 </graphic>
+                              </Button>
+                           </children>
+                        </StackPane>
+                        <Label styleClass="title-4" text="选取下载的区服" />
+                        <HBox>
+                           <children>
+                              <RadioButton accessibleText="default" mnemonicParsing="false" text="官服默认">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="serverTypeInstallToggleGroup" />
+                                 </toggleGroup>
+                              </RadioButton>
+                              <RadioButton accessibleText="bilibili" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="BILIBILI" toggleGroup="$serverTypeInstallToggleGroup" />
+                              <RadioButton accessibleText="wegame" layoutX="91.0" layoutY="10.0" mnemonicParsing="false" text="WeGame" toggleGroup="$serverTypeInstallToggleGroup" />
+                              <RadioButton accessibleText="global" layoutX="172.0" layoutY="10.0" mnemonicParsing="false" text="国际服" toggleGroup="$serverTypeInstallToggleGroup" />
+                           </children>
+                        </HBox>
+                        <HBox onDragDetected="#startDownload" spacing="20.0">
+                           <children>
+                              <Button fx:id="startDownloadBtn" disable="true" mnemonicParsing="false" onAction="#startDownload" prefWidth="100.0" styleClass="danger" text="下载" />
+                              <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#backToSelectedChild" prefWidth="100.0" text="返回" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </StackPane>
+            <StackPane fx:id="localDirChild" visible="false">
+               <children>
+                  <VBox alignment="CENTER" fillWidth="false" maxHeight="400.0" maxWidth="400.0" prefHeight="200.0" prefWidth="100.0" spacing="20.0" StackPane.alignment="CENTER">
+                     <children>
+                        <Label styleClass="title-3" text="设置本地安装目录" />
+                        <Label styleClass="title-4" text="选取安装目录" />
+                        <StackPane fx:id="gameStartAppGroup" maxWidth="350.0" styleClass="input-group">
+                           <children>
+                              <TextField fx:id="localDirField" editable="false" prefWidth="400.0" />
+                              <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setLocalDir" StackPane.alignment="CENTER_RIGHT">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdoal-folder" />
+                                 </graphic>
+                              </Button>
+                           </children>
+                        </StackPane>
+                        <Label layoutX="158.0" layoutY="146.0" styleClass="title-4" text="选取区服" />
+                        <HBox fx:id="serverPane">
+                           <children>
+                              <RadioButton accessibleText="default" mnemonicParsing="false" text="官服默认">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="serverTypeToggleGroup" />
+                                 </toggleGroup>
+                              </RadioButton>
+                              <RadioButton accessibleText="bilibili" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="BILIBILI" toggleGroup="$serverTypeToggleGroup" />
+                              <RadioButton accessibleText="wegame" layoutX="91.0" layoutY="10.0" mnemonicParsing="false" text="WeGame" toggleGroup="$serverTypeToggleGroup" />
+                              <RadioButton accessibleText="global" layoutX="172.0" layoutY="10.0" mnemonicParsing="false" text="国际服" toggleGroup="$serverTypeToggleGroup" />
+                           </children>
+                        </HBox>
+                        <HBox spacing="20.0">
+                           <children>
+                              <Button fx:id="finishLocalBtn" disable="true" mnemonicParsing="false" onAction="#finishLocalDir" prefWidth="100.0" styleClass="accent" text="完成" />
+                              <Button mnemonicParsing="false" onAction="#backToSelectedChild" prefWidth="100.0" text="返回" />
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </StackPane>
+         </children>
+      </StackPane>
+   </children>
+</AnchorPane>

@@ -1,0 +1,104 @@
+.game-base-setting{
+
+}
+
+.game-base-setting .title-4{
+    -fx-font-size: 1.05em;
+    -fx-font-weight: normal;
+}
+.game-base-setting .radio-button{
+    -fx-background-color: transparent;
+}
+.game-base-setting .separator {
+    -fx-padding: 6 0 6 0;
+}
+.game-base-setting .separator > .line{
+    -fx-border-color: #00000070;
+    -fx-border-insets: 1px 0 0 0;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+}
+.game-base-setting .child-select{
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-font-muted;
+    -fx-font-weight: bold;
+    -fx-graphic-text-gap: 2;
+    -fx-padding: 3;
+    -fx-cursor: hand;
+}
+.game-base-setting .child-select:hover{
+    -fx-text-fill: -color-accent-fg;
+}
+.game-base-setting .child-select > Pane{
+    -fx-pref-width: 25;
+    -fx-pref-height: 3;
+    -fx-background-radius: 3px;
+    -fx-background-color: transparent;
+}
+
+
+.game-base-setting .toggle-button:selected > Pane{
+    -fx-background-color: -color-accent-fg;
+}
+
+
+.game-base-setting .input-group{
+    -fx-background-radius: 20;
+    -fx-padding: 5 10 5 10;
+    -fx-background-color: -color-bg-default-60;
+}
+.game-base-setting .input-group >.text-field{
+    -fx-background-color: transparent;
+    -fx-padding: 0 40 0 0;
+}
+.game-base-setting .input-group:hover{
+    -fx-background-color: -color-bg-default-90;
+}
+.game-base-setting .input-group > .button{
+    -fx-background-color: transparent;
+    -fx-padding: 5;
+}
+.game-base-setting .input-group > .button:hover .ikonli-font-icon{
+    -fx-icon-color: -color-accent-emphasis;
+}
+
+.game-base-setting .left .param-list-view{
+    -fx-background-color: -color-bg-default-40;
+    -fx-background-radius: 0.57em; /* 8px */
+    -fx-border-color: transparent;
+}
+.game-base-setting .left .param-list-view .list-cell{
+    -fx-padding: 0.14em 0.14em 0.14em 0; /* 2px */
+}
+.game-base-setting .left .param-list-view .list-cell,
+.game-base-setting .left .param-list-view .list-cell:selected{
+    -fx-background-color: transparent;
+}
+
+.game-base-setting .left .param-list-view .list-cell .delete-btn:hover{
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+.game-base-setting .left .param-list-view .list-cell .delete-btn .ikonli-font-icon {
+    -fx-icon-color: -color-fg-default;
+    -fx-fill: -color-fg-default;
+    -fx-icon-size: 18px;
+}
+
+.game-base-setting .left .param-list-view .list-cell .delete-btn:hover .ikonli-font-icon{
+    -fx-icon-color: -color-danger-fg;
+    -fx-fill: -color-danger-fg;
+}
+
+.game-base-setting .left .param-list-view .scroll-bar{
+    -fx-background-color: transparent;
+    -fx-opacity: 1;
+}
+.game-base-setting .left .param-list-view .scroll-bar:vertical .thumb{
+    -fx-background-color: transparent;
+    -fx-background-insets: 0.071em; /* 1px */
+}
+.game-base-setting .left .param-list-view:hover .scroll-bar:vertical .thumb{
+    -fx-background-color: -color-bg-default-30;
+}

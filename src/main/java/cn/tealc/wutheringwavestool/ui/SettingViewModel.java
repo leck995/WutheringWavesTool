@@ -41,33 +41,25 @@ import java.util.ResourceBundle;
  * @author: Leck
  * @create: 2024-07-03 20:21
  */
-public class SettingViewModel implements ViewModel ,SceneLifecycle {
-    private static final Logger LOG= LoggerFactory.getLogger(SettingViewModel.class);
-    private SimpleStringProperty gameDir = new SimpleStringProperty();
+public class SettingViewModel implements ViewModel, SceneLifecycle {
+    private static final Logger LOG = LoggerFactory.getLogger(SettingViewModel.class);
     private SimpleBooleanProperty startWithAnalysis = new SimpleBooleanProperty();
     private SimpleBooleanProperty exitWhenGameOver = new SimpleBooleanProperty();
     private SimpleBooleanProperty hideWhenGameStart = new SimpleBooleanProperty();
-    private ObservableList<String> fontFamilyList= FXCollections.observableArrayList();
+    private ObservableList<String> fontFamilyList = FXCollections.observableArrayList();
+    private SimpleBooleanProperty checkNewVersion = new SimpleBooleanProperty();
 
-    private SimpleObjectProperty<SourceType> gameRootDirSource=new SimpleObjectProperty<>();
-    private SimpleStringProperty gameAppStartPath=new SimpleStringProperty();
-    private SimpleBooleanProperty gameAppStartCustom=new SimpleBooleanProperty();
-    private SimpleBooleanProperty checkNewVersion=new SimpleBooleanProperty();
-
-    private SimpleBooleanProperty diyHomeBg=new SimpleBooleanProperty();
-    private SimpleStringProperty diyHomeBgName=new SimpleStringProperty();
-    private SimpleIntegerProperty homeBgType=new SimpleIntegerProperty();
+    private SimpleBooleanProperty diyHomeBg = new SimpleBooleanProperty();
+    private SimpleStringProperty diyHomeBgName = new SimpleStringProperty();
+    private SimpleIntegerProperty homeBgType = new SimpleIntegerProperty();
     private SimpleStringProperty homeBgDir = new SimpleStringProperty();
 
-    private ObservableList<Pair<String, Locale>> languages=FXCollections.observableArrayList();
+    private ObservableList<Pair<String, Locale>> languages = FXCollections.observableArrayList();
+
     public SettingViewModel() {
-        gameDir.bindBidirectional(Config.setting.gameRootDirProperty());
         startWithAnalysis.bindBidirectional(Config.setting.firstViewWithPoolAnalysisProperty());
         exitWhenGameOver.bindBidirectional(Config.setting.exitWhenGameOverProperty());
         hideWhenGameStart.bindBidirectional(Config.setting.hideWhenGameStartProperty());
-        gameRootDirSource.bindBidirectional(Config.setting.gameRootDirSourceProperty());
-        gameAppStartPath.bindBidirectional(Config.setting.gameStarAppPathProperty());
-        gameAppStartCustom.bindBidirectional(Config.setting.gameStartAppCustomProperty());
         fontFamilyList.setAll(Font.getFamilies());
         diyHomeBg.bindBidirectional(Config.setting.diyHomeBgProperty());
         diyHomeBgName.bindBidirectional(Config.setting.diyHomeBgNameProperty());
@@ -76,28 +68,27 @@ public class SettingViewModel implements ViewModel ,SceneLifecycle {
         homeBgDir.bindBidirectional(Config.setting.diyHomeBgDirProperty());
 
         diyHomeBgName.addListener((observableValue, s1, s2) -> {
-            if (getDiyHomeBgName()!= null){
+            if (getDiyHomeBgName() != null) {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
             }
         });
 
         homeBgDir.addListener((observableValue, s1, s2) -> {
-            if (getHomeBgDir()!= null){
+            if (getHomeBgDir() != null) {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
             }
         });
 
         languages.setAll(
                 List.of(
-                        new Pair<>("简体中文",Locale.CHINA),
-                        new Pair<>("English",Locale.ENGLISH)
+                        new Pair<>("简体中文", Locale.CHINA),
+                        new Pair<>("English", Locale.ENGLISH)
                 ));
     }
 
-    public void changeBackground(){
+    public void changeBackground() {
         MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
     }
-
 
 
     @Override
@@ -115,12 +106,12 @@ public class SettingViewModel implements ViewModel ,SceneLifecycle {
     /**
      * description: 检测游戏日志是否被关闭
      */
-    private void checkGameLogOpen(){
+    private void checkGameLogOpen() {
         CheckGameConfigTask task = new CheckGameConfigTask();
         task.setOnSucceeded(workerStateEvent -> {
             Boolean value = task.getValue();
-            if (!value){ //游戏日志可能被关闭了
-                Platform.runLater(()->{
+            if (!value) { //游戏日志可能被关闭了
+                Platform.runLater(() -> {
                     NotificationManager.message(MessageInfo.success(LanguageManager.getString("ui.main.sync.message.log.close")));
                 });
             }
@@ -130,61 +121,51 @@ public class SettingViewModel implements ViewModel ,SceneLifecycle {
 
 
     public void setFontFamily(String fontFamily) {
-        MainApplication.window.getScene().getRoot().setStyle("-fx-font-family: \"" + fontFamily+"\"");
+        MainApplication.window.getScene().getRoot().setStyle("-fx-font-family: \"" + fontFamily + "\"");
     }
 
-    public void setBgFile(File file){
+    public void setBgFile(File file) {
         String suffix = LocalResourcesManager.getSuffix(file.getName());
-        File newFile = new File(String.format("assets/image/bg/%d.%s",System.currentTimeMillis(),suffix));
+        File newFile = new File(String.format("assets/image/bg/%d.%s", System.currentTimeMillis(), suffix));
         try {
-            Files.copy(file.toPath(),newFile.toPath());
-            if (diyHomeBgName.get() != null && !diyHomeBgName.get().isEmpty()){
-                File oldFile=new File(String.format("assets/image/bg/%s",diyHomeBgName.get()));
-                if (oldFile.exists()){
+            Files.copy(file.toPath(), newFile.toPath());
+            if (diyHomeBgName.get() != null && !diyHomeBgName.get().isEmpty()) {
+                File oldFile = new File(String.format("assets/image/bg/%s", diyHomeBgName.get()));
+                if (oldFile.exists()) {
                     boolean delete = oldFile.delete();
-                    LOG.info("旧背景删除:{}",delete);
+                    LOG.info("旧背景删除:{}", delete);
                 }
             }
             diyHomeBgName.set(newFile.getName());
             MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
 
         } catch (IOException e) {
-            LOG.error("IO ERROR",e);
+            LOG.error("IO ERROR", e);
         }
     }
 
-    public void checkVersion(){
+    public void checkVersion() {
         CheckVersionTask task = new CheckVersionTask(false);
         task.setOnSucceeded(workerStateEvent -> {
             ResponseBody<Release> value = task.getValue();
-            if (value.getCode() == 200){
-                MvvmFX.getNotificationCenter().publish(NotificationKey.NOTIFICATION_SHOW_UPDATE,value.getData());
-            }else if (value.getCode() == 1){
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.setting.about.update.tip01")));
-            }else{
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.message.type01")));
+            if (value.getCode() == 200) {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.NOTIFICATION_SHOW_UPDATE, value.getData());
+            } else if (value.getCode() == 1) {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.setting.about.update.tip01")));
+            } else {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.message.type01")));
             }
         });
         Thread.startVirtualThread(task);
     }
 
 
-
-
     public void setLanguages(Locale locale) {
         Config.setting.setLanguage(locale);
-        Config.language = ResourceBundle.getBundle("cn.tealc/wutheringwavestool/language/local",Config.setting.getLanguage());
+        Config.language = ResourceBundle.getBundle("cn.tealc/wutheringwavestool/language/local", Config.setting.getLanguage());
         MvvmFX.setGlobalResourceBundle(Config.language);
     }
 
-
-    public String getGameDir() {
-        return gameDir.get();
-    }
-
-    public SimpleStringProperty gameDirProperty() {
-        return gameDir;
-    }
 
     public boolean isStartWithAnalysis() {
         return startWithAnalysis.get();
@@ -238,46 +219,12 @@ public class SettingViewModel implements ViewModel ,SceneLifecycle {
         return diyHomeBgName;
     }
 
-
-    public SourceType getGameRootDirSource() {
-        return gameRootDirSource.get();
-    }
-
-    public SimpleObjectProperty<SourceType> gameRootDirSourceProperty() {
-        return gameRootDirSource;
-    }
-
-    public void setGameRootDirSource(SourceType gameRootDirSource) {
-        this.gameRootDirSource.set(gameRootDirSource);
-    }
-
-
     public boolean isCheckNewVersion() {
         return checkNewVersion.get();
     }
 
     public SimpleBooleanProperty checkNewVersionProperty() {
         return checkNewVersion;
-    }
-
-    public String getGameAppStartPath() {
-        return gameAppStartPath.get();
-    }
-
-    public SimpleStringProperty gameAppStartPathProperty() {
-        return gameAppStartPath;
-    }
-
-    public boolean isGameAppStartCustom() {
-        return gameAppStartCustom.get();
-    }
-
-    public SimpleBooleanProperty gameAppStartCustomProperty() {
-        return gameAppStartCustom;
-    }
-
-    public void setGameAppStartCustom(boolean gameAppStartCustom) {
-        this.gameAppStartCustom.set(gameAppStartCustom);
     }
 
     public ObservableList<Pair<String, Locale>> getLanguages() {

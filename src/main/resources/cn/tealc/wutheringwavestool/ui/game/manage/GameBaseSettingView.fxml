@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<StackPane prefHeight="600.0" prefWidth="1000.0" styleClass="game-base-setting" stylesheets="@../../../css/game/manage/GameBaseSetting.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.game.manage.GameBaseSettingView">
+   <children>
+      <ScrollPane fitToHeight="true" fitToWidth="true">
+         <content>
+            <HBox>
+               <children>
+                  <VBox prefHeight="200.0" prefWidth="100.0" spacing="15.0" styleClass="left" HBox.hgrow="SOMETIMES">
+                     <children>
+                        <Label layoutX="10.0" layoutY="260.0" styleClass="title-3" text="%ui.game_manager.base.installed" />
+                        <VBox prefWidth="100.0" spacing="10.0">
+                           <children>
+                              <Label styleClass="title-4" text="%ui.game_manager.base.game_dir" />
+                              <StackPane maxWidth="350.0" styleClass="input-group">
+                                 <children>
+                                    <TextField fx:id="gameDirField" prefWidth="250.0" />
+                                    <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setGameDir" StackPane.alignment="CENTER_RIGHT">
+                                       <graphic>
+                                          <FontIcon iconLiteral="mdral-border_color" />
+                                       </graphic>
+                                    </Button>
+                                 </children>
+                              </StackPane>
+                              <Label layoutX="10.0" layoutY="10.0" styleClass="title-4" text="%ui.game_manager.base.game_server" />
+                              <HBox spacing="15.0">
+                                 <children>
+                                    <RadioButton fx:id="sourceTypeBtn01" accessibleText="default" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio01">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="gameSourceTypeToggleGroup" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton fx:id="sourceTypeBtn02" accessibleText="bilibili" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio04">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="gameSourceType" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton fx:id="sourceTypeBtn03" accessibleText="wegame" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio02" toggleGroup="$gameSourceType" />
+                                    <RadioButton fx:id="sourceTypeBtn04" accessibleText="global" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio03" toggleGroup="$gameSourceType" />
+                                 </children>
+                              </HBox>
+                              <Label layoutX="10.0" layoutY="10.0" styleClass="title-4" text="%ui.setting.default.app_path" />
+                              <HBox layoutX="10.0" layoutY="39.0" spacing="15.0">
+                                 <children>
+                                    <RadioButton fx:id="gameStartAppRadioDefault" accessibleText="default" mnemonicParsing="false" onAction="#setAppPathModel" selected="true" text="%ui.setting.default.app_path.radio01">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="gameStartAppType" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton accessibleText="custom" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setAppPathModel" text="%ui.setting.default.app_path.radio02" toggleGroup="$gameStartAppType" />
+                                 </children>
+                              </HBox>
+                              <StackPane fx:id="gameStartAppGroup" layoutX="10.0" layoutY="70.0" maxWidth="350.0" styleClass="input-group">
+                                 <children>
+                                    <TextField fx:id="gameStartAppField" prefWidth="250.0" />
+                                    <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setGameApp" StackPane.alignment="CENTER_RIGHT">
+                                       <graphic>
+                                          <FontIcon iconLiteral="mdoal-folder" />
+                                       </graphic>
+                                    </Button>
+                                 </children>
+                              </StackPane>
+                           </children>
+                        </VBox>
+                        <Label styleClass="title-3" text="%ui.game_manager.base.params" />
+                        <VBox spacing="10.0">
+                           <children>
+                              <Label styleClass="text-subtle" text="%ui.game_manager.base.params.tip" />
+                              <HBox spacing="15.0">
+                                 <children>
+                                    <RadioButton mnemonicParsing="false" onAction="#setDX" text="DX11">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="gameDxToggleGroup" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setDX" text="DX12" toggleGroup="$gameDxToggleGroup" />
+                                 </children>
+                              </HBox>
+                              <StackPane maxWidth="350.0" minHeight="38.0" styleClass="input-group">
+                                 <children>
+                                    <TextField fx:id="paramField" prefWidth="250.0" promptText="%ui.game_manager.base.params.add" />
+                                 </children>
+                              </StackPane>
+                              <ListView fx:id="paramListView" maxWidth="350.0" minHeight="150.0" prefHeight="200.0" prefWidth="350.0" styleClass="param-list-view" />
+                           </children>
+                        </VBox>
+                     </children>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox prefHeight="200.0" prefWidth="300.0" styleClass="right" />
+               </children>
+            </HBox>
+         </content>
+      </ScrollPane>
+   </children>
+</StackPane>

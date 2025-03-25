@@ -1,0 +1,58 @@
+.game-manage{
+    
+}
+
+.game-manage .scroll-bar{
+    -fx-background-color: transparent;
+    -fx-opacity: 1;
+}
+
+.game-manage .scroll-bar:vertical .thumb{
+    -fx-background-color: transparent;
+    -fx-background-insets: 1;
+}
+.game-manage:hover .scroll-bar:vertical .thumb{
+    -fx-background-color: -color-bg-default-60;
+}
+
+
+
+.game-manage .separator {
+    -fx-padding: 6 0 6 0;
+}
+.game-manage .separator > .line{
+    -fx-border-color: #00000070;
+    -fx-border-insets: 1px 0 0 0;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+}
+.game-manage .child-select{
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-fg-subtle;
+    -fx-font-size: 1em;
+    -fx-font-weight: bold;
+    -fx-graphic-text-gap: 2;
+    -fx-padding: 3;
+    -fx-cursor: hand;
+}
+.game-manage .child-select:hover{
+    -fx-text-fill: -color-accent-fg;
+}
+.game-manage .child-select:selected{
+    -fx-text-fill: -color-fg-muted;
+}
+.game-manage .child-select > Pane{
+    -fx-pref-width: 25;
+    -fx-pref-height: 3;
+    -fx-background-radius: 3px;
+    -fx-background-color: transparent;
+}
+
+
+.game-manage .toggle-button:selected > Pane{
+    -fx-background-color: -color-accent-fg;
+}
+
+
+
+

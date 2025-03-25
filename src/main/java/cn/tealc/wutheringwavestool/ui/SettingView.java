@@ -28,6 +28,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
@@ -55,36 +56,28 @@ import java.util.ResourceBundle;
  * @author: Leck
  * @create: 2024-07-03 20:20
  */
-public class SettingView implements FxmlView<SettingViewModel>,Initializable {
-    private static final Logger LOG= LoggerFactory.getLogger(SettingView.class);
+public class SettingView implements FxmlView<SettingViewModel>, Initializable {
+    private static final Logger LOG = LoggerFactory.getLogger(SettingView.class);
     @InjectViewModel
     private SettingViewModel viewModel;
-
-
+    @FXML
+    private AnchorPane root;
     @FXML
     private Label appAuthor;
-
     @FXML
     private ImageView appIconIv;
-
     @FXML
     private Label appName;
-
     @FXML
     private Label appVersion;
-    @FXML
-    private TextField gameDirField;
-
     @FXML
     private CheckBox startWithAnalysisView;
     @FXML
     private ToggleSwitch exitWhenGameOver;
     @FXML
     private ToggleSwitch hideWhenGameStart;
-
     @FXML
     private TextField diyBgField;
-
     @FXML
     private StackPane diyBgInputGroup;
     @FXML
@@ -92,24 +85,9 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
     @FXML
     private ToggleSwitch noKuJieQuSwitch;
     @FXML
-    private TextField gameStartAppField;
-
-    @FXML
-    private StackPane gameStartAppGroup;
-
-    @FXML
-    private ToggleGroup gameStartAppType;
-    @FXML
-    private ToggleGroup gameSourceType;
-    @FXML
-    private RadioButton gameStartAppRadioDefault;
-
-    @FXML
     private ToggleGroup closeEventToggleGroup;
-
     @FXML
     private ComboBox<Pair<String, Locale>> languageBox;
-
     @FXML
     private ToggleGroup fileSourceType;
     @FXML
@@ -118,12 +96,12 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
     private TextField diyBgDirField;
     @FXML
     private StackPane diyBgDirInputGroup;
-
     @FXML
     private Spinner<Integer> uiScaleSpinner;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(75, 125,  Config.setting.getUiScale(), 5);
+        SpinnerValueFactory<Integer> valueFactory = new SpinnerValueFactory.IntegerSpinnerValueFactory(75, 125, Config.setting.getUiScale(), 5);
         uiScaleSpinner.setValueFactory(valueFactory);
         uiScaleSpinner.valueProperty().addListener((observableValue, integer, t1) -> {
             if (t1 != null) {
@@ -131,7 +109,6 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
             }
         });
 
-        gameDirField.textProperty().bindBidirectional(viewModel.gameDirProperty());
         startWithAnalysisView.selectedProperty().bindBidirectional(viewModel.startWithAnalysisProperty());
 
         hideWhenGameStart.setSkin(new ToggleSwitchSkin(hideWhenGameStart));
@@ -139,53 +116,33 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
         exitWhenGameOver.selectedProperty().bindBidirectional(viewModel.exitWhenGameOverProperty());
 
         diyBgField.textProperty().bindBidirectional(viewModel.diyHomeBgNameProperty());
-        diyBgInputGroup.managedProperty().bind(Bindings.equal(1,viewModel.homeBgTypeProperty()));
-        diyBgInputGroup.visibleProperty().bind(Bindings.equal(1,viewModel.homeBgTypeProperty()));
+        diyBgInputGroup.managedProperty().bind(Bindings.equal(1, viewModel.homeBgTypeProperty()));
+        diyBgInputGroup.visibleProperty().bind(Bindings.equal(1, viewModel.homeBgTypeProperty()));
         diyBgDirField.textProperty().bindBidirectional(viewModel.homeBgDirProperty());
-        diyBgDirInputGroup.managedProperty().bind(Bindings.equal(2,viewModel.homeBgTypeProperty()));
-        diyBgDirInputGroup.visibleProperty().bind(Bindings.equal(2,viewModel.homeBgTypeProperty()));
+        diyBgDirInputGroup.managedProperty().bind(Bindings.equal(2, viewModel.homeBgTypeProperty()));
+        diyBgDirInputGroup.visibleProperty().bind(Bindings.equal(2, viewModel.homeBgTypeProperty()));
 
 
         homeBgType.selectToggle(homeBgType.getToggles().get(viewModel.getHomeBgType()));
 
         homeBgType.selectedToggleProperty().addListener((observableValue, toggle, t1) -> {
-            int index= homeBgType.getToggles().indexOf(t1);
-            if (index == 0){
+            int index = homeBgType.getToggles().indexOf(t1);
+            if (index == 0) {
                 viewModel.setHomeBgType(0);
                 viewModel.changeBackground();
-            }else if (index == 1){
+            } else if (index == 1) {
                 viewModel.setHomeBgType(1);
-                if (viewModel.getDiyHomeBgName()!= null){
+                if (viewModel.getDiyHomeBgName() != null) {
                     viewModel.changeBackground();
                 }
-            }else if (index == 2){
+            } else if (index == 2) {
                 viewModel.setHomeBgType(2);
-                if (viewModel.getHomeBgDir() != null){
+                if (viewModel.getHomeBgDir() != null) {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
                 }
             }
         });
-
-
         noKuJieQuSwitch.selectedProperty().bindBidirectional(Config.setting.noKuJieQuProperty());
-
-
-        if (viewModel.getGameRootDirSource()==SourceType.DEFAULT){
-            gameSourceType.selectToggle(gameSourceType.getToggles().getFirst());
-        }else if(viewModel.getGameRootDirSource()==SourceType.WE_GAME){
-            gameSourceType.selectToggle(gameSourceType.getToggles().get(1));
-        }else {
-            gameSourceType.selectToggle(gameSourceType.getToggles().get(2));
-        }
-
-
-        gameStartAppField.textProperty().bindBidirectional(viewModel.gameAppStartPathProperty());
-        gameStartAppGroup.disableProperty().bind(gameStartAppType.selectedToggleProperty().isEqualTo(gameStartAppRadioDefault));
-        if (!viewModel.isGameAppStartCustom()){
-            gameStartAppType.selectToggle(gameStartAppType.getToggles().getFirst());
-        }else {
-            gameStartAppType.selectToggle(gameStartAppType.getToggles().get(1));
-        }
 
 
         appName.setText(Config.appTitle);
@@ -195,7 +152,7 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
 
         appIconIv.setFitWidth(80);
         appIconIv.setFitHeight(80);
-        appIconIv.setImage(new Image(FXResourcesLoader.load("image/icon.png"),80,80,true,true,true));
+        appIconIv.setImage(new Image(FXResourcesLoader.load("image/icon.png"), 80, 80, true, true, true));
 
         versionCheckSwitch.selectedProperty().bindBidirectional(viewModel.checkNewVersionProperty());
 
@@ -204,10 +161,9 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
             closeEventToggleGroup.selectToggle(closeEventToggleGroup.getToggles().get(Config.setting.getCloseEvent()));
 
 
-
         languageBox.setItems(viewModel.getLanguages());
         for (Pair<String, Locale> language : languageBox.getItems()) {
-            if (language.getValue().getLanguage().equals(Config.setting.getLanguage().getLanguage())){
+            if (language.getValue().getLanguage().equals(Config.setting.getLanguage().getLanguage())) {
                 languageBox.getSelectionModel().select(language);
             }
         }
@@ -221,6 +177,7 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
             public String toString(Pair<String, Locale> stringLocalePair) {
                 return stringLocalePair != null ? stringLocalePair.getKey() : null;
             }
+
             @Override
             public Pair<String, Locale> fromString(String s) {
                 return null;
@@ -230,73 +187,6 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
 
         fileSourceType.getToggles().get(Config.setting.getResourceSource()).setSelected(true);
 
-    }
-
-    @FXML
-    void setSelectedGameType(ActionEvent event) {
-        Object source = event.getSource();
-        if (source instanceof RadioButton button) {
-            switch (button.getAccessibleText()) {
-                case "default"-> {
-                    viewModel.setGameRootDirSource(SourceType.DEFAULT);
-                    noKuJieQuSwitch.setSelected(false);
-                }
-                case "wegame" -> {
-                    viewModel.setGameRootDirSource(SourceType.WE_GAME);
-                    noKuJieQuSwitch.setSelected(false);
-                    NotificationManager.message(new MessageInfo(MessageType.WARNING,"WeGame暂时无法直接启动，需要替换文件，具体请前往设置加群获取教程",Duration.seconds(5)));
-                }
-                case "global" -> {
-                    viewModel.setGameRootDirSource(SourceType.GLOBAL);
-                    noKuJieQuSwitch.setSelected(true);
-                }
-            }
-        }
-    }
-
-
-    @FXML
-    void setAppPathModel(ActionEvent event) {
-        Object source = event.getSource();
-        if (source instanceof RadioButton button) {
-            switch (button.getAccessibleText()) {
-                case "default" -> {
-                    Config.setting.setGameStartAppCustom(false);
-                    File gameExeClient = GameResourcesManager.getGameExeBase();
-                    if (gameExeClient != null) {
-                        gameStartAppField.setText(gameExeClient.getAbsolutePath());
-                    }else {
-                        gameStartAppField.setText("Wuthering Waves.exe");
-                    }
-
-                    gameStartAppField.positionCaret(gameStartAppField.getText().length());
-                }
-                case "custom" -> {
-                    Config.setting.setGameStartAppCustom(true);
-                    File gameExeClient = GameResourcesManager.getGameExeClient();
-                    if (gameExeClient != null) {
-                        gameStartAppField.setText(gameExeClient.getAbsolutePath());
-                    }
-                    gameStartAppField.positionCaret(gameStartAppField.getText().length());
-                }
-            }
-        }
-    }
-
-
-    @FXML
-    void setGameDir(ActionEvent event) {
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle(LanguageManager.getString("ui.setting.file.game_dir.title"));
-        File file = directoryChooser.showDialog(gameDirField.getScene().getWindow());
-        if (file != null) {
-            File startApp = new File(file.getAbsolutePath() + File.separator + "Wuthering Waves.exe");
-            if (startApp.exists()) {
-                gameDirField.setText(file.getAbsolutePath());
-            }else {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,LanguageManager.getString("ui.setting.message.01")));
-            }
-        }
     }
 
 
@@ -310,10 +200,8 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
     void toWeb(ActionEvent event) {
         try {
             Desktop.getDesktop().browse(new URI("https://github.com/leck995/WutheringWavesTool"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | URISyntaxException e) {
+            LOG.warn(e.getMessage());
         }
     }
 
@@ -323,36 +211,32 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
         if (index == 1) {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setTitle(LanguageManager.getString("ui.setting.file.background.title"));
-            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("jpg,jpeg,png,bmp","*.png","*.jpg","*.jpeg","*.bmp"));
-            File file = fileChooser.showOpenDialog(gameDirField.getScene().getWindow());
+            fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("jpg,jpeg,png,bmp", "*.png", "*.jpg", "*.jpeg", "*.bmp"));
+            File file = fileChooser.showOpenDialog(root.getScene().getWindow());
             if (file != null) {
                 viewModel.setBgFile(file);
             }
-        }else if (index == 2) {
+        } else if (index == 2) {
             DirectoryChooser chooser = new DirectoryChooser();
             chooser.setTitle(LanguageManager.getString("ui.setting.file.background.title"));
-            File file = chooser.showDialog(gameDirField.getScene().getWindow());
+            File file = chooser.showDialog(root.getScene().getWindow());
             if (file != null) {
                 File[] files = file.listFiles();
                 if (files != null && files.length > 0) {
                     viewModel.setHomeBgDir(file.getAbsolutePath());
-                }else {
+                } else {
                     NotificationManager.message(MessageInfo.warning("选中文件夹为空，无法设置为背景文件夹"));
                 }
             }
         }
-
-
     }
 
     @FXML
     void toIssues(ActionEvent event) {
         try {
             Desktop.getDesktop().browse(new URI("https://github.com/leck995/WutheringWavesTool/issues"));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
+        } catch (IOException | URISyntaxException e) {
+            LOG.warn(e.getMessage());
         }
     }
 
@@ -362,53 +246,43 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
         ClipboardContent content = new ClipboardContent();
         content.putString(LanguageManager.getString("ui.setting.communication.QQ"));
         clipboard.setContent(content);
-        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,LanguageManager.getString("ui.setting.communication.QQ.tip")));
+        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.SUCCESS, LanguageManager.getString("ui.setting.communication.QQ.tip")));
     }
 
     @FXML
     void toSupport(ActionEvent event) {
         Label title = new Label(LanguageManager.getString("ui.setting.sponsor.dialog.title"));
         title.getStyleClass().add(Styles.TITLE_3);
-        Label tip1 =new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip01"));
+        Label tip1 = new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip01"));
         tip1.setWrapText(true);
         tip1.setPrefWidth(450);
         tip1.setPrefHeight(80);
-        Image image =new Image(FXResourcesLoader.load("image/support.png"),350,320,true,true,true);
+        Image image = new Image(FXResourcesLoader.load("image/support.png"), 350, 320, true, true, true);
         ImageView iv = new ImageView(image);
 
-        Label tip2 =new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip02"));
-        Label tip3 =new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip03"));
-        VBox center = new VBox(5.0,tip1,iv,tip2,tip3);
+        Label tip2 = new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip02"));
+        Label tip3 = new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip03"));
+        VBox center = new VBox(5.0, tip1, iv, tip2, tip3);
 
         Hyperlink browserBtn = new Hyperlink(LanguageManager.getString("ui.setting.sponsor.dialog.browser"));
         browserBtn.setOnAction(actionEvent -> {
             try {
                 Desktop.getDesktop().browse(new URI(Config.URL_SUPPORT_LIST));
             } catch (IOException | URISyntaxException e) {
-                LOG.error("打开赞助名单失败{}",e.getMessage());
+                LOG.error("打开赞助名单失败{}", e.getMessage());
             }
         });
 
         Button cancelBtn = new Button(LanguageManager.getString("ui.common.cancel"));
         cancelBtn.setCancelButton(true);
-        JFXDialogLayout dialogLayout=new JFXDialogLayout();
+        JFXDialogLayout dialogLayout = new JFXDialogLayout();
         dialogLayout.setHeading(title);
         dialogLayout.setBody(center);
-        dialogLayout.setActions(browserBtn,cancelBtn);
-        dialogLayout.setPrefSize(500,500);
-        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
+        dialogLayout.setActions(browserBtn, cancelBtn);
+        dialogLayout.setPrefSize(500, 500);
+        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, dialogLayout);
     }
 
-    @FXML
-    void setGameApp(ActionEvent event) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle(LanguageManager.getString("ui.setting.file.app.title"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("exe","*.exe"));
-        File file = fileChooser.showOpenDialog(gameDirField.getScene().getWindow());
-        if (file != null) {
-            gameStartAppField.setText(file.getAbsolutePath());
-        }
-    }
 
     @FXML
     void toWiki(ActionEvent event) {
@@ -444,7 +318,5 @@ public class SettingView implements FxmlView<SettingViewModel>,Initializable {
                 }
             }
         }
-
-        System.out.println(Config.setting.getResourceSource());
     }
 }
