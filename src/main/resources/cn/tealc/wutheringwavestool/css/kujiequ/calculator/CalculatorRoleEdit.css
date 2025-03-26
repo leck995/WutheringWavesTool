@@ -1,0 +1,17 @@
+.role-edit{
+
+}
+
+.role-edit .level-group{
+    -fx-alignment: center;
+}
+.role-edit .level-group .skill-title{
+    -fx-pref-width: 80;
+}
+
+.role-edit .level-group .skill-slider{
+
+}
+.role-edit .level-group .skill-level{
+
+}

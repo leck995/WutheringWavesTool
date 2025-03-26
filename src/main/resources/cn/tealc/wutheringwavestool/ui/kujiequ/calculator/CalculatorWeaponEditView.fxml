@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Slider?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane fx:id="root" prefHeight="600.0" prefWidth="1000.0" styleClass="role-edit" stylesheets="@../../../css/kujiequ/calculator/CalculatorRoleEdit.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.calculator.CalculatorWeaponEditView">
+   <children>
+      <Label styleClass="title-2" text="计算" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      <HBox prefHeight="100.0" prefWidth="200.0" spacing="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
+         <children>
+            <VBox alignment="CENTER" prefWidth="300.0" spacing="30.0">
+               <children>
+                  <HBox alignment="CENTER">
+                     <children>
+                        <ImageView fx:id="iconIV" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" />
+                        <Label fx:id="weaponNameLabel" styleClass="title-3" text="武器武器" />
+                     </children>
+                  </HBox>
+                  <HBox styleClass="level-group">
+                     <children>
+                        <Label styleClass="skill-title" text="起始等级" />
+                        <Slider fx:id="startSlider" max="90.0" min="1.0" value="1.0">
+                           <styleClass>
+                              <String fx:value="skill-slider" />
+                              <String fx:value="small" />
+                           </styleClass></Slider>
+                        <Label fx:id="startLabel" layoutX="10.0" layoutY="10.0" styleClass="skill-level" text="LV.90" />
+                     </children>
+                  </HBox>
+                  <HBox layoutX="10.0" layoutY="138.0" styleClass="level-group">
+                     <children>
+                        <Label styleClass="skill-title" text="结束等级" />
+                        <Slider fx:id="endSlider" max="90.0" min="1.0" value="90.0">
+                           <styleClass>
+                              <String fx:value="skill-slider" />
+                              <String fx:value="small" />
+                           </styleClass></Slider>
+                        <Label fx:id="endLabel" layoutX="10.0" layoutY="10.0" styleClass="skill-level" text="LV.90" />
+                     </children>
+                  </HBox>
+                  <HBox alignment="CENTER" spacing="20.0">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#calculate" styleClass="accent" text="查询" />
+                        <Button mnemonicParsing="false" onAction="#back" text="返回" />
+                     </children>
+                  </HBox>
+               </children>
+            </VBox>
+            <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label styleClass="title-3" text="所有材料" />
+                  <FlowPane fx:id="allItemFlowPane" hgap="10.0" prefHeight="200.0" prefWidth="200.0" vgap="10.0" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </FlowPane>
+                  <Label layoutX="10.0" layoutY="10.0" styleClass="title-3" text="缺少材料" />
+                  <FlowPane fx:id="lackItemFlowPane" hgap="10.0" layoutX="10.0" layoutY="29.0" prefHeight="200.0" prefWidth="200.0" vgap="10.0" VBox.vgrow="ALWAYS" />
+               </children></VBox>
+         </children>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+</AnchorPane>

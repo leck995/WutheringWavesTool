@@ -1,0 +1,64 @@
+.calculator-view {
+
+}
+
+.calculator-view .tab-pane.no-header {
+    -fx-tab-max-width: 0;
+    -fx-tab-min-width: 0;
+    -fx-tab-max-height: 0;
+    -fx-tab-min-height: 0;
+    -fx-padding: 0;
+    -fx-tab-header-area-background-color: transparent;
+    -fx-tab-header-area-border-color: transparent;
+}
+.calculator-view .tab-pane.no-header > .tab-header-area {
+    -fx-background-insets: 0;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-border-insets: 0;
+    -fx-border-width: 0;
+    visibility: hidden;
+}
+.calculator-view .separator {
+    -fx-padding: 6 0 6 0;
+}
+.calculator-view .separator > .line{
+    -fx-border-color: #00000070;
+    -fx-border-insets: 1px 0 0 0;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+}
+.calculator-view .child-select{
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-font-muted;
+    -fx-font-weight: bold;
+    -fx-graphic-text-gap: 2;
+    -fx-padding: 3;
+    -fx-cursor: hand;
+}
+.calculator-view .child-select:hover{
+    -fx-text-fill: -color-accent-fg;
+}
+.calculator-view .child-select > Pane{
+    -fx-pref-width: 25;
+    -fx-pref-height: 3;
+    -fx-background-radius: 3px;
+    -fx-background-color: transparent;
+}
+
+
+.calculator-view .toggle-button:selected > Pane{
+    -fx-background-color: -color-accent-fg;
+}
+
+
+.calculator-view .item-cell{
+    -fx-pref-width: 80.0;
+    -fx-background-color: -color-bg-default-60;
+    -fx-background-radius: 5;
+    -fx-padding: 0 0 2 0;
+}
+.calculator-view .item-cell:hover{
+    -fx-cursor: hand;
+    -fx-background-color: -color-bg-default-40;
+}

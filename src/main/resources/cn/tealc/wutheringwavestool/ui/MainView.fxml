@@ -65,6 +65,11 @@
                                     <FontIcon iconLiteral="mdmz-person" />
                                  </graphic>
                               </ToggleButton>
+                              <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="356.0" mnemonicParsing="false" onAction="#toCalculator" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type03" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdal-calculate" />
+                                 </graphic>
+                              </ToggleButton>
                               <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="230.0" mnemonicParsing="false" onAction="#toTower" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type08" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
                                     <FontIcon iconLiteral="mdmz-navigation" />

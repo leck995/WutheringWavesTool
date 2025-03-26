@@ -10,16 +10,18 @@ import java.util.List;
 * */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class RoleAim {
+    private static final String CATEGORY_ALL ="all";
+    private static final String CATEGORY_SELF ="self";
     private int roleId;
     private int roleStartLevel;
     private int roleEndLevel;
     private List<SkillLevelUp> skillLevelUpList;
-    private List<Object> advanceSkillList; // 根据需要定义具体类型
+    private List<String> advanceSkillList; // 根据需要定义具体类型
     private int weaponId;
-    private int weaponStartLevel;
-    private int weaponEndLevel;
+    private int weaponStartLevel = 1;
+    private int weaponEndLevel = 90;
     @JsonAlias(value = "_category")
-    private String category; // 注意：JSON 中的字段名是 "_category"，但在 Java 中通常使用 camelCase
+    private String category = CATEGORY_ALL; // 注意：JSON 中的字段名是 "_category"，但在 Java 中通常使用 camelCase
 
 
     // 内部类表示技能升级信息
@@ -79,11 +81,11 @@ public class RoleAim {
         this.skillLevelUpList = skillLevelUpList;
     }
 
-    public List<Object> getAdvanceSkillList() {
+    public List<String> getAdvanceSkillList() {
         return advanceSkillList;
     }
 
-    public void setAdvanceSkillList(List<Object> advanceSkillList) {
+    public void setAdvanceSkillList(List<String> advanceSkillList) {
         this.advanceSkillList = advanceSkillList;
     }
 

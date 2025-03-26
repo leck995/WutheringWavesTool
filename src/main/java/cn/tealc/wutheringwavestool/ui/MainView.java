@@ -25,6 +25,8 @@ import cn.tealc.wutheringwavestool.ui.game.manage.GameManagerViewModel;
 import cn.tealc.wutheringwavestool.ui.kujiequ.*;
 import cn.tealc.wutheringwavestool.ui.base.UpdateView;
 import cn.tealc.wutheringwavestool.ui.base.UpdateViewModel;
+import cn.tealc.wutheringwavestool.ui.kujiequ.calculator.CalculatorView;
+import cn.tealc.wutheringwavestool.ui.kujiequ.calculator.CalculatorViewModel;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialog;
@@ -508,6 +510,20 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             toggleButton.setSelected(true);
         }
     }
+    @FXML
+    void toCalculator(ActionEvent event) {
+        ToggleButton toggleButton= (ToggleButton) event.getSource();
+        if (toggleButton.isSelected()){
+            ViewTuple<CalculatorView, CalculatorViewModel> viewTuple = FluentViewLoader.fxmlView(CalculatorView.class).load();
+            bgPane.setVisible(false);
+            child.getChildren().setAll(viewTuple.getView());
+            startNavAnim();
+        }else {
+            toggleButton.setSelected(true);
+        }
+    }
+
+
     @FXML
     void toPlugin(ActionEvent event) {
         ToggleButton toggleButton= (ToggleButton) event.getSource();

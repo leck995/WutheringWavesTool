@@ -8,15 +8,20 @@ import com.kuro.kujiequ.ApiConfig;
 import com.kuro.kujiequ.model.calculator.exist.RoleAim;
 import com.kuro.kujiequ.model.calculator.exist.WeaponAim;
 import com.kuro.kujiequ.model.calculator.result.CalculatorResult;
+import com.kuro.kujiequ.model.calculator.result.Cost;
 import com.kuro.kujiequ.model.sign.SignUserInfo;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * @program: WutheringWavesTool
@@ -27,27 +32,27 @@ public class BatchWeaponCostTask extends Task<ResponseBody<CalculatorResult>> {
     private static final Logger LOG = LoggerFactory.getLogger(BatchWeaponCostTask.class);
     private SignUserInfo signUserInfo;
 
-    private WeaponAim weapon;
+    private WeaponAim[] weapon;
 
-    public BatchWeaponCostTask(SignUserInfo signUserInfo, WeaponAim weapon) {
+    public BatchWeaponCostTask(SignUserInfo signUserInfo, WeaponAim... weapon) {
         this.signUserInfo = signUserInfo;
         this.weapon = weapon;
     }
 
     @Override
-    protected ResponseBody<CalculatorResult> call() throws Exception {
+    protected ResponseBody<CalculatorResult> call(){
         ObjectMapper mapper = new ObjectMapper();
-        String content = mapper.writeValueAsString(weapon);
-
-        String url = String.format("%s?userId=%s&serverId=%s&roleId=%s&content=%s",
-                ApiConfig.CALCULATOR_BATCH_WEAPON_COST,
-                signUserInfo.getUserId(),
-                ApiConfig.PARAM_SERVER_ID,
-                signUserInfo.getRoleId(),
-                content);
         HttpClient client = HttpClient.newHttpClient();
         try {
-            HttpRequest request = HttpRequestUtil.getRequest(url, signUserInfo.getToken());
+            String content = mapper.writeValueAsString(weapon);
+            content = URLEncoder.encode(content, StandardCharsets.UTF_8);
+            String body = String.format("userId=%s&serverId=%s&roleId=%s&content=%s",
+                    signUserInfo.getUserId(),
+                    ApiConfig.PARAM_SERVER_ID,
+                    signUserInfo.getRoleId(),
+                    content);
+
+            HttpRequest request = HttpRequestUtil.getRequest( ApiConfig.CALCULATOR_BATCH_WEAPON_COST, body,signUserInfo.getToken());
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 ResponseBody<CalculatorResult> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<CalculatorResult>>() {
