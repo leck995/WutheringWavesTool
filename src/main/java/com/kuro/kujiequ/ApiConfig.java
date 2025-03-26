@@ -27,6 +27,14 @@ public class ApiConfig {
     public static final String SELF_TOWER_DATA_URL = "https://api.kurobbs.com/aki/roleBox/akiBox/towerDataDetail";
     public static final String OTHER_TOWER_DATA_URL = "https://api.kurobbs.com/aki/roleBox/akiBox/towerIndex";
 
+    /*养成计算器相接口*/
+    public static final String CALCULATOR_REFRESH_DATA= "https://api.kurobbs.com/aki/calculator/refreshData";
+    public static final String CALCULATOR_LIST_ROLE = "https://api.kurobbs.com/aki/calculator/listRole";
+    public static final String CALCULATOR_LIST_WEAPON = "https://api.kurobbs.com/aki/calculator/listWeapon";
+    public static final String CALCULATOR_QUERY_OWNED_ROLE = "https://api.kurobbs.com/aki/calculator/queryOwnedRole";
+    public static final String CALCULATOR_ROLE_CULTIVATE_STATUS = "https://api.kurobbs.com/aki/calculator/roleCultivateStatus";
+    public static final String CALCULATOR_BATCH_ROLE_COST = "https://api.kurobbs.com/aki/calculator/batchRoleCost";
+    public static final String CALCULATOR_BATCH_WEAPON_COST = "https://api.kurobbs.com/aki/calculator/batchWeaponCost";
 
 
     public static final String PARAM_SERVER_ID="76402e5b20be2c39f095a152090afddc";

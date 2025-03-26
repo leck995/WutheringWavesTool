@@ -1,0 +1,64 @@
+package com.kuro.kujiequ.thread.calculator;
+
+import cn.tealc.wutheringwavestool.model.ResponseBody;
+import cn.tealc.wutheringwavestool.util.HttpRequestUtil;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kuro.kujiequ.ApiConfig;
+import com.kuro.kujiequ.model.calculator.exist.RoleAim;
+import com.kuro.kujiequ.model.calculator.result.CalculatorResult;
+import com.kuro.kujiequ.model.sign.SignUserInfo;
+import javafx.concurrent.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+
+/**
+ * @program: WutheringWavesTool
+ * @description: 计算指定角色的练度
+ * @author: Leck
+ */
+public class BatchRoleCostTask extends Task<ResponseBody<CalculatorResult>> {
+    private static final Logger LOG = LoggerFactory.getLogger(BatchRoleCostTask.class);
+    private SignUserInfo signUserInfo;
+
+    private RoleAim[] roles;
+
+    public BatchRoleCostTask(SignUserInfo signUserInfo, RoleAim... roles) {
+        this.signUserInfo = signUserInfo;
+        this.roles = roles;
+    }
+
+    @Override
+    protected ResponseBody<CalculatorResult> call() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        String content = mapper.writeValueAsString(roles);
+
+        String url = String.format("%s?userId=%s&serverId=%s&roleId=%s&content=%s",
+                ApiConfig.CALCULATOR_BATCH_ROLE_COST,
+                signUserInfo.getUserId(),
+                ApiConfig.PARAM_SERVER_ID,
+                signUserInfo.getRoleId(),
+                content);
+        HttpClient client = HttpClient.newHttpClient();
+        try {
+            HttpRequest request = HttpRequestUtil.getRequest(url, signUserInfo.getToken());
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode() == 200) {
+                ResponseBody<CalculatorResult> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<CalculatorResult>>() {
+                });
+                return responseBody;
+            } else {
+                return new ResponseBody<>(1, "无法计算指定角色的练度");
+            }
+        } catch (IOException | InterruptedException e) {
+            LOG.error("错误", e);
+            return new ResponseBody<>(1, "无法计算指定角色的练度");
+        }
+    }
+
+}
