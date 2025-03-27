@@ -171,7 +171,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         supportBtn.visibleProperty().bind(Config.setting.supportProperty().not());
 
         if (Config.setting.isFirstViewWithPoolAnalysis()){
-            ViewTuple<CardDetailAnalysisView, CardDetailAnalysisViewModel> viewTuple = FluentViewLoader.fxmlView(CardDetailAnalysisView.class).load();
+            ViewTuple<CardAnalysisBaseView, CardAnalysisBaseViewModel> viewTuple = FluentViewLoader.fxmlView(CardAnalysisBaseView.class).load();
             child.getChildren().setAll(viewTuple.getView());
             navToggleGroup.selectToggle(analysisBtn);
             bgPane.setVisible(false);
