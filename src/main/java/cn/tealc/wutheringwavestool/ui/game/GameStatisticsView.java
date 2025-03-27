@@ -37,9 +37,7 @@ public class GameStatisticsView implements FxmlView<GameStatisticsViewModel>, In
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
-
-
+        createTime();
     }
 
     @FXML
@@ -68,16 +66,20 @@ public class GameStatisticsView implements FxmlView<GameStatisticsViewModel>, In
     void toTime(ActionEvent event) {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
-            if (timeView == null) {
-                ViewTuple<GameTimeView, GameTimeViewModel> viewTuple = FluentViewLoader.fxmlView(GameTimeView.class).load();
-                timeView = viewTuple.getView();
-            }
-            content.getChildren().setAll(timeView);
+            createTime();
             Animations.slideInUp(timeView, Duration.millis(300)).play();
         }else {
             toggleButton.setSelected(true);
         }
-
     }
+
+    private void createTime(){
+        if (timeView == null) {
+            ViewTuple<GameTimeView, GameTimeViewModel> viewTuple = FluentViewLoader.fxmlView(GameTimeView.class).load();
+            timeView = viewTuple.getView();
+        }
+        content.getChildren().setAll(timeView);
+    }
+
 
 }
