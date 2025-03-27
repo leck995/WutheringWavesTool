@@ -100,8 +100,9 @@ public class GameDirChooseView implements FxmlView<GameDirChooseViewModel>, Init
     }
     @FXML
     void toDownloadChild(ActionEvent event) {
-        content.getChildren().forEach(node -> node.setVisible(false));
-        downloadChild.setVisible(true);
+      /*  content.getChildren().forEach(node -> node.setVisible(false));
+        downloadChild.setVisible(true);*/
+        NotificationManager.message(MessageInfo.warning("该功能尚在开发中，无法使用。"));
     }
 
     @FXML

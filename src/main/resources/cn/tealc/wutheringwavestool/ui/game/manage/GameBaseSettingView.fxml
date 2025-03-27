@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -73,6 +74,12 @@
                                     </Button>
                                  </children>
                               </StackPane>
+                              <Button mnemonicParsing="false" text="%ui.home.button.start_update" visible="false">
+                                 <styleClass>
+                                    <String fx:value="flat" />
+                                    <String fx:value="accent" />
+                                 </styleClass>
+                              </Button>
                            </children>
                         </VBox>
                         <Label styleClass="title-3" text="%ui.game_manager.base.params" />
