@@ -6,7 +6,7 @@
 
     <groupId>cn.tealc</groupId>
     <artifactId>wuthering-waves-tool</artifactId>
-    <version>1.2.2</version>
+    <version>1.2.3</version>
     <name>WutheringWavesTool</name>
 
     <properties>
@@ -220,7 +220,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>cn.tealc.wutheringwavestool/cn.tealc.wutheringwavestool.MainApplication</mainClass>
+                            <mainClass>cn.tealc.wutheringwavestool/cn.tealc.wutheringwavestool.Main</mainClass>
                             <launcher>app</launcher>
                             <jlinkImageName>runtime</jlinkImageName>
                             <noManPages>true</noManPages>
