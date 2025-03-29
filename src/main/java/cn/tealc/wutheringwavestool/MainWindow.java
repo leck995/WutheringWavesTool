@@ -69,30 +69,12 @@ public class MainWindow extends RoundStage {
         double scale =1.0;
         scene.getRoot().setScaleX(scale);
         scene.getRoot().setScaleY(scale);
-
-        setWidth(Config.setting.getAppWidth());
-        setHeight(Config.setting.getAppHeight());
         setMinSize(1000,  600);
-/*        setMinHeight(720.0  * scale);
-        setMinWidth(1285.0  * scale);*/
-        //initStyle(StageStyle.TRANSPARENT);
+        setWidth(Config.setting.getAppWidth()  < 1000 ? 1000 : Config.setting.getAppWidth());
+        setHeight(Config.setting.getAppHeight() < 600 ? 600 : Config.setting.getAppHeight());
         Config.setting.appWidthProperty().bind(scene.widthProperty());
         Config.setting.appHeightProperty().bind(scene.heightProperty());
         initFont();
-
-
-        scene.setOnKeyPressed(event -> {
-
-            if (event.getCode() == KeyCode.UP){
-                System.out.println("SSSSSSSS");
-                font++;
-                scene.getRoot().setStyle("-fx-font-size: " + font);
-            }
-            if (event.getCode() == KeyCode.DOWN){
-                font--;
-                scene.getRoot().setStyle("-fx-font-size: " + font);
-            }
-        });
     }
 
 
