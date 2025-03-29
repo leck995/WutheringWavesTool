@@ -47,7 +47,6 @@ public class MainApplication extends Application {
 
     public MainApplication() {
         MvvmFX.setGlobalResourceBundle(Config.language);
-        MvvmFX.setGlobalResourceBundle(Config.language);
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory
                 .getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
         root.setLevel(Level.toLevel(Config.setting.getLogLevel()));
