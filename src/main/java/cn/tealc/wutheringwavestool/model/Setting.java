@@ -28,7 +28,7 @@ import java.util.Locale;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Setting {
 
-    private SimpleObjectProperty<Locale> language = new SimpleObjectProperty<>(Locale.getDefault());
+    private SimpleObjectProperty<Locale> language = new SimpleObjectProperty<>(Locale.CHINA);
     private SimpleDoubleProperty appWidth=new SimpleDoubleProperty(1280.0);
     private SimpleDoubleProperty appHeight=new SimpleDoubleProperty(760.0);
     private SimpleIntegerProperty uiScale=new SimpleIntegerProperty(100);
