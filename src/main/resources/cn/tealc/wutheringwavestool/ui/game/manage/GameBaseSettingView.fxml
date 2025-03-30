@@ -44,13 +44,9 @@
                                           <ToggleGroup fx:id="gameSourceTypeToggleGroup" />
                                        </toggleGroup>
                                     </RadioButton>
-                                    <RadioButton fx:id="sourceTypeBtn02" accessibleText="bilibili" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio04">
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="gameSourceType" />
-                                       </toggleGroup>
-                                    </RadioButton>
-                                    <RadioButton fx:id="sourceTypeBtn03" accessibleText="wegame" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio02" toggleGroup="$gameSourceType" />
-                                    <RadioButton fx:id="sourceTypeBtn04" accessibleText="global" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio03" toggleGroup="$gameSourceType" />
+                                    <RadioButton fx:id="sourceTypeBtn02" accessibleText="bilibili" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio04" toggleGroup="$gameSourceTypeToggleGroup" />
+                                    <RadioButton fx:id="sourceTypeBtn03" accessibleText="wegame" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio02" toggleGroup="$gameSourceTypeToggleGroup" />
+                                    <RadioButton fx:id="sourceTypeBtn04" accessibleText="global" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio03" toggleGroup="$gameSourceTypeToggleGroup" />
                                  </children>
                               </HBox>
                               <Label layoutX="10.0" layoutY="10.0" styleClass="title-4" text="%ui.setting.default.app_path" />

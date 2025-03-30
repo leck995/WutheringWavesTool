@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.ResourceBundle;
 
 /**
@@ -43,7 +44,7 @@ public class Config {
         if (setting == null){
             setting=new Setting();
         }
-        language = ResourceBundle.getBundle("cn/tealc/wutheringwavestool/language/local",setting.getLanguage());
+        language = ResourceBundle.getBundle("cn/tealc/wutheringwavestool/language/local", Locale.SIMPLIFIED_CHINESE);
         appTitle = LanguageManager.getString("app.title");
     }
 
