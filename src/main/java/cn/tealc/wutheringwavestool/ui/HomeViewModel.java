@@ -282,20 +282,27 @@ public class HomeViewModel implements ViewModel {
         } else {
             String dir = Config.setting.getGameRootDir();
             if (dir != null) {
-                File exe = new File(dir + File.separator + "launcher.exe");
-                if (exe.exists()) {
-                    try {
-                        Desktop.getDesktop().open(exe);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                File gameDir = GameResourcesManager.getGameDir();
+                if (gameDir != null) {
+                    File parent = gameDir.getParentFile();
+                    File exe = new File(parent,"launcher.exe");
+                    if (exe.exists()) {
+                        try {
+                            Desktop.getDesktop().open(exe);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                new MessageInfo(MessageType.WARNING, String.format(LanguageManager.getString("ui.home.message.type08"), exe.getPath()), false));
                     }
-                } else {
+                }else {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING, String.format(LanguageManager.getString("ui.home.message.type03"), exe.getPath()), false));
+                            new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type08")), false);
                 }
             } else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type04")), false);
+                        new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type08")), false);
             }
         }
     }
