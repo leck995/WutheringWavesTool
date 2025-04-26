@@ -10,7 +10,7 @@ public class ApiConfig {
     public static final String LOGIN_URL = "https://api.kurobbs.com/user/sdkLogin";
     public static final String DAILY_DATA_URL = "https://api.kurobbs.com/gamer/widget/game3/getData";
     public static final String REFRESH_URL = "https://api.kurobbs.com/aki/roleBox/akiBox/refreshData";
-    public static final String GAME_DATA_URL = "https://api.kurobbs.com/aki/widget/game3/refresh";
+    public static final String GAME_DATA_URL = "https://api.kurobbs.com/gamer/widget/game3/refresh";
     public static final String BASE_DATA_URL = "https://api.kurobbs.com/aki/roleBox/akiBox/baseData";
     public static final String ROLE_DATA_URL = "https://api.kurobbs.com/aki/roleBox/akiBox/roleData";
     public static final String CALABASH_DATA_URL = "https://api.kurobbs.com/gamer/roleBox/akiBox/calabashData";
