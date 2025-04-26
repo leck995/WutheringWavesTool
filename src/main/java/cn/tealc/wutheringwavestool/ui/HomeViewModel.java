@@ -25,6 +25,7 @@ import com.kuro.kujiequ.thread.UserInfoDataTask;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -39,6 +40,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -96,6 +98,7 @@ public class HomeViewModel implements ViewModel {
             }
         });
     }
+
 
 
 
@@ -230,6 +233,9 @@ public class HomeViewModel implements ViewModel {
                 weeklyRougeText.set(String.format("%2.0f%%",rouge));
 
                 rolePaneVisible.set(true);
+
+
+                onWeekEnd(false,roleInfo);
             } else {
                 rolePaneVisible.set(false);
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
@@ -285,6 +291,42 @@ public class HomeViewModel implements ViewModel {
         });
         Thread.startVirtualThread(userDailyDataTask);
     }
+
+
+
+    public void checkIsWeekEnd(){
+        if (Config.setting.getGameRootDirSource() == SourceType.GLOBAL){
+            Platform.runLater(()->{
+                onWeekEnd(true,null);
+            });
+
+        }
+    }
+
+    /**
+     * 检查每周最后一天，并进行提醒完成周活动
+     * @param isGlobal
+     * @param roleInfo
+     */
+    private void onWeekEnd(boolean isGlobal,RoleInfo roleInfo){
+        LocalDate today = LocalDate.now();
+        if (today.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            if (isGlobal) {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message01"),false));
+            }else {
+                if (roleInfo == null) {
+                    return;
+                }
+                if (roleInfo.getWeeklyInstCount() < 3){
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message02"),false));
+                }
+                if (roleInfo.getRougeScore() < 5000){
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message03"),false));
+                }
+            }
+        }
+    }
+
 
 
     public void startUpdate() {

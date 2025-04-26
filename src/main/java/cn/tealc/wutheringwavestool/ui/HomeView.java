@@ -162,7 +162,11 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
         setChangeBgEnable();
 
+
+        viewModel.checkIsWeekEnd();
+
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.CHANGE_HEADER,((s, objects) -> changeHeaderIv()));
+
     }
 
 
