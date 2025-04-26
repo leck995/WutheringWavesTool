@@ -78,6 +78,8 @@ public class HomeViewModel implements ViewModel {
     private SimpleBooleanProperty hasSign = new SimpleBooleanProperty(true);
     private SimpleStringProperty signText = new SimpleStringProperty();
 
+    private SimpleStringProperty weeklyRougeText = new SimpleStringProperty();
+
     private SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
 
     public HomeViewModel() {
@@ -222,6 +224,11 @@ public class HomeViewModel implements ViewModel {
                         box4Text.set(String.valueOf(boxInfo.getNum()));
                     }
                 }
+
+
+                double rouge = (double) roleInfo.getRougeScore() / (double) roleInfo.getRougeScoreLimit();
+                weeklyRougeText.set(String.format("%2.0f%%",rouge));
+
                 rolePaneVisible.set(true);
             } else {
                 rolePaneVisible.set(false);
@@ -715,5 +722,17 @@ public class HomeViewModel implements ViewModel {
 
     public SimpleBooleanProperty startGameBtnDisabledProperty() {
         return startGameBtnDisabled;
+    }
+
+    public String getWeeklyRougeText() {
+        return weeklyRougeText.get();
+    }
+
+    public SimpleStringProperty weeklyRougeTextProperty() {
+        return weeklyRougeText;
+    }
+
+    public void setWeeklyRougeText(String weeklyRougeText) {
+        this.weeklyRougeText.set(weeklyRougeText);
     }
 }
