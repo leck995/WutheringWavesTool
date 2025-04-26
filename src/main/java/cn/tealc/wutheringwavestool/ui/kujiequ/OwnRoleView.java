@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ;
 
+import atlantafx.base.controls.Spacer;
 import atlantafx.base.util.Animations;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
@@ -14,11 +15,13 @@ import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.Group;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -55,62 +58,69 @@ public class OwnRoleView implements FxmlView<OwnRoleViewModel>, Initializable {
     private List<ImageView> imageViews = new ArrayList<>();
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        for (Role role :   viewModel.getRoleList()) {
-            roleFlowPane.getChildren().add(createItem(role));
+        for (Role role:viewModel.getRoleList()) {
+            roleFlowPane.getChildren().add(new RoleCell(role));
         }
         viewModel.getRoleList().addListener((ListChangeListener<? super Role>) change -> {
             roleFlowPane.getChildren().clear();
             for (Role role : change.getList()) {
-                roleFlowPane.getChildren().add(createItem(role));
+                roleFlowPane.getChildren().add(new RoleCell(role));
             }
         });
-
     }
 
-
-    private Pane createItem(Role role){
-        ImageView roleIV=new ImageView(LocalResourcesManager.imageBuffer(role.getRoleIconUrl(),110,110,true,true));
-        imageViews.add(roleIV);
-        roleIV.setFitHeight(110);
-        roleIV.setFitWidth(110);
-        roleIV.setPreserveRatio(true);
-
-
-        Label roleName=new Label(role.getRoleName());
-        roleName.getStyleClass().add("name");
-        Label level=new Label(String.format("LV.%d",role.getLevel()));
-        level.getStyleClass().add("level");
-        VBox parent=new VBox(roleIV,level,roleName);
-
-        parent.setAlignment(Pos.BOTTOM_CENTER);
-        ImageView attrIV=new ImageView(
-                new Image(
-                        FXResourcesLoader.load(
-                                String.format("/cn/tealc/wutheringwavestool/image/attr/%d.png",role.getAttributeId())),
-                        30,30,true,true,true));
+    private class RoleCell extends StackPane{
+        private Role role;
+        public RoleCell(Role role) {
+            this.role = role;
+            ImageView roleIV=new ImageView(LocalResourcesManager.imageBuffer(role.getRoleIconUrl(),110,110,true,true));
+            imageViews.add(roleIV);
+            roleIV.setFitHeight(110);
+            roleIV.setFitWidth(110);
+            roleIV.setPreserveRatio(true);
 
 
-        attrIV.setFitHeight(30);
-        attrIV.setFitWidth(30);
+            Label roleName=new Label(role.getRoleName());
+            roleName.getStyleClass().add("name");
+            Label level=new Label(String.format("LV.%d",role.getLevel()));
+            level.getStyleClass().add("level");
+            VBox parent=new VBox(roleIV,level,roleName);
 
-        StackPane item=new StackPane();
-        item.setPrefSize(120,140);
+            parent.setAlignment(Pos.BOTTOM_CENTER);
+            ImageView attrIV=new ImageView(
+                    new Image(
+                            FXResourcesLoader.load(
+                                    String.format("/cn/tealc/wutheringwavestool/image/attr/%d.png",role.getAttributeId())),
+                            30,30,true,true,true));
+            attrIV.setFitHeight(30);
+            attrIV.setFitWidth(30);
+            Pane attrIVGroup = new Pane(attrIV);
+            attrIVGroup.getStyleClass().add("attr");
+            Label chainUnlockNumLabel=new Label(String.valueOf(role.getChainUnlockNum()));
+            chainUnlockNumLabel.getStyleClass().add("chain-num");
+
+            setPrefSize(120,140);
 
 
-        Rectangle thumb=new Rectangle(100.0,5.0);
-        thumb.setArcWidth(5);
-        thumb.setArcHeight(5);
-        if (role.getStarLevel()==5){
-            thumb.setFill(Color.web("#f8f05c"));
-        }else {
-            thumb.setFill(Color.web("#bc60f2"));
+            Rectangle thumb=new Rectangle(100.0,5.0);
+            thumb.setArcWidth(5);
+            thumb.setArcHeight(5);
+            if (role.getStarLevel()==5){
+                thumb.setFill(Color.web("#f8f05c"));
+            }else {
+                thumb.setFill(Color.web("#bc60f2"));
+            }
+            getChildren().addAll(parent,attrIVGroup,chainUnlockNumLabel,thumb);
+            StackPane.setAlignment(attrIVGroup, Pos.TOP_LEFT);
+            StackPane.setAlignment(chainUnlockNumLabel, Pos.TOP_RIGHT);
+            StackPane.setAlignment(thumb, Pos.BOTTOM_CENTER);
+
+            getStyleClass().add("role-cell");
+            setOnMouseClicked(this::onCellClicked);
+
         }
-        item.getChildren().addAll(parent,attrIV,thumb);
-        StackPane.setAlignment(attrIV, Pos.TOP_RIGHT);
-        StackPane.setAlignment(thumb, Pos.BOTTOM_CENTER);
 
-        item.getStyleClass().add("role-cell");
-        item.setOnMouseClicked(mouseEvent -> {
+        private void onCellClicked(MouseEvent mouseEvent) {
             if (mouseEvent.getButton()== MouseButton.PRIMARY){
                 if (imageViews.size()==viewModel.getRoleList().size()){
                     List<Pair<Role,Image>> list = new ArrayList<>();
@@ -148,10 +158,11 @@ public class OwnRoleView implements FxmlView<OwnRoleViewModel>, Initializable {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.ERROR,"出错了，角色数量与图片不一致"));
                 }
             }
+        }
 
-        });
-        return item;
+
     }
+
 
 
 

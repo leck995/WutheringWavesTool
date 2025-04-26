@@ -13,6 +13,7 @@ public class Role {
     private int roleId;
     private int level;
     private int breach;
+    private int chainUnlockNum;
     private String roleName;
     private String roleIconUrl;
     private String rolePicUrl;
@@ -126,5 +127,13 @@ public class Role {
 
     public void setBreach(int breach) {
         this.breach = breach;
+    }
+
+    public int getChainUnlockNum() {
+        return chainUnlockNum;
+    }
+
+    public void setChainUnlockNum(int chainUnlockNum) {
+        this.chainUnlockNum = chainUnlockNum;
     }
 }
