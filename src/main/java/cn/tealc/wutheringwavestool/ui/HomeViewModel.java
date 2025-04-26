@@ -24,12 +24,14 @@ import com.kuro.kujiequ.thread.UserDataRefreshTask;
 import com.kuro.kujiequ.thread.UserInfoDataTask;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.animation.PauseTransition;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +77,9 @@ public class HomeViewModel implements ViewModel {
     private SimpleObjectProperty<Image> headImg = new SimpleObjectProperty<>();
     private SimpleBooleanProperty hasSign = new SimpleBooleanProperty(true);
     private SimpleStringProperty signText = new SimpleStringProperty();
+
+    private SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
+
     public HomeViewModel() {
         updateKujiequRoleData();
         updateGameTime(GameAppListener.getInstance().getDuration());
@@ -335,7 +340,15 @@ public class HomeViewModel implements ViewModel {
      * 启动鸣潮，先删除旧日志，然后判断是否启动参数，并进行启动
      */
     public void startGame() {
-        //先删除游戏过去的日志
+        //先设置1s的禁止点击，防止双击启动
+        PauseTransition pauseTransition = new PauseTransition(Duration.seconds(1));
+        startGameBtnDisabled.set(true);
+        pauseTransition.setOnFinished(event -> {
+            startGameBtnDisabled.set(false);
+        });
+        pauseTransition.play();
+
+        //删除游戏过去的日志，避免数据污染
         deleteLogFiles();
 
         String dir = Config.setting.getGameRootDir();
@@ -448,7 +461,7 @@ public class HomeViewModel implements ViewModel {
             }
         } catch (IOException e) {
             GameAppListener.getInstance().setStartFromApp(false);
-            LOG.info("启动游戏错误", e);
+            LOG.info("启动游戏错误:{}", e.getMessage());
             MainApplication.window.show();
         }
     }
@@ -694,5 +707,13 @@ public class HomeViewModel implements ViewModel {
 
     public SimpleStringProperty weeklyInstCountTextProperty() {
         return weeklyInstCountText;
+    }
+
+    public boolean isStartGameBtnDisabled() {
+        return startGameBtnDisabled.get();
+    }
+
+    public SimpleBooleanProperty startGameBtnDisabledProperty() {
+        return startGameBtnDisabled;
     }
 }

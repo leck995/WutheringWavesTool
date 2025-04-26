@@ -121,6 +121,8 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
     @FXML
     private Button gameTimeBtn;
+    @FXML
+    private Button startGameBtn;
 
 
     @Override
@@ -143,6 +145,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         box3Label.textProperty().bind(viewModel.box3TextProperty());
         box4Label.textProperty().bind(viewModel.box4TextProperty());
 
+        startGameBtn.disableProperty().bind(viewModel.startGameBtnDisabledProperty());
 
         Tooltip gameTimeTip = new Tooltip();
         gameTimeTip.textProperty().bind(viewModel.gameTimeTipTextProperty());

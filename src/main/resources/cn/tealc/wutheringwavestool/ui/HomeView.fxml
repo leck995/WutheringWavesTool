@@ -250,7 +250,7 @@
                         <FontIcon iconLiteral="mdsal-cloud_download" />
                      </graphic>
                   </Button>
-                  <Button mnemonicParsing="false" onAction="#startGame" text="%ui.home.button.start_game">
+                  <Button fx:id="startGameBtn" mnemonicParsing="false" onAction="#startGame" text="%ui.home.button.start_game">
                      <graphic>
                         <FontIcon iconLiteral="mdral-games" />
                      </graphic>
