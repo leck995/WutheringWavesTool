@@ -39,6 +39,11 @@ public class RoleInfo {
     private List<BoxInfo> treasureBoxList;
     private boolean showToGuest;
 
+    private int rougeScore;
+    private int rougeScoreLimit;
+    private String rougeTitle;
+
+
     public String getName() {
         return name;
     }
@@ -245,5 +250,29 @@ public class RoleInfo {
 
     public void setStoreEnergyLimit(int storeEnergyLimit) {
         this.storeEnergyLimit = storeEnergyLimit;
+    }
+
+    public int getRougeScore() {
+        return rougeScore;
+    }
+
+    public void setRougeScore(int rougeScore) {
+        this.rougeScore = rougeScore;
+    }
+
+    public int getRougeScoreLimit() {
+        return rougeScoreLimit;
+    }
+
+    public void setRougeScoreLimit(int rougeScoreLimit) {
+        this.rougeScoreLimit = rougeScoreLimit;
+    }
+
+    public String getRougeTitle() {
+        return rougeTitle;
+    }
+
+    public void setRougeTitle(String rougeTitle) {
+        this.rougeTitle = rougeTitle;
     }
 }

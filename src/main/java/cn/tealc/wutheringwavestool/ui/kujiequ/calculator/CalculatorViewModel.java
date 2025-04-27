@@ -7,6 +7,7 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import com.kuro.kujiequ.model.calculator.list.RoleForCalculator;
 import com.kuro.kujiequ.model.calculator.list.WeaponForCalculator;
 import com.kuro.kujiequ.model.sign.UserInfo;
+import com.kuro.kujiequ.thread.calculator.CalculatorDataRefreshTask;
 import com.kuro.kujiequ.thread.calculator.ListRoleTask;
 import com.kuro.kujiequ.thread.calculator.ListWeaponTask;
 import de.saxsys.mvvmfx.ViewModel;
@@ -25,12 +26,24 @@ public class CalculatorViewModel implements ViewModel {
     private ObservableList<WeaponForCalculator> weaponList = FXCollections.observableArrayList();
     public CalculatorViewModel() {
 
-
     }
 
     public void ready(){
         UserInfoDao userInfoDao = new UserInfoDao();
         UserInfo userInfo = userInfoDao.getMain();
+        //刷新缓存数据后再获取
+        CalculatorDataRefreshTask calculatorDataRefreshTask = new CalculatorDataRefreshTask(userInfo);
+        calculatorDataRefreshTask.setOnSucceeded(event -> {
+            syncRoleData(userInfo);
+        });
+        Thread.startVirtualThread(calculatorDataRefreshTask);
+    }
+
+    /**
+     * 获取角色与武器列表
+     * @param userInfo
+     */
+    private void syncRoleData(UserInfo userInfo) {
         ListWeaponTask weaponTask = new ListWeaponTask(userInfo);
         weaponTask.setOnSucceeded(e -> {
             ResponseBody<List<WeaponForCalculator>> responseBody = weaponTask.getValue();
@@ -52,8 +65,6 @@ public class CalculatorViewModel implements ViewModel {
             }
         });
         Thread.startVirtualThread(roleTask);
-
-
     }
 
 

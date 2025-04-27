@@ -121,6 +121,10 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
     @FXML
     private Button gameTimeBtn;
+    @FXML
+    private Button startGameBtn;
+    @FXML
+    private Label weeklyRougeLabel;
 
 
     @Override
@@ -143,7 +147,9 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         box3Label.textProperty().bind(viewModel.box3TextProperty());
         box4Label.textProperty().bind(viewModel.box4TextProperty());
 
+        startGameBtn.disableProperty().bind(viewModel.startGameBtnDisabledProperty());
 
+        weeklyRougeLabel.textProperty().bind(viewModel.weeklyRougeTextProperty());
         Tooltip gameTimeTip = new Tooltip();
         gameTimeTip.textProperty().bind(viewModel.gameTimeTipTextProperty());
         gameTimeBtn.setTooltip(gameTimeTip);
@@ -156,7 +162,11 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
         setChangeBgEnable();
 
+
+        viewModel.checkIsWeekEnd();
+
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.CHANGE_HEADER,((s, objects) -> changeHeaderIv()));
+
     }
 
 

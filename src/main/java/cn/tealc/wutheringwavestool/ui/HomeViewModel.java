@@ -24,12 +24,15 @@ import com.kuro.kujiequ.thread.UserDataRefreshTask;
 import com.kuro.kujiequ.thread.UserInfoDataTask;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.animation.PauseTransition;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,6 +40,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.DayOfWeek;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -75,6 +79,11 @@ public class HomeViewModel implements ViewModel {
     private SimpleObjectProperty<Image> headImg = new SimpleObjectProperty<>();
     private SimpleBooleanProperty hasSign = new SimpleBooleanProperty(true);
     private SimpleStringProperty signText = new SimpleStringProperty();
+
+    private SimpleStringProperty weeklyRougeText = new SimpleStringProperty();
+
+    private SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
+
     public HomeViewModel() {
         updateKujiequRoleData();
         updateGameTime(GameAppListener.getInstance().getDuration());
@@ -89,6 +98,7 @@ public class HomeViewModel implements ViewModel {
             }
         });
     }
+
 
 
 
@@ -202,6 +212,7 @@ public class HomeViewModel implements ViewModel {
                 gameLifeText.set(String.format(template, roleInfo.getActiveDays()));
                 levelText.set(String.format("LV.%d", roleInfo.getLevel()));
 
+                energyText.set(String.format("%d/%d",roleInfo.getEnergy(), roleInfo.getMaxEnergy()));
                 weeklyInstCountText.set(String.format("%d/%d",roleInfo.getWeeklyInstCount(),roleInfo.getWeeklyInstCountLimit()));
                 storeEnergyText.set(String.format("%d/%d",roleInfo.getStoreEnergy(),roleInfo.getStoreEnergyLimit()));
 
@@ -217,7 +228,10 @@ public class HomeViewModel implements ViewModel {
                         box4Text.set(String.valueOf(boxInfo.getNum()));
                     }
                 }
+                double rouge = (double) roleInfo.getRougeScore() / (double) roleInfo.getRougeScoreLimit();
+                weeklyRougeText.set(String.format("%2.0f%%",rouge));
                 rolePaneVisible.set(true);
+                onWeekEnd(false,roleInfo);
             } else {
                 rolePaneVisible.set(false);
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
@@ -238,7 +252,6 @@ public class HomeViewModel implements ViewModel {
             if (responseBody != null) {
                 if (responseBody.getCode() == 200){
                     RoleDailyData data = responseBody.getData();
-                    energyText.set(String.format("%d/%d", data.getEnergyData().getCur(), data.getEnergyData().getTotal()));
 
                     String[] strengths = LanguageManager.getStringArray("ui.home.label.daily.strength");
                     if (data.getEnergyData().getRefreshTimeStamp() == 0) { //体力
@@ -275,6 +288,42 @@ public class HomeViewModel implements ViewModel {
     }
 
 
+
+    public void checkIsWeekEnd(){
+        if (Config.setting.getGameRootDirSource() == SourceType.GLOBAL){
+            Platform.runLater(()->{
+                onWeekEnd(true,null);
+            });
+
+        }
+    }
+
+    /**
+     * 检查每周最后一天，并进行提醒完成周活动
+     * @param isGlobal
+     * @param roleInfo
+     */
+    private void onWeekEnd(boolean isGlobal,RoleInfo roleInfo){
+        LocalDate today = LocalDate.now();
+        if (today.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            if (isGlobal) {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message01"),MessageInfo.LONG));
+            }else {
+                if (roleInfo == null) {
+                    return;
+                }
+                if (roleInfo.getWeeklyInstCount() < 3){
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message02"),MessageInfo.LONG));
+                }
+                if (roleInfo.getRougeScore() < 5000){
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message03"),MessageInfo.LONG));
+                }
+            }
+        }
+    }
+
+
+
     public void startUpdate() {
         if (Config.setting.getGameRootDirSource() == SourceType.WE_GAME) {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
@@ -282,20 +331,27 @@ public class HomeViewModel implements ViewModel {
         } else {
             String dir = Config.setting.getGameRootDir();
             if (dir != null) {
-                File exe = new File(dir + File.separator + "launcher.exe");
-                if (exe.exists()) {
-                    try {
-                        Desktop.getDesktop().open(exe);
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
+                File gameDir = GameResourcesManager.getGameDir();
+                if (gameDir != null) {
+                    File parent = gameDir.getParentFile();
+                    File exe = new File(parent,"launcher.exe");
+                    if (exe.exists()) {
+                        try {
+                            Desktop.getDesktop().open(exe);
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
+                    } else {
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                new MessageInfo(MessageType.WARNING, String.format(LanguageManager.getString("ui.home.message.type08"), exe.getPath()), false));
                     }
-                } else {
+                }else {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING, String.format(LanguageManager.getString("ui.home.message.type03"), exe.getPath()), false));
+                            new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type08")), false);
                 }
             } else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type04")), false);
+                        new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type08")), false);
             }
         }
     }
@@ -328,7 +384,15 @@ public class HomeViewModel implements ViewModel {
      * 启动鸣潮，先删除旧日志，然后判断是否启动参数，并进行启动
      */
     public void startGame() {
-        //先删除游戏过去的日志
+        //先设置1s的禁止点击，防止双击启动
+        PauseTransition pauseTransition = new PauseTransition(Duration.seconds(1));
+        startGameBtnDisabled.set(true);
+        pauseTransition.setOnFinished(event -> {
+            startGameBtnDisabled.set(false);
+        });
+        pauseTransition.play();
+
+        //删除游戏过去的日志，避免数据污染
         deleteLogFiles();
 
         String dir = Config.setting.getGameRootDir();
@@ -441,7 +505,7 @@ public class HomeViewModel implements ViewModel {
             }
         } catch (IOException e) {
             GameAppListener.getInstance().setStartFromApp(false);
-            LOG.info("启动游戏错误", e);
+            LOG.info("启动游戏错误:{}", e.getMessage());
             MainApplication.window.show();
         }
     }
@@ -687,5 +751,25 @@ public class HomeViewModel implements ViewModel {
 
     public SimpleStringProperty weeklyInstCountTextProperty() {
         return weeklyInstCountText;
+    }
+
+    public boolean isStartGameBtnDisabled() {
+        return startGameBtnDisabled.get();
+    }
+
+    public SimpleBooleanProperty startGameBtnDisabledProperty() {
+        return startGameBtnDisabled;
+    }
+
+    public String getWeeklyRougeText() {
+        return weeklyRougeText.get();
+    }
+
+    public SimpleStringProperty weeklyRougeTextProperty() {
+        return weeklyRougeText;
+    }
+
+    public void setWeeklyRougeText(String weeklyRougeText) {
+        this.weeklyRougeText.set(weeklyRougeText);
     }
 }

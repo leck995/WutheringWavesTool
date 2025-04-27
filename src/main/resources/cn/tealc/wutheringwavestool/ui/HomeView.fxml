@@ -20,7 +20,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<BorderPane fx:id="root" prefHeight="648.0" prefWidth="1100.0" styleClass="home" stylesheets="@../css/Home.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.HomeView">
+<BorderPane fx:id="root" prefHeight="648.0" prefWidth="1100.0" styleClass="home" stylesheets="@../css/Home.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.HomeView">
    <right>
       <VBox alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" spacing="8.0" styleClass="right" BorderPane.alignment="CENTER">
          <children>
@@ -62,7 +62,7 @@
                      </children>
                   </HBox>
                   <Separator prefWidth="200.0" />
-                  <GridPane minHeight="100.0" prefHeight="200.0" styleClass="daily-data">
+                  <GridPane minHeight="150.0" prefHeight="250.0" styleClass="daily-data">
                     <columnConstraints>
                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -70,6 +70,7 @@
                     <rowConstraints>
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
                         <HBox alignment="CENTER_LEFT" spacing="5.0">
@@ -101,14 +102,14 @@
                               </VBox>
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER_LEFT" prefWidth="150.0" spacing="5.0" GridPane.rowIndex="1">
+                        <HBox alignment="CENTER_LEFT" prefWidth="150.0" spacing="5.0" GridPane.rowIndex="2">
                            <children>
                               <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
                                     <Image preserveRatio="true" requestedHeight="35.0" requestedWidth="35.0" url="@../image/kujiequ/weeklyInst.png" />
                                  </image>
                               </ImageView>
-                              <VBox alignment="CENTER">
+                              <VBox alignment="CENTER" prefWidth="50.0">
                                  <children>
                                     <Label fx:id="weeklyInstCountLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="3/3" />
                                     <Label styleClass="data-label-2" text="%ui.home.label.weekly" />
@@ -116,7 +117,7 @@
                               </VBox>
                            </children>
                         </HBox>
-                        <HBox alignment="CENTER_LEFT" prefWidth="150.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <HBox alignment="CENTER_LEFT" prefWidth="150.0" spacing="5.0" GridPane.rowIndex="1">
                            <children>
                               <ImageView fx:id="livenessIV" fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true" translateX="-4.0">
                                  <image>
@@ -130,39 +131,54 @@
                               </VBox>
                            </children>
                         </HBox>
-                     </children>
-                  </GridPane>
-                  <HBox prefWidth="65.0" spacing="20.0" styleClass="daily-data">
-                     <children>
-                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                        <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="42.0" prefWidth="150.0" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                            <children>
-                              <ImageView fx:id="battlePassIV" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" translateY="3.0">
+                              <ImageView fitHeight="35.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
                                  <image>
-                                    <Image backgroundLoading="true" requestedHeight="30.0" requestedWidth="30.0" url="@../image/kujiequ/battle-pass.png" />
-                                 </image></ImageView>
-                              <VBox alignment="CENTER_LEFT">
+                                    <Image url="@../image/kujiequ/rouge.png" />
+                                 </image>
+                              </ImageView>
+                              <VBox alignment="CENTER" prefWidth="50.0">
                                  <children>
-                                    <HBox alignment="CENTER_LEFT" spacing="10.0">
-                                       <children>
-                                          <HBox alignment="CENTER_LEFT">
-                                             <children>
-                                                <Label contentDisplay="BOTTOM" layoutX="10.0" layoutY="10.0" styleClass="data-label-1" text="%ui.home.label.station" />
-                                                <Label fx:id="battlePassLevelLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="(LV.16)" />
-                                             </children>
-                                          </HBox>
-                                          <HBox alignment="CENTER_LEFT">
-                                             <children>
-                                                <Label fx:id="battlePassNumLabel1" contentDisplay="BOTTOM" layoutX="10.0" layoutY="10.0" styleClass="data-label-2" text="%ui.home.label.station.num" />
-                                                <Label fx:id="battlePassNumLabel" contentDisplay="BOTTOM" styleClass="data-label-2" text="1200/1200" />
-                                             </children>
-                                          </HBox>
-                                       </children>
-                                    </HBox>
-                                    <ProgressBar fx:id="battlePassProgress" prefWidth="200.0" progress="0.0" />
+                                    <Label fx:id="weeklyRougeLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="100%" />
+                                    <Label styleClass="data-label-2" text="%ui.home.label.rouge" />
                                  </children>
+                                 <padding>
+                                    <Insets left="5.0" />
+                                 </padding>
                               </VBox>
                            </children>
                         </HBox>
+                     </children>
+                  </GridPane>
+                  <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="daily-data">
+                     <children>
+                        <ImageView fx:id="battlePassIV" fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" translateY="3.0">
+                           <image>
+                              <Image backgroundLoading="true" requestedHeight="30.0" requestedWidth="30.0" url="@../image/kujiequ/battle-pass.png" />
+                           </image>
+                        </ImageView>
+                        <VBox alignment="CENTER_LEFT">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                 <children>
+                                    <HBox alignment="CENTER_LEFT">
+                                       <children>
+                                          <Label contentDisplay="BOTTOM" layoutX="10.0" layoutY="10.0" styleClass="data-label-1" text="%ui.home.label.station" />
+                                          <Label fx:id="battlePassLevelLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="(LV.16)" />
+                                       </children>
+                                    </HBox>
+                                    <HBox alignment="CENTER_LEFT">
+                                       <children>
+                                          <Label fx:id="battlePassNumLabel1" contentDisplay="BOTTOM" layoutX="10.0" layoutY="10.0" styleClass="data-label-2" text="%ui.home.label.station.num" />
+                                          <Label fx:id="battlePassNumLabel" contentDisplay="BOTTOM" styleClass="data-label-2" text="1200/1200" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </HBox>
+                              <ProgressBar fx:id="battlePassProgress" prefWidth="200.0" progress="0.0" />
+                           </children>
+                        </VBox>
                      </children>
                   </HBox>
                   <Separator prefWidth="200.0" />
@@ -204,11 +220,6 @@
          <children>
             <HBox alignment="CENTER_RIGHT" spacing="15.0" styleClass="bottom">
                <children>
-                  <Button layoutX="122.0" layoutY="10.0" mnemonicParsing="false" onAction="#startUpdate" styleClass="func-btn" text="%ui.home.button.start_update" visible="false">
-                     <graphic>
-                        <FontIcon iconLiteral="mdsal-cloud_download" />
-                     </graphic>
-                  </Button>
                   <MenuButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" popupSide="TOP" styleClass="func-btn" text="%ui.home.button.browser">
                      <items>
                         <MenuItem mnemonicParsing="false" onAction="#toAlbum" text="%ui.home.button.browser.screenshot_dir">
@@ -250,7 +261,12 @@
                         <FontIcon iconLiteral="mdsmz-timer" />
                      </graphic>
                   </Button>
-                  <Button mnemonicParsing="false" onAction="#startGame" text="%ui.home.button.start_game">
+                  <Button layoutX="122.0" layoutY="10.0" mnemonicParsing="false" onAction="#startUpdate" styleClass="func-btn" text="%ui.home.button.start_update">
+                     <graphic>
+                        <FontIcon iconLiteral="mdsal-cloud_download" />
+                     </graphic>
+                  </Button>
+                  <Button fx:id="startGameBtn" mnemonicParsing="false" onAction="#startGame" text="%ui.home.button.start_game">
                      <graphic>
                         <FontIcon iconLiteral="mdral-games" />
                      </graphic>

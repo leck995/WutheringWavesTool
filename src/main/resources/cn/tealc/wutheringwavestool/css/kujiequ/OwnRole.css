@@ -12,6 +12,22 @@
 .own-role .role-cell:hover{
     -fx-background-color: -color-bg-default-40;
 }
+
+.own-role .role-cell .attr{
+
+}
+
+.own-role .role-cell .chain-num{
+    -fx-background-color: #a1a0a0;
+    -fx-padding: 2 4 2 4;
+    -fx-text-fill: white;
+    -fx-translate-x: -3;
+    -fx-translate-y: 3;
+    -fx-background-radius: 3;
+    -fx-font-weight: bold;
+}
+
+
 .own-role .role-cell > VBox{
     -fx-padding: 0 0 8 0; /*与role对应*/
     -fx-spacing: 2;
@@ -28,6 +44,9 @@
     -fx-text-fill: -color-font-subtle;
 
 }
+
+
+
 
 
 .own-role .back-btn{

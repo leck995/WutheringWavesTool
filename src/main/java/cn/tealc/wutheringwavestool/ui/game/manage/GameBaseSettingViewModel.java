@@ -1,8 +1,14 @@
 package cn.tealc.wutheringwavestool.ui.game.manage;
 
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.SourceType;
+import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+import cn.tealc.wutheringwavestool.thread.system.CheckGameConfigTask;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
+import de.saxsys.mvvmfx.SceneLifecycle;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -15,7 +21,7 @@ import java.io.File;
  * @author: Leck
  * @create: 2025-03-08 23:11
  */
-public class GameBaseSettingViewModel implements ViewModel {
+public class GameBaseSettingViewModel implements ViewModel, SceneLifecycle {
     private SimpleObjectProperty<SourceType> gameSourceType = new SimpleObjectProperty<>();
     private SimpleStringProperty gameDir=new SimpleStringProperty();
     private SimpleStringProperty gameAppStartPath=new SimpleStringProperty();
@@ -111,7 +117,31 @@ public class GameBaseSettingViewModel implements ViewModel {
         }
     }
 
+    @Override
+    public void onViewAdded() {
 
+    }
+
+    @Override
+    public void onViewRemoved() {
+        checkGameLogOpen();
+        Config.save();
+    }
+    /**
+     * description: 检测游戏日志是否被关闭
+     */
+    private void checkGameLogOpen() {
+        CheckGameConfigTask task = new CheckGameConfigTask();
+        task.setOnSucceeded(workerStateEvent -> {
+            Boolean value = task.getValue();
+            if (!value) { //游戏日志可能被关闭了
+                Platform.runLater(() -> {
+                    NotificationManager.message(MessageInfo.success(LanguageManager.getString("ui.main.sync.message.log.close")));
+                });
+            }
+        });
+        Thread.startVirtualThread(task);
+    }
 
     public boolean changeServer(SourceType sourceType) {
         return false;
@@ -186,4 +216,8 @@ public class GameBaseSettingViewModel implements ViewModel {
     public ObservableList<String> getStartUpParams() {
         return startUpParams;
     }
+
+
+
+
 }
