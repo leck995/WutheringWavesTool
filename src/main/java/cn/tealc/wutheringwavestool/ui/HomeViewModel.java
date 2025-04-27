@@ -212,6 +212,7 @@ public class HomeViewModel implements ViewModel {
                 gameLifeText.set(String.format(template, roleInfo.getActiveDays()));
                 levelText.set(String.format("LV.%d", roleInfo.getLevel()));
 
+                energyText.set(String.format("%d/%d",roleInfo.getEnergy(), roleInfo.getMaxEnergy()));
                 weeklyInstCountText.set(String.format("%d/%d",roleInfo.getWeeklyInstCount(),roleInfo.getWeeklyInstCountLimit()));
                 storeEnergyText.set(String.format("%d/%d",roleInfo.getStoreEnergy(),roleInfo.getStoreEnergyLimit()));
 
@@ -227,14 +228,9 @@ public class HomeViewModel implements ViewModel {
                         box4Text.set(String.valueOf(boxInfo.getNum()));
                     }
                 }
-
-
                 double rouge = (double) roleInfo.getRougeScore() / (double) roleInfo.getRougeScoreLimit();
                 weeklyRougeText.set(String.format("%2.0f%%",rouge));
-
                 rolePaneVisible.set(true);
-
-
                 onWeekEnd(false,roleInfo);
             } else {
                 rolePaneVisible.set(false);
@@ -256,7 +252,6 @@ public class HomeViewModel implements ViewModel {
             if (responseBody != null) {
                 if (responseBody.getCode() == 200){
                     RoleDailyData data = responseBody.getData();
-                    energyText.set(String.format("%d/%d", data.getEnergyData().getCur(), data.getEnergyData().getTotal()));
 
                     String[] strengths = LanguageManager.getStringArray("ui.home.label.daily.strength");
                     if (data.getEnergyData().getRefreshTimeStamp() == 0) { //体力
@@ -312,16 +307,16 @@ public class HomeViewModel implements ViewModel {
         LocalDate today = LocalDate.now();
         if (today.getDayOfWeek() == DayOfWeek.SUNDAY) {
             if (isGlobal) {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message01"),false));
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message01"),MessageInfo.LONG));
             }else {
                 if (roleInfo == null) {
                     return;
                 }
                 if (roleInfo.getWeeklyInstCount() < 3){
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message02"),false));
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message02"),MessageInfo.LONG));
                 }
                 if (roleInfo.getRougeScore() < 5000){
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message03"),false));
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message03"),MessageInfo.LONG));
                 }
             }
         }
