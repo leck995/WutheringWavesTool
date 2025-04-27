@@ -79,9 +79,7 @@ public class HomeViewModel implements ViewModel {
     private SimpleObjectProperty<Image> headImg = new SimpleObjectProperty<>();
     private SimpleBooleanProperty hasSign = new SimpleBooleanProperty(true);
     private SimpleStringProperty signText = new SimpleStringProperty();
-
     private SimpleStringProperty weeklyRougeText = new SimpleStringProperty();
-
     private SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
 
     public HomeViewModel() {
@@ -213,7 +211,7 @@ public class HomeViewModel implements ViewModel {
                 levelText.set(String.format("LV.%d", roleInfo.getLevel()));
 
                 energyText.set(String.format("%d/%d",roleInfo.getEnergy(), roleInfo.getMaxEnergy()));
-                weeklyInstCountText.set(String.format("%d/%d",roleInfo.getWeeklyInstCount(),roleInfo.getWeeklyInstCountLimit()));
+                weeklyInstCountText.set(String.format("%d/%d",roleInfo.getWeeklyInstCountLimit() - roleInfo.getWeeklyInstCount(),roleInfo.getWeeklyInstCountLimit()));
                 storeEnergyText.set(String.format("%d/%d",roleInfo.getStoreEnergy(),roleInfo.getStoreEnergyLimit()));
 
                 String[] chests = LanguageManager.getStringArray("ui.home.label.chest.types");
@@ -228,8 +226,7 @@ public class HomeViewModel implements ViewModel {
                         box4Text.set(String.valueOf(boxInfo.getNum()));
                     }
                 }
-                double rouge = (double) roleInfo.getRougeScore() / (double) roleInfo.getRougeScoreLimit();
-                weeklyRougeText.set(String.format("%2.0f%%",rouge));
+                weeklyRougeText.set(String.format("%d",roleInfo.getRougeScore()));
                 rolePaneVisible.set(true);
                 onWeekEnd(false,roleInfo);
             } else {
@@ -312,7 +309,7 @@ public class HomeViewModel implements ViewModel {
                 if (roleInfo == null) {
                     return;
                 }
-                if (roleInfo.getWeeklyInstCount() < 3){
+                if (roleInfo.getWeeklyInstCount() != 0){
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message02"),MessageInfo.LONG));
                 }
                 if (roleInfo.getRougeScore() < 5000){
