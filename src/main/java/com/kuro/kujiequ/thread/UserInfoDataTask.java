@@ -21,7 +21,7 @@ import java.net.http.HttpResponse;
 
 /**
  * @program: WutheringWavesTool
- * @description:
+ * @description: 获取用户的游戏数据，包括体力，宝箱数量，周本活动，潮汐之遗等
  * @author: Leck
  * @create: 2024-07-06 14:24
  */
@@ -51,7 +51,6 @@ public class UserInfoDataTask extends Task<ResponseBody<RoleInfo>> {
                 ResponseBodyForApi responseBodyForApi = mapper.readValue(response.body(), new TypeReference<ResponseBodyForApi>() {
                 });
                 ResponseBody<RoleInfo> responseBody = new ResponseBody<>(responseBodyForApi.getCode(), responseBodyForApi.getMsg(),responseBodyForApi.getSuccess());
-
                 if (responseBody.getCode() == 200){
                     String row = ApiUtil.decrypt(responseBodyForApi.getData());
                     //遇到个用户会返回null,不知道为什么，初步判断可能需要刷新后才能获取，以防万一，做个判断好了
@@ -62,9 +61,12 @@ public class UserInfoDataTask extends Task<ResponseBody<RoleInfo>> {
                     responseBody.setData(roleInfo);
                     return responseBody;
                 }else {
-                    return new ResponseBody<>(1, responseBody.getMsg());
+                    if (responseBody.getMsg().equals("登录已过期，请重新登录")){
+                        return new ResponseBody<>(1, "检测到Token已过期，请前往账号页面更新Token");
+                    }else {
+                        return new ResponseBody<>(1, responseBody.getMsg());
+                    }
                 }
-
             }else {
                 return new ResponseBody<>(1, "连接出错");
             }
