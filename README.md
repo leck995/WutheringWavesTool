@@ -6,10 +6,10 @@
 
 [点此下载程序](https://github.com/leck995/WutheringWavesTool/releases)
 
-[点此查看文档](https://leck995.github.io/WutheringWavesTool/)
+[点此查看使用教程](https://wave.tealc.fun/)
 
 
-<img src="./docs/assets/image01.png" alt="主页" style="zoom:67%;" />
+<img src="./docs/image/image01.png" alt="主页" style="zoom:67%;" />
 
 ## 功能
 ___
@@ -30,13 +30,13 @@ ___
 
 ## 部分截图
 
-<img src="./docs/assets/image02.png" alt="image02" style="zoom:67%;" />
-<img src="./docs/assets/image07.png" alt="image07" style="zoom:67%;" />
-<img src="./docs/assets/image08.png" alt="image08" style="zoom:67%;" />
-<img src="./docs/assets/image04.png" alt="image04" style="zoom:67%;" />
-<img src="./docs/assets/image05.png" alt="image05" style="zoom:67%;" />
-<img src="./docs/assets/image06.png" alt="image06" style="zoom:67%;" />
-<img src="./docs/assets/image03.png" alt="image03" style="zoom:67%;" />
+<img src="./docs/image/image02.png" alt="image02" style="zoom:67%;" />
+<img src="./docs/image/image07.png" alt="image07" style="zoom:67%;" />
+<img src="./docs/image/image08.png" alt="image08" style="zoom:67%;" />
+<img src="./docs/image/image04.png" alt="image04" style="zoom:67%;" />
+<img src="./docs/image/image05.png" alt="image05" style="zoom:67%;" />
+<img src="./docs/image/image06.png" alt="image06" style="zoom:67%;" />
+<img src="./docs/image/image03.png" alt="image03" style="zoom:67%;" />
 
 
 ## 感谢与支持
@@ -61,4 +61,4 @@ ___
 
 您可以按以下格式留言：[名称]:[想说的话]
 
-<img src="./docs/assets/99.png" alt="support"  />
+<img src="./docs/image/support.png" alt="support"  />
