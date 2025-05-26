@@ -59,8 +59,6 @@ public class HomeViewModel implements ViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(HomeViewModel.class);
     private SimpleStringProperty energyText = new SimpleStringProperty();
     private SimpleStringProperty energyTimeText = new SimpleStringProperty();
-
-    private SimpleStringProperty weeklyInstCountText= new SimpleStringProperty();
     private SimpleStringProperty storeEnergyText = new SimpleStringProperty();
     private SimpleStringProperty livenessText = new SimpleStringProperty();
     private SimpleStringProperty battlePassLevelText = new SimpleStringProperty();
@@ -80,6 +78,9 @@ public class HomeViewModel implements ViewModel {
     private SimpleBooleanProperty hasSign = new SimpleBooleanProperty(true);
     private SimpleStringProperty signText = new SimpleStringProperty();
     private SimpleStringProperty weeklyRougeText = new SimpleStringProperty();
+    private SimpleStringProperty weeklyRougeTipText = new SimpleStringProperty("肉鸽");
+    private SimpleStringProperty weeklyInstCountText= new SimpleStringProperty();
+    private SimpleStringProperty weeklyInstCountTipText= new SimpleStringProperty("周本");
     private SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
 
     public HomeViewModel() {
@@ -310,10 +311,15 @@ public class HomeViewModel implements ViewModel {
                     return;
                 }
                 if (roleInfo.getWeeklyInstCount() != 0){
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message02"),MessageInfo.LONG));
+                    weeklyInstCountTipText.set(LanguageManager.getString("ui.home.label.weekly.tip"));
+                }else {
+                    weeklyInstCountTipText.set(LanguageManager.getString("ui.home.label.weekly"));
                 }
                 if (roleInfo.getRougeScore() < 5000){
+                    weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.weekly.tip"));
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message03"),MessageInfo.LONG));
+                }else {
+                    weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.rouge"));
                 }
             }
         }
@@ -768,5 +774,21 @@ public class HomeViewModel implements ViewModel {
 
     public void setWeeklyRougeText(String weeklyRougeText) {
         this.weeklyRougeText.set(weeklyRougeText);
+    }
+
+    public String getWeeklyRougeTipText() {
+        return weeklyRougeTipText.get();
+    }
+
+    public SimpleStringProperty weeklyRougeTipTextProperty() {
+        return weeklyRougeTipText;
+    }
+
+    public String getWeeklyInstCountTipText() {
+        return weeklyInstCountTipText.get();
+    }
+
+    public SimpleStringProperty weeklyInstCountTipTextProperty() {
+        return weeklyInstCountTipText;
     }
 }

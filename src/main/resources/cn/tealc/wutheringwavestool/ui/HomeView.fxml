@@ -109,10 +109,10 @@
                                     <Image preserveRatio="true" requestedHeight="35.0" requestedWidth="35.0" url="@../image/kujiequ/weeklyInst.png" />
                                  </image>
                               </ImageView>
-                              <VBox alignment="CENTER" prefWidth="50.0">
+                              <VBox alignment="CENTER" maxWidth="120.0" prefWidth="60.0">
                                  <children>
                                     <Label fx:id="weeklyInstCountLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="3/3" />
-                                    <Label styleClass="data-label-2" text="%ui.home.label.weekly" />
+                                    <Label fx:id="weeklyInstCountTipLabel" styleClass="data-label-2" text="%ui.home.label.weekly" />
                                  </children>
                               </VBox>
                            </children>
@@ -138,10 +138,10 @@
                                     <Image url="@../image/kujiequ/rouge.png" />
                                  </image>
                               </ImageView>
-                              <VBox alignment="CENTER" prefWidth="50.0">
+                              <VBox alignment="CENTER" maxWidth="120.0" prefWidth="60.0">
                                  <children>
                                     <Label fx:id="weeklyRougeLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="100%" />
-                                    <Label styleClass="data-label-2" text="%ui.home.label.rouge" />
+                                    <Label fx:id="weeklyRougeTipLabel" styleClass="data-label-2" text="%ui.home.label.rouge" />
                                  </children>
                                  <padding>
                                     <Insets left="5.0" />

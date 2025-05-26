@@ -107,9 +107,8 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     private Label livenessLabel;
 
     @FXML
-    private Label weeklyInstCountLabel;
-    @FXML
     private Label storeEnergyLabel;
+
     @FXML
     private Label roleNameLabel;
 
@@ -121,10 +120,15 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
     @FXML
     private Button gameTimeBtn;
+
     @FXML
     private Button startGameBtn;
+
     @FXML
-    private Label weeklyRougeLabel;
+    private Label weeklyRougeLabel,weeklyRougeTipLabel;
+
+    @FXML
+    private Label weeklyInstCountLabel,weeklyInstCountTipLabel;
 
 
     @Override
@@ -133,6 +137,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         energyLabel.textProperty().bind(viewModel.energyTextProperty());
         storeEnergyLabel.textProperty().bind(viewModel.storeEnergyTextProperty());
         weeklyInstCountLabel.textProperty().bind(viewModel.weeklyInstCountTextProperty());
+        weeklyInstCountTipLabel.textProperty().bind(viewModel.weeklyInstCountTipTextProperty());
         livenessLabel.textProperty().bind(viewModel.livenessTextProperty());
         battlePassProgress.progressProperty().bind(viewModel.battlePassProgressProperty());
         battlePassLevelLabel.textProperty().bind(viewModel.battlePassLevelTextProperty());
@@ -150,6 +155,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         startGameBtn.disableProperty().bind(viewModel.startGameBtnDisabledProperty());
 
         weeklyRougeLabel.textProperty().bind(viewModel.weeklyRougeTextProperty());
+        weeklyRougeTipLabel.textProperty().bind(viewModel.weeklyRougeTipTextProperty());
         Tooltip gameTimeTip = new Tooltip();
         gameTimeTip.textProperty().bind(viewModel.gameTimeTipTextProperty());
         gameTimeBtn.setTooltip(gameTimeTip);
