@@ -609,7 +609,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         switch (messageInfo.getType()){
             case SUCCESS -> {
                 message = new Message(
-                        "Success",
+                        null,
                         messageInfo.getMessage(),
                         new FontIcon(Material2OutlinedAL.CHECK_CIRCLE_OUTLINE)
                 );
@@ -617,7 +617,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             }
             case WARNING -> {
                 message = new Message(
-                        "Warning",
+                        null,
                         messageInfo.getMessage(),
                         new FontIcon(Material2OutlinedMZ.OUTLINED_FLAG)
                 );
@@ -625,7 +625,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             }
             case INFO -> {
                 message = new Message(
-                        "Info",
+                        null,
                         messageInfo.getMessage(),
 
                         new FontIcon(Material2OutlinedMZ.TURNED_IN_NOT)
@@ -634,7 +634,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             }
             case ERROR -> {
                 message = new Message(
-                        "ERROR",
+                        null,
                         messageInfo.getMessage(),
                         new FontIcon(Material2OutlinedAL.ERROR_OUTLINE)
                 );
