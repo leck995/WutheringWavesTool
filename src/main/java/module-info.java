@@ -54,6 +54,7 @@ open module cn.tealc.wutheringwavestool {
     exports com.kuro.game.model.launcher;
     exports cn.tealc.wutheringwavestool.ui.cardpool;
     exports cn.tealc.wutheringwavestool.ui.game.manage;
+    exports cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 
 
 }

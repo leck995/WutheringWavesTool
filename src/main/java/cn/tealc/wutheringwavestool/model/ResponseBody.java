@@ -42,6 +42,9 @@ public class ResponseBody<T> {
     }
 
 
+    public boolean isSuccess() {
+        return success;
+    }
 
     public Integer getCode() {
         return code;

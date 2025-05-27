@@ -26,6 +26,7 @@ public class ApiConfig {
     public static final String EVENT_LIST_URL = "https://api.kurobbs.com/forum/companyEvent/findEventList";
     public static final String SELF_TOWER_DATA_URL = "https://api.kurobbs.com/aki/roleBox/akiBox/towerDataDetail";
     public static final String OTHER_TOWER_DATA_URL = "https://api.kurobbs.com/aki/roleBox/akiBox/towerIndex";
+    public static final String SELF_SLASH_DATA_URL="https://api.kurobbs.com/aki/roleBox/akiBox/slashDetail";
 
     /*养成计算器相接口*/
     public static final String CALCULATOR_REFRESH_DATA= "https://api.kurobbs.com/aki/calculator/refreshData";

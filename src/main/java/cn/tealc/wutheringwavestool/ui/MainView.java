@@ -13,13 +13,9 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.release.Release;
 import cn.tealc.wutheringwavestool.thread.system.ui.MainBackgroundTask;
-import cn.tealc.wutheringwavestool.ui.cardpool.CardDetailAnalysisView;
-import cn.tealc.wutheringwavestool.ui.cardpool.CardDetailAnalysisViewModel;
 import cn.tealc.wutheringwavestool.ui.cardpool.CardAnalysisBaseView;
 import cn.tealc.wutheringwavestool.ui.cardpool.CardAnalysisBaseViewModel;
 import cn.tealc.wutheringwavestool.ui.game.*;
-import cn.tealc.wutheringwavestool.ui.game.manage.GameAdvanceSettingView;
-import cn.tealc.wutheringwavestool.ui.game.manage.GameAdvanceSettingViewModel;
 import cn.tealc.wutheringwavestool.ui.game.manage.GameManagerView;
 import cn.tealc.wutheringwavestool.ui.game.manage.GameManagerViewModel;
 import cn.tealc.wutheringwavestool.ui.kujiequ.*;
@@ -27,6 +23,10 @@ import cn.tealc.wutheringwavestool.ui.base.UpdateView;
 import cn.tealc.wutheringwavestool.ui.base.UpdateViewModel;
 import cn.tealc.wutheringwavestool.ui.kujiequ.calculator.CalculatorView;
 import cn.tealc.wutheringwavestool.ui.kujiequ.calculator.CalculatorViewModel;
+import cn.tealc.wutheringwavestool.ui.kujiequ.tower.TowerGroupView;
+import cn.tealc.wutheringwavestool.ui.kujiequ.tower.TowerGroupViewModel;
+import cn.tealc.wutheringwavestool.ui.kujiequ.tower.TowerView;
+import cn.tealc.wutheringwavestool.ui.kujiequ.tower.TowerViewModel;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialog;
@@ -488,7 +488,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     void toTower(ActionEvent event) {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
-            ViewTuple<TowerView, TowerViewModel> viewTuple = FluentViewLoader.fxmlView(TowerView.class).load();
+            ViewTuple<TowerGroupView, TowerGroupViewModel> viewTuple = FluentViewLoader.fxmlView(TowerGroupView.class).load();
             bgPane.setVisible(false);
             child.getChildren().setAll(viewTuple.getView());
             startNavAnim();
