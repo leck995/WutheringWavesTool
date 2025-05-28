@@ -91,6 +91,7 @@ public class ResourcesSyncTask extends Task<String> {
                             updateMessage("start");
                             updateDateFile(remoteResource);
                             downloadFile(url, localFile.getPath());
+                            updateMessage("success");
                         }
                     }
                 } else {
