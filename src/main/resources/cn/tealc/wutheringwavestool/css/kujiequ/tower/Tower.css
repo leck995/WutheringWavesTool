@@ -74,13 +74,14 @@
 .tower .difficulty-list-view .list-cell > .tower-cell .tower-star{
     -fx-font-size: 15;
     -fx-text-fill: -color-font-muted;
+    -fx-effect: dropshadow(gaussian, #35312e, 6, 0, 0, 0);
 }
 .tower .difficulty-list-view .list-cell > .tower-cell .tower-star.full-star{
-    -fx-text-fill: #ffec16;
+    -fx-text-fill: #fff624;
 }
 .tower .difficulty-list-view .list-cell > .tower-cell .tower-star.full-star .ikonli-font-icon {
-    -fx-icon-color: #ffec16;
-    -fx-fill: #ffec16;
+    -fx-icon-color: #fff624;
+    -fx-fill: #fff624;
 }
 .tower .difficulty-list-view .scroll-bar{
     -fx-background-color: transparent;

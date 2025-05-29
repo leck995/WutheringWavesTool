@@ -61,6 +61,7 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
                 boolean show = newValue.getDifficulty() == 3;
                 seasonEndTimeLabel.setVisible(show);
                 towerHistoryListview.getParent().setVisible(show);
+                towerHistoryListview.getSelectionModel().clearSelection();
             }
         });
         viewModel.getTowerAreaList().addListener((ListChangeListener<? super TowerArea>) change -> {
@@ -77,6 +78,7 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
         towerHistoryListview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 viewModel.changeHistory(newValue.getKey());
+                difficuityListview.getSelectionModel().clearSelection();
             }
         });
     }
