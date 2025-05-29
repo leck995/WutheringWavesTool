@@ -1,11 +1,9 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 
 import cn.tealc.wutheringwavestool.dao.GameSlashDataDao;
-import cn.tealc.wutheringwavestool.dao.GameTowerDataDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.tower.SlashDataForDB;
-import cn.tealc.wutheringwavestool.model.tower.TowerData;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,12 +21,13 @@ import javafx.util.Pair;
 
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 public class SlashViewModel implements ViewModel {
@@ -45,7 +44,13 @@ public class SlashViewModel implements ViewModel {
         initialize();
     }
 
-
+    /**
+     * 初始化
+     * @description:
+     * @param:
+     * @return  void
+     * @date:   2025/5/29
+     */
     private void initialize(){
         UserInfoDao userInfoDao = new UserInfoDao();
         UserInfo userInfo = userInfoDao.getMain();
@@ -59,10 +64,16 @@ public class SlashViewModel implements ViewModel {
             });
             Thread.startVirtualThread(task);
         }
-
         initHistory();
     }
 
+    /**
+     * 初始化历史列表
+     * @description:
+     * @param:
+     * @return  void
+     * @date:   2025/5/29
+     */
     private void initHistory() {
         GameSlashDataDao dao = new GameSlashDataDao();
         List<Long> endTimeList = dao.getAllEndTimes();
@@ -80,7 +91,13 @@ public class SlashViewModel implements ViewModel {
     }
 
 
-
+    /**
+     * 根据截止日期显示历史战绩
+     * @description:
+     * @param:	timestamp
+     * @return  void
+     * @date:   2025/5/29
+     */
     public void changHistory(long timestamp){
         GameSlashDataDao dao = new GameSlashDataDao();
         Optional<SlashDataForDB> data = dao.getByEndTime(timestamp);
@@ -97,6 +114,12 @@ public class SlashViewModel implements ViewModel {
     }
 
 
+    /**
+     * @description: 更新历史战绩具体内容
+     * @param:	list
+     * @return  void
+     * @date:   2025/5/29
+     */
     public void updateHistoryDifficulty(List<SlashDifficulty> list) {
         title.set("历史-再生海域");
         Optional<SlashDifficulty> first = list.stream().filter(difficulty -> difficulty.getDifficulty() == 1).findFirst();
@@ -117,6 +140,12 @@ public class SlashViewModel implements ViewModel {
         changeDifficulty(difficulties.get(index));
     }
 
+    /**
+     * @description: 切换关卡
+     * @param:	slashDifficulty
+     * @return  void
+     * @date:   2025/5/29
+     */
     public void changeDifficulty(SlashDifficulty slashDifficulty) {
         title.set(slashDifficulty.getDifficultyName());
         if (slashDifficulty.getDifficulty() == 1){ //对"无尽湍渊"与"再生海域-海隙"进行合并
@@ -136,8 +165,12 @@ public class SlashViewModel implements ViewModel {
     }
 
 
-
-
+    /**
+     * @description: 更新获取到的最新数据
+     * @param:	data
+     * @return  void
+     * @date:   2025/5/29
+     */
     private void updateDate(SlashData data){
         sourceDifficulties = data.getDifficultyList();
         List<SlashDifficulty> filterList = sourceDifficulties
@@ -158,8 +191,12 @@ public class SlashViewModel implements ViewModel {
     }
 
 
-
-
+    /**
+     * @description: 更新海墟的总分数，仅在每次获取请求后更新
+     * @param:	data
+     * @return  void
+     * @date:   2025/5/29
+     */
     private void updateScore(SlashData data){
         Optional<SlashDifficulty> first = data.getDifficultyList().stream().filter(difficulty -> difficulty.getDifficulty() == 1).findFirst();
         if (first.isPresent()){
@@ -176,6 +213,12 @@ public class SlashViewModel implements ViewModel {
         }
     }
 
+    /**
+     * @description: 更新每期结束时间
+     * @param:	milliseconds
+     * @return  void
+     * @date:   2025/5/29
+     */
     private void updateSeasonEndTime(long milliseconds){
         long millisecondsInADay = 24 * 60 * 60 * 1000;
         long millisecondsInAnHour = 60 * 60 * 1000;
