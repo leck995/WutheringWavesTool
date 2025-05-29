@@ -1,7 +1,14 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 
+import cn.tealc.wutheringwavestool.dao.GameSlashDataDao;
+import cn.tealc.wutheringwavestool.dao.GameTowerDataDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
+import cn.tealc.wutheringwavestool.model.tower.SlashDataForDB;
+import cn.tealc.wutheringwavestool.model.tower.TowerData;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.model.slash.Challenge;
 import com.kuro.kujiequ.model.slash.SlashData;
@@ -12,23 +19,28 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.util.Pair;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SlashViewModel implements ViewModel {
     private final ObservableList<SlashDifficulty> difficulties = FXCollections.observableArrayList();
     private final ObservableList<Challenge> challenges = FXCollections.observableArrayList();
-
+    private final ObservableList<Pair<Long, Pair<String,String>>> historyList = FXCollections.observableArrayList();
     private final SimpleStringProperty title = new SimpleStringProperty();
     private final SimpleStringProperty endTime = new SimpleStringProperty();
-    private List<SlashDifficulty> sourceDifficulties;
+    private final SimpleStringProperty score01 = new SimpleStringProperty(); //海隙总积分
+    private final SimpleStringProperty score02 = new SimpleStringProperty();//湍渊总积分
     private final SimpleBooleanProperty endTimeVisible = new SimpleBooleanProperty(true);
-
+    private List<SlashDifficulty> sourceDifficulties;
     public SlashViewModel() {
         initialize();
     }
@@ -47,11 +59,65 @@ public class SlashViewModel implements ViewModel {
             });
             Thread.startVirtualThread(task);
         }
+
+        initHistory();
+    }
+
+    private void initHistory() {
+        GameSlashDataDao dao = new GameSlashDataDao();
+        List<Long> endTimeList = dao.getAllEndTimes();
+        SimpleDateFormat endFormat = new SimpleDateFormat("yyyy.MM.dd");
+        DateTimeFormatter startFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd");
+        endTimeList.forEach(endTime -> {
+            Instant instant = Instant.ofEpochMilli(endTime);
+            ZonedDateTime endDate = instant.atZone(ZoneId.systemDefault());
+            ZonedDateTime startDate = endDate.minusDays(28);
+            Date date =new Date(endTime);
+            String startDay = startFormat.format(startDate);
+            String endDay = endFormat.format(date);
+            historyList.add(new Pair<>(endTime, new Pair<>(startDay, endDay)));
+        });
     }
 
 
+
+    public void changHistory(long timestamp){
+        GameSlashDataDao dao = new GameSlashDataDao();
+        Optional<SlashDataForDB> data = dao.getByEndTime(timestamp);
+        data.ifPresent(slashData -> {
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                List<SlashDifficulty> list = mapper.readValue(slashData.getData(), new TypeReference<List<SlashDifficulty>>() {
+                });
+                updateHistoryDifficulty(list);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+
+    public void updateHistoryDifficulty(List<SlashDifficulty> list) {
+        title.set("历史-再生海域");
+        Optional<SlashDifficulty> first = list.stream().filter(difficulty -> difficulty.getDifficulty() == 1).findFirst();
+        if (first.isPresent()) {
+            Optional<SlashDifficulty> second = list.stream().filter(difficulty -> difficulty.getDifficulty() == 2).findFirst();
+            if (second.isPresent()){
+                List<Challenge> mergedList = Stream.concat(second.get().getChallengeList().stream(), first.get().getChallengeList().stream())
+                        .toList();
+                challenges.setAll(mergedList);
+            }else {
+                challenges.setAll(first.get().getChallengeList());
+            }
+        }
+        endTimeVisible.setValue(false);
+    }
+
     public void changeDifficulty(int index) {
-        SlashDifficulty slashDifficulty = difficulties.get(index);
+        changeDifficulty(difficulties.get(index));
+    }
+
+    public void changeDifficulty(SlashDifficulty slashDifficulty) {
         title.set(slashDifficulty.getDifficultyName());
         if (slashDifficulty.getDifficulty() == 1){ //对"无尽湍渊"与"再生海域-海隙"进行合并
             Optional<SlashDifficulty> first = sourceDifficulties.stream().filter(difficulty -> difficulty.getDifficulty() == 2).findFirst();
@@ -70,6 +136,8 @@ public class SlashViewModel implements ViewModel {
     }
 
 
+
+
     private void updateDate(SlashData data){
         sourceDifficulties = data.getDifficultyList();
         List<SlashDifficulty> filterList = sourceDifficulties
@@ -82,12 +150,31 @@ public class SlashViewModel implements ViewModel {
                     }})
                 .toList(); //过滤掉"无尽湍渊"
         difficulties.setAll(filterList);
+
+
+        updateScore(data);
         updateSeasonEndTime(data.getSeasonEndTime());
         changeDifficulty(0);
     }
 
 
 
+
+    private void updateScore(SlashData data){
+        Optional<SlashDifficulty> first = data.getDifficultyList().stream().filter(difficulty -> difficulty.getDifficulty() == 1).findFirst();
+        if (first.isPresent()){
+            score01.set(String.format("%d/%d",first.get().getAllScore(),first.get().getMaxScore()));
+        }else {
+            score01.set("");
+        }
+
+        Optional<SlashDifficulty> second = data.getDifficultyList().stream().filter(difficulty -> difficulty.getDifficulty() == 2).findFirst();
+        if (second.isPresent()){
+            score02.set(String.format("%d/%d",second.get().getAllScore(),second.get().getMaxScore()));
+        }else {
+            score02.set("");
+        }
+    }
 
     private void updateSeasonEndTime(long milliseconds){
         long millisecondsInADay = 24 * 60 * 60 * 1000;
@@ -128,5 +215,25 @@ public class SlashViewModel implements ViewModel {
 
     public SimpleBooleanProperty endTimeVisibleProperty() {
         return endTimeVisible;
+    }
+
+    public ObservableList<Pair<Long, Pair<String, String>>> getHistoryList() {
+        return historyList;
+    }
+
+    public String getScore01() {
+        return score01.get();
+    }
+
+    public SimpleStringProperty score01Property() {
+        return score01;
+    }
+
+    public String getScore02() {
+        return score02.get();
+    }
+
+    public SimpleStringProperty score02Property() {
+        return score02;
     }
 }

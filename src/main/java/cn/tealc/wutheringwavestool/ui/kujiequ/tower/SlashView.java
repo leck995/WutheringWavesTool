@@ -43,20 +43,31 @@ public class SlashView implements FxmlView<SlashViewModel> {
 
     @FXML
     private Label title;
+    @FXML
+    private Label scoreLabel01,scoreLabel02;
+    @FXML
+    private HBox infoPane;
 
     @FXML
-    private ListView<Challenge> towerHistoryListview;
+    private ListView<Pair<Long, Pair<String,String>>> towerHistoryListview;
 
     public void initialize() {
         title.textProperty().bind(viewModel.titleProperty());
+        infoPane.visibleProperty().bind(viewModel.endTimeVisibleProperty());
         seasonEndTimeLabel.textProperty().bind(viewModel.endTimeProperty());
-        seasonEndTimeLabel.visibleProperty().bind(viewModel.endTimeVisibleProperty());
+        scoreLabel01.textProperty().bind(viewModel.score01Property());
+        scoreLabel02.textProperty().bind(viewModel.score02Property());
 
 
         difficuityListview.setItems(viewModel.getDifficulties());
         difficuityListview.setCellFactory(c -> new DifficultyCell());
-
-        difficuityListview.getSelectionModel().selectedIndexProperty().addListener((observableValue, number, t1) -> viewModel.changeDifficulty(t1.intValue()));
+        difficuityListview.getSelectionModel().selectedItemProperty().addListener((observableValue, number, t1) ->
+        {
+            if (t1 != null){
+                viewModel.changeDifficulty(t1);
+                towerHistoryListview.getSelectionModel().clearSelection();
+            }
+        });
 
         viewModel.getChallenges().addListener((ListChangeListener<? super Challenge>) change -> {
             areaFlowPane.getChildren().clear();
@@ -65,6 +76,14 @@ public class SlashView implements FxmlView<SlashViewModel> {
             }
         });
 
+        towerHistoryListview.setItems(viewModel.getHistoryList());
+        towerHistoryListview.setCellFactory(difficultyListView -> new HistoryCell());
+        towerHistoryListview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                viewModel.changHistory(newValue.getKey());
+                difficuityListview.getSelectionModel().clearSelection();
+            }
+        });
 
 
     }
@@ -140,7 +159,10 @@ public class SlashView implements FxmlView<SlashViewModel> {
     }
 
     static class AreaCell extends VBox {
-        private static final Image STAR_IMAGE = new Image(FXResourcesLoader.load("image/kujiequ/star01.png"),30,30,true,true,true);
+        private static final Image SLASH_IMAGE01 = new Image(FXResourcesLoader.load("image/kujiequ/slash01.png"),30,30,true,true,true);
+        private static final Image SLASH_IMAGE02 = new Image(FXResourcesLoader.load("image/kujiequ/slash02.png"),30,30,true,true,true);
+        private static final Image SLASH_IMAGE03 = new Image(FXResourcesLoader.load("image/kujiequ/slash03.png"),30,30,true,true,true);
+
         private final Label title;
         private final Label level;
         private final Label score;
@@ -159,6 +181,7 @@ public class SlashView implements FxmlView<SlashViewModel> {
             score = new Label();
 
             titleVBox.getChildren().addAll(title,new Spacer(),level,score);
+            titleVBox.setAlignment(Pos.CENTER_LEFT);
             titleVBox.setSpacing(10);
 
             Separator separator = new Separator(Orientation.HORIZONTAL);
@@ -171,9 +194,21 @@ public class SlashView implements FxmlView<SlashViewModel> {
             title.setText(String.format("%d %s",challenge.getChallengeId(),challenge.getChallengeName()));
             title.getStyleClass().add("area-title");
 
+            ImageView icon = new ImageView();
+            if (challenge.getChallengeId() < 7){
+                icon.setImage(SLASH_IMAGE01);
+            }else if (challenge.getChallengeId() < 12){
+                icon.setImage(SLASH_IMAGE02);
+            }else {
+                icon.setImage(SLASH_IMAGE03);
+            }
+            title.setGraphic(icon);
 
-            level.setText(String.valueOf(challenge.getRank()));
+
+            level.setText(challenge.getRank());
+            level.getStyleClass().addAll("area-level",challenge.getRank().toLowerCase());
             score.setText(String.format("积分：%s",challenge.getScore()));
+            score.getStyleClass().add("area-score");
             //ImageView icon = new ImageView(challenge.get);
 
             for (int i = 0; i < challenge.getHalfList().size(); i++) {
@@ -193,7 +228,7 @@ public class SlashView implements FxmlView<SlashViewModel> {
                 roleHbox.setAlignment(Pos.CENTER_LEFT);
 
                 Label scoreLabel = new Label();
-
+                scoreLabel.getStyleClass().add("floor-score");
                 floorHBox.getChildren().addAll(floorName, scoreLabel, new Spacer(),roleHbox,starHBox);
                 floorHBox.setSpacing(20.0);
                 //floorHBox.setMinHeight(40.0);
@@ -202,8 +237,11 @@ public class SlashView implements FxmlView<SlashViewModel> {
                 scoreLabel.setText(String.valueOf(half.getScore()));
 
                 ImageView buffIcon = new ImageView(LocalResourcesManager.imageBuffer(half.getBuffIcon(),50,50,true,true));
-
                 starHBox.getChildren().add(buffIcon);
+
+                starHBox.setAlignment(Pos.CENTER);
+                starHBox.getStyleClass().add("floor-buff");
+
 
                 Label buffDesc = new Label(String.format("%s：%s",half.getBuffName(),half.getBuffDescription()));
                 buffDesc.setWrapText(true);
@@ -212,8 +250,8 @@ public class SlashView implements FxmlView<SlashViewModel> {
                 popover.setTitle(half.getBuffName());
                 popover.setDetachable(false);
                 popover.setArrowLocation(Popover.ArrowLocation.TOP_LEFT);
-                buffIcon.setOnMouseClicked(event -> {
-                    popover.show(buffIcon);
+                starHBox.setOnMouseClicked(event -> {
+                    popover.show(starHBox);
                 });
 
 

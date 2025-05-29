@@ -118,6 +118,15 @@ public class JdbcUtils {
                         UNIQUE (role_id, create_date)
                     );
                     """;
+
+            String createGameSlash= """
+                    CREATE TABLE IF NOT EXISTS game_slash (
+                        id INTEGER PRIMARY KEY,
+                        data TEXT NOT NULL,
+                        end_time BIGINT NOT NULL UNIQUE
+                    );
+                    CREATE INDEX IF NOT EXISTS idx_slash_data_end_time ON game_slash(end_time);
+                    """;
             Statement st = con.createStatement();
             st.execute(createGameTime);
             st.execute(createGameRole);
@@ -125,6 +134,7 @@ public class JdbcUtils {
             st.execute(createSignHistory);
             st.execute(createGameTower);
             st.execute(createGameRecord);
+            st.execute(createGameSlash);
             st.close();
             con.close();
         } catch (SQLException e) {

@@ -1,10 +1,13 @@
 package com.kuro.kujiequ.thread.slash;
 
+import cn.tealc.wutheringwavestool.dao.GameSlashDataDao;
 import cn.tealc.wutheringwavestool.dao.GameTowerDataDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.ResponseBodyForApi;
+import cn.tealc.wutheringwavestool.model.tower.SlashDataForDB;
 import cn.tealc.wutheringwavestool.model.tower.TowerData;
 import cn.tealc.wutheringwavestool.util.HttpRequestUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuro.kujiequ.ApiConfig;
@@ -12,6 +15,7 @@ import com.kuro.kujiequ.ApiDecryptException;
 import com.kuro.kujiequ.ApiUtil;
 import com.kuro.kujiequ.model.sign.SignUserInfo;
 import com.kuro.kujiequ.model.slash.SlashData;
+import com.kuro.kujiequ.model.slash.SlashDifficulty;
 import com.kuro.kujiequ.model.towerData.Difficulty;
 import com.kuro.kujiequ.model.towerData.DifficultyTotal;
 import com.kuro.kujiequ.model.towerData.Floor;
@@ -25,6 +29,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Calendar;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -63,39 +68,8 @@ public class SlashDataDetailTask extends Task<ResponseBody<SlashData>> {
                     String row = responseBodyForApi.getData();
                     LOG.debug(row);
                     SlashData slashData = mapper.readValue(row, SlashData.class);
-
                     responseBody.setData(slashData);
-
-/*
-                    */
-/*把深渊数据保存到数据库中*//*
-
-                    GameTowerDataDao dataDao = new GameTowerDataDao();
-                    Difficulty first = difficultyTotal.getDifficultyList().getFirst();
-                    if (first.getDifficulty() == 3){
-                        for (TowerArea towerArea : first.getTowerAreaList()) {
-                            for (Floor floor : towerArea.getFloorList()) {
-                                TowerData data =new TowerData();
-                                data.setAreaId(towerArea.getAreaId());
-                                data.setAreaName(towerArea.getAreaName());
-                                data.setDifficulty(first.getDifficulty());
-                                data.setDifficultyName(first.getDifficultyName());
-                                data.setFloor(floor.getFloor());
-                                data.setStar(floor.getStar());
-                                data.setPicUrl(floor.getPicUrl());
-                                if (floor.getRoleList() != null){
-                                    String collect = floor.getRoleList().stream().map(role -> String.valueOf(role.getRoleId())).collect(Collectors.joining(","));
-                                    data.setRoleList(collect);
-                                }
-                                long seasonEndTime = difficultyTotal.getSeasonEndTime();
-                                long date = System.currentTimeMillis() + seasonEndTime;
-                                data.setEndTime(convertToHourlyTimestamp(date));
-                                dataDao.add(data);
-                            }
-                        }
-                    }
-*/
-
+                    saveToDB(slashData,mapper);
                     return responseBody;
                 }else {
                     return new ResponseBody<>(1,responseBodyForApi.getMsg(),false);
@@ -114,6 +88,30 @@ public class SlashDataDetailTask extends Task<ResponseBody<SlashData>> {
         }
     }
 
+
+
+    /**
+     * 保存到数据库
+     * @description:
+     * @param:	slashData
+     * @param:	mapper
+     * @return  void
+     * @date:   2025/5/29
+     */
+    private void saveToDB(SlashData slashData,ObjectMapper mapper ) throws JsonProcessingException {
+        //过滤一次性的关卡数据
+        List<SlashDifficulty> list = slashData.getDifficultyList().stream().filter(slashDifficulty -> slashDifficulty.getDifficulty() != 0).toList();
+        String json = mapper.writeValueAsString(list);
+        long seasonEndTime = slashData.getSeasonEndTime();
+        long date = convertToHourlyTimestamp(System.currentTimeMillis() + seasonEndTime);
+
+        SlashDataForDB data = new SlashDataForDB();
+        data.setData(json);
+        data.setEndTime(date);
+
+        GameSlashDataDao dataDao = new GameSlashDataDao();
+        dataDao.add(data);
+    }
 
     /**
      * @description: 将给定的时间戳转换成当天4点

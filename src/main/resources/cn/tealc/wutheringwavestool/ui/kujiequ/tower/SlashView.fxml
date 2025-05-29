@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import atlantafx.base.controls.Spacer?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane prefHeight="800.0" prefWidth="1100.0" styleClass="tower" stylesheets="@../../../css/kujiequ/Tower.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.tower.SlashView">
+<StackPane prefHeight="800.0" prefWidth="1100.0" styleClass="tower" stylesheets="@../../../css/kujiequ/tower/Tower.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.tower.SlashView">
     <children>
         <AnchorPane prefHeight="200.0" prefWidth="200.0">
             <children>
@@ -23,13 +25,34 @@
                         </VBox>
                     </children>
                 </VBox>
-                <Label fx:id="title" layoutX="20.0" layoutY="20.0" styleClass="title-2" text="深境之塔" AnchorPane.leftAnchor="220.0" AnchorPane.topAnchor="10.0" />
+            <HBox alignment="CENTER_LEFT" layoutX="220.0" layoutY="10.0" spacing="20.0" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+               <children>
+                      <Label fx:id="title" styleClass="title-2" text="深境之塔" />
+                  <Spacer />
+                  <HBox fx:id="infoPane" alignment="CENTER" spacing="20.0">
+                     <children>
+                        <HBox alignment="CENTER_LEFT">
+                           <children>
+                              <Label text="湍渊：" />
+                              <Label fx:id="scoreLabel02" text="2000/5000" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER_LEFT">
+                           <children>
+                              <Label text="海隙：" />
+                              <Label fx:id="scoreLabel01" text="2000/5000" />
+                           </children>
+                        </HBox>
+                            <Label fx:id="seasonEndTimeLabel" styleClass="end-time" text="刷新" />
+                     </children>
+                  </HBox>
+               </children>
+            </HBox>
                 <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="right" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
                     <content>
                         <FlowPane fx:id="areaFlowPane" columnHalignment="CENTER" hgap="50.0" vgap="40.0" />
                     </content>
                 </ScrollPane>
-                <Label fx:id="seasonEndTimeLabel" styleClass="end-time" text="刷新" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="16.0" />
             </children>
         </AnchorPane>
     </children>

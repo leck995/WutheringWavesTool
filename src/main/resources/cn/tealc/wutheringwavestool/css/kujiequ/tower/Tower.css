@@ -96,6 +96,7 @@
 
 
 
+
 .tower .right .area{
     -fx-spacing: 8;
     -fx-background-color: -color-bg-default-30;
@@ -107,8 +108,37 @@
     -fx-font-size: 20;
     -fx-font-weight: bold;
 }
+.tower .right .area .area-score{
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+}
+
+.tower .right .area .area-level{
+    -fx-font-size: 22;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, #2e2e2e, 4, 0, 0, 0);
+}
+.tower .right .area .area-level.s{
+    -fx-text-fill: #fff624;
+}
+.tower .right .area .area-level.a,
+.tower .right .area .area-level.b,
+.tower .right .area .area-level.c,
+.tower .right .area .area-level.d{
+    -fx-text-fill: #00f6fd;
+}
+
 
 
 .tower .right .area .floor-title{
     -fx-font-size: 16;
+}
+
+.tower .right .area .floor-score{
+    -fx-font-weight: bold;
+}
+
+
+.tower .right .area .floor-buff{
+    -fx-cursor: hand;
 }
