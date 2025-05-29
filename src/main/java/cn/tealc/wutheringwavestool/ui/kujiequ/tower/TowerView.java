@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
+import com.kuro.kujiequ.model.roleData.Role;
 import com.kuro.kujiequ.model.towerData.Difficulty;
 import com.kuro.kujiequ.model.towerData.Floor;
 import com.kuro.kujiequ.model.towerData.SimpleRole;
@@ -154,7 +155,7 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
         }
     }
 
-    static class AreaCell extends VBox {
+    class AreaCell extends VBox {
         private static final Image STAR_IMAGE = new Image(FXResourcesLoader.load("image/kujiequ/star01.png"),30,30,true,true,true);
         private final Label title;
         private TowerArea towerArea;
@@ -210,12 +211,27 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
 
                 if (floor.getRoleList() != null && !floor.getRoleList().isEmpty()) {
                     for (SimpleRole role : floor.getRoleList()) {
+                        StackPane roleItem = new StackPane();
+
                         ImageView roleIv = new ImageView();
                         Image image = LocalResourcesManager.header(role.getRoleId(),50,50);
                         roleIv.setImage(image);
                         Circle circle = new Circle(25,25,25);
                         roleIv.setClip(circle);
-                        roleHbox.getChildren().add(roleIv);
+                        roleItem.getChildren().add(roleIv);
+
+                        Role roleDetail = viewModel.getRoleMap().get(role.getRoleId());
+                        if (roleDetail != null) {
+                            Label num = new Label(String.valueOf(roleDetail.getChainUnlockNum()));
+                            num.getStyleClass().add("chain-unlock-num");
+                            num.setTranslateX(5);
+                            num.setTranslateY(-5);
+                            roleItem.getChildren().add(num);
+                            StackPane.setAlignment(num,Pos.TOP_RIGHT);
+                        }
+
+
+                        roleHbox.getChildren().add(roleItem);
                     }
                 }else {
                     Label label = new Label("暂无数据");

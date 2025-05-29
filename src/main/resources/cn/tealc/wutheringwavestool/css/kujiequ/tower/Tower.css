@@ -128,7 +128,15 @@
 .tower .right .area .area-level.d{
     -fx-text-fill: #00f6fd;
 }
-
+.tower .right .area .chain-unlock-num{
+    -fx-background-color: -color-bg-default-90;
+    -fx-pref-width: 15;
+    -fx-pref-height: 15;
+    -fx-background-radius: 20;
+    -fx-font-size: 0.9em;
+    -fx-font-weight: bold;
+    -fx-alignment: center;
+}
 
 
 .tower .right .area .floor-title{

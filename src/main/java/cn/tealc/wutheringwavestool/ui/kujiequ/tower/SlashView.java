@@ -4,6 +4,7 @@ import atlantafx.base.controls.Popover;
 import atlantafx.base.controls.Spacer;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
+import com.kuro.kujiequ.model.roleData.Role;
 import com.kuro.kujiequ.model.slash.Challenge;
 import com.kuro.kujiequ.model.slash.Half;
 import com.kuro.kujiequ.model.slash.SlashDifficulty;
@@ -158,7 +159,7 @@ public class SlashView implements FxmlView<SlashViewModel> {
         }
     }
 
-    static class AreaCell extends VBox {
+    class AreaCell extends VBox {
         private static final Image SLASH_IMAGE01 = new Image(FXResourcesLoader.load("image/kujiequ/slash01.png"),30,30,true,true,true);
         private static final Image SLASH_IMAGE02 = new Image(FXResourcesLoader.load("image/kujiequ/slash02.png"),30,30,true,true,true);
         private static final Image SLASH_IMAGE03 = new Image(FXResourcesLoader.load("image/kujiequ/slash03.png"),30,30,true,true,true);
@@ -259,12 +260,29 @@ public class SlashView implements FxmlView<SlashViewModel> {
 
                 if (half.getRoleList() != null && !half.getRoleList().isEmpty()) {
                     for (SimpleRole role : half.getRoleList()) {
+                        StackPane roleItem = new StackPane();
+
                         ImageView roleIv = new ImageView();
                         Image image = LocalResourcesManager.header(role.getRoleId(),50,50);
                         roleIv.setImage(image);
                         Circle circle = new Circle(25,25,25);
                         roleIv.setClip(circle);
-                        roleHbox.getChildren().add(roleIv);
+                        roleItem.getChildren().add(roleIv);
+
+                        Role roleDetail = viewModel.getRoleMap().get(role.getRoleId());
+                        if (roleDetail != null) {
+                            Label num = new Label(String.valueOf(roleDetail.getChainUnlockNum()));
+                            num.getStyleClass().add("chain-unlock-num");
+                            num.setTranslateX(5);
+                            num.setTranslateY(-5);
+                            roleItem.getChildren().add(num);
+                            StackPane.setAlignment(num,Pos.TOP_RIGHT);
+                        }else {
+                            System.out.println("null");
+                        }
+
+
+                        roleHbox.getChildren().add(roleItem);
                     }
                 }else {
                     Label label = new Label("暂无数据");
@@ -273,12 +291,6 @@ public class SlashView implements FxmlView<SlashViewModel> {
 
                 getChildren().add(floorHBox);
             }
-
-
-            for (Half half : challenge.getHalfList()) {
-
-            }
-
         }
 
 

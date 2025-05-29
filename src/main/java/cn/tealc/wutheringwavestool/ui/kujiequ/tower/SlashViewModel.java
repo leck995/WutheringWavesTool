@@ -7,16 +7,21 @@ import cn.tealc.wutheringwavestool.model.tower.SlashDataForDB;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kuro.kujiequ.model.roleData.Role;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.model.slash.Challenge;
 import com.kuro.kujiequ.model.slash.SlashData;
 import com.kuro.kujiequ.model.slash.SlashDifficulty;
+import com.kuro.kujiequ.thread.TowerDataDetailTask;
+import com.kuro.kujiequ.thread.role.GameRoleDataTask;
 import com.kuro.kujiequ.thread.slash.SlashDataDetailTask;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.WorkerStateEvent;
+import javafx.event.EventHandler;
 import javafx.util.Pair;
 
 import java.text.SimpleDateFormat;
@@ -24,10 +29,8 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 public class SlashViewModel implements ViewModel {
@@ -40,6 +43,7 @@ public class SlashViewModel implements ViewModel {
     private final SimpleStringProperty score02 = new SimpleStringProperty();//湍渊总积分
     private final SimpleBooleanProperty endTimeVisible = new SimpleBooleanProperty(true);
     private List<SlashDifficulty> sourceDifficulties;
+    private final Map<Integer,Role> roleMap = new HashMap<>();
     public SlashViewModel() {
         initialize();
     }
@@ -55,14 +59,21 @@ public class SlashViewModel implements ViewModel {
         UserInfoDao userInfoDao = new UserInfoDao();
         UserInfo userInfo = userInfoDao.getMain();
         if (userInfo != null) {
-            SlashDataDetailTask task = new SlashDataDetailTask(userInfo);
-            task.setOnSucceeded(workerStateEvent -> {
-                ResponseBody<SlashData> value = task.getValue();
-                if (value.isSuccess()) {
-                    updateDate(value.getData());
+            SlashDataDetailTask slashDataDetailTask = new SlashDataDetailTask(userInfo);
+            GameRoleDataTask roleDataTask = new GameRoleDataTask(userInfo);
+            EventHandler<WorkerStateEvent> eventHandler = workerStateEvent -> {
+                if (slashDataDetailTask.state() == Future.State.SUCCESS && roleDataTask.state() == Future.State.SUCCESS){
+                    updateRoleMap(roleDataTask.getValue());
+                    ResponseBody<SlashData> value = slashDataDetailTask.getValue();
+                    if (value.isSuccess()) {
+                        updateDate(value.getData());
+                    }
                 }
-            });
-            Thread.startVirtualThread(task);
+            };
+            slashDataDetailTask.setOnSucceeded(eventHandler);
+            roleDataTask.setOnSucceeded(eventHandler);
+            Thread.startVirtualThread(slashDataDetailTask);
+            Thread.startVirtualThread(roleDataTask);
         }
         initHistory();
     }
@@ -191,6 +202,14 @@ public class SlashViewModel implements ViewModel {
     }
 
 
+    private void updateRoleMap(ResponseBody<List<Role>> roles){
+        if (roles.getCode() == 200){
+            roles.getData().forEach(role -> {
+                roleMap.put(role.getRoleId(), role);
+            });
+        }
+    }
+
     /**
      * @description: 更新海墟的总分数，仅在每次获取请求后更新
      * @param:	data
@@ -278,5 +297,9 @@ public class SlashViewModel implements ViewModel {
 
     public SimpleStringProperty score02Property() {
         return score02;
+    }
+
+    public Map<Integer, Role> getRoleMap() {
+        return roleMap;
     }
 }

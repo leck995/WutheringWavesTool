@@ -12,7 +12,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class SimpleRole {
     private Integer roleId;
     private String iconUrl;
-
     public SimpleRole(Integer roleId, String iconUrl) {
         this.roleId = roleId;
         this.iconUrl = iconUrl;
