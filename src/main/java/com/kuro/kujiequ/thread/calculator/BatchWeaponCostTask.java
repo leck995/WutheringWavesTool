@@ -52,7 +52,7 @@ public class BatchWeaponCostTask extends Task<ResponseBody<CalculatorResult>> {
                     signUserInfo.getRoleId(),
                     content);
 
-            HttpRequest request = HttpRequestUtil.getRequest( ApiConfig.CALCULATOR_BATCH_WEAPON_COST, body,signUserInfo.getToken());
+            HttpRequest request = HttpRequestUtil.getRequestWithSource(ApiConfig.CALCULATOR_BATCH_WEAPON_COST, body,signUserInfo.getToken(),"h5");
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 ResponseBody<CalculatorResult> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<CalculatorResult>>() {

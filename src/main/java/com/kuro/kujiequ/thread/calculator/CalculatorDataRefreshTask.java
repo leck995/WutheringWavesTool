@@ -35,7 +35,7 @@ public class CalculatorDataRefreshTask extends Task<ResponseBody<String>> {
                 ApiConfig.CALCULATOR_LIST_ROLE,signUserInfo.getUserId(),ApiConfig.PARAM_SERVER_ID,signUserInfo.getRoleId());
         HttpClient client = HttpClient.newHttpClient();
         try {
-            HttpRequest request = HttpRequestUtil.getRequest(url, signUserInfo.getToken());
+            HttpRequest request = HttpRequestUtil.getRequest(url, signUserInfo.getToken(),"h5");
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 return ResponseBody.create(200,"刷新成功",null);

@@ -36,7 +36,7 @@ public class QueryOwnedRoleTask extends Task<ResponseBody<List<Integer>>> {
                 ApiConfig.CALCULATOR_QUERY_OWNED_ROLE,signUserInfo.getUserId(),ApiConfig.PARAM_SERVER_ID,signUserInfo.getRoleId());
         HttpClient client = HttpClient.newHttpClient();
         try {
-            HttpRequest request = HttpRequestUtil.getRequest(url,signUserInfo.getToken());
+            HttpRequest request = HttpRequestUtil.getRequestWithSource(url,signUserInfo.getToken(),"h5");
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 200) {
