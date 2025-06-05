@@ -14,9 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.List;
 
 /**
@@ -45,9 +47,18 @@ public class SignGoodsTask extends Task<ResponseBody<Pair<Boolean,List<SignGood>
         HttpClient client = HttpClient.newHttpClient();
         ResponseBody<Pair<Boolean,List<SignGood>>> body =new ResponseBody<>();
         try {
-            HttpRequest request = HttpRequestUtil.getRequest(url,token);
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .timeout(Duration.ofSeconds(20))
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .header("Source", "h5")
+                    .header("Token", token)
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .build();
+            System.out.println(token);
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
+                System.out.println(response.body());
                 ObjectMapper mapper=new ObjectMapper();
                 JsonNode tree = mapper.readTree(response.body());
                 int code = tree.get("code").asInt();

@@ -14,9 +14,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -63,9 +65,19 @@ public class SignTask extends Task<String> {
                 , ApiConfig.SIGNIN_URL,ApiConfig.PARAM_GAME_ID,ApiConfig.PARAM_SERVER_ID,roleId,userId,monthValue);
         HttpClient client = HttpClient.newHttpClient();
         try {
-            HttpRequest request = HttpRequestUtil.getRequest(url,token);
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(URI.create(url))
+                    .timeout(Duration.ofSeconds(20))
+                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0")
+                    .header("source", "h5")
+                    .header("devcode", "111.181.85.154, Mozilla/5.0 (Linux; Android 14; 22081212C Build/UKQ1.230917.001; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/124.0.6367.179 Mobile Safari/537.36 Kuro/2.2.0 KuroGameBox/2.2.0")
+                    .header("token", token)
+                    .POST(HttpRequest.BodyPublishers.noBody())
+                    .build();;
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
+                LOG.debug("签到完成：{}",response.body());
                 if (response.body().contains("请求成功")){
                     updateHistory(roleId,userId,token);//获取更新签到记录
                     return "签到成功";
