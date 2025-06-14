@@ -80,6 +80,11 @@
                                     <FontIcon iconLiteral="mdral-beenhere" />
                                  </graphic>
                               </ToggleButton>
+                              <ToggleButton accessibleText="kujiequ" alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="356.0" mnemonicParsing="false" onAction="#toBriefing" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type15" textOverrun="CLIP" toggleGroup="$navToggleGroup">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdral-beenhere" />
+                                 </graphic>
+                              </ToggleButton>
                               <ToggleButton alignment="CENTER_LEFT" ellipsisString="" layoutX="15.0" layoutY="314.0" mnemonicParsing="false" onAction="#toPlugin" prefWidth="140.0" styleClass="icon-only" text="%ui.main.button.nav.type13" textOverrun="CLIP" toggleGroup="$navToggleGroup">
                                  <graphic>
                                     <FontIcon iconLiteral="mdal-extension" />

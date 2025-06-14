@@ -122,7 +122,7 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
     @FXML
     void browserGuide(ActionEvent event) {
         try {
-            Desktop.getDesktop().browse(URI.create("https://www.yuque.com/chashuisuipian/tc2ire/yh69bg99qcbdgic5"));
+            Desktop.getDesktop().browse(URI.create("https://www.yuque.com/chashuisuipian/sm05lg/pyk5otkcfhd1dqmf"));
         } catch (IOException e) {
             log.info("跳转错误",e);
         }

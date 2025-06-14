@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import atlantafx.base.controls.Spacer?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="800.0" prefWidth="1300.0" styleClass="resource-briefing" stylesheets="@../../css/kujiequ/ResourceBriefing.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.ResourceBriefingView">
+    <children>
+        <HBox fx:id="headerPane" layoutX="20.0" layoutY="20.0" prefHeight="35.0" spacing="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <Label styleClass="title-2" text="资源简报" />
+                <Separator orientation="VERTICAL" />
+                <HBox HBox.hgrow="ALWAYS">
+                    <children>
+                        <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toMonth" selected="true" styleClass="child-select" text="本月">
+                            <graphic>
+                                <Pane prefHeight="200.0" prefWidth="200.0" />
+                            </graphic>
+                     <toggleGroup>
+                                <ToggleGroup fx:id="childSelectedToggle" />
+                     </toggleGroup>
+                        </ToggleButton>
+                        <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toWeek" styleClass="child-select" text="本周" toggleGroup="$childSelectedToggle">
+                            <graphic>
+                                <Pane prefHeight="200.0" prefWidth="200.0" />
+                            </graphic>
+                        </ToggleButton>
+                  <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toVersion" styleClass="child-select" text="版本" toggleGroup="$childSelectedToggle">
+                     <graphic>
+                        <Pane prefHeight="200.0" prefWidth="200.0" />
+                     </graphic>
+                  </ToggleButton>
+                  <Spacer />
+                  <ComboBox fx:id="recordTypeBox" prefWidth="180.0" />
+                    </children>
+                </HBox>
+            </children>
+        </HBox>
+        <StackPane fx:id="content" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0">
+         <children>
+            <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="50.0">
+               <children>
+                  <VBox maxHeight="-Infinity" maxWidth="300.0" minHeight="300.0" prefHeight="200.0" prefWidth="300.0" styleClass="item-cell">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" styleClass="header">
+                           <children>
+                              <Label styleClass="title-4" text="星声">
+                                 <graphic>
+                                    <ImageView fx:id="starIcon" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../image/kujiequ/star.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Label>
+                              <Spacer />
+                              <Label fx:id="starNumLabel" text="152" />
+                           </children>
+                        </HBox>
+                        <Separator prefWidth="200.0" />
+                        <VBox fx:id="starGroup" prefHeight="200.0" prefWidth="100.0" spacing="10.0" />
+                     </children>
+                  </VBox>
+                  <VBox layoutX="525.0" layoutY="150.0" maxHeight="-Infinity" maxWidth="300.0" minHeight="300.0" prefHeight="200.0" prefWidth="300.0" styleClass="item-cell">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" styleClass="header">
+                           <children>
+                              <Label styleClass="title-4" text="贝币">
+                                 <graphic>
+                                    <ImageView fx:id="starIcon1" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../image/kujiequ/coin.png" />
+                                       </image>
+                                    </ImageView>
+                                 </graphic>
+                              </Label>
+                              <Spacer />
+                              <Label fx:id="coinNumLabel" text="152" />
+                           </children>
+                        </HBox>
+                        <Separator prefWidth="200.0" />
+                        <VBox fx:id="coinGroup" prefHeight="200.0" prefWidth="100.0" spacing="10.0" />
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <VBox maxHeight="-Infinity" maxWidth="500.0" StackPane.alignment="BOTTOM_RIGHT">
+               <children>
+                  <Label styleClass="text-muted" text="※目前支持查看到昨日（自然日）的数据记录；数据每自然日6点刷新。" wrapText="true" />
+                  <Label styleClass="text-muted" text="※仅统计除充值、邮件奖励之外途径获取的资源数量。展示数据仅供参考，请以游戏中实际数据为准。" wrapText="true" />
+               </children>
+            </VBox>
+         </children>
+      </StackPane>
+    </children>
+    <padding>
+        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+    </padding>
+</AnchorPane>

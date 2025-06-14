@@ -46,8 +46,10 @@ public class ApiConfig {
 
 
 
-
-
+    public static final String RESOURCE_BRIEFING_LIST= "https://api.kurobbs.com/aki/resource/period/list";
+    public static final String RESOURCE_BRIEFING_MONTH= "https://api.kurobbs.com/aki/resource/month";
+    public static final String RESOURCE_BRIEFING_WEEK= "https://api.kurobbs.com/aki/resource/week";
+    public static final String RESOURCE_BRIEFING_VERSION= "https://api.kurobbs.com/aki/resource/version";
 
     public static final String PARAM_SERVER_ID="76402e5b20be2c39f095a152090afddc";
     public static final String PARAM_GAME_ID="3";

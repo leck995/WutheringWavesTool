@@ -1,0 +1,54 @@
+.resource-briefing .separator {
+    -fx-padding: 6 0 6 0;
+}
+.resource-briefing .separator > .line{
+    -fx-border-color: #00000070;
+    -fx-border-insets: 1px 0 0 0;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+}
+.resource-briefing .child-select{
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-font-muted;
+    -fx-font-weight: bold;
+    -fx-graphic-text-gap: 2;
+    -fx-padding: 3;
+    -fx-cursor: hand;
+}
+.resource-briefing .child-select:hover{
+    -fx-text-fill: -color-accent-fg;
+}
+.resource-briefing .child-select > Pane{
+    -fx-pref-width: 25;
+    -fx-pref-height: 3;
+    -fx-background-radius: 3px;
+    -fx-background-color: transparent;
+}
+
+
+.resource-briefing .toggle-button:selected > Pane{
+    -fx-background-color: -color-accent-fg;
+}
+
+
+.resource-briefing .item-cell{
+    -fx-background-color: -color-bg-default-40;
+    -fx-padding: 10;
+    -fx-background-radius: 10;
+}
+
+.resource-briefing .item-cell .separator{
+    -fx-padding: 4 0 8 0;
+}
+.resource-briefing .item-cell .separator > .line{
+    -fx-border-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #777676 0.0%, #77767600 100.0%) transparent transparent transparent;
+    -fx-border-insets: 1px 0 0 0;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+}
+
+
+.resource-briefing .item-cell .header .label{
+   -fx-font-weight: bold;
+    -fx-font-size: 16;
+}

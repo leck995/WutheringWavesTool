@@ -534,6 +534,19 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         }
     }
 
+    @FXML
+    void toBriefing(ActionEvent event) {
+        ToggleButton toggleButton= (ToggleButton) event.getSource();
+        if (toggleButton.isSelected()){
+            ViewTuple<ResourceBriefingView, ResourceBriefingViewModel> viewTuple = FluentViewLoader.fxmlView(ResourceBriefingView.class).load();
+            bgPane.setVisible(false);
+            child.getChildren().setAll(viewTuple.getView());
+            startNavAnim();
+        }else {
+            toggleButton.setSelected(true);
+        }
+    }
+
 
     @FXML
     void toPlugin(ActionEvent event) {
