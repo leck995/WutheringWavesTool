@@ -4,9 +4,9 @@ import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.kuro.kujiequ.model.roleData.*;
 import com.kuro.kujiequ.model.roleData.weight.PhantomWeight;
-import com.kuro.kujiequ.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.thread.system.ui.ImgColorBgTask;
-import com.kuro.kujiequ.thread.role.GameRoleDetailTask;
+import com.kuro.kujiequ.model.sign.UserInfo;
+import com.kuro.kujiequ.thread.rolebox.role.GameRoleDetailTask;
 import cn.tealc.wutheringwavestool.util.LocalDataManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.ViewModel;
@@ -109,7 +109,7 @@ public class OwnRoleDetailViewModel implements ViewModel {
 
     private ObservableList<Pair<Role,Image>> rolePairList= FXCollections.observableArrayList();
 
-    private SignUserInfo userInfo;
+    private UserInfo userInfo;
 
     private SimpleIntegerProperty selectIndex=new SimpleIntegerProperty();
 
@@ -122,7 +122,9 @@ public class OwnRoleDetailViewModel implements ViewModel {
 
 
     private SimpleObjectProperty<Phantom.Status> phantomStatus=new SimpleObjectProperty<>();
-    public OwnRoleDetailViewModel(SignUserInfo userInfo, int selectIndex, List<Pair<Role,Image>> rolePairList) {
+
+    private ObservableList<RoleAttribute> roleAttributeList = FXCollections.observableArrayList();
+    public OwnRoleDetailViewModel(UserInfo userInfo, int selectIndex, List<Pair<Role,Image>> rolePairList) {
         this.userInfo = userInfo;
         this.rolePairList.setAll(rolePairList);
         this.selectIndex.set(selectIndex);
@@ -141,10 +143,10 @@ public class OwnRoleDetailViewModel implements ViewModel {
         GameRoleDetailTask task=new GameRoleDetailTask(userInfo,pair.getKey().getRoleId());
         task.setOnSucceeded(e -> {
             ResponseBody<RoleDetail> value = task.getValue();
-            if (value.getSuccess()){
+            if (value.getCode() == 200){
                 RoleDetail data = value.getData();
                 roleName.set(data.getRole().getRoleName());
-                roleLevel.set(String.format("LV.%d",data.getRole().getLevel()));
+                roleLevel.set(String.format("LV.%d -- %d",data.getRole().getLevel(),data.getRole().getChainUnlockNum()));
                 roleImage.set(LocalResourcesManager.imageBuffer(data.getRole().getRolePicUrl(),500,380,true,true));
 
                 roleAttrImage.set(
@@ -152,6 +154,8 @@ public class OwnRoleDetailViewModel implements ViewModel {
                                 FXResourcesLoader.load(
                                         String.format("image/attr/%d.png",data.getRole().getAttributeId())
                                 ),true));
+
+                roleAttributeList.setAll(data.getRoleAttributeList());
 
                 weaponName.set(data.getWeaponData().getWeapon().getWeaponName());
                 weaponResonLevel.set(String.format("突破%d",data.getWeaponData().getResonLevel()));
@@ -211,7 +215,12 @@ public class OwnRoleDetailViewModel implements ViewModel {
                 phantomList.clear();
                 Map<String,PhoantomMainProps> totalPhantomValueMap = new HashMap<>();
                 if (equipPhantomList != null){
-                    PhantomWeight weight = LocalDataManager.getWeight(getRoleName());
+                    PhantomWeight weight;
+                    if (getRoleName().equals("漂泊者")) {
+                        weight = LocalDataManager.getWeight(getRoleName()+"·"+data.getRole().getAttributeName());
+                    }else{
+                        weight = LocalDataManager.getWeight(getRoleName());
+                    }
                     if (weight != null){
                         Map<String, Integer> subPropWeights = weight.getSubPropWeights();
                         int count= 0;
@@ -663,5 +672,9 @@ public class OwnRoleDetailViewModel implements ViewModel {
 
     public SimpleObjectProperty<Phantom.Status> phantomStatusProperty() {
         return phantomStatus;
+    }
+
+    public ObservableList<RoleAttribute> getRoleAttributeList() {
+        return roleAttributeList;
     }
 }

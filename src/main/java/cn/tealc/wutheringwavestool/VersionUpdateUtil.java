@@ -31,6 +31,7 @@ public class VersionUpdateUtil {
         update03();
         update04();
         update05();
+        update06();
     }
 
 
@@ -169,6 +170,21 @@ public class VersionUpdateUtil {
 
     }
 
+    private static void update06(){
+        Connection connection = JdbcUtils.getConnection();
+        try {
+            Statement st = connection.createStatement();
+            String checkSql="select count(*) from sqlite_master where name='user_info' and sql like '%dev_code%'";
+            ResultSet resultSet = st.executeQuery(checkSql);
+            int anInt = resultSet.getInt(1);
+            if (anInt == 0){
+                st.execute("ALTER table user_info ADD dev_code TEXT");
+            }
+            resultSet.close();
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public static void deleteFile(File file) {
         if(file.isFile()) {

@@ -25,6 +25,10 @@ public class RoleDailyData {
     private RoleDailyDetail energyData;
     private RoleDailyDetail livenessData;
     private List<RoleDailyDetail> battlePassData;
+    private RoleDailyDetail storeEnergyData; //结晶单质
+    private RoleDailyDetail towerData; //逆境深塔·实验区
+    private RoleDailyDetail slashTowerData; //冥歌海墟·再生-湍渊
+    private RoleDailyDetail weeklyData; //战歌重奏
 
     public int getGameId() {
         return gameId;
@@ -128,5 +132,37 @@ public class RoleDailyData {
 
     public void setBattlePassData(List<RoleDailyDetail> battlePassData) {
         this.battlePassData = battlePassData;
+    }
+
+    public RoleDailyDetail getStoreEnergyData() {
+        return storeEnergyData;
+    }
+
+    public void setStoreEnergyData(RoleDailyDetail storeEnergyData) {
+        this.storeEnergyData = storeEnergyData;
+    }
+
+    public RoleDailyDetail getTowerData() {
+        return towerData;
+    }
+
+    public void setTowerData(RoleDailyDetail towerData) {
+        this.towerData = towerData;
+    }
+
+    public RoleDailyDetail getSlashTowerData() {
+        return slashTowerData;
+    }
+
+    public void setSlashTowerData(RoleDailyDetail slashTowerData) {
+        this.slashTowerData = slashTowerData;
+    }
+
+    public RoleDailyDetail getWeeklyData() {
+        return weeklyData;
+    }
+
+    public void setWeeklyData(RoleDailyDetail weeklyData) {
+        this.weeklyData = weeklyData;
     }
 }

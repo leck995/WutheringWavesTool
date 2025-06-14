@@ -8,11 +8,13 @@ import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.release.Release;
 import cn.tealc.wutheringwavestool.thread.system.CheckGameConfigTask;
 import com.kuro.kujiequ.model.sign.UserInfo;
+import com.kuro.kujiequ.model.slash.SlashData;
 import com.kuro.kujiequ.model.towerData.DifficultyTotal;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.system.CheckVersionTask;
-import com.kuro.kujiequ.thread.TowerDataDetailTask;
+import com.kuro.kujiequ.thread.rolebox.slash.SlashDataDetailTask;
+import com.kuro.kujiequ.thread.rolebox.tower.TowerDataDetailTask;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
@@ -32,19 +34,19 @@ public class MainViewModel implements ViewModel {
     }
 
 
-    public void checkVersion(){
-        if (Config.setting.isCheckNewVersion()){
+    public void checkVersion() {
+        if (Config.setting.isCheckNewVersion()) {
             Platform.runLater(() -> {
                 CheckVersionTask task = new CheckVersionTask(true);
                 task.setOnSucceeded(workerStateEvent -> {
                     ResponseBody<Release> value = task.getValue();
-                    if (value.getCode() == 200){
-                        Platform.runLater(()->{
-                            MvvmFX.getNotificationCenter().publish(NotificationKey.NOTIFICATION_SHOW_UPDATE,value.getData());
+                    if (value.getCode() == 200) {
+                        Platform.runLater(() -> {
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.NOTIFICATION_SHOW_UPDATE, value.getData());
                         });
-                    }else if (value.getCode() == -1){
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.NOTIFICATION_SHOW_UPDATE,value.getData());
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.message.type01")));
+                    } else if (value.getCode() == -1) {
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.NOTIFICATION_SHOW_UPDATE, value.getData());
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.message.type01")));
                     }
                 });
                 Thread.startVirtualThread(task);
@@ -53,12 +55,12 @@ public class MainViewModel implements ViewModel {
     }
 
 
-    private void checkGameLogOpen(){
+    private void checkGameLogOpen() {
         CheckGameConfigTask task = new CheckGameConfigTask();
         task.setOnSucceeded(workerStateEvent -> {
             Boolean value = task.getValue();
-            if (!value){ //游戏日志可能被关闭了
-                Platform.runLater(()->{
+            if (!value) { //游戏日志可能被关闭了
+                Platform.runLater(() -> {
                     NotificationManager.message(MessageInfo.success(LanguageManager.getString("ui.main.sync.message.log.close")));
                 });
             }
@@ -66,25 +68,39 @@ public class MainViewModel implements ViewModel {
         Thread.startVirtualThread(task);
     }
 
-    private void updateKujiequ(){
-        if (!Config.setting.isNoKuJieQu()){
+    private void updateKujiequ() {
+        if (!Config.setting.isNoKuJieQu()) {
             //获取深塔刷新时间，同时更新深塔历史记录
             UserInfoDao dao = new UserInfoDao();
             UserInfo main = dao.getMain();
-            if (main!=null){
+            if (main != null) {
                 TowerDataDetailTask task = new TowerDataDetailTask(main);
                 task.setOnSucceeded(workerStateEvent -> {
                     ResponseBody<DifficultyTotal> value = task.getValue();
-                    if (value.getCode() == 200){
+                    if (value.getCode() == 200) {
                         long milliseconds = value.getData().getSeasonEndTime();
                         long millisecondsInADay = 24 * 60 * 60 * 1000;
                         double days = (double) milliseconds / (double) millisecondsInADay;
-                        if (days > 0 && days < 1){//不足一天时,提醒
-                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.sync.message.tower")));
+                        if (days > 0 && days < 1) {//不足一天时,提醒
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.sync.message.tower")));
                         }
                     }
                 });
                 Thread.startVirtualThread(task);
+
+                SlashDataDetailTask slashDataDetailTask = new SlashDataDetailTask(main);
+                slashDataDetailTask.setOnSucceeded(workerStateEvent -> {
+                    ResponseBody<SlashData> value = slashDataDetailTask.getValue();
+                    if (value.getCode() == 200) {
+                        long milliseconds = value.getData().getSeasonEndTime();
+                        long millisecondsInADay = 24 * 60 * 60 * 1000;
+                        double days = (double) milliseconds / (double) millisecondsInADay;
+                        if (days > 0 && days < 1) {//不足一天时,提醒
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.sync.message.slash")));
+                        }
+                    }
+                });
+                Thread.startVirtualThread(slashDataDetailTask);
             }
         }
     }

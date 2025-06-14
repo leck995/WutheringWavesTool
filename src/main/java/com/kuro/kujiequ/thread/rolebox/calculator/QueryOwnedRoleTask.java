@@ -1,12 +1,13 @@
-package com.kuro.kujiequ.thread.calculator;
+package com.kuro.kujiequ.thread.rolebox.calculator;
 
 import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.wutheringwavestool.util.HttpRequestUtil;
+import com.kuro.kujiequ.AccessTokenException;
+import com.kuro.kujiequ.model.sign.UserInfo;
+import com.kuro.kujiequ.thread.BaseTask;
+import com.kuro.util.HttpRequestUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuro.kujiequ.ApiConfig;
-import com.kuro.kujiequ.model.calculator.list.WeaponForCalculator;
-import com.kuro.kujiequ.model.sign.SignUserInfo;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,22 +23,21 @@ import java.util.List;
  * @description: 获取指定玩家以存在的角色列表
  * @author: Leck
  */
-public class QueryOwnedRoleTask extends Task<ResponseBody<List<Integer>>> {
+public class QueryOwnedRoleTask extends BaseTask<ResponseBody<List<Integer>>> {
     private static final Logger LOG= LoggerFactory.getLogger(QueryOwnedRoleTask.class);
-    private SignUserInfo signUserInfo;
+    private UserInfo userInfo;
 
-    public QueryOwnedRoleTask(SignUserInfo signUserInfo) {
-        this.signUserInfo = signUserInfo;
+    public QueryOwnedRoleTask(UserInfo userInfo) {
+        this.userInfo = userInfo;
     }
 
     @Override
     protected ResponseBody<List<Integer>> call() throws Exception {
         String url =String.format("%s?userId=%s&serverId=%s&roleId=%s",
-                ApiConfig.CALCULATOR_QUERY_OWNED_ROLE,signUserInfo.getUserId(),ApiConfig.PARAM_SERVER_ID,signUserInfo.getRoleId());
-        HttpClient client = HttpClient.newHttpClient();
+                ApiConfig.CALCULATOR_QUERY_OWNED_ROLE,userInfo.getUserId(),ApiConfig.PARAM_SERVER_ID,userInfo.getRoleId());
         try {
-            HttpRequest request = HttpRequestUtil.getRequestWithSource(url,signUserInfo.getToken(),"h5");
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpRequest request = getBuilder(url,null,userInfo).build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 200) {
                 ObjectMapper mapper = new ObjectMapper();
@@ -47,9 +47,9 @@ public class QueryOwnedRoleTask extends Task<ResponseBody<List<Integer>>> {
             }else {
                 return new ResponseBody<>(1,"无法获取指定玩家以存在的角色列表");
             }
-        } catch (IOException | InterruptedException e) {
-            LOG.error("错误",e);
-            return new ResponseBody<>(1,"无法获取指定玩家以存在的角色列表");
+        } catch (AccessTokenException | IOException | InterruptedException e) {
+            LOG.error("错误", e);
+            return new ResponseBody<>(1, e.getMessage());
         }
     }
 

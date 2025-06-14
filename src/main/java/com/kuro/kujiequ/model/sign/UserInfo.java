@@ -13,6 +13,7 @@ public class UserInfo extends SignUserInfo {
     private String roleName;
     private String roleUrl;
     private Long creatTime;
+    private String devCode;
 
     //private Integer
     public UserInfo() {
@@ -78,5 +79,13 @@ public class UserInfo extends SignUserInfo {
 
     public void setCreatTime(Long creatTime) {
         this.creatTime = creatTime;
+    }
+
+    public String getDevCode() {
+        return devCode;
+    }
+
+    public void setDevCode(String devCode) {
+        this.devCode = devCode;
     }
 }

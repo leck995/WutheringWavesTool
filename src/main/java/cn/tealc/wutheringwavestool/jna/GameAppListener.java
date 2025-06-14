@@ -54,7 +54,7 @@ public class GameAppListener implements WinUser.WinEventProc{
         char[] buffer = new char[256];
         user32.GetWindowText(hwnd, buffer, buffer.length);
         String title = Native.toString(buffer);
-        LOG.debug("当前前台窗口是:{}",title);
+        //LOG.debug("当前前台窗口是:{}",title);
         if (title.equals("鸣潮  ") || title.equals("Wuthering Waves  ") || title.equals("鳴潮  ")) {
             // 检测到游戏启动
             if (!start) {

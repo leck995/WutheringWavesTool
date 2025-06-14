@@ -37,7 +37,21 @@ public class ApiConfig {
     public static final String CALCULATOR_BATCH_ROLE_COST = "https://api.kurobbs.com/aki/calculator/batchRoleCost";
     public static final String CALCULATOR_BATCH_WEAPON_COST = "https://api.kurobbs.com/aki/calculator/batchWeaponCost";
 
+    public static final String ACCOUNT_LOGIN="https://api.kurobbs.com/user/sdkLogin";
+    public static final String ACCOUNT_SEEK_ROLE="https://api.kurobbs.com/gamer/role/list";
+
+
+    public static final String ROLE_ACCESS_TOKEN="https://api.kurobbs.com/aki/roleBox/requestToken";
+
+
+
+
+
+
 
     public static final String PARAM_SERVER_ID="76402e5b20be2c39f095a152090afddc";
     public static final String PARAM_GAME_ID="3";
+
+
+
 }

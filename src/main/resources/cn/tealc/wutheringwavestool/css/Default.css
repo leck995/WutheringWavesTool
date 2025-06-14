@@ -53,3 +53,11 @@
 */
 
 
+
+
+.tea-dialog{
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+}
+

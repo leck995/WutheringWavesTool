@@ -15,6 +15,7 @@ import cn.tealc.wutheringwavestool.model.release.Release;
 import cn.tealc.wutheringwavestool.thread.system.ui.MainBackgroundTask;
 import cn.tealc.wutheringwavestool.ui.cardpool.CardAnalysisBaseView;
 import cn.tealc.wutheringwavestool.ui.cardpool.CardAnalysisBaseViewModel;
+import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
 import cn.tealc.wutheringwavestool.ui.game.*;
 import cn.tealc.wutheringwavestool.ui.game.manage.GameManagerView;
 import cn.tealc.wutheringwavestool.ui.game.manage.GameManagerViewModel;
@@ -217,7 +218,12 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
                 showDialog(node);
             }else {
                 Pane panes= (Pane) objects[0];
-                showDialog(panes);
+                if (objects[1] != null && objects[1] instanceof BaseDialog dialog){
+                    showDialog(panes,dialog);
+                }else {
+                    showDialog(panes);
+                }
+
             }
         }));
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.CHANGE_BG,((s, objects) -> {
@@ -308,6 +314,11 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
 
     private void showDialog(Pane pane){
         JFXDialog dialog = new JFXDialog(root,pane,JFXDialog.DialogTransition.CENTER);
+        dialog.show();
+    }
+    private void showDialog(Pane pane,BaseDialog baseDialog){
+        JFXDialog dialog = new JFXDialog(root,pane,JFXDialog.DialogTransition.CENTER);
+        baseDialog.setDialog(dialog);
         dialog.show();
     }
 

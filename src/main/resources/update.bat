@@ -1,62 +1,88 @@
 @echo off
-echo ��ȡ����ԱȨ��
+echo 正在获取管理员权限
 if exist "%SystemRoot%\SysWOW64" path %path%;%windir%\SysNative;%SystemRoot%\SysWOW64;%~dp0
 bcdedit >nul
 if '%errorlevel%' NEQ '0' (goto UACPrompt) else (goto UACAdmin)
+
 :UACPrompt
 %1 start "" mshta vbscript:createobject("shell.application").shellexecute("""%~0""","::",,"runas",1)(window.close)&exit
 exit /B
+
 :UACAdmin
 cd /d "%~dp0"
-echo ��ǰ����·���ǣ�%CD%
-echo �ѻ�ȡ����ԱȨ��
+echo 当前路径为：%CD%
+echo 获取管理员权限中...
 setlocal
 
-rem ɱ�� WutheringWavesTool.exe ����
+rem 强制结束 WutheringWavesTool.exe 进程
 taskkill /IM "WutheringWavesTool.exe" /F
 
-:: �������������ҵ����̺ţ�Ȼ��ɱ����
-set JPS=jps
-set MAIN_CLASS=cn.tealc.wutheringwavestool.MainApplication
+rem 等待 2 秒
+timeout /t 2 /nobreak > nul
 
-for /f "tokens=1" %%a in ('%JPS% -l ^| findstr /i "%MAIN_CLASS%"') do (
-    set PID=%%a
-)
-
-if defined PID (
-    echo Stopping %MAIN_CLASS% PID %PID%...
-    taskkill /f /pid %PID%
-    echo %MAIN_CLASS% is stopped.
-) else (
-    echo %MAIN_CLASS% is not running.
-)
-
-rem �ȴ� 1 ��
-timeout /t 1 /nobreak > nul
-
-rem ��ȡ������ű�����Ŀ¼
+rem 获取路径并移除末尾反斜杠
 set "baseDir=%~dp0"
 set "sourceDir=%baseDir%update"
-set "targetDir=%baseDir%"
+set "targetDir=%~dp0"
+set "targetDir=%targetDir:~0,-1%"  & rem 修复点：去掉末尾的\
+echo 检测到助手安装目录="%targetDir%"
 
-rem ���ԴĿ¼�Ƿ����
+rem 更新逻辑
+set "updateSuccess=false"
 if exist "%sourceDir%" (
-rem �����ļ���Ŀ¼��������
-robocopy %sourceDir% %targetDir% /MOVE /E /V
+    echo 开始更新。。。
+    robocopy "%sourceDir%" "%targetDir%" /MOVE /E /V /R:0 /W:0
+    if %errorlevel% LEQ 1 (
+        set "updateSuccess=true"
+        echo 更新成功！
+    ) else (
+        echo 更新失败，错误代码：%errorlevel%
+    )
+) else (
+    echo 更新失败，"%sourceDir%" 不存在
 )
+
+rem 获取更新文件的路径
+set "baseDir=%~dp0"
+set "sourceDir=%baseDir%update"
+set "targetDir=%~dp0"
+echo 检测到助手安装目录=%targetDir%
+
 
 if exist "%baseDir%update.zip" (
-del "%baseDir%update.zip"
+    del "%baseDir%update.zip"
 )
-echo baseDir: %~dp0
-echo Executable path: "%baseDir%WutheringWavesTool.exe"
-rem ���� WutheringWavesTool.exe
-if exist "%baseDir%WutheringWavesTool.exe" (
-    echo Starting WutheringWavesTool.exe...
-    start "" "%baseDir%WutheringWavesTool.exe"
+
+rem 删除更新缓存目录
+if exist "%sourceDir%" (
+    echo 正在删除 "%sourceDir%" 及其所有子文件和子目录...
+    rmdir /S /Q "%sourceDir%"
+    if exist "%sourceDir%" (
+        echo 删除失败，请检查权限或文件占用！
+    ) else (
+        echo 成功删除 "%sourceDir%"
+    )
 ) else (
-    echo WutheringWavesTool.exe �������� %baseDir%
+    echo "%sourceDir%" 不存在，无需删除。
 )
-del "%~f0"
-exit
+
+echo baseDir: %~dp0
+echo 可执行文件路径: "%baseDir%WutheringWavesTool.exe"
+
+rem 启动 WutheringWavesTool.exe（仅在更新成功时执行）
+if "%updateSuccess%"=="true" (
+    if exist "%baseDir%WutheringWavesTool.exe" (
+        echo 正在启动 WutheringWavesTool.exe...
+        start "" "%baseDir%WutheringWavesTool.exe"
+    ) else (
+        echo WutheringWavesTool.exe 不存在于 %baseDir%
+    )
+) else (
+    echo 由于更新失败，未启动 WutheringWavesTool.exe
+)
+
+rem 不再自动删除脚本，方便用户查看日志
+echo 更新流程结束，请按任意键退出...
+pause > nul
 endlocal
+exit

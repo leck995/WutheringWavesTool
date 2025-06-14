@@ -1,8 +1,10 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ;
 
+import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.UserInfoDataTask;
+import com.kuro.kujiequ.thread.rolebox.PlayerBaseDataTask;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -19,24 +21,18 @@ import java.util.Objects;
 public class AccountViewModel implements ViewModel {
     private final ObservableList<UserInfo> accountList= FXCollections.observableArrayList();
     public AccountViewModel() {
+        refreshUserList();
+        NotificationManager.subscribe(NotificationKey.ACCOUNT_UPDATE,(s, objects) -> refreshUserList());
+    }
+
+
+    private void refreshUserList(){
         UserInfoDao dao=new UserInfoDao();
         List<UserInfo> userInfos = dao.getAll();
         accountList.setAll(userInfos);
-        getSignGoods();
-
     }
 
 
-
-
-    private void getSignGoods(){
-        UserInfoDao dao=new UserInfoDao();
-        UserInfo main = dao.getMain();
-        if (main != null){
-           
-        }
-
-    }
 
 
 
@@ -98,7 +94,7 @@ public class AccountViewModel implements ViewModel {
     }
 
     public void getUserInfo(UserInfo userInfo){
-        UserInfoDataTask task = new UserInfoDataTask(userInfo);
+        PlayerBaseDataTask task = new PlayerBaseDataTask(userInfo);
         task.setOnSucceeded(event -> {});
     }
 

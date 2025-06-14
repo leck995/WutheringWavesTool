@@ -6,7 +6,7 @@
 
     <groupId>cn.tealc</groupId>
     <artifactId>wuthering-waves-tool</artifactId>
-    <version>1.2.6</version>
+    <version>1.2.8</version>
     <name>WutheringWavesTool</name>
 
     <properties>
@@ -37,7 +37,6 @@
             <artifactId>javafx-swing</artifactId>
             <version>${javafx.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.kordamp.ikonli</groupId>
             <artifactId>ikonli-javafx</artifactId>
@@ -176,6 +175,8 @@
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
+
+
     </dependencies>
 
     <build>

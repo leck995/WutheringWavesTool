@@ -121,7 +121,7 @@ public class JdbcUtils {
 
             String createGameSlash= """
                     CREATE TABLE IF NOT EXISTS game_slash (
-                        id INTEGER PRIMARY KEY,
+                        id INTEGER PRIMARY KEY  AUTOINCREMENT,
                         data TEXT NOT NULL,
                         end_time BIGINT NOT NULL UNIQUE
                     );

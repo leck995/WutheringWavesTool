@@ -1,20 +1,12 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ;
 
-import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
-import com.kuro.kujiequ.model.roleData.user.RoleInfo;
-import com.kuro.kujiequ.model.sign.SignUserInfo;
+import cn.tealc.wutheringwavestool.ui.account.AccountUpdateView;
+import cn.tealc.wutheringwavestool.ui.account.AccountUpdateViewModel;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.UserDataRefreshTask;
-import com.kuro.kujiequ.thread.UserInfoDataTask;
 import com.jfoenixN.controls.JFXDialogLayout;
-import de.saxsys.mvvmfx.FxmlView;
-import de.saxsys.mvvmfx.InjectViewModel;
-import de.saxsys.mvvmfx.MvvmFX;
+import de.saxsys.mvvmfx.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -23,7 +15,6 @@ import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -32,9 +23,6 @@ import org.kordamp.ikonli.material2.Material2AL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.awt.*;
-import java.io.IOException;
-import java.net.URI;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -58,8 +46,8 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
 
     @FXML
     void addUser(ActionEvent event) {
-        AddAccountView addAccountView = new AddAccountView();
-        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,addAccountView);
+        ViewTuple<AccountUpdateView, AccountUpdateViewModel> viewTuple = FluentViewLoader.fxmlView(AccountUpdateView.class).viewModel(new AccountUpdateViewModel()).load();
+        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, viewTuple.getView(),viewTuple.getCodeBehind());
     }
 
     class AccountCell extends ListCell<UserInfo> {
@@ -118,7 +106,6 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
         }
 
         private void delete(){
-            System.out.println(getIndex());
             JFXDialogLayout dialogLayout = new JFXDialogLayout();
             Label title=new Label("确认");
             title.getStyleClass().add(Styles.TITLE_2);
@@ -135,188 +122,17 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
                 cancelBtn.fireEvent(event1); //这里是为了触发cancelBtn的事件，从而关闭窗口，属实另辟途径（自夸）
             });
             dialogLayout.setActions(saveBtn, cancelBtn);
-
             MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
 
         }
 
         private void update(){
-            SignUserInfo item = getItem();
-            Label userIdLabel = new Label("用户ID:");
-            TextField userIdTextField = new TextField(item.getUserId());
-            userIdTextField.setPromptText("库街区的用户UID");
-            InputGroup inputGroup1 = new InputGroup(userIdLabel,userIdTextField);
-            inputGroup1.setAlignment(Pos.CENTER);
-            Label roleIdLabel = new Label("游戏ID:");
-
-            TextField roleIdTextField = new TextField(item.getRoleId());
-            roleIdTextField.setPromptText("鸣潮的玩家ID(特征码)");
-            InputGroup inputGroup2 = new InputGroup(roleIdLabel,roleIdTextField);
-            inputGroup2.setAlignment(Pos.CENTER);
-
-            Label tokenLabel = new Label("Token:");
-            TextField tokenTextField = new TextField(item.getToken());
-            tokenTextField.setPromptText("库街区的登录Token");
-            InputGroup inputGroup3 = new InputGroup(tokenLabel, tokenTextField);
-            inputGroup3.setAlignment(Pos.CENTER);
-
-            CheckBox mainCheckBox = new CheckBox("设为主账号");
-            mainCheckBox.setSelected(item.getMain());
-            VBox parentVBox = new VBox(10.0,inputGroup1,inputGroup2,inputGroup3,mainCheckBox);
-
-            parentVBox.setAlignment(Pos.CENTER);
-
-            Button saveBtn=new Button("保存");
-            saveBtn.getStyleClass().add(Styles.ACCENT);
-            Button cancelBtn=new Button("取消");
-            cancelBtn.setCancelButton(true);
-
-
-            saveBtn.setOnAction(event1 -> {
-                String userId = userIdTextField.getText();
-                String roleId = roleIdTextField.getText();
-                String token = tokenTextField.getText();
-                boolean selected = mainCheckBox.isSelected();
-                if (!userId.isEmpty() && !roleId.isEmpty() && !token.isEmpty()) {
-                    UserInfo userInfo = new UserInfo(userId, roleId, token, selected, true);
-
-                    check(userInfo,saveBtn,cancelBtn);
-
-                }
-            });
-            Label title = new Label("修改签到用户");
-            title.getStyleClass().add(Styles.TITLE_2);
-            JFXDialogLayout dialogLayout=new JFXDialogLayout();
-            dialogLayout.setHeading(title);
-            dialogLayout.setBody(parentVBox);
-            dialogLayout.setActions(saveBtn,cancelBtn);
-            dialogLayout.setPrefSize(400,250);
-            MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
-        }
-
-
-        private void check(UserInfo userInfo,Button saveBtn,Button cancelBtn){
-
-            UserDataRefreshTask refreshTask = new UserDataRefreshTask(userInfo);
-
-            refreshTask.setOnSucceeded(workerStateEvent -> {
-                UserInfoDataTask task =new UserInfoDataTask(userInfo);
-                task.setOnSucceeded(event1 -> {
-                    ResponseBody<RoleInfo> value = task.getValue();
-                    if (value.getCode() == 200){
-                        userInfo.setRoleName(value.getData().getName());
-                        userInfo.setCreatTime(value.getData().getCreatTime());
-
-                        boolean b = viewModel.updateUser(getIndex(), userInfo);
-                        if (b){
-                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"成功修改用户:"+value.getData().getName()));
-
-                            cancelBtn.fireEvent(new ActionEvent()); //这里是为了触发cancelBtn的事件，从而关闭窗口
-                        }else {
-                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"修改失败,可能重复添加"));
-                        }
-                    }else {
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"获取用户失败，输入信息有误，无法添加，原因:"+value.getMsg()));
-                    }
-                });
-                Thread.startVirtualThread(task);
-            });
-            Thread.startVirtualThread(refreshTask);
-        }
-
-    }
-
-    class AddAccountView extends JFXDialogLayout{
-        private final Button saveBtn;
-        private final Button cancelBtn;
-
-        public AddAccountView() {
-            Label userIdLabel = new Label("用户ID:");
-            TextField userIdTextField = new TextField();
-            userIdTextField.setPromptText("库街区的用户UID");
-            InputGroup inputGroup1 = new InputGroup(userIdLabel,userIdTextField);
-            inputGroup1.setAlignment(Pos.CENTER);
-            Label roleIdLabel = new Label("游戏ID:");
-
-            TextField roleIdTextField = new TextField();
-            roleIdTextField.setPromptText("鸣潮的玩家ID(特征码)");
-            InputGroup inputGroup2 = new InputGroup(roleIdLabel,roleIdTextField);
-            inputGroup2.setAlignment(Pos.CENTER);
-
-            Label tokenLabel = new Label("Token: ");
-            TextField tokenTextField = new TextField();
-            tokenTextField.setPromptText("库街区的登录Token");
-            InputGroup inputGroup3 = new InputGroup(tokenLabel, tokenTextField);
-            inputGroup3.setAlignment(Pos.CENTER);
-
-            CheckBox mainCheckBox = new CheckBox("设为主账号");
-            VBox parentVBox = new VBox(10.0,inputGroup1,inputGroup2,inputGroup3,mainCheckBox);
-
-            parentVBox.setAlignment(Pos.CENTER);
-            saveBtn= new Button("保存");
-
-            saveBtn.getStyleClass().add(Styles.ACCENT);
-            cancelBtn = new Button("取消");
-            cancelBtn.setCancelButton(true);
-
-            Hyperlink guide=new Hyperlink("查看教程");
-            guide.setOnAction(event1 -> {
-                try {
-                    Desktop.getDesktop().browse(URI.create("https://www.yuque.com/chashuisuipian/tc2ire/yh69bg99qcbdgic5"));
-                } catch (IOException e) {
-                    LOG.info("跳转错误",e);
-                }
-            });
-            saveBtn.setOnAction(event1 -> {
-                String userId = userIdTextField.getText();
-                String roleId = roleIdTextField.getText();
-                String token = tokenTextField.getText();
-                boolean selected = mainCheckBox.isSelected();
-                if (!userId.isEmpty() && !roleId.isEmpty() && !token.isEmpty()) {
-                    UserInfo userInfo = new UserInfo(userId, roleId, token, selected, true);
-                    check(userInfo);
-                }
-
-            });
-            Label title = new Label("添加签到用户");
-            title.getStyleClass().add(Styles.TITLE_2);
-            setHeading(title);
-            setBody(parentVBox);
-            setActions(guide,saveBtn, cancelBtn);
-            setPrefSize(400,250);
-        }
-
-        private void check(UserInfo userInfo){
-            UserDataRefreshTask refreshTask = new UserDataRefreshTask(userInfo);
-            refreshTask.setOnSucceeded(workerStateEvent -> {
-                UserInfoDataTask task =new UserInfoDataTask(userInfo);
-                task.setOnSucceeded(event1 -> {
-                    ResponseBody<RoleInfo> value = task.getValue();
-                    if (value.getCode() == 200){
-                        userInfo.setRoleName(value.getData().getName());
-                        userInfo.setCreatTime(value.getData().getCreatTime());
-                        boolean status = viewModel.addUser(userInfo);
-                        if (status) {
-                            cancelBtn.fireEvent(new ActionEvent());//这里是为了触发cancelBtn的事件，从而关闭窗口，属实另辟途径（自夸）
-                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"成功添加用户:"+value.getData().getName()));
-                        }else {
-                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"重复添加，请先删除原有用户再添加"));
-                        }
-                    }else {
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,"获取用户失败，输入信息有误，无法添加，原因:"+value.getMsg()));
-                    }
-                });
-                Thread.startVirtualThread(task);
-            });
-            Thread.startVirtualThread(refreshTask);
-
+            ViewTuple<AccountUpdateView, AccountUpdateViewModel> viewTuple = FluentViewLoader.fxmlView(AccountUpdateView.class).viewModel(new AccountUpdateViewModel(getItem())).load();
+            MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, viewTuple.getView(),viewTuple.getCodeBehind());
         }
 
 
     }
-
-
-
 
 
 }

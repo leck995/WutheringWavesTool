@@ -18,6 +18,7 @@ public class RoleDetail {
     private WeaponData weaponData;
     private PhantomData phantomData;
     private List<SkillData> skillList;
+    private List<RoleAttribute> roleAttributeList;
 
     public Role getRole() {
         return role;
@@ -65,5 +66,13 @@ public class RoleDetail {
 
     public void setSkillList(List<SkillData> skillList) {
         this.skillList = skillList;
+    }
+
+    public List<RoleAttribute> getRoleAttributeList() {
+        return roleAttributeList;
+    }
+
+    public void setRoleAttributeList(List<RoleAttribute> roleAttributeList) {
+        this.roleAttributeList = roleAttributeList;
     }
 }

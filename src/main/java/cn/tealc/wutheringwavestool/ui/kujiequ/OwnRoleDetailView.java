@@ -1,9 +1,8 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ;
 
-import com.kuro.kujiequ.model.roleData.FetterDetail;
-import com.kuro.kujiequ.model.roleData.Phantom;
-import com.kuro.kujiequ.model.roleData.PhoantomMainProps;
-import com.kuro.kujiequ.model.roleData.Role;
+import atlantafx.base.controls.Spacer;
+import cn.tealc.wutheringwavestool.base.Config;
+import com.kuro.kujiequ.model.roleData.*;
 import cn.tealc.wutheringwavestool.ui.component.OwnRoleDetailCell;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.FxmlView;
@@ -118,6 +117,8 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
     private StackPane weaponBgPane;
     @FXML
     private VBox phantomListGroup;
+    @FXML
+    private FlowPane roleAttributePane;
 
 
     @Override
@@ -129,6 +130,7 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
         roleAttrImageView.imageProperty().bind(viewModel.roleAttrImageProperty());
 
         weaponName.textProperty().bind(viewModel.weaponNameProperty());
+        //weaponName.setManaged(false);
         weaponLevel.textProperty().bind(viewModel.weaponLevelProperty());
         weaponResonLevel.textProperty().bind(viewModel.weaponResonLevelProperty());
         weaponImageView.imageProperty().bind(viewModel.weaponImageProperty());
@@ -226,6 +228,14 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
         });
 
 
+
+
+        viewModel.getRoleAttributeList().addListener((ListChangeListener<? super RoleAttribute>) change -> {
+            roleAttributePane.getChildren().clear();
+            for (RoleAttribute roleAttribute : change.getList()) {
+                roleAttributePane.getChildren().add(new RoleItem(roleAttribute));
+            }
+        });
     }
 
 
@@ -355,10 +365,6 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
     }
 
 
-
-
-
-
     private VBox phantomGuidance(){
         VBox vBox = new VBox();
         VBox top = new VBox();
@@ -371,7 +377,7 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
         button.setOnAction(actionEvent -> {
             try {
                 Desktop.getDesktop().browse(
-                        URI.create("https://github.com/leck995/WutheringWavesTool/wiki/%E5%A3%B0%E9%AA%B8%E6%B5%8B%E8%AF%84%E6%9C%BA%E5%88%B6%E8%AF%B4%E6%98%8E"));
+                        URI.create(Config.URL_PHANTOM_GUIDE));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -410,10 +416,6 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
         vBox.getStyleClass().add("phantom");
         return vBox;
     }
-
-
-
-
 
 
     class PhantomItem extends VBox{
@@ -571,6 +573,23 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
 
             setSpacing(8.0);
             getStyleClass().add("phantom");
+        }
+    }
+
+
+    static class RoleItem extends HBox{
+        public RoleItem(RoleAttribute attribute) {
+            ImageView icon = new ImageView(LocalResourcesManager.imageBuffer(attribute.getIconUrl(), 30, 30, true, true));
+            icon.setFitWidth(26);
+            icon.setFitHeight(26);
+            Label name = new Label(attribute.getAttributeName());
+            Label value = new Label(attribute.getAttributeValue());
+            name.setGraphic(icon);
+            getChildren().addAll(name,new Spacer(), value);
+            getStyleClass().add("attribute-item");
+            icon.getStyleClass().add("attribute-icon");
+            name.getStyleClass().add("attribute-name");
+            value.getStyleClass().add("attribute-value");
         }
     }
 

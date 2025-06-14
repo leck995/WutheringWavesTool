@@ -1,14 +1,14 @@
-package com.kuro.kujiequ.thread.calculator;
+package com.kuro.kujiequ.thread.rolebox.calculator;
 
 import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.wutheringwavestool.model.ResponseBodyForApi;
-import cn.tealc.wutheringwavestool.util.HttpRequestUtil;
+import com.kuro.kujiequ.AccessTokenException;
+import com.kuro.kujiequ.model.sign.UserInfo;
+import com.kuro.kujiequ.thread.BaseTask;
+import com.kuro.util.HttpRequestUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuro.kujiequ.ApiConfig;
 import com.kuro.kujiequ.model.calculator.list.RoleForCalculator;
-import com.kuro.kujiequ.model.calculator.result.Cost;
-import com.kuro.kujiequ.model.sign.SignUserInfo;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -27,26 +26,24 @@ import java.util.List;
  * @author: Leck
  * @create: 2024-07-06 14:24
  */
-public class ListRoleTask extends Task<ResponseBody<List<RoleForCalculator>>> {
+public class ListRoleTask extends BaseTask<ResponseBody<List<RoleForCalculator>>> {
     private static final Logger LOG= LoggerFactory.getLogger(ListRoleTask.class);
-    private SignUserInfo signUserInfo;
+    private UserInfo userInfo;
 
-    public ListRoleTask(SignUserInfo signUserInfo) {
-        this.signUserInfo = signUserInfo;
+    public ListRoleTask(UserInfo userInfo) {
+        this.userInfo = userInfo;
     }
 
     @Override
     protected ResponseBody<List<RoleForCalculator>> call() throws Exception {
-        return request(signUserInfo.getToken());
+        return request();
     }
 
-    private ResponseBody<List<RoleForCalculator>> request(String token){
+    private ResponseBody<List<RoleForCalculator>> request(){
         String url= ApiConfig.CALCULATOR_LIST_ROLE;
-        HttpClient client = HttpClient.newHttpClient();
         try {
-            HttpRequest request = HttpRequestUtil.getRequestWithSource(url,token,"h5");
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
+            HttpRequest request = getBuilder(url,null,userInfo).build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 ObjectMapper mapper = new ObjectMapper();
                 ResponseBody<List<RoleForCalculator>> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<List<RoleForCalculator>>>() {
@@ -56,9 +53,9 @@ public class ListRoleTask extends Task<ResponseBody<List<RoleForCalculator>>> {
             }else {
                 return new ResponseBody<>(1,"无法获取养成计算器的角色列表");
             }
-        } catch (IOException | InterruptedException e) {
-            LOG.error("错误",e);
-            return new ResponseBody<>(1,"无法获取养成计算器的角色列表");
+        } catch (AccessTokenException | IOException | InterruptedException e) {
+            LOG.error("错误", e);
+            return new ResponseBody<>(1, e.getMessage());
         }
     }
 }

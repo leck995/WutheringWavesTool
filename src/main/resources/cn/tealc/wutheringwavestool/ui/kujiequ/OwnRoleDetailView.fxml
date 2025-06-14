@@ -7,12 +7,13 @@
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane prefHeight="800.0" prefWidth="1100.0" styleClass="role-detail" stylesheets="@../../css/kujiequ/OwnRoleDetail.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.OwnRoleDetailView">
+<StackPane prefHeight="800.0" prefWidth="1100.0" styleClass="role-detail" stylesheets="@../../css/kujiequ/OwnRoleDetail.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.OwnRoleDetailView">
    <children>
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
          <children>
@@ -48,75 +49,84 @@
                                     <Label fx:id="roleLevel" styleClass="role-level" text="LV.70" translateY="2.0" />
                                  </children>
                               </HBox>
-                              <HBox layoutX="686.0" layoutY="35.0" spacing="10.0" styleClass="weapon" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="120.0">
+                              <HBox layoutX="250.0" layoutY="40.0" spacing="25.0" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="120.0">
                                  <children>
-                                    <StackPane fx:id="weaponBgPane" styleClass="sr">
+                                    <HBox spacing="10.0" styleClass="weapon">
                                        <children>
-                                          <ImageView fx:id="weaponImageView" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../../image/role-weapon.png" />
-                                             </image>
-                                          </ImageView>
+                                          <StackPane fx:id="weaponBgPane" styleClass="sr">
+                                             <children>
+                                                <ImageView fx:id="weaponImageView" fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../../image/role-weapon.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </children>
+                                          </StackPane>
+                                          <VBox alignment="CENTER_LEFT" spacing="2.0">
+                                             <children>
+                                                <Label fx:id="weaponName" styleClass="level" text="武器" />
+                                                <Label fx:id="weaponLevel" styleClass="level" text="LV.70" />
+                                                <Label fx:id="weaponResonLevel" styleClass="level2" text="突破1" />
+                                             </children>
+                                          </VBox>
                                        </children>
-                                    </StackPane>
-                                    <VBox alignment="CENTER_LEFT" spacing="2.0">
+                                    </HBox>
+                                    <HBox spacing="10.0" styleClass="role-skill">
                                        <children>
-                                          <Label fx:id="weaponName" styleClass="name" text="武器" />
-                                          <Label fx:id="weaponLevel" styleClass="level" text="LV.70" />
-                                          <Label fx:id="weaponResonLevel" styleClass="level2" text="突破1" />
+                                          <Label fx:id="skill05" contentDisplay="TOP" styleClass="level" text="LV.1">
+                                             <graphic>
+                                                <ImageView fx:id="skillImg05" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../../image/role-skill.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Label>
+                                          <Label fx:id="skill04" contentDisplay="TOP" layoutX="10.0" layoutY="10.0" styleClass="level" text="LV.2">
+                                             <graphic>
+                                                <ImageView fx:id="skillImg04" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../../image/role-skill.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Label>
+                                          <Label fx:id="skill03" contentDisplay="TOP" styleClass="level" text="LV.3">
+                                             <graphic>
+                                                <ImageView fx:id="skillImg03" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../../image/role-skill.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Label>
+                                          <Label fx:id="skill02" contentDisplay="TOP" layoutX="10.0" layoutY="110.0" styleClass="level" text="LV.4">
+                                             <graphic>
+                                                <ImageView fx:id="skillImg02" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../../image/role-skill.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Label>
+                                          <Label fx:id="skill01" contentDisplay="TOP" layoutX="10.0" layoutY="160.0" styleClass="level" text="LV.6">
+                                             <graphic>
+                                                <ImageView fx:id="skillImg01" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
+                                                   <image>
+                                                      <Image url="@../../image/role-skill.png" />
+                                                   </image>
+                                                </ImageView>
+                                             </graphic>
+                                          </Label>
                                        </children>
-                                    </VBox>
+                                    </HBox>
                                  </children>
                               </HBox>
-                              <HBox spacing="10.0" styleClass="role-skill" AnchorPane.leftAnchor="40.0" AnchorPane.topAnchor="250.0">
-                                 <children>
-                                    <Label fx:id="skill05" contentDisplay="TOP" styleClass="level" text="LV.1">
-                                       <graphic>
-                                          <ImageView fx:id="skillImg05" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../../image/role-skill.png" />
-                                             </image>
-                                          </ImageView>
-                                       </graphic>
-                                    </Label>
-                                    <Label fx:id="skill04" contentDisplay="TOP" layoutX="10.0" layoutY="10.0" styleClass="level" text="LV.2">
-                                       <graphic>
-                                          <ImageView fx:id="skillImg04" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../../image/role-skill.png" />
-                                             </image>
-                                          </ImageView>
-                                       </graphic>
-                                    </Label>
-                                    <Label fx:id="skill03" contentDisplay="TOP" styleClass="level" text="LV.3">
-                                       <graphic>
-                                          <ImageView fx:id="skillImg03" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../../image/role-skill.png" />
-                                             </image>
-                                          </ImageView>
-                                       </graphic>
-                                    </Label>
-                                    <Label fx:id="skill02" contentDisplay="TOP" layoutX="10.0" layoutY="110.0" styleClass="level" text="LV.4">
-                                       <graphic>
-                                          <ImageView fx:id="skillImg02" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../../image/role-skill.png" />
-                                             </image>
-                                          </ImageView>
-                                       </graphic>
-                                    </Label>
-                                    <Label fx:id="skill01" contentDisplay="TOP" layoutX="10.0" layoutY="160.0" styleClass="level" text="LV.6">
-                                       <graphic>
-                                          <ImageView fx:id="skillImg01" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
-                                             <image>
-                                                <Image url="@../../image/role-skill.png" />
-                                             </image>
-                                          </ImageView>
-                                       </graphic>
-                                    </Label>
-                                 </children>
-                              </HBox>
+                              <FlowPane fx:id="roleAttributePane" alignment="CENTER_LEFT" hgap="20.0" styleClass="role-attribute" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="230.0">
+                                 <padding>
+                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                 </padding>
+                              </FlowPane>
                               <VBox alignment="TOP_RIGHT" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
                                  <children>
                                     <ImageView fx:id="chain01" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">

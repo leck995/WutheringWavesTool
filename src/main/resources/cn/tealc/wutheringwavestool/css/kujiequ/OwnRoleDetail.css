@@ -106,6 +106,42 @@
     -fx-text-fill: white;
 }
 
+.role-detail .role .role-attribute{
+    -fx-background-color: -color-bg-default-40;
+    -fx-background-radius: 15;
+}
+.role-detail .role .role-attribute > .attribute-item{
+    -fx-pref-width: 170;
+    -fx-pref-height: 36;
+    -fx-alignment: center-left;
+}
+.role-detail .role .role-attribute > .attribute-item > .attribute-icon{
+    -fx-fit-to-width: 30;
+    -fx-fit-to-height: 30;
+}
+
+.role-detail .role .role-attribute  > .attribute-item > .attribute-name{
+    -fx-alignment: center;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-font-size: 15;
+}
+
+.role-detail .role .role-attribute > .attribute-item > .attribute-name > .attribute-icon{
+    -fx-fit-to-width: 30;
+    -fx-fit-to-height: 30;
+}
+
+.role-detail .role .role-attribute > .attribute-item > .attribute-value{
+    -fx-alignment: center;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-font-size: 15;
+}
+
+
+
+
 
 
 .role-detail .phantom-desc{

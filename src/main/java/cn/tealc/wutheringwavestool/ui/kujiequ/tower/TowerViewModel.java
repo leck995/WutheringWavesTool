@@ -6,9 +6,9 @@ import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.kuro.kujiequ.model.roleData.Role;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import cn.tealc.wutheringwavestool.model.tower.TowerData;
-import com.kuro.kujiequ.thread.TowerDataDetailTask;
+import com.kuro.kujiequ.thread.rolebox.tower.TowerDataDetailTask;
 import com.kuro.kujiequ.model.towerData.*;
-import com.kuro.kujiequ.thread.role.GameRoleDataTask;
+import com.kuro.kujiequ.thread.rolebox.role.GameRoleDataTask;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -25,8 +25,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Flow;
 import java.util.concurrent.Future;
 
 /**

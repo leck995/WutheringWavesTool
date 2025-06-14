@@ -5,13 +5,11 @@ import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import com.kuro.kujiequ.model.calculator.exist.WeaponAim;
-import com.kuro.kujiequ.model.calculator.list.RoleForCalculator;
 import com.kuro.kujiequ.model.calculator.list.WeaponForCalculator;
 import com.kuro.kujiequ.model.calculator.result.CalculatorResult;
 import com.kuro.kujiequ.model.calculator.result.Cost;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.calculator.BatchRoleCostTask;
-import com.kuro.kujiequ.thread.calculator.BatchWeaponCostTask;
+import com.kuro.kujiequ.thread.rolebox.calculator.BatchWeaponCostTask;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -19,8 +17,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
-
-import java.util.List;
 
 /**
  * @description:

@@ -32,6 +32,7 @@ public class UserInfoDao {
         map.put("role_name","roleName");
         map.put("role_url","roleUrl");
         map.put("creat_time","creatTime");
+        map.put("dev_code","devCode");
         BeanProcessor beanProcessor=new BeanProcessor(map);
         return new BasicRowProcessor(beanProcessor);
     }
@@ -45,6 +46,18 @@ public class UserInfoDao {
             return null;
         }
     }
+    public UserInfo getUserById(int id){
+        QueryRunner qr=new QueryRunner();
+        String sql="SELECT * FROM user_info where id = ?";
+        try {
+            return qr.query(con,sql,new BeanHandler<>(UserInfo.class,getRowProcessor()),id);
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(),e);
+            return null;
+        }
+    }
+
+
     public UserInfo getUserByRoleId(String roleId){
         QueryRunner qr=new QueryRunner();
         String sql="SELECT * FROM user_info where role_id = ?";
@@ -78,12 +91,12 @@ public class UserInfoDao {
     }
 
     public int addUser(UserInfo userInfo){
-        String sql="INSERT INTO user_info (user_id,role_id,token,is_main,is_web,last_sign_time,role_name,role_url,creat_time) VALUES (?,?,?,?,?,?,?,?,?)";
+        String sql="INSERT INTO user_info (user_id,role_id,token,is_main,is_web,last_sign_time,role_name,role_url,creat_time,dev_code) VALUES (?,?,?,?,?,?,?,?,?,?)";
         QueryRunner qr=new QueryRunner();
         try {
             ResultSetHandler<Integer> rsh = new ScalarHandler<Integer>();
             return qr.insert(con,sql,rsh,
-                    userInfo.getUserId(),userInfo.getRoleId(),userInfo.getToken(),userInfo.getMain(),userInfo.getWeb(),userInfo.getLastSignTime(),userInfo.getRoleName(),userInfo.getRoleUrl(),userInfo.getCreatTime());
+                    userInfo.getUserId(),userInfo.getRoleId(),userInfo.getToken(),userInfo.getMain(),userInfo.getWeb(),userInfo.getLastSignTime(),userInfo.getRoleName(),userInfo.getRoleUrl(),userInfo.getCreatTime(),userInfo.getDevCode());
         } catch (SQLException e) {
             LOG.error(e.getMessage(),e);
             return 0;
@@ -91,11 +104,11 @@ public class UserInfoDao {
     }
 
     public int updateUser(UserInfo userInfo){
-        String sql="UPDATE user_info set user_id=?,role_id=?,token=?,is_main=?,is_web=?,last_sign_time =? ,role_name=?,role_url=?,creat_time=? WHERE id=?";
+        String sql="UPDATE user_info set user_id=?,role_id=?,token=?,is_main=?,is_web=?,last_sign_time =? ,role_name=?,role_url=?,creat_time=?,dev_code=? WHERE id=?";
         QueryRunner qr=new QueryRunner();
         try {
             return qr.update(con,sql,userInfo.getUserId(),userInfo.getRoleId(),userInfo.getToken(),userInfo.getMain(),
-                    userInfo.getWeb(),userInfo.getLastSignTime(),userInfo.getRoleName(),userInfo.getRoleUrl(),userInfo.getCreatTime(),userInfo.getId());
+                    userInfo.getWeb(),userInfo.getLastSignTime(),userInfo.getRoleName(),userInfo.getRoleUrl(),userInfo.getCreatTime(),userInfo.getDevCode(),userInfo.getId());
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }

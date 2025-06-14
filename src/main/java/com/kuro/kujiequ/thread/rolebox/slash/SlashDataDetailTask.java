@@ -1,26 +1,19 @@
-package com.kuro.kujiequ.thread.slash;
+package com.kuro.kujiequ.thread.rolebox.slash;
 
 import cn.tealc.wutheringwavestool.dao.GameSlashDataDao;
-import cn.tealc.wutheringwavestool.dao.GameTowerDataDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.ResponseBodyForApi;
 import cn.tealc.wutheringwavestool.model.tower.SlashDataForDB;
-import cn.tealc.wutheringwavestool.model.tower.TowerData;
-import cn.tealc.wutheringwavestool.util.HttpRequestUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kuro.kujiequ.AccessTokenException;
 import com.kuro.kujiequ.ApiConfig;
-import com.kuro.kujiequ.ApiDecryptException;
-import com.kuro.kujiequ.ApiUtil;
-import com.kuro.kujiequ.model.sign.SignUserInfo;
+import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.model.slash.SlashData;
 import com.kuro.kujiequ.model.slash.SlashDifficulty;
-import com.kuro.kujiequ.model.towerData.Difficulty;
-import com.kuro.kujiequ.model.towerData.DifficultyTotal;
-import com.kuro.kujiequ.model.towerData.Floor;
-import com.kuro.kujiequ.model.towerData.TowerArea;
-import javafx.concurrent.Task;
+import com.kuro.kujiequ.thread.BaseTask;
+import com.kuro.util.HttpRequestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +23,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Calendar;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @program: WutheringWavesTool
@@ -38,35 +30,30 @@ import java.util.stream.Collectors;
  * @author: Leck
  * @create: 2024-10-15 22:19
  */
-public class SlashDataDetailTask extends Task<ResponseBody<SlashData>> {
+public class SlashDataDetailTask extends BaseTask<ResponseBody<SlashData>> {
     private static final Logger LOG= LoggerFactory.getLogger(SlashDataDetailTask.class);
-    private final SignUserInfo signUserInfo;
+    private final UserInfo userInfo;
 
-    public SlashDataDetailTask(SignUserInfo signUserInfo) {
-        this.signUserInfo = signUserInfo;
+    public SlashDataDetailTask(UserInfo userInfo) {
+        this.userInfo = userInfo;
     }
 
     @Override
     protected ResponseBody<SlashData> call() throws Exception {
-        return get(signUserInfo.getUserId(),signUserInfo.getRoleId(), signUserInfo.getToken());
-    }
-
-    private ResponseBody<SlashData> get(String userId,String roleId,String token){
         String url=String.format("%s?roleId=%s&serverId=%s&userId=%s"
-                , ApiConfig.SELF_SLASH_DATA_URL,roleId,ApiConfig.PARAM_SERVER_ID,userId);
-        HttpClient client = HttpClient.newHttpClient();
+                , ApiConfig.SELF_SLASH_DATA_URL,userInfo.getRoleId(),ApiConfig.PARAM_SERVER_ID,userInfo.getUserId());
         try {
-            HttpRequest request = HttpRequestUtil.getRequest(url,token);
-            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpRequest.Builder builder = getBuilder(url,null,userInfo);
+            HttpRequest request = builder.build();
+            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
+                LOG.debug("海墟：{}",response.body());
                 ObjectMapper mapper = new ObjectMapper();
                 ResponseBodyForApi responseBodyForApi = mapper.readValue(response.body(), new TypeReference<ResponseBodyForApi>() {
                 });
-
-                if (responseBodyForApi.getCode() == 200){
-                    ResponseBody<SlashData> responseBody = new ResponseBody<>(responseBodyForApi.getCode(), responseBodyForApi.getMsg(),responseBodyForApi.getSuccess());
+                if (responseBodyForApi.getCode() == 200  || responseBodyForApi.getCode() == 10902){
+                    ResponseBody<SlashData> responseBody = new ResponseBody<>(200, responseBodyForApi.getMsg(),responseBodyForApi.getSuccess());
                     String row = responseBodyForApi.getData();
-                    LOG.debug(row);
                     SlashData slashData = mapper.readValue(row, SlashData.class);
                     responseBody.setData(slashData);
                     saveToDB(slashData,mapper);
@@ -82,11 +69,12 @@ public class SlashDataDetailTask extends Task<ResponseBody<SlashData>> {
                 responseBody.setMsg("连接失败，响应状态码:" + response.statusCode());
                 return responseBody;
             }
-        } catch (IOException | InterruptedException e) {
-            LOG.error("TowerDataDetailTask错误",e);
+        } catch (IOException | InterruptedException | AccessTokenException e) {
+            LOG.error("错误",e);
             return new ResponseBody<>(1,e.getMessage());
         }
     }
+
 
 
 
@@ -101,6 +89,8 @@ public class SlashDataDetailTask extends Task<ResponseBody<SlashData>> {
     private void saveToDB(SlashData slashData,ObjectMapper mapper ) throws JsonProcessingException {
         //过滤一次性的关卡数据
         List<SlashDifficulty> list = slashData.getDifficultyList().stream().filter(slashDifficulty -> slashDifficulty.getDifficulty() != 0).toList();
+        if (list.isEmpty())
+            return;
         String json = mapper.writeValueAsString(list);
         long seasonEndTime = slashData.getSeasonEndTime();
         long date = convertToHourlyTimestamp(System.currentTimeMillis() + seasonEndTime);

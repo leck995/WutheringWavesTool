@@ -13,15 +13,14 @@ import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import com.kuro.kujiequ.model.roleData.user.BoxInfo;
 import com.kuro.kujiequ.model.roleData.user.RoleDailyData;
 import com.kuro.kujiequ.model.roleData.user.RoleInfo;
-import com.kuro.kujiequ.model.sign.SignUserInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.SignTask;
-import com.kuro.kujiequ.thread.UserDailyDataTask;
+import com.kuro.kujiequ.thread.base.sign.SignTask;
+import com.kuro.kujiequ.thread.base.UserDailyDataTask;
 import com.kuro.kujiequ.thread.UserDataRefreshTask;
-import com.kuro.kujiequ.thread.UserInfoDataTask;
+import com.kuro.kujiequ.thread.rolebox.PlayerBaseDataTask;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.animation.PauseTransition;
@@ -30,7 +29,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
 import javafx.util.Duration;
 import org.slf4j.Logger;
@@ -79,19 +77,19 @@ public class HomeViewModel implements ViewModel {
     private SimpleStringProperty signText = new SimpleStringProperty();
     private SimpleStringProperty weeklyRougeText = new SimpleStringProperty();
     private SimpleStringProperty weeklyRougeTipText = new SimpleStringProperty("肉鸽");
-    private SimpleStringProperty weeklyInstCountText= new SimpleStringProperty();
-    private SimpleStringProperty weeklyInstCountTipText= new SimpleStringProperty("周本");
+    private SimpleStringProperty weeklyInstCountText = new SimpleStringProperty();
+    private SimpleStringProperty weeklyInstCountTipText = new SimpleStringProperty("周本");
     private SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
 
     public HomeViewModel() {
         updateKujiequRoleData();
         updateGameTime(GameAppListener.getInstance().getDuration());
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_GAME_TIME_UPDATE, (s, objects) -> {
-            if (objects.length > 0){
+            if (objects.length > 0) {
                 long playTime = (long) objects[0];
                 updateGameTime(playTime);
                 updateKujiequRoleData();
-            }else {
+            } else {
                 updateGameTime(0);
                 updateKujiequRoleData();
             }
@@ -99,15 +97,11 @@ public class HomeViewModel implements ViewModel {
     }
 
 
-
-
-
-
     /**
+     * @return void
      * @description: 更新游玩时长；会对数据库与time进行相加处理，并显示
-     * @param:	time	尚未保存到数据库中的时长
-     * @return  void
-     * @date:   2024/10/8
+     * @param: time    尚未保存到数据库中的时长
+     * @date: 2024/10/8
      */
     private void updateGameTime(long time) {
         List<GameTime> list = getGameTimes();
@@ -118,9 +112,9 @@ public class HomeViewModel implements ViewModel {
     }
 
     /**
+     * @return java.util.List<cn.tealc.wutheringwavestool.model.game.GameTime>
      * @description: 获取数据库中的当天游玩时长时间
-     * @return  java.util.List<cn.tealc.wutheringwavestool.model.game.GameTime>
-     * @date:   2024/10/8
+     * @date: 2024/10/8
      */
     private List<GameTime> getGameTimes() {
         GameTimeDao gameTimeDao = new GameTimeDao();
@@ -129,6 +123,7 @@ public class HomeViewModel implements ViewModel {
         String date = dateTimeFormatter.format(localDate);
         return gameTimeDao.getTimeListByData(date);
     }
+
     private void updateGameTimeText(long sum) {
         int hour = (int) (sum / (1000 * 60 * 60));
         int minute = (int) ((sum % (1000 * 60 * 60)) / (1000 * 60));
@@ -150,25 +145,21 @@ public class HomeViewModel implements ViewModel {
     }
 
 
-
-
-
-
     /**
+     * @return void
      * @description: 刷新库街区的角色数据
      * @param:
-     * @return  void
-     * @date:   2024/10/8
+     * @date: 2024/10/8
      */
     public void updateKujiequRoleData() {
-        if (Config.setting.isNoKuJieQu()){
+        if (Config.setting.isNoKuJieQu()) {
             hasSign.set(true);
             return;
         }
 
         UserInfoDao dao = new UserInfoDao();
         UserInfo userInfo = dao.getMain();
-        if (userInfo == null){
+        if (userInfo == null) {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                     new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type01")));
             return;
@@ -182,7 +173,7 @@ public class HomeViewModel implements ViewModel {
             if (responseBody.getCode() == 200) {
                 getDailyData(userInfo);
                 getRoleData(userInfo);
-            }else {
+            } else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                         new MessageInfo(MessageType.WARNING, responseBody.getMsg()));
                 LOG.error(responseBody.getMsg());
@@ -190,30 +181,31 @@ public class HomeViewModel implements ViewModel {
         });
         Thread.startVirtualThread(task);
 
-        if (Config.setting.isAutoKujieQuSign()){
+        if (Config.setting.isAutoKujieQuSign()) {
             startKujiequDailySign();
         }
     }
 
 
     /**
-     * 获取角色的基本数据，如宝箱数量
+     * 获取角色的基本数据，如宝箱数量。鉴于getDailyData方法每次都是同时调用，故失败请求不再弹出消息显示。
+     *
      * @param userInfo
      */
     private void getRoleData(UserInfo userInfo) {
-        UserInfoDataTask userInfoDataTask = new UserInfoDataTask(userInfo);
-        userInfoDataTask.setOnSucceeded(workerStateEvent -> {
-            ResponseBody<RoleInfo> responseBody = userInfoDataTask.getValue();
+        PlayerBaseDataTask playerBaseDataTask = new PlayerBaseDataTask(userInfo);
+        playerBaseDataTask.setOnSucceeded(workerStateEvent -> {
+            ResponseBody<RoleInfo> responseBody = playerBaseDataTask.getValue();
             if (responseBody.getCode() == 200) {
                 RoleInfo roleInfo = responseBody.getData();
-                roleNameText.set(roleInfo.getName());
+                //roleNameText.set(roleInfo.getName());
                 String template = LanguageManager.getString("ui.home.label.role.day");
                 gameLifeText.set(String.format(template, roleInfo.getActiveDays()));
                 levelText.set(String.format("LV.%d", roleInfo.getLevel()));
 
-                energyText.set(String.format("%d/%d",roleInfo.getEnergy(), roleInfo.getMaxEnergy()));
-                weeklyInstCountText.set(String.format("%d/%d",roleInfo.getWeeklyInstCountLimit() - roleInfo.getWeeklyInstCount(),roleInfo.getWeeklyInstCountLimit()));
-                storeEnergyText.set(String.format("%d/%d",roleInfo.getStoreEnergy(),roleInfo.getStoreEnergyLimit()));
+                //energyText.set(String.format("%d/%d", roleInfo.getEnergy(), roleInfo.getMaxEnergy()));
+                //weeklyInstCountText.set(String.format("%d/%d", roleInfo.getWeeklyInstCountLimit() - roleInfo.getWeeklyInstCount(), roleInfo.getWeeklyInstCountLimit()));
+                //storeEnergyText.set(String.format("%d/%d", roleInfo.getStoreEnergy(), roleInfo.getStoreEnergyLimit()));
 
                 String[] chests = LanguageManager.getStringArray("ui.home.label.chest.types");
                 for (BoxInfo boxInfo : roleInfo.getTreasureBoxList()) {
@@ -227,20 +219,19 @@ public class HomeViewModel implements ViewModel {
                         box4Text.set(String.valueOf(boxInfo.getNum()));
                     }
                 }
-                weeklyRougeText.set(String.format("%d",roleInfo.getRougeScore()));
+                weeklyRougeText.set(String.format("%d", roleInfo.getRougeScore()));
                 rolePaneVisible.set(true);
-                onWeekEnd(false,roleInfo);
+                onWeekEnd(false, roleInfo);
             } else {
                 rolePaneVisible.set(false);
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING, responseBody.getMsg()), false);
             }
         });
-        Thread.startVirtualThread(userInfoDataTask);
+        Thread.startVirtualThread(playerBaseDataTask);
     }
 
     /**
-     * 获取角色的日常数据，如体力;鉴于getRoleData方法每次都是同时调用，故失败请求不再弹出消息显示。
+     * 获取角色的日常数据，如体力;
+     *
      * @param userInfo
      */
     private void getDailyData(UserInfo userInfo) {
@@ -248,7 +239,7 @@ public class HomeViewModel implements ViewModel {
         userDailyDataTask.setOnSucceeded(workerStateEvent -> {
             ResponseBody<RoleDailyData> responseBody = userDailyDataTask.getValue();
             if (responseBody != null) {
-                if (responseBody.getCode() == 200){
+                if (responseBody.getCode() == 200) {
                     RoleDailyData data = responseBody.getData();
 
                     String[] strengths = LanguageManager.getStringArray("ui.home.label.daily.strength");
@@ -277,8 +268,19 @@ public class HomeViewModel implements ViewModel {
                     double total = data.getBattlePassData().get(1).getTotal();
                     battlePassProgress.set(cur / total);
                     rolePaneVisible.set(true);
-                }else {
+
+
+                    //原本放在userInfo
+                    roleNameText.set(data.getRoleName());
+                    energyText.set(String.format("%d/%d", data.getEnergyData().getCur(), data.getEnergyData().getTotal()));
+                    weeklyInstCountText.set(String.format("%d/%d", data.getWeeklyData().getTotal() - data.getWeeklyData().getCur(), data.getWeeklyData().getTotal()));
+                    storeEnergyText.set(String.format("%d/%d", data.getStoreEnergyData().getCur(), data.getStoreEnergyData().getTotal()));
+
+
+                } else {
                     rolePaneVisible.set(false);
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                            new MessageInfo(MessageType.WARNING, responseBody.getMsg()), false);
                 }
             }
         });
@@ -286,11 +288,10 @@ public class HomeViewModel implements ViewModel {
     }
 
 
-
-    public void checkIsWeekEnd(){
-        if (Config.setting.getGameRootDirSource() == SourceType.GLOBAL){
-            Platform.runLater(()->{
-                onWeekEnd(true,null);
+    public void checkIsWeekEnd() {
+        if (Config.setting.getGameRootDirSource() == SourceType.GLOBAL) {
+            Platform.runLater(() -> {
+                onWeekEnd(true, null);
             });
 
         }
@@ -298,33 +299,33 @@ public class HomeViewModel implements ViewModel {
 
     /**
      * 检查每周最后一天，并进行提醒完成周活动
+     *
      * @param isGlobal
      * @param roleInfo
      */
-    private void onWeekEnd(boolean isGlobal,RoleInfo roleInfo){
+    private void onWeekEnd(boolean isGlobal, RoleInfo roleInfo) {
         LocalDate today = LocalDate.now();
         if (today.getDayOfWeek() == DayOfWeek.SUNDAY) {
             if (isGlobal) {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message01"),MessageInfo.LONG));
-            }else {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message01"), MessageInfo.LONG));
+            } else {
                 if (roleInfo == null) {
                     return;
                 }
-                if (roleInfo.getWeeklyInstCount() != 0){
+                if (roleInfo.getWeeklyInstCount() != 0) {
                     weeklyInstCountTipText.set(LanguageManager.getString("ui.home.label.weekly.tip"));
-                }else {
+                } else {
                     weeklyInstCountTipText.set(LanguageManager.getString("ui.home.label.weekly"));
                 }
-                if (roleInfo.getRougeScore() < 5000){
+                if (roleInfo.getRougeScore() < 5000) {
                     weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.weekly.tip"));
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message03"),MessageInfo.LONG));
-                }else {
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message03"), MessageInfo.LONG));
+                } else {
                     weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.rouge"));
                 }
             }
         }
     }
-
 
 
     public void startUpdate() {
@@ -337,7 +338,7 @@ public class HomeViewModel implements ViewModel {
                 File gameDir = GameResourcesManager.getGameDir();
                 if (gameDir != null) {
                     File parent = gameDir.getParentFile();
-                    File exe = new File(parent,"launcher.exe");
+                    File exe = new File(parent, "launcher.exe");
                     if (exe.exists()) {
                         try {
                             Desktop.getDesktop().open(exe);
@@ -348,7 +349,7 @@ public class HomeViewModel implements ViewModel {
                         MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                                 new MessageInfo(MessageType.WARNING, String.format(LanguageManager.getString("ui.home.message.type08"), exe.getPath()), false));
                     }
-                }else {
+                } else {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                             new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type08")), false);
                 }
@@ -372,7 +373,7 @@ public class HomeViewModel implements ViewModel {
     /**
      * 开始进行库街区鸣潮签到
      */
-    public void startKujiequDailySign(){
+    public void startKujiequDailySign() {
         SignTask task = new SignTask();
         task.setOnSucceeded(workerStateEvent -> {
             hasSign.set(true);
@@ -402,8 +403,8 @@ public class HomeViewModel implements ViewModel {
         if (dir != null) {
             File exe = null;
             //当自定义启动程序时
-            if (Config.setting.isGameStartAppCustom()){
-                exe=new File(Config.setting.getGameStarAppPath());
+            if (Config.setting.isGameStartAppCustom()) {
+                exe = new File(Config.setting.getGameStarAppPath());
                 if (!exe.exists()) {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                             new MessageInfo(MessageType.WARNING,
@@ -413,22 +414,22 @@ public class HomeViewModel implements ViewModel {
                                     )));
                     return;
                 }
-            }else { //默认启动程序Wuthering Waves.exe
+            } else { //默认启动程序Wuthering Waves.exe
                 exe = GameResourcesManager.getGameExeBase();
             }
 
             if (exe != null) {
-                if (Config.setting.isUserAdvanceGameSettings()){ //使用高级启动设置
+                if (Config.setting.isUserAdvanceGameSettings()) { //使用高级启动设置
                     List<String> paramsList = new ArrayList<String>(Config.setting.getStartUpParams());
                     if (!paramsList.isEmpty()) {
                         paramsList.addFirst(exe.getAbsolutePath());
                         String[] newArray = new String[paramsList.size()];
                         paramsList.toArray(newArray);
                         runExeByCustom(newArray);
-                    }else {
+                    } else {
                         runExe(exe);
                     }
-                }else { //默认启动
+                } else { //默认启动
                     runExe(exe);
                 }
                 hideMainWindow();
@@ -444,25 +445,25 @@ public class HomeViewModel implements ViewModel {
 
 
     /**
+     * @return void
      * @description: 启动时隐藏窗口
      * @param:
-     * @return  void
-     * @date:   2024/11/16
+     * @date: 2024/11/16
      */
     private void hideMainWindow() {
-        if (Config.setting.isHideWhenGameStart()){
+        if (Config.setting.isHideWhenGameStart()) {
             MainApplication.window.hide();
         }
     }
 
     /**
+     * @return void
      * @description: 第一个参数必须是启动器的路径
-     * @param:	params
-     * @return  void
-     * @date:   2024/10/17
+     * @param: params
+     * @date: 2024/10/17
      */
     private void runExeByCustom(String... params) {
-        Thread.startVirtualThread(()->{
+        Thread.startVirtualThread(() -> {
             String[] command2 = {"cmd.exe", "/c", "start", "\"\""}; //权限不够，提权
             String[] mergedArray = Stream.concat(Stream.of(command2), Stream.of(params))
                     .toArray(String[]::new);
@@ -470,7 +471,7 @@ public class HomeViewModel implements ViewModel {
             processBuilder.redirectOutput(ProcessBuilder.Redirect.DISCARD);
             processBuilder.redirectError(ProcessBuilder.Redirect.DISCARD);
             String path = params[0];
-            if (path.contains("WWMI Loader.exe")){
+            if (path.contains("WWMI Loader.exe")) {
                 //设置工作目录，适配wwmi
                 File file = new File(path);
                 if (file.exists()) {
@@ -486,20 +487,20 @@ public class HomeViewModel implements ViewModel {
             } catch (IOException e) {
                 MainApplication.window.show();
                 GameAppListener.getInstance().setStartFromApp(false);
-                LOG.error("高级启动无法启动鸣潮",e);
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.ERROR,LanguageManager.getString("ui.home.message.type07")+e.getMessage()));
+                LOG.error("高级启动无法启动鸣潮", e);
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.ERROR, LanguageManager.getString("ui.home.message.type07") + e.getMessage()));
             }
         });
     }
 
 
     /**
+     * @return void
      * @description: 默认启动
-     * @param:	exe
-     * @return  void
-     * @date:   2024/11/16
+     * @param: exe
+     * @date: 2024/11/16
      */
-    private void runExe(File exe){
+    private void runExe(File exe) {
         try {
             GameAppListener.getInstance().setStartFromApp(true);
             Desktop.getDesktop().open(exe);
@@ -515,12 +516,12 @@ public class HomeViewModel implements ViewModel {
 
 
     /**
+     * @return void
      * @description: 删除游戏日志，用于保证每次启动日志都是最新的，不重复的
      * @param:
-     * @return  void
-     * @date:   2024/11/16
+     * @date: 2024/11/16
      */
-    private void deleteLogFiles(){
+    private void deleteLogFiles() {
         File dir = GameResourcesManager.getGameLogDir();
         if (dir != null) {
             File[] files = dir.listFiles();
@@ -529,7 +530,6 @@ public class HomeViewModel implements ViewModel {
             }
         }
     }
-
 
 
     public String getEnergyText() {

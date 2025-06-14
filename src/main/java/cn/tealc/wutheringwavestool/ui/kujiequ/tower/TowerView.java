@@ -82,6 +82,7 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
                 difficuityListview.getSelectionModel().clearSelection();
             }
         });
+        towerHistoryListview.setPlaceholder(new Label("尚无往期记录"));
     }
 
 
