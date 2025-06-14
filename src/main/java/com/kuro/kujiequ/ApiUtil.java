@@ -16,10 +16,11 @@ import java.util.Base64;
 
 /**
  * @program: WutheringWavesTool
- * @description: 对库街区接口数据进行解密
+ * @description: 对库街区接口数据进行解密，官方不在进行加密，故废弃
  * @author: Leck
  * @create: 2024-09-28 07:06
  */
+@Deprecated
 public class ApiUtil {
     private static final Logger LOG = LoggerFactory.getLogger(ApiUtil.class);
     public static String decrypt(String value) throws ApiDecryptException {
