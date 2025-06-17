@@ -1,12 +1,16 @@
 package cn.tealc.wutheringwavestool.ui;
 
+import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.release.Release;
+import cn.tealc.wutheringwavestool.model.system.NavData;
 import cn.tealc.wutheringwavestool.thread.system.CheckGameConfigTask;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.model.slash.SlashData;
 import com.kuro.kujiequ.model.towerData.DifficultyTotal;
@@ -20,6 +24,10 @@ import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
 /**
  * @program: WutheringWavesTool
  * @description:
@@ -32,6 +40,21 @@ public class MainViewModel implements ViewModel {
         checkGameLogOpen();
         updateKujiequ();
     }
+
+    public List<NavData> getNavList(){
+        InputStream inputStream = FXResourcesLoader.loadStream("/cn/tealc/wutheringwavestool/data/nav.json");
+        ObjectMapper mapper = new ObjectMapper();
+        List<NavData> list = null;
+        try {
+            list = mapper.readValue(inputStream, new TypeReference<List<NavData>>() {
+            });
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return list;
+    }
+
+
 
 
     public void checkVersion() {

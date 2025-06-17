@@ -31,6 +31,9 @@ open module cn.tealc.wutheringwavestool {
     exports cn.tealc.wutheringwavestool;
     exports cn.tealc.wutheringwavestool.model;
     exports cn.tealc.wutheringwavestool.model.analysis to com.fasterxml.jackson.databind;
+    exports cn.tealc.wutheringwavestool.model.message;
+    exports cn.tealc.wutheringwavestool.model.system;
+
     exports cn.tealc.wutheringwavestool.base;
     exports cn.tealc.wutheringwavestool.jna;
     exports cn.tealc.wutheringwavestool.ui;
@@ -38,8 +41,14 @@ open module cn.tealc.wutheringwavestool {
     exports cn.tealc.wutheringwavestool.ui.game;
     exports cn.tealc.wutheringwavestool.dao;
     exports cn.tealc.wutheringwavestool.util;
-    exports cn.tealc.wutheringwavestool.model.message;
     exports cn.tealc.wutheringwavestool.plugin;
+
+
+
+    exports cn.tealc.wutheringwavestool.ui.cardpool;
+    exports cn.tealc.wutheringwavestool.ui.game.manage;
+    exports cn.tealc.wutheringwavestool.ui.kujiequ.tower;
+
 
 
     exports com.kuro.kujiequ.model.towerData;
@@ -52,9 +61,6 @@ open module cn.tealc.wutheringwavestool {
     exports com.kuro.kujiequ;
     exports com.kuro.game.model.game;
     exports com.kuro.game.model.launcher;
-    exports cn.tealc.wutheringwavestool.ui.cardpool;
-    exports cn.tealc.wutheringwavestool.ui.game.manage;
-    exports cn.tealc.wutheringwavestool.ui.kujiequ.tower;
     exports com.kuro.util;
     exports com.kuro.kujiequ.thread.rolebox.tower;
     exports com.kuro.kujiequ.thread.base.sign;

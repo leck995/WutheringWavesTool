@@ -143,6 +143,9 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
             }
         });
         noKuJieQuSwitch.selectedProperty().bindBidirectional(Config.setting.noKuJieQuProperty());
+        noKuJieQuSwitch.selectedProperty().addListener(observableValue -> {
+            NotificationManager.publish(NotificationKey.CHANGE_NAV);
+        });
 
 
         appName.setText(Config.appTitle);
