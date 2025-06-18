@@ -18,6 +18,7 @@ import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.effect.BlurType;
 import javafx.scene.effect.ColorAdjust;
 import javafx.scene.effect.DropShadow;
@@ -122,6 +123,8 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
     private VBox phantomListGroup;
     @FXML
     private FlowPane roleAttributePane;
+    @FXML
+    private ScrollPane contentScrollPane;
 
 
     @Override
@@ -245,6 +248,8 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
                 }
             }
         });
+
+        viewModel.subscribe(OwnRoleDetailViewModel.EVENT_CHANGE_ROLE,(s, objects) -> contentScrollPane.setVvalue(0));
     }
 
 
