@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ;
 
+import atlantafx.base.controls.Popover;
 import atlantafx.base.controls.Spacer;
 import cn.tealc.wutheringwavestool.base.Config;
 import com.kuro.kujiequ.model.roleData.*;
@@ -8,11 +9,13 @@ import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.collections.ListChangeListener;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.Label;
 import javafx.scene.effect.BlurType;
@@ -232,12 +235,33 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
 
         viewModel.getRoleAttributeList().addListener((ListChangeListener<? super RoleAttribute>) change -> {
             roleAttributePane.getChildren().clear();
+            int index=0;
             for (RoleAttribute roleAttribute : change.getList()) {
-                roleAttributePane.getChildren().add(new RoleItem(roleAttribute));
+                if (index < 6){
+                    roleAttributePane.getChildren().add(new RoleItem(roleAttribute,false));
+                    index++;
+                }else {
+                    return;
+                }
             }
         });
     }
 
+
+    @FXML
+    void showAttrDetail(ActionEvent event) {
+        FlowPane pane = new FlowPane();
+        pane.setPrefWrapLength(460);
+        pane.setHgap(30);
+        for (RoleAttribute roleAttribute : viewModel.getRoleAttributeList()) {
+            pane.getChildren().add(new RoleItem(roleAttribute,true));
+        }
+
+        Popover popover = new Popover(pane);
+        popover.setDetachable(false);
+        popover.setArrowLocation(Popover.ArrowLocation.TOP_LEFT);
+        popover.show((Node) event.getSource());
+    }
 
     /**
      * @description: 创建声骸头部信息，如套装效果，声骸词条总值
@@ -578,7 +602,7 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
 
 
     static class RoleItem extends HBox{
-        public RoleItem(RoleAttribute attribute) {
+        public RoleItem(RoleAttribute attribute,boolean pop) {
             ImageView icon = new ImageView(LocalResourcesManager.imageBuffer(attribute.getIconUrl(), 30, 30, true, true));
             icon.setFitWidth(26);
             icon.setFitHeight(26);
@@ -587,6 +611,8 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
             name.setGraphic(icon);
             getChildren().addAll(name,new Spacer(), value);
             getStyleClass().add("attribute-item");
+            if (pop)
+                getStyleClass().add("pop");
             icon.getStyleClass().add("attribute-icon");
             name.getStyleClass().add("attribute-name");
             value.getStyleClass().add("attribute-value");

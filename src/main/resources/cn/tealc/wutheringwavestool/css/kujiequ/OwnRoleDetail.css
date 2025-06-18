@@ -106,42 +106,83 @@
     -fx-text-fill: white;
 }
 
+
+.attribute-item.pop{
+    -fx-pref-width: 210;
+    -fx-pref-height: 36;
+    -fx-alignment: center-left;
+}
+.attribute-item.pop > .attribute-icon{
+    -fx-fit-to-width: 30;
+    -fx-fit-to-height: 30;
+}
+
+.attribute-item.pop > .attribute-name{
+    -fx-alignment: center;
+    -fx-font-weight: bold;
+    -fx-font-size: 15;
+}
+
+.attribute-item.pop > .attribute-name > .attribute-icon{
+    -fx-fit-to-width: 30;
+    -fx-fit-to-height: 30;
+}
+
+.attribute-item.pop > .attribute-value{
+    -fx-alignment: center;
+    -fx-font-weight: bold;
+    -fx-font-size: 15;
+}
+
+
+
 .role-detail .role .role-attribute{
     -fx-background-color: -color-bg-default-40;
     -fx-background-radius: 15;
 }
-.role-detail .role .role-attribute > .attribute-item{
+.role-detail .role .role-attribute >.simple-pane > .attribute-item{
     -fx-pref-width: 170;
     -fx-pref-height: 36;
     -fx-alignment: center-left;
 }
-.role-detail .role .role-attribute > .attribute-item > .attribute-icon{
+.role-detail .role .role-attribute >.simple-pane > .attribute-item > .attribute-icon{
     -fx-fit-to-width: 30;
     -fx-fit-to-height: 30;
 }
 
-.role-detail .role .role-attribute  > .attribute-item > .attribute-name{
+.role-detail .role .role-attribute  >.simple-pane > .attribute-item > .attribute-name{
     -fx-alignment: center;
     -fx-font-weight: bold;
     -fx-text-fill: white;
     -fx-font-size: 15;
 }
 
-.role-detail .role .role-attribute > .attribute-item > .attribute-name > .attribute-icon{
+.role-detail .role .role-attribute >.simple-pane > .attribute-item > .attribute-name > .attribute-icon{
     -fx-fit-to-width: 30;
     -fx-fit-to-height: 30;
 }
 
-.role-detail .role .role-attribute > .attribute-item > .attribute-value{
+.role-detail .role .role-attribute >.simple-pane > .attribute-item > .attribute-value{
     -fx-alignment: center;
     -fx-font-weight: bold;
     -fx-text-fill: white;
     -fx-font-size: 15;
 }
+.role-detail .role .role-attribute >.more-btn{
+    -fx-background-color: transparent;
+    -fx-padding: 5;
+    -fx-cursor: hand;
+}
 
 
+.role-detail .role .role-attribute >.more-btn > .ikonli-font-icon {
+    -fx-icon-color: white;
+    -fx-icon-size: 22px;
+}
 
-
+.role-detail .role .role-attribute >.more-btn:hover > .ikonli-font-icon{
+    -fx-icon-color: -color-accent-fg;
+}
 
 
 .role-detail .phantom-desc{
