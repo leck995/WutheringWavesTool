@@ -16,6 +16,8 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @program: WutheringWavesTool
@@ -23,7 +25,7 @@ import java.time.Duration;
  * @author: Leck
  * @create: 2024-07-06 14:24
  */
-public class GameRoleSeekTask extends BaseTask<ResponseBody<UserInfo>> {
+public class GameRoleSeekTask extends BaseTask<ResponseBody<List<UserInfo>>> {
     private static final Logger LOG = LoggerFactory.getLogger(GameRoleSeekTask.class);
     private final String token;
     private final boolean isWeb;
@@ -34,7 +36,7 @@ public class GameRoleSeekTask extends BaseTask<ResponseBody<UserInfo>> {
     }
 
     @Override
-    protected ResponseBody<UserInfo> call() throws Exception {
+    protected ResponseBody<List<UserInfo>> call() throws Exception {
         String url = String.format("%s?gameId=3", ApiConfig.ACCOUNT_SEEK_ROLE);
         try {
             HttpRequest request = HttpRequest.newBuilder()
@@ -48,23 +50,27 @@ public class GameRoleSeekTask extends BaseTask<ResponseBody<UserInfo>> {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 200) {
+                LOG.debug(response.body());
                 ObjectMapper mapper = new ObjectMapper();
                 JsonNode tree = mapper.readTree(response.body());
                 int code = tree.get("code").asInt();
                 if (code == 200) {
                     JsonNode dataNode = tree.get("data");
                     if (dataNode.isArray() && !dataNode.isEmpty()) {
-                        JsonNode firstItem = dataNode.get(0);
-                        long userId = firstItem.path("userId").asLong();
-                        String roleId = firstItem.path("roleId").asText();
-                        String roleName = firstItem.path("roleName").asText();
-                        UserInfo userInfo = new UserInfo();
-                        userInfo.setToken(this.token);
-                        userInfo.setIsWeb(this.isWeb);
-                        userInfo.setRoleId(roleId);
-                        userInfo.setRoleName(roleName);
-                        userInfo.setUserId(String.valueOf(userId));
-                        return ResponseBody.create(200, "success", userInfo);
+                        List<UserInfo> list = new ArrayList<>();
+                        for (JsonNode jsonNode : dataNode) {
+                            long userId = jsonNode.path("userId").asLong();
+                            String roleId = jsonNode.path("roleId").asText();
+                            String roleName = jsonNode.path("roleName").asText();
+                            UserInfo userInfo = new UserInfo();
+                            userInfo.setToken(this.token);
+                            userInfo.setIsWeb(this.isWeb);
+                            userInfo.setRoleId(roleId);
+                            userInfo.setRoleName(roleName);
+                            userInfo.setUserId(String.valueOf(userId));
+                            list.add(userInfo);
+                        }
+                        return ResponseBody.create(200, "success", list);
                     } else {
                         return new ResponseBody<>(1, "找不到游戏账号信息，请检查库街区的游戏绑定");
                     }
