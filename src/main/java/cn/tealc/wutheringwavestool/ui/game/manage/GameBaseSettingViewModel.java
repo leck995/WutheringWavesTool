@@ -49,9 +49,24 @@ public class GameBaseSettingViewModel implements ViewModel, SceneLifecycle {
     }
 
 
+
+
+
+
+
+
+    /**
+     * 删除指定启动参数
+     * @param index
+     */
     public void deleteParam(int index) {
         startUpParams.remove(index);
     }
+
+    /**
+     * 添加启动参数
+     * @param param
+     */
     public void addParam(String param) {
         startUpParams.add(param);
     }
@@ -63,6 +78,9 @@ public class GameBaseSettingViewModel implements ViewModel, SceneLifecycle {
         return startUpParams.contains("-dx12");
     }
 
+    /**
+     * 启动参数中添加dx11
+     */
     public void addDx11(){
         int index = startUpParams.indexOf("-dx12");
         if (index != -1){
@@ -71,6 +89,10 @@ public class GameBaseSettingViewModel implements ViewModel, SceneLifecycle {
             startUpParams.add("-dx11");
         }
     }
+
+    /**
+     * 启动参数中添加dx12
+     */
     public void addDx12(){
         int index = startUpParams.indexOf("-dx11");
         if (index != -1){
@@ -83,6 +105,9 @@ public class GameBaseSettingViewModel implements ViewModel, SceneLifecycle {
     public void replaceParam(String param1, String param2) {
 
     }
+
+
+
 
 
 

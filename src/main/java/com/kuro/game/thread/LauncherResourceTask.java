@@ -3,7 +3,6 @@ package com.kuro.game.thread;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuro.game.ApiConfig;
-import com.kuro.game.model.game.DownloadResource;
 import com.kuro.game.model.launcher.LauncherResource;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
@@ -24,11 +23,30 @@ import java.util.zip.GZIPInputStream;
 public class LauncherResourceTask extends Task<ResponseBody<LauncherResource>> {
     private static final Logger LOG = LoggerFactory.getLogger(LauncherResourceTask.class);
 
+    public enum Type{
+        BILIBILI,
+        CN,
+        GLOBAL
+    }
+
+    private final Type type;
+
+    public LauncherResourceTask(Type type) {
+        this.type = type;
+    }
+
     @Override
     protected ResponseBody<LauncherResource> call() {
         HttpClient client = HttpClient.newHttpClient();
+        String url;
+        switch (type) {
+            case BILIBILI -> url =ApiConfig.INDEX_BILIBILI;
+            case GLOBAL -> url =ApiConfig.INDEX_GLOBAL;
+            default -> url =ApiConfig.INDEX_CN;
+        }
+
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(ApiConfig.INDEX_CN))
+                .uri(URI.create(url))
                 .header("User-Agent",
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 Edg/132.0.0.0")
                 .header("Accept", "*/*")

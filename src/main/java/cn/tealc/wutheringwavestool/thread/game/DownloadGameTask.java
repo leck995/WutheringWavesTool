@@ -1,7 +1,7 @@
 package cn.tealc.wutheringwavestool.thread.game;
 
 import cn.tealc.wutheringwavestool.model.ResponseBody;
-import com.kuro.game.model.game.DownloadFile;
+import com.kuro.game.model.game.FileInfo;
 import javafx.concurrent.Task;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
@@ -23,21 +23,21 @@ public class DownloadGameTask extends Task<ResponseBody<String>> {
     private HttpClient httpClient;
     private String dir;
     private String host;
-    private DownloadFile downloadFile;
+    private FileInfo fileInfo;
     private boolean pause;
     private boolean stop;
 
 
-    public DownloadGameTask(HttpClient httpClient, String dir, String host, DownloadFile downloadFile) {
+    public DownloadGameTask(HttpClient httpClient, String dir, String host, FileInfo fileInfo) {
         this.httpClient = httpClient;
         this.dir = dir;
         this.host = host;
-        this.downloadFile = downloadFile;
+        this.fileInfo = fileInfo;
     }
 
     @Override
     protected ResponseBody<String> call() throws Exception {
-        File resource = new File(dir + downloadFile.getDest());
+        File resource = new File(dir + fileInfo.getDest());
         //第一步，检查目录是否存在，不存在则创建
         File parentFile = resource.getParentFile();
         if (!parentFile.exists()){
@@ -47,7 +47,7 @@ public class DownloadGameTask extends Task<ResponseBody<String>> {
 
 
         HttpRequest request = HttpRequest.newBuilder()
-                .uri(URI.create(host + downloadFile.getDest()))
+                .uri(URI.create(host + fileInfo.getDest()))
                 .build();
         try (BufferedInputStream in = new BufferedInputStream(httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream()).body());
              FileOutputStream fileOutputStream = new FileOutputStream(resource)) {
@@ -99,9 +99,9 @@ public class DownloadGameTask extends Task<ResponseBody<String>> {
 
 
     private boolean checkMd5(){
-        try (FileInputStream inputStream = new FileInputStream(new File(dir, downloadFile.getDest()))) {
+        try (FileInputStream inputStream = new FileInputStream(new File(dir, fileInfo.getDest()))) {
             String md5 = DigestUtils.md5Hex(inputStream);
-            return md5.equals(downloadFile.getMd5());
+            return md5.equals(fileInfo.getMd5());
         } catch (IOException e) {
             LOG.error(e.getMessage(),e);
             return false;

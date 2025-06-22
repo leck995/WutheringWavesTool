@@ -7,6 +7,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * @author: Leck
  * @create: 2025-02-10 16:14
  */
+@Deprecated
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class SampleHashInfo {
     private Integer sampleNum;

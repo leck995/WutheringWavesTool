@@ -5,7 +5,7 @@ import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuro.game.ApiConfig;
-import com.kuro.game.model.launcher.UpdateData;
+import com.kuro.game.model.launcher.item.UpdateData;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

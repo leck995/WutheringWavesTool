@@ -524,9 +524,17 @@ public class HomeViewModel implements ViewModel {
     private void deleteLogFiles() {
         File dir = GameResourcesManager.getGameLogDir();
         if (dir != null) {
+            LOG.info("");
             File[] files = dir.listFiles();
             if (files != null) {
-                Arrays.stream(files).forEach(File::delete);
+                LOG.info("开始删除旧日志");
+                for (File file : files) {
+                    boolean delete = file.delete();
+                    LOG.debug("删除日志文件{},状态：{}", file.getName(),delete);
+                }
+                //Arrays.stream(files).forEach(File::delete);
+            }else {
+                LOG.info("无旧日志，跳过");
             }
         }
     }
