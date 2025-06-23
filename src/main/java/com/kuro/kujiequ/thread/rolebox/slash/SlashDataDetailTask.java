@@ -86,7 +86,7 @@ public class SlashDataDetailTask extends BaseTask<ResponseBody<SlashData>> {
      * @return  void
      * @date:   2025/5/29
      */
-    private void saveToDB(SlashData slashData,ObjectMapper mapper ) throws JsonProcessingException {
+    private void saveToDB(SlashData slashData,ObjectMapper mapper) throws JsonProcessingException {
         //过滤一次性的关卡数据
         List<SlashDifficulty> list = slashData.getDifficultyList().stream().filter(slashDifficulty -> slashDifficulty.getDifficulty() != 0).toList();
         if (list.isEmpty())
@@ -96,6 +96,7 @@ public class SlashDataDetailTask extends BaseTask<ResponseBody<SlashData>> {
         long date = convertToHourlyTimestamp(System.currentTimeMillis() + seasonEndTime);
 
         SlashDataForDB data = new SlashDataForDB();
+        data.setRoleId(userInfo.getRoleId());
         data.setData(json);
         data.setEndTime(date);
 

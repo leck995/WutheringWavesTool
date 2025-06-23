@@ -165,8 +165,6 @@ public class HomeViewModel implements ViewModel {
             return;
         }
 
-        Config.currentRoleId = userInfo.getRoleId();
-
         UserDataRefreshTask task = new UserDataRefreshTask(userInfo);
         task.setOnSucceeded(workerStateEvent -> {
             ResponseBody<String> responseBody = task.getValue();

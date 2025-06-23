@@ -1,9 +1,11 @@
 package cn.tealc.wutheringwavestool;
 
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.dao.GameSlashDataDao;
 import cn.tealc.wutheringwavestool.dao.GameTowerDataDao;
 import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.model.tower.SlashDataForDB;
 import cn.tealc.wutheringwavestool.model.tower.TowerData;
 import com.kuro.kujiequ.model.sign.SignUserInfo;
 import com.kuro.kujiequ.model.sign.UserInfo;
@@ -42,6 +44,7 @@ public class VersionUpdateUtil {
         update05();
         update06();
         update07();
+        update08();
     }
 
 
@@ -217,7 +220,7 @@ public class VersionUpdateUtil {
                 qr.update(connection, """
                 CREATE TABLE IF NOT EXISTS game_tower(
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    role_id INTEGER,
+                    role_id VARCHAR,
                     floor INTEGER NOT NULL,
                     pic_url INTEGER,
                     role_list VARCHAR,
@@ -231,9 +234,9 @@ public class VersionUpdateUtil {
                 )""");
 
                 qr.update(connection, """
-                INSERT INTO game_tower (id, role_id, floor, pic_url, role_list, star, area_id, area_name, difficulty, difficulty_name, endTime)
-                SELECT id, NULL, floor, pic_url, role_list, star, area_id, area_name, difficulty, difficulty_name, endTime
-                FROM game_tower_old""");
+                INSERT INTO game_tower (role_id, floor, pic_url, role_list, star, area_id, area_name, difficulty, difficulty_name, endTime)
+                SELECT NULL, floor, pic_url, role_list, star, area_id, area_name, difficulty, difficulty_name, endTime
+                FROM game_tower""");
 
                 connection.commit();
                 connection.setAutoCommit(true); // 恢复自动提交模式
@@ -261,6 +264,7 @@ public class VersionUpdateUtil {
         }
     }
 
+
     private static void update08() {
         Connection connection = null;
         try {
@@ -269,66 +273,52 @@ public class VersionUpdateUtil {
             QueryRunner qr = new QueryRunner();
 
             // 检查是否需要迁移
-            String checkSql = "SELECT count(*) FROM sqlite_master WHERE name='game_tower' AND sql LIKE '%role_id%'";
+            String checkSql = "SELECT count(*) FROM sqlite_master WHERE name='game_slash' AND sql LIKE '%role_id%'";
             ResultSetHandler<Integer> countHandler = new ScalarHandler<>();
             Integer exists = qr.query(connection, checkSql, countHandler);
 
             if (exists == null || exists == 0) {
-                LOG.info("开始迁移数据表game_tower");
+                LOG.info("开始迁移数据表game_slash");
                 // 执行迁移操作
-                qr.update(connection, "ALTER TABLE game_tower RENAME TO game_tower_old");
+                qr.update(connection, "ALTER TABLE game_slash RENAME TO game_slash_old");
 
                 qr.update(connection, """
-                CREATE TABLE IF NOT EXISTS game_tower(
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    role_id INTEGER,
-                    floor INTEGER NOT NULL,
-                    pic_url INTEGER,
-                    role_list VARCHAR,
-                    star INTEGER,
-                    area_id INTEGER NOT NULL,
-                    area_name VARCHAR NOT NULL,
-                    difficulty INTEGER,
-                    difficulty_name VARCHAR,
-                    endTime INTEGER NOT NULL,
-                    UNIQUE (role_id, area_id, floor, endTime)
-                )""");
+                        CREATE TABLE IF NOT EXISTS game_slash (
+                        id INTEGER PRIMARY KEY  AUTOINCREMENT,
+                        data TEXT NOT NULL,
+                        end_time BIGINT NOT NULL,
+                        role_id VARCHAR,
+                        UNIQUE (role_id, end_time)
+                    );""");
 
                 qr.update(connection, """
-                INSERT INTO game_tower (id, role_id, floor, pic_url, role_list, star, area_id, area_name, difficulty, difficulty_name, endTime)
-                SELECT id, NULL, floor, pic_url, role_list, star, area_id, area_name, difficulty, difficulty_name, endTime
-                FROM game_tower_old""");
+                INSERT INTO game_slash (data, end_time)
+                SELECT data, end_time
+                FROM game_slash_old""");
 
                 connection.commit();
+                connection.setAutoCommit(true); // 恢复自动提交模式
+
+
+                UserInfoDao userInfoDao = new UserInfoDao();
+                UserInfo userInfo = userInfoDao.getMain();
+                if (userInfo != null) {
+                    GameSlashDataDao dao = new GameSlashDataDao();
+                    List<SlashDataForDB> all = dao.getAll();
+                    for (SlashDataForDB data : all) {
+                        data.setRoleId(userInfo.getRoleId());
+                        dao.updateRoleId(data.getId(), userInfo.getRoleId());
+                    }
+                }
             }
         } catch (SQLException e) {
             try {
-                if (connection != null) {
-                    connection.rollback();
-                }
+                connection.rollback();
             } catch (SQLException ex) {
                 e.addSuppressed(ex);
             }
+            LOG.info("game_tower数据库操作失败{}",e.getMessage());
             throw new RuntimeException("Database migration failed", e);
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.setAutoCommit(true); // 恢复自动提交模式
-                }
-            } catch (SQLException e) {
-                // 记录日志
-            }
-        }
-
-        UserInfoDao userInfoDao = new UserInfoDao();
-        UserInfo userInfo = userInfoDao.getMain();
-        if (userInfo != null) {
-            GameTowerDataDao dao = new GameTowerDataDao();
-            List<TowerData> all = dao.getAll();
-            for (TowerData towerData : all) {
-                towerData.setRoleId(userInfo.getRoleId());
-                dao.update(towerData);
-            }
         }
     }
 
