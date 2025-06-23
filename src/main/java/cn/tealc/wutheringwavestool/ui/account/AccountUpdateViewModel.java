@@ -200,6 +200,15 @@ public class AccountUpdateViewModel implements ViewModel {
 
     private boolean updateUserToDB(UserInfo newUser) {
         UserInfoDao dao = new UserInfoDao();
+        List<UserInfo> accountList = dao.getAll();
+        if (newUser.getMain()) {
+            for (UserInfo oldMainUser : accountList) {
+                if (oldMainUser.getMain()) {
+                    oldMainUser.setMain(false);
+                    dao.updateUser(oldMainUser);
+                }
+            }
+        }
         return dao.updateUser(newUser) > 0;
     }
 

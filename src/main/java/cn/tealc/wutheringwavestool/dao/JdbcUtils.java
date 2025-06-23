@@ -83,17 +83,18 @@ public class JdbcUtils {
                     """;
             String createGameTower="""
                     CREATE TABLE IF NOT EXISTS game_tower(
-                      id INTEGER PRIMARY KEY AUTOINCREMENT,
-                      floor INTEGER  NOT NULL,
-                      pic_url INTEGER,
-                      role_list VARCHAR,
-                      star INTEGER,
-                      area_id INTEGER  NOT NULL,
-                      area_name VARCHAR  NOT NULL,
-                      difficulty INTEGER,
-                      difficulty_name VARCHAR,
-                      endTime INTEGER NOT NULL ,
-                      UNIQUE (area_id, floor, endTime));
+                                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                role_id INTEGER,
+                                floor INTEGER NOT NULL,
+                                pic_url INTEGER,
+                                role_list VARCHAR,
+                                star INTEGER,
+                                area_id INTEGER NOT NULL,
+                                area_name VARCHAR NOT NULL,
+                                difficulty INTEGER,
+                                difficulty_name VARCHAR,
+                                endTime INTEGER NOT NULL,
+                                UNIQUE (role_id, area_id, floor, endTime))
                     """;
 
             String createGameRecord="""

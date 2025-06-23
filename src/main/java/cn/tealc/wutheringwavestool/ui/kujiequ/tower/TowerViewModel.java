@@ -105,7 +105,7 @@ public class TowerViewModel implements ViewModel {
 
     private void initHistory(){
         GameTowerDataDao dataDao = new GameTowerDataDao();
-        List<Long> endTimeList = dataDao.getEndTimeList();
+        List<Long> endTimeList = dataDao.getEndTimeListByRoleId(userInfo.getRoleId());
         SimpleDateFormat endFormat = new SimpleDateFormat("yyyy.MM.dd");
         DateTimeFormatter startFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd");
         // 定义一个截止日期

@@ -8,10 +8,12 @@ package cn.tealc.wutheringwavestool.model.tower;
  */
 public class TowerData {
     private int id;
+    private String roleId;
     private int floor;
     private String picUrl;
     private String roleList;
     private int star;
+
 
 
     private int areaId;
@@ -99,5 +101,13 @@ public class TowerData {
 
     public void setEndTime(long endTime) {
         this.endTime = endTime;
+    }
+
+    public String getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(String roleId) {
+        this.roleId = roleId;
     }
 }
