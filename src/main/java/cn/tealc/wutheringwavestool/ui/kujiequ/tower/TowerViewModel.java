@@ -134,7 +134,7 @@ public class TowerViewModel implements ViewModel {
     public void changeHistory(long endTime){
         title.set("深境区");
         GameTowerDataDao dao = new GameTowerDataDao();
-        Set<TowerData> list = dao.getListByEndTime(endTime);
+        Set<TowerData> list = dao.getListByRoleIdAndEndTime(userInfo.getRoleId(),endTime);
 
         Map<String,TowerArea> towerAreaMap = new LinkedHashMap<>();
         for (TowerData data : list) {

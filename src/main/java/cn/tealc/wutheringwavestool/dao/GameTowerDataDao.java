@@ -51,11 +51,11 @@ public class GameTowerDataDao {
         }
     }
 
-    public Set<TowerData> getListByEndTime(long endTime){
+    public Set<TowerData> getListByRoleIdAndEndTime(String roleId,long endTime){
         QueryRunner qr=new QueryRunner();
-        String sql="SELECT * FROM game_tower where endTime = ?";
+        String sql="SELECT * FROM game_tower where endTime = ? and role_id = ?";
         try {
-            List<TowerData> query = qr.query(con, sql, new BeanListHandler<>(TowerData.class,getRowProcessor()),endTime);
+            List<TowerData> query = qr.query(con, sql, new BeanListHandler<>(TowerData.class,getRowProcessor()),endTime,roleId);
             return new HashSet<>(query);
         } catch (SQLException e) {
             LOG.error(e.getMessage(),e);

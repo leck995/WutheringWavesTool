@@ -204,7 +204,7 @@ public class VersionUpdateUtil {
         Connection connection = null;
         try {
             connection = JdbcUtils.getConnection();
-            connection.setAutoCommit(false);
+
             QueryRunner qr = new QueryRunner();
 
             // 检查是否需要迁移
@@ -214,6 +214,7 @@ public class VersionUpdateUtil {
 
             if (exists == null || exists == 0) {
                 LOG.info("开始迁移数据表game_tower");
+                connection.setAutoCommit(false);
                 // 执行迁移操作
                 qr.update(connection, "ALTER TABLE game_tower RENAME TO game_tower_old");
 
@@ -234,9 +235,9 @@ public class VersionUpdateUtil {
                 )""");
 
                 qr.update(connection, """
-                INSERT INTO game_tower (role_id, floor, pic_url, role_list, star, area_id, area_name, difficulty, difficulty_name, endTime)
-                SELECT NULL, floor, pic_url, role_list, star, area_id, area_name, difficulty, difficulty_name, endTime
-                FROM game_tower""");
+                INSERT INTO game_tower (floor, pic_url, role_list, star, area_id, area_name, difficulty, difficulty_name, endTime)
+                SELECT floor, pic_url, role_list, star, area_id, area_name, difficulty, difficulty_name, endTime
+                FROM game_tower_old""");
 
                 connection.commit();
                 connection.setAutoCommit(true); // 恢复自动提交模式
@@ -261,6 +262,12 @@ public class VersionUpdateUtil {
             }
             LOG.info("game_tower数据库操作失败{}",e.getMessage());
             throw new RuntimeException("Database migration failed", e);
+        }finally {
+            try {
+                connection.setAutoCommit(true); // 恢复自动提交模式
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -269,7 +276,7 @@ public class VersionUpdateUtil {
         Connection connection = null;
         try {
             connection = JdbcUtils.getConnection();
-            connection.setAutoCommit(false);
+
             QueryRunner qr = new QueryRunner();
 
             // 检查是否需要迁移
@@ -279,6 +286,7 @@ public class VersionUpdateUtil {
 
             if (exists == null || exists == 0) {
                 LOG.info("开始迁移数据表game_slash");
+                connection.setAutoCommit(false);
                 // 执行迁移操作
                 qr.update(connection, "ALTER TABLE game_slash RENAME TO game_slash_old");
 
@@ -297,9 +305,6 @@ public class VersionUpdateUtil {
                 FROM game_slash_old""");
 
                 connection.commit();
-                connection.setAutoCommit(true); // 恢复自动提交模式
-
-
                 UserInfoDao userInfoDao = new UserInfoDao();
                 UserInfo userInfo = userInfoDao.getMain();
                 if (userInfo != null) {
@@ -319,6 +324,12 @@ public class VersionUpdateUtil {
             }
             LOG.info("game_tower数据库操作失败{}",e.getMessage());
             throw new RuntimeException("Database migration failed", e);
+        }finally {
+            try {
+                connection.setAutoCommit(true); // 恢复自动提交模式
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 

@@ -40,6 +40,7 @@ public class GameSlashDataDao {
         }
     }
 
+
     // 按ID查询
     public SlashDataForDB getById(int id) {
         QueryRunner qr = new QueryRunner();
@@ -68,6 +69,21 @@ public class GameSlashDataDao {
         }
     }
 
+    public Optional<SlashDataForDB> getByRoleIdAndEndTime(String roleId,long endTime) {
+        QueryRunner qr = new QueryRunner();
+        String sql = "SELECT * FROM game_slash WHERE end_time = ? AND role_id = ?";
+        try {
+            SlashDataForDB slashDataForDB =  qr.query(con, sql,
+                    new BeanHandler<>(SlashDataForDB.class, getRowProcessor()), endTime,roleId);
+            return Optional.ofNullable(slashDataForDB);
+        } catch (SQLException e) {
+            LOG.error("按endTime查询失败, endTime: {}", endTime, e);
+            return Optional.empty();
+        }
+    }
+
+
+
     // 获取所有不重复的endTime列表（按倒序排列）
     public List<Long> getAllEndTimes() {
         QueryRunner qr = new QueryRunner();
@@ -79,6 +95,20 @@ public class GameSlashDataDao {
             return Collections.emptyList();
         }
     }
+
+
+    public List<Long> getEndTimesByRoleId(String roleId) {
+        QueryRunner qr = new QueryRunner();
+        String sql = "SELECT DISTINCT end_time FROM game_slash where role_id = ? ORDER BY end_time DESC";
+        try {
+            return qr.query(con, sql, new ColumnListHandler<>(),roleId);
+        } catch (SQLException e) {
+            LOG.error("获取endTime列表失败", e);
+            return Collections.emptyList();
+        }
+    }
+
+
 
     // 添加或更新记录（upsert操作）
     public int add(SlashDataForDB data) {
