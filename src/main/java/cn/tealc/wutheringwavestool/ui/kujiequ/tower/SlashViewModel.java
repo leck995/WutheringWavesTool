@@ -144,8 +144,15 @@ public class SlashViewModel implements ViewModel {
         if (first.isPresent()) {
             Optional<SlashDifficulty> second = list.stream().filter(difficulty -> difficulty.getDifficulty() == 2).findFirst();
             if (second.isPresent()) {
-                List<Challenge> mergedList = Stream.concat(second.get().getChallengeList().stream(), first.get().getChallengeList().stream())
-                        .toList();
+                List<Challenge> mergedList = new ArrayList<>();
+                if (second.get().getChallengeList() != null && !second.get().getChallengeList().isEmpty() && second.get().getChallengeList().getFirst().getScore() != 0) {
+                    mergedList.addAll(second.get().getChallengeList());
+                }
+                if (first.get().getChallengeList() != null) {
+                    mergedList.addAll(first.get().getChallengeList());
+                }
+           /*     List<Challenge> mergedList = Stream.concat(second.get().getChallengeList().stream(), first.get().getChallengeList().stream())
+                        .toList();*/
                 challenges.setAll(mergedList);
             } else {
                 challenges.setAll(first.get().getChallengeList());
@@ -169,8 +176,16 @@ public class SlashViewModel implements ViewModel {
         if (slashDifficulty.getDifficulty() == 1) { //对"无尽湍渊"与"再生海域-海隙"进行合并
             Optional<SlashDifficulty> first = sourceDifficulties.stream().filter(difficulty -> difficulty.getDifficulty() == 2).findFirst();
             if (first.isPresent()) {
-                List<Challenge> mergedList = Stream.concat(first.get().getChallengeList().stream(), slashDifficulty.getChallengeList().stream())
-                        .toList();
+                List<Challenge> mergedList = new ArrayList<>();
+                if (first.get().getChallengeList() != null && first.get().getChallengeList().isEmpty() && first.get().getChallengeList().getFirst().getScore() != 0) {
+                    mergedList.addAll(first.get().getChallengeList());
+                }
+                if (slashDifficulty.getChallengeList() != null) {
+                    mergedList.addAll(slashDifficulty.getChallengeList());
+                }
+
+          /*      List<Challenge> mergedList = Stream.concat(first.get().getChallengeList().stream(), slashDifficulty.getChallengeList().stream())
+                        .toList();*/
                 challenges.setAll(mergedList);
             } else {
                 challenges.setAll(slashDifficulty.getChallengeList());
