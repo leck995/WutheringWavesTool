@@ -131,6 +131,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     private Label weeklyInstCountLabel,weeklyInstCountTipLabel;
 
 
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         energyTimeLabel.textProperty().bind(viewModel.energyTimeTextProperty());

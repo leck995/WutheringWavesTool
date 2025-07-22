@@ -70,13 +70,13 @@ public class OwnRoleView implements FxmlView<OwnRoleViewModel>, Initializable {
     }
 
     private class RoleCell extends StackPane{
-        private Role role;
+        private final Role role;
         public RoleCell(Role role) {
             this.role = role;
             ImageView roleIV=new ImageView(LocalResourcesManager.imageBuffer(role.getRoleIconUrl(),110,110,true,true));
             imageViews.add(roleIV);
-            roleIV.setFitHeight(110);
-            roleIV.setFitWidth(110);
+            roleIV.setFitHeight(80);
+            roleIV.setFitWidth(80);
             roleIV.setPreserveRatio(true);
 
 
@@ -99,10 +99,10 @@ public class OwnRoleView implements FxmlView<OwnRoleViewModel>, Initializable {
             Label chainUnlockNumLabel=new Label(String.valueOf(role.getChainUnlockNum()));
             chainUnlockNumLabel.getStyleClass().add("chain-num");
 
-            setPrefSize(120,140);
+            setPrefSize(100,120);
 
 
-            Rectangle thumb=new Rectangle(100.0,5.0);
+            Rectangle thumb=new Rectangle(80.0,5.0);
             thumb.setArcWidth(5);
             thumb.setArcHeight(5);
             if (role.getStarLevel()==5){
