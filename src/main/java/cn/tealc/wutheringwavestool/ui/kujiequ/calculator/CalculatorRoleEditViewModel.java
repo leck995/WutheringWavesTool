@@ -6,8 +6,10 @@ import com.kuro.kujiequ.model.calculator.exist.RoleAim;
 import com.kuro.kujiequ.model.calculator.list.RoleForCalculator;
 import com.kuro.kujiequ.model.calculator.result.CalculatorResult;
 import com.kuro.kujiequ.model.calculator.result.Cost;
+import com.kuro.kujiequ.model.roleData.RoleDetail;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.thread.rolebox.calculator.BatchRoleCostTask;
+import com.kuro.kujiequ.thread.rolebox.role.GameRoleDetailTask;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -15,6 +17,8 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.image.Image;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +29,7 @@ import java.util.List;
  * @create: 2025-03-26 19:42
  */
 public class CalculatorRoleEditViewModel implements ViewModel {
+    private static final Logger LOG = LoggerFactory.getLogger(CalculatorRoleEditViewModel.class);
     private SimpleStringProperty roleName = new SimpleStringProperty();
     private SimpleObjectProperty<Image> icon = new SimpleObjectProperty<>();
     private SimpleDoubleProperty roleLevel = new SimpleDoubleProperty(90);
@@ -33,6 +38,13 @@ public class CalculatorRoleEditViewModel implements ViewModel {
     private SimpleDoubleProperty skillLevel03 = new SimpleDoubleProperty(10);
     private SimpleDoubleProperty skillLevel04 = new SimpleDoubleProperty(10);
     private SimpleDoubleProperty skillLevel05 = new SimpleDoubleProperty(10);
+
+    private int skill01 = 1;
+    private int skill02 = 1;
+    private int skill03 = 1;
+    private int skill04 = 1;
+    private int skill05 = 1;
+    private int rolelevel = 1;
 
 
     private ObservableList<Cost> totalCostList = FXCollections.observableArrayList();
@@ -43,6 +55,25 @@ public class CalculatorRoleEditViewModel implements ViewModel {
         this.role = role;
         this.roleName.set(role.getRoleName());
         this.icon.set(icon);
+
+        UserInfoDao dao = new UserInfoDao();
+        UserInfo userInfo = dao.getMain();
+        GameRoleDetailTask task1 = new GameRoleDetailTask(userInfo,role.getRoleId());
+        task1.setOnSucceeded(e -> {
+            ResponseBody<RoleDetail> value = task1.getValue();
+            if (value.getCode() == 200) {
+                RoleDetail data = value.getData();
+                if(data.getSkillList() != null) {
+                    skill01 = data.getSkillList().get(4).getLevel();
+                    skill02 = data.getSkillList().get(3).getLevel();
+                    skill03 = data.getSkillList().get(2).getLevel();
+                    skill04 = data.getSkillList().get(1).getLevel();
+                    skill05 = data.getSkillList().get(0).getLevel();
+                    rolelevel = data.getRole().getLevel();
+                }
+            }
+        });
+        Thread.startVirtualThread(task1);
     }
 
     public void ready(){
@@ -57,17 +88,17 @@ public class CalculatorRoleEditViewModel implements ViewModel {
         if (userInfo != null) {
             RoleAim roleAim = new RoleAim();
             roleAim.setRoleId(role.getRoleId());
-            roleAim.setRoleStartLevel(1);
+            roleAim.setRoleStartLevel(rolelevel);
             roleAim.setRoleEndLevel((int) getRoleLevel());
 
             roleAim.setAdvanceSkillList(otherSkills);
             List<RoleAim.SkillLevelUp> levelUpList = new ArrayList<>();
             roleAim.setSkillLevelUpList(levelUpList);
-            levelUpList.add(getSkillLevelUp(1,getSkillLevel01()));
-            levelUpList.add(getSkillLevelUp(1,getSkillLevel02()));
-            levelUpList.add(getSkillLevelUp(1,getSkillLevel03()));
-            levelUpList.add(getSkillLevelUp(1,getSkillLevel04()));
-            levelUpList.add(getSkillLevelUp(1,getSkillLevel05()));
+            levelUpList.add(getSkillLevelUp(skill01,getSkillLevel01()));
+            levelUpList.add(getSkillLevelUp(skill02,getSkillLevel02()));
+            levelUpList.add(getSkillLevelUp(skill03,getSkillLevel03()));
+            levelUpList.add(getSkillLevelUp(skill04,getSkillLevel04()));
+            levelUpList.add(getSkillLevelUp(skill05,getSkillLevel05()));
 
             BatchRoleCostTask task = new BatchRoleCostTask(userInfo,roleAim);
             task.setOnSucceeded(workerStateEvent -> {
