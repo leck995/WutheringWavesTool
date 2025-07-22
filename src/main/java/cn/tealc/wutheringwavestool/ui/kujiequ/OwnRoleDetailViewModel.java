@@ -163,7 +163,7 @@ public class OwnRoleDetailViewModel implements ViewModel {
                 weaponName.set(data.getWeaponData().getWeapon().getWeaponName());
                 weaponResonLevel.set(String.format("突破%d", data.getWeaponData().getResonLevel()));
                 weaponLevel.set(String.format("LV.%d", data.getWeaponData().getLevel()));
-                weaponImage.set(new Image(data.getWeaponData().getWeapon().getWeaponIcon(), true));
+                weaponImage.set(LocalResourcesManager.imageBuffer(data.getWeaponData().getWeapon().getWeaponIcon()));
                 weaponStarLevel.set(data.getWeaponData().getWeapon().getWeaponStarLevel());
 
 
