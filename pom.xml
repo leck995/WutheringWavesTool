@@ -176,6 +176,11 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>org.controlsfx</groupId>
+            <artifactId>controlsfx</artifactId>
+            <version>11.2.2</version>
+        </dependency>
 
     </dependencies>
 

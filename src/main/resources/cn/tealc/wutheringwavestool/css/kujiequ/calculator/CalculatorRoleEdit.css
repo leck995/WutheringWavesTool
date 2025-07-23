@@ -1,9 +1,240 @@
-.role-edit{
+
+.role-edit {
+    -fx-base: #d0d0d0;
+    -fx-background: #f4f4f4;
+    -fx-control-inner-background: white;
+    -fx-dark-text-color: black;
+    -fx-mid-text-color: #292929;
+    -fx-light-text-color: white;
+    -fx-accent: #0093ff;
+    -fx-focus-color: #0093ff;
+    -fx-color: -fx-base;
+    -fx-disabled-opacity: 0.4;
+    -fx-hover-base: ladder(
+            -fx-base,
+            derive(-fx-base,20%) 20%,
+            derive(-fx-base,30%) 35%,
+            derive(-fx-base,40%) 50%
+    );
+
+    -fx-pressed-base: derive(-fx-base,-20%);
+
+    /* Used to specify the body color for focused objects.  By default, it's
+     * the same as -fx-base (i.e., the body color doesn't change when a control
+     * gets focus).
+     */
+    -fx-focused-base: -fx-base;
+
+    /* The color to use for -fx-text-fill when text is to be painted on top of
+     * a background filled with the -fx-background color.
+     */
+    -fx-text-background-color: ladder(
+            -fx-background,
+            -fx-light-text-color 45%,
+            -fx-dark-text-color  46%,
+            -fx-dark-text-color  59%,
+            -fx-mid-text-color   60%
+    );
+
+    /* The default color for all text.  Sections should change the -fx-text-fill
+     * property if change the background color to something else.  See also:
+     *
+     * -fx-text-base-color for text on top of -fx-base, -fx-color, and -fx-body-color
+     * -fx-text-background-color for text on top of -fx-background
+     * -fx-text-inner-color for text on top of -fx-control-inner-color
+     * -fx-selection-bar-text for text on top of -fx-selection-bar
+     */
+    -fx-text-fill: -fx-text-background-color;
+
+    /* A little darker than -fx-color and used to draw boxes around objects such
+     * as progress bars, scroll bars, scroll panes, trees, tables, and lists.
+     */
+    -fx-box-border: ladder(
+            -fx-color,
+            black 20%,
+            derive(-fx-color,-30%) 30%
+    );
+
+    /* Darker than -fx-background and used to draw boxes around text boxes and
+     * password boxes.
+     */
+    -fx-text-box-border: ladder(
+            -fx-background,
+            black 10%,
+            derive(-fx-background, -15%) 30%
+    );
+
+    /* Typically lighter than -fx-background and used to provide a small
+     * highlight under controls and tick marks for checkboxes and radio buttons.
+     * Often used with an insets of 0 0 -1 0, and is also often the first
+     * color in a -fx-background-color list.  Also is typically replaced by
+     * -fx-focus-color with an insets of -1.4 in the "focused" pseudoclass.
+     */
+    -fx-shadow-highlight-color: ladder(
+            -fx-background,
+            transparent 0%,
+            derive(-fx-background,40%)   5%,
+            derive(-fx-background,60%)  70%,
+            derive(-fx-background,100%) 85%,
+            derive(-fx-background,100%) 97%,
+            derive(-fx-background,-10%) 97.5%
+    );
+
+    /* A gradient that goes from a little darker than -fx-color on the top to
+     * even more darker than -fx-color on the bottom.  Typically is the second
+     * color in the -fx-background-color list as the small thin border around
+     * a control. It is typically the same size as the control (i.e., insets
+     * are 0).
+     */
+    -fx-outer-border: linear-gradient(
+            to bottom,
+            derive(-fx-color,-9%) 0%,
+            derive(-fx-color,-33%) 100%
+    );
+
+    /* A gradient that goes from a bit lighter than -fx-color on the top to
+     * a little darker at the bottom.  Typically is the third color in the
+     * -fx-background-color list as a thin highlight inside the outer border.
+     * Insets are typically 1.
+     */
+    -fx-inner-border: linear-gradient(
+            to bottom,
+            ladder(-fx-color,
+            derive(-fx-color,80%) 60%,
+            white 82%) 0%,
+            ladder(-fx-color,
+            derive(-fx-color,20%) 10%,
+            derive(-fx-color,-10%) 80%) 100%
+    );
+
+    -fx-inner-border-horizontal: linear-gradient(
+            to right,
+            ladder(-fx-color,
+            derive(-fx-color,80%) 60%,
+            white 82%) 0%,
+            ladder(-fx-color,
+            derive(-fx-color,20%) 10%,
+            derive(-fx-color,-10%) 80%) 100%
+    );
+
+    -fx-inner-border-bottomup: linear-gradient(
+            to top,
+            ladder(-fx-color,
+            derive(-fx-color,80%) 60%,
+            white 82%) 0%,
+            ladder(-fx-color,
+            derive(-fx-color,20%) 10%,
+            derive(-fx-color,-10%) 80%) 100%);
+
+    /* A gradient that goes from a little lighter than -fx-color at the top to
+     * a little darker than -fx-color at the bottom and is used to fill the
+     * body of many controls such as buttons.  Typically is the fourth color
+     * in the -fx-background-color list and represents main body of the control.
+     * Insets are typically 2.
+     */
+    -fx-body-color: linear-gradient(
+            to bottom,
+            derive(-fx-color,34%) 0%,
+            derive(-fx-color,-18%) 100%
+    );
+
+    -fx-body-color-bottomup:  linear-gradient(
+            to top,
+            derive(-fx-color,34%) 0%,
+            derive(-fx-color,-18%) 100%
+    );
+
+    /* The color to use as -fx-text-fill when painting text on top of
+     * backgrounds filled with -fx-base, -fx-color, and -fx-body-color.
+     */
+    -fx-text-base-color: ladder(
+            -fx-color,
+            -fx-light-text-color 45%,
+            -fx-dark-text-color  46%,
+            -fx-dark-text-color  59%,
+            -fx-mid-text-color   60%
+    );
+
+    /* The color to use as -fx-text-fill when painting text on top of
+     * backgrounds filled with -fx-control-inner-background.
+     */
+    -fx-text-inner-color: ladder(
+            -fx-control-inner-background,
+            -fx-light-text-color 45%,
+            -fx-dark-text-color  46%,
+            -fx-dark-text-color  59%,
+            -fx-mid-text-color   60%
+    );
+
+    /* The color to use for small mark-like objects such as checks on check
+     * boxes, filled in circles in radio buttons, arrows on scroll bars, etc.
+     */
+    -fx-mark-color: ladder(
+            -fx-color,
+            white 30%,
+            derive(-fx-color,-63%) 31%
+    );
+
+    /* The small thin light "shadow" for mark-like objects. Typically used in
+     * conjunction with -fx-mark-color with an insets of 1 0 -1 0.
+     */
+    -fx-mark-highlight-color: ladder(
+            -fx-color,
+            derive(-fx-color,80%) 60%,
+            white 70%
+    );
+
+    /* Background for items in list like things such as menus, lists, trees,
+     * and tables.
+     *
+     * TODO: it seems like this should be based upon -fx-accent and we should
+     * remove the setting -fx-background in all the sections that use
+     * -fx-selection-bar.
+     */
+    -fx-selection-bar: linear-gradient(
+            to bottom,
+            derive(-fx-background,-7%) 0%,
+            derive(-fx-background,-34%) 100%
+    );
+
+    /* The color to use as -fx-text-fill when painting text on top of
+     * backgrounds filled with -fx-selection-bar.
+     *
+     * TODO: it seems like this should be derived from -fx-selection-bar.
+     */
+    -fx-selection-bar-text: ladder(
+            -fx-background,
+            -fx-light-text-color 50%,
+            -fx-mid-text-color   51%
+    );
+
+    /* The default border color for a tab.
+     *
+     * TODO: should this be -fx-box-border or derived from some other color?
+     */
+    -fx-tab-border-color: -fx-box-border;
+
+    /* These are needed for Popup */
+    -fx-background-color: inherit;
+    -fx-background-radius: inherit;
+    -fx-background-insets: inherit;
+    -fx-padding: inherit;
+
+    /* The color to use in ListView/TreeView/TableView to indicate hover. */
+    -fx-cell-hover-color: #cce3f4;
+
+    -fx-cell-focus-inner-border: #85b9de;
+
+    /* The colors to use in Pagination */
+    -fx-page-bullet-border: #acacac;
+    -fx-page-indicator-hover-border: #accee5;
+
 
 }
-
 .role-edit .level-group{
     -fx-alignment: center;
+    -fx-spacing: 5;
+
 }
 .role-edit .level-group .skill-title{
     -fx-pref-width: 80;
@@ -21,4 +252,63 @@
 
 .role-edit .level-group .skill-level{
 
+}
+
+
+
+/*******************************************************************************
+ *                                                                             *
+ * RangeSlider                                                                 *
+ * (Largely derived from Modena styles)                                        *
+ *                                                                             *
+ ******************************************************************************/
+
+.range-slider{
+
+
+}
+.range-slider:focused{
+    -fx-cursor: hand;
+}
+.range-slider .low-thumb,
+.range-slider .high-thumb {
+    -fx-background-color:-color-fg-subtle;
+    -fx-background-radius: 1.0em; /* makes sure this remains circular */
+    -fx-padding: 0.4em;  /* 7 */
+    -fx-effect: dropshadow(two-pass-box , rgba(0, 0, 0, 0.1), 5, 0.0 , 0, 2);
+}
+
+.range-slider:focused .low-thumb,
+.range-slider:focused .high-thumb {
+    -fx-background-radius: 1.0em; /* makes sure this remains circular */
+}
+
+.range-slider .low-thumb:hover,
+.range-slider .high-thumb:hover{
+    -fx-background-color:-color-accent-emphasis;
+    -fx-background-insets: -2;
+}
+
+
+.range-slider .range-bar {
+    -fx-background-color: -color-accent-emphasis;
+}
+
+
+.range-slider .track {
+    -fx-background-color:-color-border-muted;
+    -fx-background-insets: 0 0 -1 0, 0, 1;
+    -fx-background-radius: 0.25em, 0.25em, 0.166667em; /* 3 3 2 */
+    -fx-padding: 0.15em; /* 3 */
+}
+
+.range-slider .axis {
+    -fx-tick-label-fill: derive(-fx-text-background-color, 30%);
+    -fx-tick-length: 5px;
+    -fx-minor-tick-length: 3px;
+    -fx-border-color: null;
+}
+
+.range-slider:disabled {
+    -fx-opacity: 0.4;
 }

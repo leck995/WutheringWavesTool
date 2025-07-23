@@ -1,15 +1,18 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.calculator;
 
+import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+import cn.tealc.wutheringwavestool.model.message.MessageType;
 import com.kuro.kujiequ.model.calculator.exist.WeaponAim;
 import com.kuro.kujiequ.model.calculator.list.WeaponForCalculator;
 import com.kuro.kujiequ.model.calculator.result.CalculatorResult;
 import com.kuro.kujiequ.model.calculator.result.Cost;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.thread.rolebox.calculator.BatchWeaponCostTask;
+import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -30,6 +33,7 @@ public class CalculatorWeaponEditViewModel implements ViewModel {
     private SimpleDoubleProperty endLevel = new SimpleDoubleProperty(90);
     private ObservableList<Cost> totalCostList = FXCollections.observableArrayList();
     private ObservableList<Cost> missingCostList = FXCollections.observableArrayList();
+    private final ObservableList<Cost> relateCostList = FXCollections.observableArrayList();
     private WeaponForCalculator weapon;
     public CalculatorWeaponEditViewModel(WeaponForCalculator weapon, Image icon) {
         this.weapon = weapon;
@@ -55,10 +59,18 @@ public class CalculatorWeaponEditViewModel implements ViewModel {
                 ResponseBody<CalculatorResult> responseBody = task.getValue();
                 if (responseBody.getCode() == 200){
                     CalculatorResult data = responseBody.getData();
-                    totalCostList.setAll(data.getPreview().getAllCost());
-                    missingCostList.setAll(data.getPreview().getMissingCost());
+                    if (data.getPreview().getAllCost() != null){
+                        totalCostList.setAll(data.getPreview().getAllCost());
+                    }
+                    if (data.getPreview().getMissingCost() != null){
+                        missingCostList.setAll(data.getPreview().getMissingCost());
+                    }
+                    if (data.getPreview().getSynthetic() != null){
+                        relateCostList.setAll(data.getPreview().getSynthetic());
+                    }
                 }else {
-                    System.out.println(responseBody.getMsg());
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                            new MessageInfo(MessageType.WARNING,responseBody.getMsg()));
                 }
             });
             Thread.startVirtualThread(task);
@@ -108,5 +120,9 @@ public class CalculatorWeaponEditViewModel implements ViewModel {
 
     public ObservableList<Cost> getMissingCostList() {
         return missingCostList;
+    }
+
+    public ObservableList<Cost> getRelateCostList() {
+        return relateCostList;
     }
 }

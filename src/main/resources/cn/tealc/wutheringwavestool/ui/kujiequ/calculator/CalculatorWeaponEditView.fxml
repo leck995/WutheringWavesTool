@@ -62,8 +62,13 @@
                         <Insets />
                      </VBox.margin>
                   </FlowPane>
-                  <Label layoutX="10.0" layoutY="10.0" styleClass="title-3" text="缺少材料" />
+                  <Label layoutX="10.0" layoutY="10.0" styleClass="title-3" text="缺少材料">
+                     <padding>
+                        <Insets top="10.0" />
+                     </padding></Label>
                   <FlowPane fx:id="lackItemFlowPane" hgap="10.0" layoutX="10.0" layoutY="29.0" prefHeight="200.0" prefWidth="200.0" vgap="10.0" VBox.vgrow="ALWAYS" />
+                  <Label layoutX="10.0" layoutY="280.0" styleClass="title-4" text="背包可合成材料" />
+                  <FlowPane fx:id="relateItemFlowPane" hgap="10.0" layoutX="10.0" layoutY="294.0" prefHeight="200.0" prefWidth="200.0" vgap="10.0" />
                </children></VBox>
          </children>
       </HBox>

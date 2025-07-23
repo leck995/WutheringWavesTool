@@ -27,6 +27,8 @@ open module cn.tealc.wutheringwavestool {
     requires ch.qos.logback.core;
     requires ch.qos.logback.classic;
     requires cn.tealc.fxplugin;
+    requires org.controlsfx.controls;
+
 
     exports cn.tealc.wutheringwavestool;
     exports cn.tealc.wutheringwavestool.model;

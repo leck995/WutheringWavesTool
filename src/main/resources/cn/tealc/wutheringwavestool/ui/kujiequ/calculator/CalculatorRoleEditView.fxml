@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.Slider?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -14,84 +12,70 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import org.controlsfx.control.RangeSlider?>
 
 <AnchorPane fx:id="root" prefHeight="600.0" prefWidth="1000.0" styleClass="role-edit" stylesheets="@../../../css/kujiequ/calculator/CalculatorRoleEdit.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.calculator.CalculatorRoleEditView">
    <children>
       <Label styleClass="title-2" text="计算" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
       <HBox prefHeight="100.0" prefWidth="200.0" spacing="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
          <children>
-            <VBox alignment="TOP_CENTER" prefWidth="300.0" spacing="10.0">
+            <VBox alignment="TOP_CENTER" prefWidth="310.0" spacing="10.0">
                <children>
-                  <HBox alignment="CENTER">
+                  <HBox alignment="CENTER" spacing="10.0">
                      <children>
                         <ImageView fx:id="iconIV" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" />
                         <Label fx:id="roleNameLabel" styleClass="title-3" text="长离" />
                      </children>
+                     <padding>
+                        <Insets bottom="10.0" />
+                     </padding>
                   </HBox>
                   <HBox styleClass="level-group">
                      <children>
                         <Label styleClass="skill-title" text="角色等级" />
-                        <Slider fx:id="levelSlider" max="90.0" min="1.0" value="90.0">
-                           <styleClass>
-                              <String fx:value="skill-slider" />
-                              <String fx:value="small" />
-                           </styleClass></Slider>
-                        <Label fx:id="levelLabel" layoutX="10.0" layoutY="10.0" styleClass="skill-level" text="LV.90" />
+                        <Label fx:id="levelLowLabel" styleClass="skill-level" text="LV.01" />
+                        <RangeSlider fx:id="levelSlider" blockIncrement="1.0" highValue="90.0" lowValue="1.0" majorTickUnit="30.0" max="90.0" min="1.0" />
+                        <Label fx:id="levelHighLabel" layoutX="10.0" layoutY="10.0" styleClass="skill-level" text="LV.90" />
                      </children>
                   </HBox>
                   <HBox layoutX="10.0" layoutY="138.0" styleClass="level-group">
                      <children>
                         <Label styleClass="skill-title" text="常态攻击" />
-                        <Slider fx:id="skillSlider01" blockIncrement="1.0" max="10.0" min="1.0" value="10.0">
-                           <styleClass>
-                              <String fx:value="skill-slider" />
-                              <String fx:value="small" />
-                           </styleClass></Slider>
-                        <Label fx:id="skillLabel01" layoutX="10.0" layoutY="10.0" styleClass="skill-level" text="LV.90" />
+                        <Label fx:id="skillLowLabel01" styleClass="skill-level" text="LV.01" />
+                        <RangeSlider fx:id="skillSlider01" blockIncrement="1.0" highValue="10.0" lowValue="1.0" majorTickUnit="1.0" max="10.0" min="1.0" />
+                        <Label fx:id="skillHighLabel01" layoutX="10.0" layoutY="10.0" styleClass="skill-level" text="LV.10" />
                      </children>
                   </HBox>
                   <HBox layoutX="10.0" layoutY="158.0" styleClass="level-group">
                      <children>
                         <Label styleClass="skill-title" text="共鸣技能" />
-                        <Slider fx:id="skillSlider02" blockIncrement="1.0" max="10.0" min="1.0" value="10.0">
-                           <styleClass>
-                              <String fx:value="skill-slider" />
-                              <String fx:value="small" />
-                           </styleClass></Slider>
-                        <Label fx:id="skillLabel02" layoutX="10.0" layoutY="10.0" styleClass="skill-level" text="LV.90" />
+                        <Label fx:id="skillLowLabel02" styleClass="skill-level" text="LV.01" />
+                        <RangeSlider fx:id="skillSlider02" highValue="10.0" lowValue="1.0" majorTickUnit="5.0" max="10.0" min="1.0" />
+                        <Label fx:id="skillHighLabel02" layoutX="10.0" layoutY="10.0" styleClass="skill-level" text="LV.10" />
                      </children>
                   </HBox>
                   <HBox layoutX="10.0" layoutY="218.0" styleClass="level-group">
                      <children>
                         <Label styleClass="skill-title" text="共鸣回路" />
-                        <Slider fx:id="skillSlider03" blockIncrement="1.0" max="10.0" min="1.0" value="10.0">
-                           <styleClass>
-                              <String fx:value="skill-slider" />
-                              <String fx:value="small" />
-                           </styleClass></Slider>
-                        <Label fx:id="skillLabel03" layoutX="10.0" layoutY="10.0" styleClass="skill-level" text="LV.90" />
+                        <Label fx:id="skillLowLabel03" styleClass="skill-level" text="LV.01" />
+                        <RangeSlider fx:id="skillSlider03" highValue="10.0" lowValue="1.0" majorTickUnit="5.0" max="10.0" min="1.0" />
+                        <Label fx:id="skillHighLabel03" layoutX="10.0" layoutY="10.0" styleClass="skill-level" text="LV.10" />
                      </children>
                   </HBox>
                   <HBox layoutX="10.0" layoutY="178.0" styleClass="level-group">
                      <children>
                         <Label styleClass="skill-title" text="共鸣解放" />
-                        <Slider fx:id="skillSlider04" blockIncrement="1.0" max="10.0" min="1.0" value="10.0">
-                           <styleClass>
-                              <String fx:value="skill-slider" />
-                              <String fx:value="small" />
-                           </styleClass></Slider>
-                        <Label fx:id="skillLabel04" layoutX="10.0" layoutY="10.0" styleClass="skill-level" text="LV.90" />
+                        <Label fx:id="skillLowLabel04" styleClass="skill-level" text="LV.01" />
+                        <RangeSlider fx:id="skillSlider04" highValue="10.0" lowValue="1.0" majorTickUnit="5.0" max="10.0" min="1.0" />
+                        <Label fx:id="skillHighLabel04" layoutX="10.0" layoutY="10.0" styleClass="skill-level" text="LV.10" />
                      </children>
                   </HBox>
                   <HBox layoutX="10.0" layoutY="198.0" styleClass="level-group">
                      <children>
                         <Label styleClass="skill-title" text="变奏技能" />
-                        <Slider fx:id="skillSlider05" blockIncrement="1.0" max="10.0" min="1.0" value="10.0">
-                           <styleClass>
-                              <String fx:value="skill-slider" />
-                              <String fx:value="small" />
-                           </styleClass></Slider>
-                        <Label fx:id="skillLabel05" layoutX="10.0" layoutY="10.0" styleClass="skill-level" text="LV.90" />
+                        <Label fx:id="skillLowLabel05" styleClass="skill-level" text="LV.01" />
+                        <RangeSlider fx:id="skillSlider05" blockIncrement="1.0" highValue="10.0" lowValue="1.0" majorTickUnit="5.0" max="10.0" min="1.0" />
+                        <Label fx:id="skillHighLabel05" layoutX="10.0" layoutY="10.0" styleClass="skill-level" text="LV.10" />
                      </children>
                   </HBox>
                   <Label text="其他技能" />
@@ -108,37 +92,43 @@
                       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <CheckBox accessibleText="2-1" mnemonicParsing="false" selected="true" text="常态-2" GridPane.halignment="CENTER" />
-                        <CheckBox accessibleText="3-1" layoutX="10.0" layoutY="15.0" mnemonicParsing="false" selected="true" text="常态-3" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
-                        <CheckBox accessibleText="2-2" mnemonicParsing="false" selected="true" text="技能-2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                        <CheckBox accessibleText="3-2" mnemonicParsing="false" selected="true" text="技能-3" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                        <CheckBox accessibleText="2-3" mnemonicParsing="false" selected="true" text="回路-2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
-                        <CheckBox accessibleText="3-3" mnemonicParsing="false" selected="true" text="回路-3" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
-                        <CheckBox accessibleText="2-4" mnemonicParsing="false" selected="true" text="解放-2" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
-                        <CheckBox accessibleText="3-4" mnemonicParsing="false" selected="true" text="解放-3" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
-                        <CheckBox accessibleText="2-5" mnemonicParsing="false" selected="true" text="变奏-2" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
-                        <CheckBox accessibleText="3-5" mnemonicParsing="false" selected="true" text="变奏-3" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+                        <CheckBox fx:id="skillBreak01" accessibleText="2-1" mnemonicParsing="false" selected="true" text="常态-2" GridPane.halignment="CENTER" />
+                        <CheckBox fx:id="skillBreak02" accessibleText="3-1" layoutX="10.0" layoutY="15.0" mnemonicParsing="false" selected="true" text="常态-3" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+                        <CheckBox fx:id="skillBreak03" accessibleText="2-2" mnemonicParsing="false" selected="true" text="技能-2" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                        <CheckBox fx:id="skillBreak04" accessibleText="3-2" mnemonicParsing="false" selected="true" text="技能-3" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                        <CheckBox fx:id="skillBreak05" accessibleText="2-3" mnemonicParsing="false" selected="true" text="回路-2" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                        <CheckBox fx:id="skillBreak06" accessibleText="3-3" mnemonicParsing="false" selected="true" text="回路-3" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                        <CheckBox fx:id="skillBreak07" accessibleText="2-4" mnemonicParsing="false" selected="true" text="解放-2" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+                        <CheckBox fx:id="skillBreak08" accessibleText="3-4" mnemonicParsing="false" selected="true" text="解放-3" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+                        <CheckBox fx:id="skillBreak09" accessibleText="2-5" mnemonicParsing="false" selected="true" text="变奏-2" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+                        <CheckBox fx:id="skillBreak10" accessibleText="3-5" mnemonicParsing="false" selected="true" text="变奏-3" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
                      </children>
                   </GridPane>
                   <Label styleClass="text-subtle" text="角色等级低于技能要求等级时，即使技能等级拉高，也只会统计符合角色等级限制的技能材料。" wrapText="true" />
                   <HBox alignment="CENTER" spacing="20.0">
                      <children>
                         <Button mnemonicParsing="false" onAction="#calculate" styleClass="accent" text="查询" />
-                        <Button mnemonicParsing="false" onAction="#reset" text="返回" />
+                        <Button mnemonicParsing="false" onAction="#reset" styleClass="danger" text="重置" />
+                        <Button mnemonicParsing="false" onAction="#back" text="返回" />
                      </children>
                   </HBox>
                </children>
             </VBox>
             <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
                <children>
-                  <Label styleClass="title-3" text="所有材料" />
+                  <Label styleClass="title-3" text="所需材料" />
                   <FlowPane fx:id="allItemFlowPane" hgap="10.0" prefHeight="200.0" prefWidth="200.0" vgap="10.0" VBox.vgrow="ALWAYS">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
                   </FlowPane>
-                  <Label layoutX="10.0" layoutY="10.0" styleClass="title-3" text="缺少材料" />
+                  <Label layoutX="10.0" layoutY="10.0" styleClass="title-3" text="仍需材料">
+                     <padding>
+                        <Insets top="10.0" />
+                     </padding></Label>
                   <FlowPane fx:id="lackItemFlowPane" hgap="10.0" layoutX="10.0" layoutY="29.0" prefHeight="200.0" prefWidth="200.0" vgap="10.0" VBox.vgrow="ALWAYS" />
+                  <Label layoutX="10.0" layoutY="280.0" styleClass="title-4" text="背包可合成材料" />
+                  <FlowPane fx:id="relateItemFlowPane" hgap="10.0" layoutX="10.0" layoutY="294.0" prefHeight="200.0" prefWidth="200.0" vgap="10.0" />
                </children></VBox>
          </children>
       </HBox>

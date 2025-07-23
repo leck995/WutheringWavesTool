@@ -27,16 +27,13 @@ public class CalculatorWeaponEditView implements FxmlView<CalculatorWeaponEditVi
     @InjectViewModel
     private CalculatorWeaponEditViewModel viewModel;
     @FXML
-    private FlowPane allItemFlowPane;
-
-    @FXML
     private Slider endSlider;
 
     @FXML
     private ImageView iconIV;
 
     @FXML
-    private FlowPane lackItemFlowPane;
+    private FlowPane allItemFlowPane,lackItemFlowPane,relateItemFlowPane;
 
     @FXML
     private Label startLabel;
@@ -52,6 +49,8 @@ public class CalculatorWeaponEditView implements FxmlView<CalculatorWeaponEditVi
 
     @FXML
     private Label weaponNameLabel;
+
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -77,6 +76,13 @@ public class CalculatorWeaponEditView implements FxmlView<CalculatorWeaponEditVi
             lackItemFlowPane.getChildren().clear();
             for (Cost cost : change.getList()) {
                 lackItemFlowPane.getChildren().add(new Cell(cost));
+            }
+        });
+
+        viewModel.getRelateCostList().addListener((ListChangeListener<? super Cost>) change -> {
+            relateItemFlowPane.getChildren().clear();
+            for (Cost cost : change.getList()) {
+                relateItemFlowPane.getChildren().add(new Cell(cost));
             }
         });
     }
