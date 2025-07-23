@@ -19,14 +19,14 @@
    <children>
   <AnchorPane fx:id="contentPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
          <children>
-            <StackPane layoutX="146.0" layoutY="96.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <StackPane layoutX="146.0" layoutY="96.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <ListView fx:id="poolListview" maxWidth="820.0" orientation="HORIZONTAL" prefHeight="50.0" prefWidth="820.0" styleClass="select-listview" />
+                  <ListView fx:id="poolListview" maxHeight="400.0" maxWidth="250.0" prefHeight="50.0" prefWidth="150.0" styleClass="select-listview" />
                </children>
             </StackPane>
-            <StackPane layoutY="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="80.0">
+            <StackPane layoutY="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
                <children>
-                  <HBox fx:id="children" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="100.0">
+                  <HBox fx:id="children" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
                      <children>
                         <VBox alignment="CENTER" maxHeight="600.0" maxWidth="400.0" spacing="10.0" styleClass="left">
                            <children>
@@ -106,11 +106,11 @@
                               </ScrollPane>
                               <ListView fx:id="ssrListView" maxWidth="400.0" minWidth="400.0" prefWidth="400.0" styleClass="ssr-list-view" />
                            </children>
+                           <padding>
+                              <Insets right="40.0" top="30.0" />
+                           </padding>
                         </StackPane>
                      </children>
-                     <padding>
-                        <Insets left="200.0" right="100.0" />
-                     </padding>
                   </HBox>
                   <StackPane fx:id="poolEmptyPane" prefHeight="150.0" prefWidth="200.0">
                      <children>
