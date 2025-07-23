@@ -13,9 +13,9 @@ import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kuro.game.model.game.DownloadFile;
-import com.kuro.game.model.game.DownloadResource;
-import com.kuro.game.model.launcher.CdnData;
+import com.kuro.game.model.game.FileInfo;
+import com.kuro.game.model.game.GameResource;
+import com.kuro.game.model.launcher.item.CdnData;
 import com.kuro.game.model.launcher.LauncherResource;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
@@ -70,7 +70,6 @@ public class GameManagerViewModel implements ViewModel {
 
 
     private void checkService(){
-
         File gameDir = GameResourcesManager.getGameDir();
         if(gameDir != null){
             //判断国际服是否存在
@@ -155,11 +154,11 @@ public class GameManagerViewModel implements ViewModel {
         try {
             LauncherResource launcherResource = mapper.readValue(new File("response-bili.json"), LauncherResource.class);
            // System.out.println(launcherResource.getDownloadResource().);
-            DownloadResource resource = mapper.readValue(new File("resources-bili.json"), DownloadResource.class);
+            GameResource resource = mapper.readValue(new File("resources-bili.json"), GameResource.class);
 
-            List<DownloadFile> fileList = resource.getResource().stream().filter(downloadFile -> downloadFile.getDest().startsWith("/Client/Binaries/Win64/ThirdParty/")).toList();
+            List<FileInfo> fileList = resource.getResource().stream().filter(fileInfo -> fileInfo.getDest().startsWith("/Client/Binaries/Win64/ThirdParty/")).toList();
 
-            long sum = fileList.stream().mapToLong(DownloadFile::getSize).sum();
+            long sum = fileList.stream().mapToLong(FileInfo::getSize).sum();
             System.out.println("size:" + sum);
             List<CdnData> cdnList = launcherResource.getUpdateData().getCdnList();
             cdnList.sort(Comparator.comparingInt(CdnData::getPing));
@@ -172,9 +171,9 @@ public class GameManagerViewModel implements ViewModel {
 
                 try (ExecutorService pool = Executors.newFixedThreadPool(8)) {
                     HttpClient client = HttpClient.newHttpClient();
-                    for (DownloadFile downloadFile : fileList) {
-                        DownloadGameTask task = new DownloadGameTask(client, gameDir.getAbsolutePath(), host, downloadFile);
-                        task.setOnSucceeded(workerStateEvent -> System.out.println("Download completed" + downloadFile.getDest()));
+                    for (FileInfo fileInfo : fileList) {
+                        DownloadGameTask task = new DownloadGameTask(client, gameDir.getAbsolutePath(), host, fileInfo);
+                        task.setOnSucceeded(workerStateEvent -> System.out.println("Download completed" + fileInfo.getDest()));
                         pool.submit(task);
                     }
                 }

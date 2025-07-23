@@ -10,8 +10,15 @@
 }
 
 .role-edit .level-group .skill-slider{
-
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
 }
+
+.role-edit .level-group .skill-slider > .thumb {
+    -fx-padding: 4;
+}
+
+
 .role-edit .level-group .skill-level{
 
 }

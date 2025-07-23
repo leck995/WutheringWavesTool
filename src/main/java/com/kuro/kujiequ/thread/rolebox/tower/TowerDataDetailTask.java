@@ -79,6 +79,7 @@ public class TowerDataDetailTask extends BaseTask<ResponseBody<DifficultyTotal>>
                         for (TowerArea towerArea : first.getTowerAreaList()) {
                             for (Floor floor : towerArea.getFloorList()) {
                                 TowerData data = new TowerData();
+                                data.setRoleId(userInfo.getRoleId());
                                 data.setAreaId(towerArea.getAreaId());
                                 data.setAreaName(towerArea.getAreaName());
                                 data.setDifficulty(first.getDifficulty());

@@ -77,10 +77,14 @@
     -fx-background-color: #cfc6b2;
 }
 
+.home .right .box-data .data-icon {
+    -fx-effect: dropshadow( three-pass-box , rgba(50, 49, 49, 0.5), 3 , 1, 0 , 0);
+}
+
 .home .right .box-data .data-label-1 {
     -fx-text-fill: -color-font-muted;
-    -fx-font-size: 1.1429em; /* 16px */
-    -fx-graphic-text-gap: 0.2143em; /* 3px */
+    -fx-font-size: 1em;
+    -fx-graphic-text-gap: 0em;
 }
 
 .home .right .box-data .data-label-2 {

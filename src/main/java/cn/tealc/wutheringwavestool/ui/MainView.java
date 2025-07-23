@@ -12,6 +12,7 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.release.Release;
+import cn.tealc.wutheringwavestool.model.system.NavData;
 import cn.tealc.wutheringwavestool.thread.system.ui.MainBackgroundTask;
 import cn.tealc.wutheringwavestool.ui.cardpool.CardAnalysisBaseView;
 import cn.tealc.wutheringwavestool.ui.cardpool.CardAnalysisBaseViewModel;
@@ -30,6 +31,7 @@ import cn.tealc.wutheringwavestool.ui.kujiequ.tower.TowerView;
 import cn.tealc.wutheringwavestool.ui.kujiequ.tower.TowerViewModel;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
+import cn.tealc.wutheringwavestool.util.NavLoader;
 import com.jfoenixN.controls.JFXDialog;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;
@@ -55,6 +57,7 @@ import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
 import org.kordamp.ikonli.material2.Material2OutlinedMZ;
 import org.slf4j.Logger;
@@ -67,6 +70,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Random;
 import java.util.ResourceBundle;
 
@@ -76,11 +80,10 @@ import java.util.ResourceBundle;
  * @author: Leck
  * @create: 2024-07-03 18:59
  */
-public class MainView implements Initializable,FxmlView<MainViewModel> {
-    private static final Logger LOG= LoggerFactory.getLogger(MainView.class);
+public class MainView implements Initializable, FxmlView<MainViewModel> {
+    private static final Logger LOG = LoggerFactory.getLogger(MainView.class);
     @InjectViewModel
     private MainViewModel viewModel;
-
     @FXML
     private AnchorPane content;
     @FXML
@@ -91,22 +94,13 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     private Button maxBtn;
     @FXML
     private Button closeBtn;
-    @FXML
-    private ToggleGroup navToggleGroup;
+
 
     @FXML
     private StackPane root;
 
     @FXML
     private VBox messagePane;
-    @FXML
-    private ToggleButton analysisBtn;
-    @FXML
-    private ToggleButton homeBtn;
-
-
-    @FXML
-    private ToggleButton supportBtn;
 
     private GaussianBlur bgGaussianBlur;
     @FXML
@@ -120,68 +114,73 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     @FXML
     private VBox nav;
     @FXML
+    private VBox navTop, navBottom;
+    @FXML
     private Region navBg;
     @FXML
     private ImageView icon;
 
     @FXML
     private HBox titlebar;
+    private ToggleGroup navToggleGroup;
+    private ToggleButton supportBtn;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        Circle circle=new Circle(18,18,18);
+        Circle circle = new Circle(18, 18, 18);
         icon.setClip(circle);
-        icon.setImage(new Image(FXResourcesLoader.load("image/icon.png"),45,45,true,true));
+        icon.setImage(new Image(FXResourcesLoader.load("image/icon.png"), 45, 45, true, true));
 
         //禁用库街区，系统语言为英文也会默认禁用库街区
-        if (Config.setting.isNoKuJieQu()){
+        if (Config.setting.isNoKuJieQu()) {
             Iterator<Node> iterator = nav.getChildren().iterator();
             while (iterator.hasNext()) {
                 Node next = iterator.next();
                 if (next instanceof ToggleButton button) {
-                    if (button.getAccessibleText() != null && button.getAccessibleText().equals("kujiequ")){
+                    if (button.getAccessibleText() != null && button.getAccessibleText().equals("kujiequ")) {
                         iterator.remove();
                     }
                 }
             }
         }
 
-        navBtn.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
-            if (!t1){
-                for (Toggle toggle : navToggleGroup.getToggles()) {
-                    if (toggle == navBtn) {
-                        return;
-                    }
-                    ToggleButton toggleButton = (ToggleButton) toggle;
-                    toggleButton.getStyleClass().remove("icon-only");
+        initBackground();
+        initNav();
+        initContent();
+        initGlobalEvent();
+    }
+
+    private void initGlobalEvent() {
+        MvvmFX.getNotificationCenter().subscribe(NotificationKey.NOTIFICATION_SHOW_UPDATE, ((s, objects) -> {
+            showUpdateView((Release) objects[0]);
+        }));
+        MvvmFX.getNotificationCenter().subscribe(NotificationKey.MESSAGE, ((s, objects) -> {
+            showMessage((MessageInfo) objects[0]);
+        }));
+        MvvmFX.getNotificationCenter().subscribe(NotificationKey.DIALOG, ((s, objects) -> {
+            if (objects[0] instanceof JFXDialogLayout node) {
+                showDialog(node);
+            } else {
+                Pane panes = (Pane) objects[0];
+                if (objects[1] != null && objects[1] instanceof BaseDialog dialog) {
+                    showDialog(panes, dialog);
+                } else {
+                    showDialog(panes);
                 }
-                supportBtn.getStyleClass().remove("icon-only");
-            }else {
-                for (Toggle toggle : navToggleGroup.getToggles()) {
-                    if (toggle == navBtn) {
-                        return;
-                    }
-                    ToggleButton toggleButton = (ToggleButton) toggle;
-                    toggleButton.getStyleClass().add("icon-only");
-                }
-                supportBtn.getStyleClass().add("icon-only");
             }
-        });
+        }));
+        MvvmFX.getNotificationCenter().subscribe(NotificationKey.CHANGE_BG, ((s, objects) -> {
+            updateBg();
+        }));
 
-        navBtn.selectedProperty().bindBidirectional(Config.setting.leftBarShowProperty());
+        MvvmFX.getNotificationCenter().subscribe(NotificationKey.CHANGE_NAV, ((s, objects) -> {
+            navTop.getChildren().clear();
+            navBottom.getChildren().clear();
+            initNav();
+        }));
+    }
 
-        supportBtn.visibleProperty().bind(Config.setting.supportProperty().not());
-
-        if (Config.setting.isFirstViewWithPoolAnalysis()){
-            ViewTuple<CardAnalysisBaseView, CardAnalysisBaseViewModel> viewTuple = FluentViewLoader.fxmlView(CardAnalysisBaseView.class).load();
-            child.getChildren().setAll(viewTuple.getView());
-            navToggleGroup.selectToggle(analysisBtn);
-            bgPane.setVisible(false);
-        }else {
-            ViewTuple<HomeView, HomeViewModel> viewTuple = FluentViewLoader.fxmlView(HomeView.class).load();
-            child.getChildren().setAll(viewTuple.getView());
-
-        }
-
+    private void initBackground() {
         Rectangle rectangle = new Rectangle();
         rectangle.widthProperty().bind(bgPane.widthProperty());
         rectangle.heightProperty().bind(bgPane.heightProperty());
@@ -190,7 +189,6 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         bgPane.setClip(rectangle);
         bgPane02.visibleProperty().bind(bgPane.visibleProperty().not());
         bgPane03.visibleProperty().bind(bgPane.visibleProperty().not());
-
 
         // 创建亚克力效果层
         Rectangle acrylicLayer = new Rectangle();
@@ -205,52 +203,100 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         bgPane02.getChildren().addAll(acrylicLayer, noiseTexture);
 
         updateBg();
-
-
-        MvvmFX.getNotificationCenter().subscribe(NotificationKey.NOTIFICATION_SHOW_UPDATE,((s, objects) -> {
-            showUpdateView((Release) objects[0]);
-        }));
-        MvvmFX.getNotificationCenter().subscribe(NotificationKey.MESSAGE,((s, objects) -> {
-            showMessage((MessageInfo) objects[0]);
-        }));
-        MvvmFX.getNotificationCenter().subscribe(NotificationKey.DIALOG,((s, objects) -> {
-            if (objects[0] instanceof JFXDialogLayout node){
-                showDialog(node);
-            }else {
-                Pane panes= (Pane) objects[0];
-                if (objects[1] != null && objects[1] instanceof BaseDialog dialog){
-                    showDialog(panes,dialog);
-                }else {
-                    showDialog(panes);
-                }
-
-            }
-        }));
-        MvvmFX.getNotificationCenter().subscribe(NotificationKey.CHANGE_BG,((s, objects) -> {
-            updateBg();
-        }));
     }
 
+    private void initNav() {
+        supportBtn = new ToggleButton(LanguageManager.getString("ui.main.button.nav.type09"),new FontIcon(Material2AL.LOCAL_CAFE));
+        supportBtn.getStyleClass().add("icon-only");
+        supportBtn.setOnAction(this::toSupport);
+        navBottom.getChildren().addFirst(supportBtn);
 
-    private void updateBg(){
-        Image image=null;
-        if (Config.setting.getDiyHomeBgType() == 0){
+        navToggleGroup = new ToggleGroup();
+        List<NavData> navList = viewModel.getNavList();
+
+        for (NavData navData : navList) {
+            if (Config.setting.isNoKuJieQu() && navData.isKujiequ()){
+                continue;
+            }
+            FontIcon fontIcon = new FontIcon(navData.getIcon());
+            String title = LanguageManager.getString(navData.getTitle());
+            ToggleButton toggleButton = new ToggleButton(title, fontIcon);
+            toggleButton.setOnAction(actionEvent -> {
+                ToggleButton source = (ToggleButton) actionEvent.getSource();
+                if (source.isSelected()) {
+                    ViewTuple<?, ?> load = NavLoader.load(navData);
+                    bgPane.setVisible(navData.isShowBg());
+                    child.getChildren().setAll(load.getView());
+                    startNavAnim();
+                } else {
+                    source.setSelected(true);
+                }
+            });
+            toggleButton.setToggleGroup(navToggleGroup);
+            toggleButton.getStyleClass().add("icon-only");
+            if (navData.isBottom()) {
+                navBottom.getChildren().add(toggleButton);
+            } else {
+                navTop.getChildren().add(toggleButton);
+            }
+        }
+
+        navBtn.selectedProperty().addListener((observableValue, aBoolean, t1) -> {
+            if (!t1) {
+                for (Toggle toggle : navToggleGroup.getToggles()) {
+                    if (toggle == navBtn) {
+                        return;
+                    }
+                    ToggleButton toggleButton = (ToggleButton) toggle;
+                    toggleButton.getStyleClass().remove("icon-only");
+                }
+                supportBtn.getStyleClass().remove("icon-only");
+            } else {
+                for (Toggle toggle : navToggleGroup.getToggles()) {
+                    if (toggle == navBtn) {
+                        return;
+                    }
+                    ToggleButton toggleButton = (ToggleButton) toggle;
+                    toggleButton.getStyleClass().add("icon-only");
+                }
+                supportBtn.getStyleClass().add("icon-only");
+            }
+        });
+        navBtn.selectedProperty().bindBidirectional(Config.setting.leftBarShowProperty());
+        supportBtn.visibleProperty().bind(Config.setting.supportProperty().not());
+    }
+
+    private void initContent(){
+        if (Config.setting.isFirstViewWithPoolAnalysis()) {
+            ViewTuple<CardAnalysisBaseView, CardAnalysisBaseViewModel> viewTuple = FluentViewLoader.fxmlView(CardAnalysisBaseView.class).load();
+            child.getChildren().setAll(viewTuple.getView());
+            //navToggleGroup.selectToggle(analysisBtn);
+            bgPane.setVisible(false);
+        } else {
+            ViewTuple<HomeView, HomeViewModel> viewTuple = FluentViewLoader.fxmlView(HomeView.class).load();
+            child.getChildren().setAll(viewTuple.getView());
+        }
+    }
+
+    private void updateBg() {
+        Image image = null;
+        if (Config.setting.getDiyHomeBgType() == 0) {
             image = new Image(FXResourcesLoader.load("image/bg.png"));
-        }else if (Config.setting.getDiyHomeBgType() == 1){
-            image= LocalResourcesManager.getHomeBg(Config.setting.getDiyHomeBgName());
-            if (image == null){
+        } else if (Config.setting.getDiyHomeBgType() == 1) {
+            image = LocalResourcesManager.getHomeBg(Config.setting.getDiyHomeBgName());
+            if (image == null) {
                 image = new Image(FXResourcesLoader.load("image/bg.png"));
                 Config.setting.setDiyHomeBg(false);
                 Config.setting.setDiyHomeBgName(null);
                 LOG.warn("自定义壁纸出现问题，取消自定义");
             }
-        }else if (Config.setting.getDiyHomeBgType() == 2){
+        } else if (Config.setting.getDiyHomeBgType() == 2) {
             image = getImageFormBgDir();
-            if (image == null){
+            if (image == null) {
                 image = new Image(FXResourcesLoader.load("image/bg.png"));
             }
         }
-        if (image != null){
+        if (image != null) {
             bgPane.setBackground(
                     new Background(
                             new BackgroundImage(
@@ -259,7 +305,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
                                     BackgroundRepeat.NO_REPEAT,
                                     BackgroundPosition.CENTER,
                                     new BackgroundSize(BackgroundSize.AUTO, BackgroundSize.AUTO, true, true, true, true))));
-           // bgPane02.setBackground(bgPane.getBackground());
+            // bgPane02.setBackground(bgPane.getBackground());
             //bgPane02用于显示高斯模糊的背景
             MainBackgroundTask task = new MainBackgroundTask(image);
             task.setOnSucceeded(workerStateEvent -> {
@@ -270,14 +316,14 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         }
     }
 
-    private Image getImageFormBgDir(){
+    private Image getImageFormBgDir() {
         File bgDir = new File(Config.setting.getDiyHomeBgDir());
-        if (bgDir.exists()){
-            File[] bgs=bgDir.listFiles((dir, name) -> name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".gif"));
+        if (bgDir.exists()) {
+            File[] bgs = bgDir.listFiles((dir, name) -> name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".gif"));
             if (bgs != null && bgs.length > 0) {
                 Random random = new Random();
                 int i = random.nextInt(bgs.length);
-                return new Image(bgs[i].toURI().toString(),2560,1440,true,true,false);
+                return new Image(bgs[i].toURI().toString(), 2560, 1440, true, true, false);
             }
         }
 
@@ -285,13 +331,11 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     }
 
 
-
-
-    private void showDialog(JFXDialogLayout container){
-        JFXDialog dialog = new JFXDialog(root,container,JFXDialog.DialogTransition.CENTER);
+    private void showDialog(JFXDialogLayout container) {
+        JFXDialog dialog = new JFXDialog(root, container, JFXDialog.DialogTransition.CENTER);
         for (Node action : container.getActions()) {
             if (action instanceof Button button) {
-                if (button.isCancelButton()){
+                if (button.isCancelButton()) {
                     button.setOnAction(event -> {
                         dialog.close();
                     });
@@ -301,29 +345,30 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         dialog.show();
     }
 
-    private void showUpdateView(Release release){
+    private void showUpdateView(Release release) {
         ViewTuple<UpdateView, UpdateViewModel> viewTuple = FluentViewLoader.fxmlView(UpdateView.class).viewModel(new UpdateViewModel(release)).load();
         StackPane view = (StackPane) viewTuple.getView();
         view.setBackground(bgPane02.getBackground());
 
         //必须放在通知界面的后面
-        content.getChildren().add(content.getChildren().size()-1,view);
-        AnchorPaneUtil.setPosition(view,0,0,0,0);
+        content.getChildren().add(content.getChildren().size() - 1, view);
+        AnchorPaneUtil.setPosition(view, 0, 0, 0, 0);
     }
 
 
-    private void showDialog(Pane pane){
-        JFXDialog dialog = new JFXDialog(root,pane,JFXDialog.DialogTransition.CENTER);
+    private void showDialog(Pane pane) {
+        JFXDialog dialog = new JFXDialog(root, pane, JFXDialog.DialogTransition.CENTER);
         dialog.show();
     }
-    private void showDialog(Pane pane,BaseDialog baseDialog){
-        JFXDialog dialog = new JFXDialog(root,pane,JFXDialog.DialogTransition.CENTER);
+
+    private void showDialog(Pane pane, BaseDialog baseDialog) {
+        JFXDialog dialog = new JFXDialog(root, pane, JFXDialog.DialogTransition.CENTER);
         baseDialog.setDialog(dialog);
         dialog.show();
     }
 
-    private void showMessage(MessageInfo info){
-        if (messagePane.getChildren().size() > 7){
+    private void showMessage(MessageInfo info) {
+        if (messagePane.getChildren().size() > 7) {
             messagePane.getChildren().removeFirst();
         }
         Message message = createMessage(info);
@@ -335,10 +380,10 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         Platform.runLater(() -> {
             messagePane.getChildren().add(message);
             message.setTranslateX(300);
-            Timeline timeline=new Timeline(new KeyFrame(Duration.millis(250),new KeyValue(message.translateXProperty(),0)));
+            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(250), new KeyValue(message.translateXProperty(), 0)));
             timeline.play();
         });
-        if (info.getAutoClose()){
+        if (info.getAutoClose()) {
             Timeline fiveSecondsWonder = new Timeline(new KeyFrame(info.getShowTime(), new EventHandler<ActionEvent>() {
                 @Override
                 public void handle(ActionEvent event) {
@@ -352,7 +397,7 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
     }
 
 
-    public void close(){
+    public void close() {
         switch (Config.setting.getCloseEvent()) {
             case 0 -> showExitDialog();
             case 1 -> MainApplication.exit();
@@ -360,20 +405,20 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         }
     }
 
-    private void showExitDialog(){
+    private void showExitDialog() {
         JFXDialogLayout dialogLayout = new JFXDialogLayout();
         Label title = new Label(LanguageManager.getString("ui.main.exit.header"));
         title.getStyleClass().add("title-2");
         dialogLayout.setHeading(title);
-        Label tip=new Label(LanguageManager.getString("ui.main.exit.body"));
+        Label tip = new Label(LanguageManager.getString("ui.main.exit.body"));
         dialogLayout.setBody(tip);
 
-        Button exitBtn=new Button(LanguageManager.getString("ui.main.exit.btn01"));
-        Button iconBtn=new Button(LanguageManager.getString("ui.main.exit.btn02"));
-        Button cancelBtn=new Button(LanguageManager.getString("ui.main.exit.btn03"));
+        Button exitBtn = new Button(LanguageManager.getString("ui.main.exit.btn01"));
+        Button iconBtn = new Button(LanguageManager.getString("ui.main.exit.btn02"));
+        Button cancelBtn = new Button(LanguageManager.getString("ui.main.exit.btn03"));
 
-        dialogLayout.setActions(iconBtn,exitBtn,cancelBtn);
-        JFXDialog jfxDialog = new JFXDialog(root,dialogLayout,JFXDialog.DialogTransition.CENTER);
+        dialogLayout.setActions(iconBtn, exitBtn, cancelBtn);
+        JFXDialog jfxDialog = new JFXDialog(root, dialogLayout, JFXDialog.DialogTransition.CENTER);
 
         exitBtn.setOnAction(event -> {
             MainApplication.exit();
@@ -389,202 +434,29 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
 
 
     @FXML
-    void toAnalysis(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
-        if (toggleButton.isSelected()){
-            ViewTuple<CardAnalysisBaseView, CardAnalysisBaseViewModel> viewTuple = FluentViewLoader.fxmlView(CardAnalysisBaseView.class).load();
-
-
-            //ViewTuple<AnalysisPoolView, AnalysisPoolViewModel> viewTuple = FluentViewLoader.fxmlView(AnalysisPoolView.class).load();
-            child.getChildren().setAll(viewTuple.getView());
-            startNavAnim();
-            bgPane.setVisible(false);
-
-        }else {
-            toggleButton.setSelected(true);
-        }
-    }
-    @FXML
-    void toOwnRole(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
-        if (toggleButton.isSelected()){
-            ViewTuple<OwnRoleView, OwnRoleViewModel> viewTuple = FluentViewLoader.fxmlView(OwnRoleView.class).load();
-
-            child.getChildren().setAll(viewTuple.getView());
-            startNavAnim();
-            bgPane.setVisible(false);
-        }else {
-            toggleButton.setSelected(true);
-        }
-    }
-    @FXML
-    void toSign(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
-        if (toggleButton.isSelected()){
-            ViewTuple<SignView, SignViewModel> viewTuple = FluentViewLoader.fxmlView(SignView.class).load();
-            bgPane.setVisible(false);
-            child.getChildren().setAll(viewTuple.getView());
-            startNavAnim();
-        }else {
-            toggleButton.setSelected(true);
-        }
-
-    }
-    @FXML
-    void toMain(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
-        if (toggleButton.isSelected()){
-            ViewTuple<HomeView, HomeViewModel> viewTuple = FluentViewLoader.fxmlView(HomeView.class).load();
-            bgPane.setVisible(true);
-            child.getChildren().setAll(viewTuple.getView());
-            startNavAnim();
-        }else {
-            toggleButton.setSelected(true);
-        }
-    }
-
-    @FXML
-    void toSetting(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
-        if (toggleButton.isSelected()){
-            ViewTuple<SettingView,SettingViewModel> viewTuple = FluentViewLoader.fxmlView(SettingView.class).load();
-            bgPane.setVisible(false);
-            child.getChildren().setAll(viewTuple.getView());
-            startNavAnim();
-        }else {
-            toggleButton.setSelected(true);
-        }
-    }
-
-    @FXML
-    void toGameManager(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
-        if (toggleButton.isSelected()){
-            ViewTuple<GameManagerView, GameManagerViewModel> viewTuple = FluentViewLoader.fxmlView(GameManagerView.class).load();
-            bgPane.setVisible(false);
-            child.getChildren().setAll(viewTuple.getView());
-            startNavAnim();
-        }else {
-            toggleButton.setSelected(true);
-        }
-    }
-    @FXML
-    void toAccount(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
-        if (toggleButton.isSelected()){
-            ViewTuple<AccountView, AccountViewModel> viewTuple = FluentViewLoader.fxmlView(AccountView.class).load();
-            bgPane.setVisible(false);
-            child.getChildren().setAll(viewTuple.getView());
-            startNavAnim();
-        }else {
-            toggleButton.setSelected(true);
-        }
-    }
-
-    @FXML
-    void toGameTime(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
-        if (toggleButton.isSelected()){
-            ViewTuple<GameStatisticsView, GameStatisticsViewModel> viewTuple = FluentViewLoader.fxmlView(GameStatisticsView.class).load();
-            bgPane.setVisible(false);
-            child.getChildren().setAll(viewTuple.getView());
-            startNavAnim();
-        }else {
-            toggleButton.setSelected(true);
-        }
-    }
-
-
-    @FXML
-    void toTower(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
-        if (toggleButton.isSelected()){
-            ViewTuple<TowerGroupView, TowerGroupViewModel> viewTuple = FluentViewLoader.fxmlView(TowerGroupView.class).load();
-            bgPane.setVisible(false);
-            child.getChildren().setAll(viewTuple.getView());
-            startNavAnim();
-        }else {
-            toggleButton.setSelected(true);
-        }
-    }
-    
-
-    @FXML
-    void toUpdate(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
-        if (toggleButton.isSelected()){
-            ViewTuple<UpdateView, UpdateViewModel> viewTuple = FluentViewLoader.fxmlView(UpdateView.class).load();
-            bgPane.setVisible(false);
-            child.getChildren().setAll(viewTuple.getView());
-            startNavAnim();
-        }else {
-            toggleButton.setSelected(true);
-        }
-    }
-    @FXML
-    void toCalculator(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
-        if (toggleButton.isSelected()){
-            ViewTuple<CalculatorView, CalculatorViewModel> viewTuple = FluentViewLoader.fxmlView(CalculatorView.class).load();
-            bgPane.setVisible(false);
-            child.getChildren().setAll(viewTuple.getView());
-            startNavAnim();
-        }else {
-            toggleButton.setSelected(true);
-        }
-    }
-
-    @FXML
-    void toBriefing(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
-        if (toggleButton.isSelected()){
-            ViewTuple<ResourceBriefingView, ResourceBriefingViewModel> viewTuple = FluentViewLoader.fxmlView(ResourceBriefingView.class).load();
-            bgPane.setVisible(false);
-            child.getChildren().setAll(viewTuple.getView());
-            startNavAnim();
-        }else {
-            toggleButton.setSelected(true);
-        }
-    }
-
-
-    @FXML
-    void toPlugin(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
-        if (toggleButton.isSelected()){
-            ViewTuple<PluginView, PluginViewModel> viewTuple = FluentViewLoader.fxmlView(PluginView.class).load();
-            bgPane.setVisible(false);
-            child.getChildren().setAll(viewTuple.getView());
-            startNavAnim();
-        }else {
-            toggleButton.setSelected(true);
-        }
-    }
-
-    @FXML
     void toSupport(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
+        ToggleButton toggleButton = (ToggleButton) event.getSource();
         toggleButton.setSelected(false);
         Label title = new Label(LanguageManager.getString("ui.setting.sponsor.dialog.title"));
         title.getStyleClass().add(Styles.TITLE_3);
-        Label tip1 =new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip01"));
+        Label tip1 = new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip01"));
         tip1.setWrapText(true);
         tip1.setPrefWidth(450);
         tip1.setMinHeight(80);
-        Image image =new Image(FXResourcesLoader.load("image/support.png"),350,320,true,true,true);
+        Image image = new Image(FXResourcesLoader.load("image/support.png"), 350, 320, true, true, true);
         ImageView iv = new ImageView(image);
 
-        StackPane imagePane =new StackPane(iv);
-        Label tip2 =new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip02"));
-        Label tip3 =new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip03"));
-        VBox center = new VBox(5.0,tip1,imagePane,tip2,tip3);
+        StackPane imagePane = new StackPane(iv);
+        Label tip2 = new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip02"));
+        Label tip3 = new Label(LanguageManager.getString("ui.setting.sponsor.dialog.tip03"));
+        VBox center = new VBox(5.0, tip1, imagePane, tip2, tip3);
 
         Hyperlink browserBtn = new Hyperlink(LanguageManager.getString("ui.setting.sponsor.dialog.browser"));
         browserBtn.setOnAction(actionEvent -> {
             try {
                 Desktop.getDesktop().browse(new URI(Config.URL_SUPPORT_LIST));
             } catch (IOException | URISyntaxException e) {
-                LOG.error("打开赞助名单失败{}",e.getMessage());
+                LOG.error("打开赞助名单失败{}", e.getMessage());
             }
         });
         Button okBtn = new Button(LanguageManager.getString("ui.setting.sponsor.dialog.ok"));
@@ -592,33 +464,23 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
 
 
         okBtn.setOnAction(actionEvent -> {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"感谢您的支持，谢谢",Duration.seconds(5)));
+            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.SUCCESS, "感谢您的支持，谢谢", Duration.seconds(5)));
             Config.setting.setSupport(true);
             cancelBtn.fireEvent(actionEvent);
         });
 
         cancelBtn.setCancelButton(true);
-        JFXDialogLayout dialogLayout=new JFXDialogLayout();
+        JFXDialogLayout dialogLayout = new JFXDialogLayout();
         dialogLayout.setHeading(title);
         dialogLayout.setBody(center);
-        dialogLayout.setActions(browserBtn,okBtn,cancelBtn);
-        dialogLayout.setPrefSize(500,500);
-        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
+        dialogLayout.setActions(browserBtn, okBtn, cancelBtn);
+        dialogLayout.setPrefSize(500, 500);
+        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, dialogLayout);
     }
 
 
-    private void startChangeAnim(){
-        Animations.slideInLeft(child,Duration.millis(300)).play();
-        var t = new Timeline(
-                new KeyFrame(Duration.millis(300),
-                        new KeyValue(bgPane.scaleXProperty(), 1.2),
-                        new KeyValue(bgPane.scaleYProperty(), 1.2),
-                        new KeyValue(bgPane.scaleZProperty(), 1.2)
-                ));
-        t.play();
-    }
-    private void startBackAnim(){
-        Animations.slideInLeft(child,Duration.millis(300)).play();
+    private void startChangeAnim() {
+        Animations.slideInLeft(child, Duration.millis(300)).play();
         var t = new Timeline(
                 new KeyFrame(Duration.millis(300),
                         new KeyValue(bgPane.scaleXProperty(), 1.2),
@@ -628,9 +490,20 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
         t.play();
     }
 
-    private Message createMessage(MessageInfo messageInfo){
+    private void startBackAnim() {
+        Animations.slideInLeft(child, Duration.millis(300)).play();
+        var t = new Timeline(
+                new KeyFrame(Duration.millis(300),
+                        new KeyValue(bgPane.scaleXProperty(), 1.2),
+                        new KeyValue(bgPane.scaleYProperty(), 1.2),
+                        new KeyValue(bgPane.scaleZProperty(), 1.2)
+                ));
+        t.play();
+    }
+
+    private Message createMessage(MessageInfo messageInfo) {
         Message message = null;
-        switch (messageInfo.getType()){
+        switch (messageInfo.getType()) {
             case SUCCESS -> {
                 message = new Message(
                         null,
@@ -666,8 +539,8 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
             }
         }
 
-        message.setPrefSize(300.0,60.0);
-        message.setMaxSize(300.0,80.0);
+        message.setPrefSize(300.0, 60.0);
+        message.setMaxSize(300.0, 80.0);
         return message;
     }
 
@@ -690,10 +563,9 @@ public class MainView implements Initializable,FxmlView<MainViewModel> {
                 child.setScaleY(1);
             }
         });
-        
+
         t.play();
     }
-
 
 
     public Button getMinBtn() {

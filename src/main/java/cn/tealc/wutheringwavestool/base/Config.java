@@ -23,7 +23,6 @@ public class Config {
     public static final String URL_PHANTOM_GUIDE="https://wave.tealc.fun/pages/advance/phantom.html";
 
     public static Setting setting;
-    public static String currentRoleId;
     public static ResourceBundle language;
     public static String appTitle;
     static {

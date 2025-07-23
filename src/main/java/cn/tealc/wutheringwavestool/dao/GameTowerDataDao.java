@@ -28,6 +28,7 @@ public class GameTowerDataDao {
         map.put("floor","floor");
         map.put("pic_url","picUrl");
         map.put("role_list","roleList");
+        map.put("role_id","roleId");
         map.put("star","star");
         map.put("area_id","areaId");
         map.put("area_name","areaName");
@@ -50,11 +51,11 @@ public class GameTowerDataDao {
         }
     }
 
-    public Set<TowerData> getListByEndTime(long endTime){
+    public Set<TowerData> getListByRoleIdAndEndTime(String roleId,long endTime){
         QueryRunner qr=new QueryRunner();
-        String sql="SELECT * FROM game_tower where endTime = ?";
+        String sql="SELECT * FROM game_tower where endTime = ? and role_id = ?";
         try {
-            List<TowerData> query = qr.query(con, sql, new BeanListHandler<>(TowerData.class,getRowProcessor()),endTime);
+            List<TowerData> query = qr.query(con, sql, new BeanListHandler<>(TowerData.class,getRowProcessor()),endTime,roleId);
             return new HashSet<>(query);
         } catch (SQLException e) {
             LOG.error(e.getMessage(),e);
@@ -76,17 +77,67 @@ public class GameTowerDataDao {
         }
     }
 
+    public List<Long> getEndTimeListByRoleId(String roleId){
+        QueryRunner qr=new QueryRunner();
+        String sql="SELECT endTime FROM game_tower where role_id = ?";
+        try {
+            List<Long> query = qr.query(con, sql, new ColumnListHandler<>(),roleId);
+            HashSet<Long> longs = new HashSet<>(query);
+            return longs.stream().sorted(Comparator.reverseOrder()).toList();
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(),e);
+            return null;
+        }
+    }
 
     public int add(TowerData tower){
-        String sql=" INSERT INTO game_tower(floor,pic_url,role_list,star,area_id,area_name,difficulty,difficulty_name,endTime) VALUES (?,?,?,?,?,?,?,?,?) ON CONFLICT(area_id,floor,endTime) DO UPDATE SET star = ?,role_list = ?";
+        String sql="""
+                INSERT INTO game_tower(role_id,floor,pic_url,role_list,star,area_id,area_name,difficulty,difficulty_name,endTime) 
+                VALUES (?,?,?,?,?,?,?,?,?,?) 
+                ON CONFLICT(role_id, area_id, floor, endTime) 
+                DO UPDATE SET star = ?,role_list = ?""";
         QueryRunner qr=new QueryRunner();
         try {
             ResultSetHandler<Integer> rsh = new ScalarHandler<Integer>();
-            return qr.insert(con,sql,rsh,
-                    tower.getFloor(),tower.getPicUrl(),tower.getRoleList(),tower.getStar(),tower.getAreaId(),tower.getAreaName(),tower.getDifficulty(),tower.getDifficultyName(),tower.getEndTime(),
+            return qr.insert(con,sql,
+                    rsh,tower.getRoleId(),tower.getFloor(),tower.getPicUrl(),tower.getRoleList(),tower.getStar(),tower.getAreaId(),tower.getAreaName(),tower.getDifficulty(),tower.getDifficultyName(),tower.getEndTime(),
                     tower.getStar(),tower.getRoleList());
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    public int update(TowerData tower) {
+        String sql = """
+        UPDATE game_tower 
+        SET role_id = ?, 
+            floor = ?, 
+            pic_url = ?, 
+            role_list = ?, 
+            star = ?, 
+            area_name = ?, 
+            difficulty = ?, 
+            difficulty_name = ?, 
+            endTime = ?
+        WHERE id =?
+        """;
+
+        QueryRunner qr = new QueryRunner();
+        try {
+            return qr.update(con, sql,
+                    tower.getRoleId(),
+                    tower.getFloor(),
+                    tower.getPicUrl(),
+                    tower.getRoleList(),
+                    tower.getStar(),
+                    tower.getAreaName(),
+                    tower.getDifficulty(),
+                    tower.getDifficultyName(),
+                    tower.getEndTime(),
+                    // WHERE 条件参数
+                    tower.getId());
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to update tower data", e);
         }
     }
 }

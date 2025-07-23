@@ -105,7 +105,7 @@ public class TowerViewModel implements ViewModel {
 
     private void initHistory(){
         GameTowerDataDao dataDao = new GameTowerDataDao();
-        List<Long> endTimeList = dataDao.getEndTimeList();
+        List<Long> endTimeList = dataDao.getEndTimeListByRoleId(userInfo.getRoleId());
         SimpleDateFormat endFormat = new SimpleDateFormat("yyyy.MM.dd");
         DateTimeFormatter startFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd");
         // 定义一个截止日期
@@ -134,7 +134,7 @@ public class TowerViewModel implements ViewModel {
     public void changeHistory(long endTime){
         title.set("深境区");
         GameTowerDataDao dao = new GameTowerDataDao();
-        Set<TowerData> list = dao.getListByEndTime(endTime);
+        Set<TowerData> list = dao.getListByRoleIdAndEndTime(userInfo.getRoleId(),endTime);
 
         Map<String,TowerArea> towerAreaMap = new LinkedHashMap<>();
         for (TowerData data : list) {

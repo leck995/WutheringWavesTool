@@ -4,6 +4,7 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
 import com.jfoenixN.controls.JFXDialogLayout;
+import com.kuro.kujiequ.model.sign.UserInfo;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.beans.binding.Bindings;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
+import java.util.List;
 
 public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpdateViewModel> {
     private static final Logger log = LoggerFactory.getLogger(AccountUpdateView.class);
@@ -107,6 +109,12 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
         loginBtn.disableProperty().bind(isPhoneAndCodeEmpty);
 
         viewModel.subscribe(AccountUpdateViewModel.EVENT_CLOSE,(s, objects) -> closeDialog());
+
+        viewModel.subscribe(AccountUpdateViewModel.EVENT_SELECT_ROLE,(s, objects) -> {
+            initAndShowRoleSelectDialog((List<UserInfo>) objects[0]);
+        });
+
+
     }
 
     @FXML
@@ -178,5 +186,31 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
     void toLogin(ActionEvent event) {
         viewModel.setLoginTabVisible(true);
         loginMainAccountCheckBox.setSelected(true);
+    }
+
+
+    private void initAndShowRoleSelectDialog(List<UserInfo> userInfoList){
+        Label titleLabel = new Label("选择角色账号");
+        titleLabel.getStyleClass().add("title-2");
+
+        Button cancelBtn = new Button("关闭");
+        cancelBtn.setCancelButton(true);
+
+        VBox content = new VBox();
+        content.setSpacing(10);
+        for (UserInfo userInfo : userInfoList) {
+            Button button = new Button(String.format("%s(%s)",userInfo.getRoleName(),userInfo.getRoleId()));
+            button.setOnAction(actionEvent -> {
+                cancelBtn.fire();
+                viewModel.addAndUpdateUser(userInfo);
+            });
+            content.getChildren().add(button);
+        }
+
+        JFXDialogLayout layout = new JFXDialogLayout();
+        layout.setHeading(titleLabel);
+        layout.setBody(content);
+        layout.setActions(cancelBtn);
+        NotificationManager.publish(NotificationKey.DIALOG,layout);
     }
 }

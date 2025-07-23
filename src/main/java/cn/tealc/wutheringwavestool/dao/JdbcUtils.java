@@ -83,17 +83,18 @@ public class JdbcUtils {
                     """;
             String createGameTower="""
                     CREATE TABLE IF NOT EXISTS game_tower(
-                      id INTEGER PRIMARY KEY AUTOINCREMENT,
-                      floor INTEGER  NOT NULL,
-                      pic_url INTEGER,
-                      role_list VARCHAR,
-                      star INTEGER,
-                      area_id INTEGER  NOT NULL,
-                      area_name VARCHAR  NOT NULL,
-                      difficulty INTEGER,
-                      difficulty_name VARCHAR,
-                      endTime INTEGER NOT NULL ,
-                      UNIQUE (area_id, floor, endTime));
+                                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                                role_id VARCHAR,
+                                floor INTEGER NOT NULL,
+                                pic_url INTEGER,
+                                role_list VARCHAR,
+                                star INTEGER,
+                                area_id INTEGER NOT NULL,
+                                area_name VARCHAR NOT NULL,
+                                difficulty INTEGER,
+                                difficulty_name VARCHAR,
+                                endTime INTEGER NOT NULL,
+                                UNIQUE (role_id, area_id, floor, endTime))
                     """;
 
             String createGameRecord="""
@@ -123,9 +124,10 @@ public class JdbcUtils {
                     CREATE TABLE IF NOT EXISTS game_slash (
                         id INTEGER PRIMARY KEY  AUTOINCREMENT,
                         data TEXT NOT NULL,
-                        end_time BIGINT NOT NULL UNIQUE
+                        end_time BIGINT NOT NULL,
+                        role_id VARCHAR,
+                        UNIQUE (role_id, end_time)
                     );
-                    CREATE INDEX IF NOT EXISTS idx_slash_data_end_time ON game_slash(end_time);
                     """;
             Statement st = con.createStatement();
             st.execute(createGameTime);

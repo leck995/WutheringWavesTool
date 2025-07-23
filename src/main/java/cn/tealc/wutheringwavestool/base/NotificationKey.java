@@ -11,6 +11,7 @@ public class NotificationKey {
     public static final String DIALOG="DIALOG";
     public static final String CHANGE_BG="CHANGE_BG";
     public static final String CHANGE_HEADER="CHANGE_HEADER";
+    public static final String CHANGE_NAV="CHANGE_NAV";
     public static final String SIGN_USER_DELETE="SIGN_USER_DELETE";
     public static final String SIGN_USER_UPDATE="SIGN_USER_UPDATE";
 

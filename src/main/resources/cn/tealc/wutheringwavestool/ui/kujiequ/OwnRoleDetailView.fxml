@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
@@ -12,6 +13,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <StackPane prefHeight="800.0" prefWidth="1100.0" styleClass="role-detail" stylesheets="@../../css/kujiequ/OwnRoleDetail.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.OwnRoleDetailView">
    <children>
@@ -22,7 +24,7 @@
                   <ListView fx:id="roleListview" prefHeight="200.0" prefWidth="200.0" styleClass="role-list-view" />
                </children>
             </StackPane>
-            <ScrollPane fitToHeight="true" fitToWidth="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="240.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <ScrollPane fx:id="contentScrollPane" fitToHeight="true" fitToWidth="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="240.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <content>
                   <VBox spacing="25.0">
                      <children>
@@ -122,11 +124,20 @@
                                     </HBox>
                                  </children>
                               </HBox>
-                              <FlowPane fx:id="roleAttributePane" alignment="CENTER_LEFT" hgap="20.0" styleClass="role-attribute" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="230.0">
-                                 <padding>
-                                    <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-                                 </padding>
-                              </FlowPane>
+                              <StackPane styleClass="role-attribute" AnchorPane.leftAnchor="30.0" AnchorPane.topAnchor="230.0">
+                                 <children>
+                                    <FlowPane fx:id="roleAttributePane" alignment="CENTER_LEFT" hgap="20.0" styleClass="simple-pane">
+                                       <padding>
+                                          <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                                       </padding>
+                                    </FlowPane>
+                                    <Button mnemonicParsing="false" onAction="#showAttrDetail" styleClass="more-btn" StackPane.alignment="CENTER_RIGHT">
+                                       <graphic>
+                                          <FontIcon iconLiteral="fltfmz-more-vertical-20" />
+                                       </graphic>
+                                    </Button>
+                                 </children>
+                              </StackPane>
                               <VBox alignment="TOP_RIGHT" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
                                  <children>
                                     <ImageView fx:id="chain01" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">

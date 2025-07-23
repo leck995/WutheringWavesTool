@@ -113,7 +113,6 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
     }
 
     private void initStartParam(){
-
         paramField.setOnAction(event -> {
             String param = paramField.getText();
             if (!param.trim().isEmpty()){

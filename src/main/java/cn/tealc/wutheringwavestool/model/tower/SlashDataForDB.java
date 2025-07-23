@@ -9,6 +9,7 @@ public class SlashDataForDB {
     private int id;
     private String data;
     private long endTime;
+    private String roleId;
 
     public int getId() {
         return id;
@@ -32,5 +33,13 @@ public class SlashDataForDB {
 
     public void setEndTime(long endTime) {
         this.endTime = endTime;
+    }
+
+    public String getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(String roleId) {
+        this.roleId = roleId;
     }
 }

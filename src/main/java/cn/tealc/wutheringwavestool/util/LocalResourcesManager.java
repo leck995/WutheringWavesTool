@@ -84,7 +84,7 @@ public class LocalResourcesManager {
     public static Image imageBuffer(String url,double width,double height,boolean preserveRatio,boolean smooth){
         File file=new File(String.format(BUFFER_DIR_TEMPLATE,getName(url)));
         if (file.exists()){ //有缓存，获取
-            return new Image(file.toURI().toString(),width,height,preserveRatio,smooth);
+            return new Image(file.toURI().toString(),width,height,preserveRatio,smooth,true);
         }else { //无缓存，获取并保存
             LOG.debug("{}无缓存，获取并保存",file);
             Image image=new Image(url,true);

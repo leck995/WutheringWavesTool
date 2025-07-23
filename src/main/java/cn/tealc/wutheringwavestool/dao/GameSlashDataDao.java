@@ -23,6 +23,7 @@ public class GameSlashDataDao {
         Map<String, String> columnToPropertyOverrides = new HashMap<>();
         columnToPropertyOverrides.put("id", "id");
         columnToPropertyOverrides.put("data", "data");
+        columnToPropertyOverrides.put("role_id", "roleId");
         columnToPropertyOverrides.put("end_time", "endTime"); // 假设数据库列名为end_time
         return new BasicRowProcessor(new BeanProcessor(columnToPropertyOverrides));
     }
@@ -38,6 +39,7 @@ public class GameSlashDataDao {
             return Collections.emptyList();
         }
     }
+
 
     // 按ID查询
     public SlashDataForDB getById(int id) {
@@ -67,6 +69,21 @@ public class GameSlashDataDao {
         }
     }
 
+    public Optional<SlashDataForDB> getByRoleIdAndEndTime(String roleId,long endTime) {
+        QueryRunner qr = new QueryRunner();
+        String sql = "SELECT * FROM game_slash WHERE end_time = ? AND role_id = ?";
+        try {
+            SlashDataForDB slashDataForDB =  qr.query(con, sql,
+                    new BeanHandler<>(SlashDataForDB.class, getRowProcessor()), endTime,roleId);
+            return Optional.ofNullable(slashDataForDB);
+        } catch (SQLException e) {
+            LOG.error("按endTime查询失败, endTime: {}", endTime, e);
+            return Optional.empty();
+        }
+    }
+
+
+
     // 获取所有不重复的endTime列表（按倒序排列）
     public List<Long> getAllEndTimes() {
         QueryRunner qr = new QueryRunner();
@@ -79,16 +96,30 @@ public class GameSlashDataDao {
         }
     }
 
+
+    public List<Long> getEndTimesByRoleId(String roleId) {
+        QueryRunner qr = new QueryRunner();
+        String sql = "SELECT DISTINCT end_time FROM game_slash where role_id = ? ORDER BY end_time DESC";
+        try {
+            return qr.query(con, sql, new ColumnListHandler<>(),roleId);
+        } catch (SQLException e) {
+            LOG.error("获取endTime列表失败", e);
+            return Collections.emptyList();
+        }
+    }
+
+
+
     // 添加或更新记录（upsert操作）
     public int add(SlashDataForDB data) {
-        String sql = "INSERT INTO game_slash(id, data, end_time) VALUES (?, ?, ?) " +
-                "ON CONFLICT(end_time) DO UPDATE SET data = ?";
+        String sql = "INSERT INTO game_slash(data, end_time,role_id) VALUES (?,?,?) " +
+                "ON CONFLICT(end_time,role_id) DO UPDATE SET data = ?";
         QueryRunner qr = new QueryRunner();
         try {
             return qr.update(con, sql,
-                    data.getId(),
                     data.getData(),
                     data.getEndTime(),
+                    data.getRoleId(),
                     data.getData());
         } catch (SQLException e) {
             LOG.error("保存记录失败, ID: {}", data.getId(), e);
@@ -98,15 +129,15 @@ public class GameSlashDataDao {
 
     // 批量保存
     public int[] addList(List<SlashDataForDB> dataList) {
-        String sql = "INSERT INTO game_slash(id, data, end_time) VALUES (?, ?, ?) " +
-                "ON CONFLICT(end_time) DO UPDATE SET data = ?";
+        String sql = "INSERT INTO game_slash(data, end_time,rold_id) VALUES (?,?,?,?) " +
+                "ON CONFLICT(end_time,rold_id) DO UPDATE SET data = ?";
         QueryRunner qr = new QueryRunner();
         try {
             Object[][] params = dataList.stream()
                     .map(data -> new Object[]{
-                            data.getId(),
                             data.getData(),
                             data.getEndTime(),
+                            data.getRoleId(),
                             data.getData()
                     })
                     .toArray(Object[][]::new);
@@ -128,6 +159,18 @@ public class GameSlashDataDao {
             throw new RuntimeException("更新失败", e);
         }
     }
+
+    public int updateRoleId(int id,String roleId) {
+        String sql = "UPDATE game_slash SET role_id = ? WHERE id = ?";
+        QueryRunner qr = new QueryRunner();
+        try {
+            return qr.update(con, sql, roleId, id);
+        } catch (SQLException e) {
+            LOG.error("更新数据内容失败, ID: {}", id, e);
+            throw new RuntimeException("更新失败", e);
+        }
+    }
+
 
     // 删除记录
     public int delete(int id) {

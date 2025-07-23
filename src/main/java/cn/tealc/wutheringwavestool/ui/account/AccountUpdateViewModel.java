@@ -17,7 +17,8 @@ import java.util.List;
 import java.util.UUID;
 
 public class AccountUpdateViewModel implements ViewModel {
-    public static final String EVENT_CLOSE = "close";
+    public static final String EVENT_CLOSE = "EVENT_CLOSE";
+    public static final String EVENT_SELECT_ROLE = "EVENT_SELECT_ROLE";
 
     private final SimpleBooleanProperty loginTabVisible = new SimpleBooleanProperty(true);
 
@@ -86,23 +87,23 @@ public class AccountUpdateViewModel implements ViewModel {
     }
 
 
-
+    /**
+     * 添加用户时，请求获取账号列表
+     * @param token
+     * @param isWeb
+     * @param did
+     */
     public void addUser(String token, boolean isWeb, String did) {
         GameRoleSeekTask task = new GameRoleSeekTask(token, isWeb);
         task.setOnSucceeded(workerStateEvent -> {
-            ResponseBody<UserInfo> value = task.getValue();
+            ResponseBody<List<UserInfo>> value = task.getValue();
             if (value.getCode() == 200) {
-                UserInfo user = value.getData();
-                user.setMain(mainAccount.get());
-                user.setDevCode(did);
-                boolean status = addUserToDB(user);
-                if (status) {
-                    publish(EVENT_CLOSE);
-                    NotificationManager.message(MessageInfo.success("成功添加账号，游戏昵称：" + user.getRoleName()));
-                    NotificationManager.publish(NotificationKey.ACCOUNT_UPDATE);
-                } else {
-                    NotificationManager.message(MessageInfo.error("账号已存在，无法添加账号：" + user.getRoleName()));
-                }
+                List<UserInfo> userInfoList = value.getData();
+                userInfoList.forEach(userInfo -> {
+                    userInfo.setMain(mainAccount.get());
+                    userInfo.setDevCode(did);
+                });
+                checkUserList(userInfoList);
             } else {
                 NotificationManager.message(MessageInfo.error("添加账号失败，原因：" + value.getMsg()));
             }
@@ -111,30 +112,69 @@ public class AccountUpdateViewModel implements ViewModel {
     }
 
 
-
-
+    /**
+     * 修改用户时，请求获取账号列表
+     * @param token
+     * @param isWeb
+     * @param did
+     */
     private void updateUser(String token, boolean isWeb, String did) {
         GameRoleSeekTask task = new GameRoleSeekTask(token, isWeb);
         task.setOnSucceeded(workerStateEvent -> {
-            ResponseBody<UserInfo> value = task.getValue();
+            ResponseBody<List<UserInfo>> value = task.getValue();
             if (value.getCode() == 200) {
-                UserInfo user = value.getData();
-                user.setMain(mainAccount.get());
-                user.setId(oldUserInfo.getId());
-                user.setDevCode(did);
-                boolean status = updateUserToDB(user);
-                if (status) {
-                    publish(EVENT_CLOSE);
-                    NotificationManager.message(MessageInfo.success("成功修改账号，游戏昵称：" + user.getRoleName()));
-                    NotificationManager.publish(NotificationKey.ACCOUNT_UPDATE);
-                } else {
-                    NotificationManager.message(MessageInfo.error("账号已存在，无法修改账号：" + user.getRoleName()));
-                }
+                List<UserInfo> userInfoList = value.getData();
+                userInfoList.forEach(userInfo -> {
+                    userInfo.setMain(mainAccount.get());
+                    userInfo.setId(oldUserInfo.getId());
+                    userInfo.setDevCode(did);
+                });
+                checkUserList(userInfoList);
             } else {
                 NotificationManager.message(MessageInfo.error("修改账号失败，原因：" + value.getMsg()));
             }
         });
         Thread.startVirtualThread(task);
+    }
+
+
+    /**
+     * 处理获取的账号列表
+     * @param userList
+     */
+    private void checkUserList(List<UserInfo> userList) {
+        if (userList.isEmpty()) {
+            NotificationManager.message(MessageInfo.warning("该账号没有绑定游戏账号"));
+        } else {
+            if (userList.size() == 1) { //如果只有一个游戏账号，直接添加
+                addAndUpdateUser(userList.getFirst());
+            } else { //多个则弹窗，让用户选择
+                publish(EVENT_SELECT_ROLE, userList);
+            }
+        }
+    }
+
+
+    /**
+     * 添加更新用户，当用户选择时调用
+     *
+     * @param user
+     */
+    public void addAndUpdateUser(UserInfo user) {
+        boolean status;
+        if (isAdd) {
+            status = addUserToDB(user);
+        } else {
+            status = updateUserToDB(user);
+        }
+        if (status) {
+            publish(EVENT_CLOSE);
+            NotificationManager.message(MessageInfo.success("成功更新账号，游戏昵称：" + user.getRoleName()));
+            NotificationManager.publish(NotificationKey.ACCOUNT_UPDATE);
+        } else {
+            String message = isAdd ? "添加账号失败，账号可能已存在：" : "数据库操作出错，更新账号失败：";
+            NotificationManager.message(MessageInfo.error(message + user.getRoleName()));
+        }
     }
 
     private boolean addUserToDB(UserInfo userInfo) {
@@ -160,9 +200,17 @@ public class AccountUpdateViewModel implements ViewModel {
 
     private boolean updateUserToDB(UserInfo newUser) {
         UserInfoDao dao = new UserInfoDao();
+        List<UserInfo> accountList = dao.getAll();
+        if (newUser.getMain()) {
+            for (UserInfo oldMainUser : accountList) {
+                if (oldMainUser.getMain()) {
+                    oldMainUser.setMain(false);
+                    dao.updateUser(oldMainUser);
+                }
+            }
+        }
         return dao.updateUser(newUser) > 0;
     }
-
 
 
     public String getTitle() {
@@ -232,6 +280,7 @@ public class AccountUpdateViewModel implements ViewModel {
     public SimpleBooleanProperty loginTabVisibleProperty() {
         return loginTabVisible;
     }
+
     public void setLoginTabVisible(boolean loginTabVisible) {
         this.loginTabVisible.set(loginTabVisible);
     }
