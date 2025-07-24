@@ -138,6 +138,7 @@ public class GameAppListener implements WinUser.WinEventProc{
         if (startFromApp){
             GameLogFileAnalysisTask task = new GameLogFileAnalysisTask();
             task.setOnSucceeded(workerStateEvent -> {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_GAME_TIME_UPDATE);
                 long startTime = startGameTime;
                 exit(startTime);
             });
