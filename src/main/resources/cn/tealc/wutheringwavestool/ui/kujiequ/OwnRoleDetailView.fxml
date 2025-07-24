@@ -133,7 +133,7 @@
                                     </FlowPane>
                                     <Button mnemonicParsing="false" onAction="#showAttrDetail" styleClass="more-btn" StackPane.alignment="CENTER_RIGHT">
                                        <graphic>
-                                          <FontIcon iconLiteral="fltfmz-more-vertical-20" />
+                                          <FontIcon iconLiteral="mdmz-more_vert" />
                                        </graphic>
                                     </Button>
                                  </children>

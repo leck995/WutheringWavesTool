@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.account;
 
+import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
@@ -11,10 +12,10 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 
 public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpdateViewModel> {
@@ -76,8 +78,6 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
     private RadioButton webRadioBox;
 
 
-
-
     public void initialize() {
         addTab.visibleProperty().bind(viewModel.loginTabVisibleProperty().not());
         loginTab.visibleProperty().bind(viewModel.loginTabVisibleProperty());
@@ -108,9 +108,9 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
         );
         loginBtn.disableProperty().bind(isPhoneAndCodeEmpty);
 
-        viewModel.subscribe(AccountUpdateViewModel.EVENT_CLOSE,(s, objects) -> closeDialog());
+        viewModel.subscribe(AccountUpdateViewModel.EVENT_CLOSE, (s, objects) -> closeDialog());
 
-        viewModel.subscribe(AccountUpdateViewModel.EVENT_SELECT_ROLE,(s, objects) -> {
+        viewModel.subscribe(AccountUpdateViewModel.EVENT_SELECT_ROLE, (s, objects) -> {
             initAndShowRoleSelectDialog((List<UserInfo>) objects[0]);
         });
 
@@ -132,7 +132,7 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
         try {
             Desktop.getDesktop().browse(URI.create("https://www.yuque.com/chashuisuipian/sm05lg/pyk5otkcfhd1dqmf"));
         } catch (IOException e) {
-            log.info("跳转错误",e);
+            log.info("跳转错误", e);
         }
     }
 
@@ -155,7 +155,7 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
                     点击下方按钮前往网页版库街区，输入手机号登录，获取到验证码(收到验证码即停止)；
                 第二种方法：
                     打开库街区APP，输入手机号登录，获取到验证码(收到验证码即停止);
-                    
+                
                 将获取到验证码在助手中输入并登录。
                 """);
         Button openBrowserBtn = new Button("前往库街区");
@@ -163,7 +163,7 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
             try {
                 Desktop.getDesktop().browse(URI.create("https://www.kurobbs.com/mc/home/9"));
             } catch (IOException e) {
-                log.info("跳转错误",e);
+                log.info("跳转错误", e);
             }
         });
 
@@ -172,8 +172,8 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
         JFXDialogLayout layout = new JFXDialogLayout();
         layout.setHeading(titleLabel);
         layout.setBody(contentLabel);
-        layout.setActions(openBrowserBtn,cancelBtn);
-        NotificationManager.publish(NotificationKey.DIALOG,layout);
+        layout.setActions(openBrowserBtn, cancelBtn);
+        NotificationManager.publish(NotificationKey.DIALOG, layout);
     }
 
     @FXML
@@ -189,28 +189,39 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
     }
 
 
-    private void initAndShowRoleSelectDialog(List<UserInfo> userInfoList){
+    private void initAndShowRoleSelectDialog(List<UserInfo> userInfoList) {
         Label titleLabel = new Label("选择角色账号");
         titleLabel.getStyleClass().add("title-2");
+
+
+        VBox content = new VBox();
+        content.setSpacing(10);
+        List<CheckBox> checkboxes = new ArrayList<>();
+        for (UserInfo userInfo : userInfoList) {
+            CheckBox checkBox = new CheckBox(String.format("%s(%s)", userInfo.getRoleName(), userInfo.getRoleId()));
+            content.getChildren().add(checkBox);
+            checkboxes.add(checkBox);
+        }
 
         Button cancelBtn = new Button("关闭");
         cancelBtn.setCancelButton(true);
 
-        VBox content = new VBox();
-        content.setSpacing(10);
-        for (UserInfo userInfo : userInfoList) {
-            Button button = new Button(String.format("%s(%s)",userInfo.getRoleName(),userInfo.getRoleId()));
-            button.setOnAction(actionEvent -> {
-                cancelBtn.fire();
-                viewModel.addAndUpdateUser(userInfo);
-            });
-            content.getChildren().add(button);
-        }
+        Button submitBtn = new Button("保存");
+        submitBtn.getStyleClass().add(Styles.ACCENT);
+        submitBtn.setOnAction(event1 -> {
+            for (int i = 0; i < checkboxes.size(); i++) {
+                if (checkboxes.get(i).isSelected()) {
+                    viewModel.addAndUpdateUser(userInfoList.get(i));
+                }
+            }
+            cancelBtn.fire();
+        });
+
 
         JFXDialogLayout layout = new JFXDialogLayout();
         layout.setHeading(titleLabel);
         layout.setBody(content);
-        layout.setActions(cancelBtn);
-        NotificationManager.publish(NotificationKey.DIALOG,layout);
+        layout.setActions(submitBtn,cancelBtn);
+        NotificationManager.publish(NotificationKey.DIALOG, layout);
     }
 }

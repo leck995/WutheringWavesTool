@@ -155,6 +155,10 @@ public class AccountUpdateViewModel implements ViewModel {
     }
 
 
+    public void addAndUpdateUserList(List<UserInfo> userList) {
+        userList.forEach(this::addAndUpdateUser);
+    }
+
     /**
      * 添加更新用户，当用户选择时调用
      *
