@@ -87,10 +87,13 @@ public class SlashDataDetailTask extends BaseTask<ResponseBody<SlashData>> {
      * @date:   2025/5/29
      */
     private void saveToDB(SlashData slashData,ObjectMapper mapper) throws JsonProcessingException {
-        //过滤一次性的关卡数据
-        List<SlashDifficulty> list = slashData.getDifficultyList().stream().filter(slashDifficulty -> slashDifficulty.getDifficulty() != 0).toList();
+        //过滤一次性的关卡数据,以及总分为0的记录
+        List<SlashDifficulty> list = slashData.getDifficultyList().stream()
+                .filter(slashDifficulty -> slashDifficulty.getDifficulty() != 0 && slashDifficulty.getAllScore() > 0)
+                .toList();
         if (list.isEmpty())
             return;
+
         String json = mapper.writeValueAsString(list);
         long seasonEndTime = slashData.getSeasonEndTime();
         long date = convertToHourlyTimestamp(System.currentTimeMillis() + seasonEndTime);

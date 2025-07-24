@@ -23,10 +23,13 @@ import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * @program: WutheringWavesTool
@@ -35,6 +38,10 @@ import java.util.List;
  * @create: 2024-07-03 18:59
  */
 public class MainViewModel implements ViewModel {
+    private static final Logger LOG = LoggerFactory.getLogger(MainViewModel.class);
+    private final AtomicBoolean warningTower = new AtomicBoolean(false);
+    private final AtomicBoolean warningSlash = new AtomicBoolean(false);
+
     public MainViewModel() {
         checkVersion();
         checkGameLogOpen();
@@ -91,40 +98,74 @@ public class MainViewModel implements ViewModel {
         Thread.startVirtualThread(task);
     }
 
+
+
+
     private void updateKujiequ() {
         if (!Config.setting.isNoKuJieQu()) {
-            //获取深塔刷新时间，同时更新深塔历史记录
-            UserInfoDao dao = new UserInfoDao();
-            UserInfo main = dao.getMain();
-            if (main != null) {
-                TowerDataDetailTask task = new TowerDataDetailTask(main);
-                task.setOnSucceeded(workerStateEvent -> {
-                    ResponseBody<DifficultyTotal> value = task.getValue();
-                    if (value.getCode() == 200) {
-                        long milliseconds = value.getData().getSeasonEndTime();
-                        long millisecondsInADay = 24 * 60 * 60 * 1000;
-                        double days = (double) milliseconds / (double) millisecondsInADay;
-                        if (days > 0 && days < 1) {//不足一天时,提醒
-                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.sync.message.tower")));
+            Thread.startVirtualThread(()->{
+                //获取深塔刷新时间，同时更新深塔历史记录
+                UserInfoDao dao = new UserInfoDao();
+                List<UserInfo> users = dao.getAll();
+                for (int i = 0; i < users.size(); i++) {
+                    syncSlash(users.get(i));
+                    syncTower(users.get(i));
+                    if (users.size() > 2){
+                        try {
+                            Thread.sleep(200); //用户数超过两个，等待200ms
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
                         }
                     }
-                });
-                Thread.startVirtualThread(task);
-
-                SlashDataDetailTask slashDataDetailTask = new SlashDataDetailTask(main);
-                slashDataDetailTask.setOnSucceeded(workerStateEvent -> {
-                    ResponseBody<SlashData> value = slashDataDetailTask.getValue();
-                    if (value.getCode() == 200) {
-                        long milliseconds = value.getData().getSeasonEndTime();
-                        long millisecondsInADay = 24 * 60 * 60 * 1000;
-                        double days = (double) milliseconds / (double) millisecondsInADay;
-                        if (days > 0 && days < 1) {//不足一天时,提醒
-                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.sync.message.slash")));
-                        }
-                    }
-                });
-                Thread.startVirtualThread(slashDataDetailTask);
-            }
+                }
+            });
         }
     }
+
+
+
+
+    /**
+     * 查询用户的深塔记录并保存，当距离结束只剩1天提醒
+     * @param userInfo
+     */
+    private void syncTower(UserInfo userInfo) {
+        Thread.startVirtualThread(()->{
+            TowerDataDetailTask task = new TowerDataDetailTask(userInfo);
+            task.setOnSucceeded(workerStateEvent -> {
+                ResponseBody<DifficultyTotal> value = task.getValue();
+                if (value.getCode() == 200) {
+                    long milliseconds = value.getData().getSeasonEndTime();
+                    long millisecondsInADay = 24 * 60 * 60 * 1000;
+                    double days = (double) milliseconds / (double) millisecondsInADay;
+                    if (days > 0 && days < 1 && warningTower.compareAndSet(false, true)) {//不足一天时,提醒
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.sync.message.tower")));
+                    }
+                }
+            });
+            Thread.startVirtualThread(task);
+        });
+    }
+
+    /**
+     * 查询用户的海虚记录并保存，当距离结束只剩1天提醒
+     * @param userInfo
+     */
+    private void syncSlash(UserInfo userInfo) {
+        SlashDataDetailTask slashDataDetailTask = new SlashDataDetailTask(userInfo);
+        slashDataDetailTask.setOnSucceeded(workerStateEvent -> {
+            ResponseBody<SlashData> value = slashDataDetailTask.getValue();
+            if (value.getCode() == 200) {
+                long milliseconds = value.getData().getSeasonEndTime();
+                long millisecondsInADay = 24 * 60 * 60 * 1000;
+                double days = (double) milliseconds / (double) millisecondsInADay;
+                if (days > 0 && days < 1 &&  warningSlash.compareAndSet(false, true)) {//不足一天时,提醒
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.sync.message.slash")));
+                }
+            }
+        });
+        Thread.startVirtualThread(slashDataDetailTask);
+    }
+
+
 }
