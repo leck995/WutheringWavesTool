@@ -43,7 +43,7 @@ public class PlayerBaseDataTask extends BaseTask<ResponseBody<RoleInfo>> {
         String body = String.format("serverId=%s&type=2&roleId=%s&sizeType=1&gameId=%s"
                 , ApiConfig.PARAM_SERVER_ID, userInfo.getRoleId(), ApiConfig.PARAM_GAME_ID);
         try {
-            HttpRequest.Builder builder = getBuilder(url,null,userInfo);
+            HttpRequest.Builder builder = getBuilder(url,body,userInfo);
             HttpRequest request = builder.build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
