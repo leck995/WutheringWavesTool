@@ -121,6 +121,7 @@ public abstract class BaseTask<V> extends Task<V> {
                 .header("source", "android")
                 .header("B-At", "")
                 .header("token", userInfo.getToken())
+                .header("Content-Type","application/x-www-form-urlencoded")
                 .POST(HttpRequest.BodyPublishers.noBody())
                 .build();
         HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());

@@ -10,7 +10,7 @@ import java.security.GeneralSecurityException;
  */
 public class AccessTokenException extends Exception {
     public AccessTokenException() {
-        super("登录已过期，请重新登录");
+        super("用户Bat获取失败失败或过期");
     }
 
     public AccessTokenException(String message) {

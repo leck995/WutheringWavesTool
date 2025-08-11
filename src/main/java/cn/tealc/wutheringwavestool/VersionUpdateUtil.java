@@ -333,7 +333,9 @@ public class VersionUpdateUtil {
         }
     }
 
+    private static void update09() {
 
+    }
 
 
     public static void deleteFile(File file) {

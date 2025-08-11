@@ -9,6 +9,7 @@ import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -18,6 +19,7 @@ import java.net.http.HttpResponse;
 public class CheckVersionTask extends Task<ResponseBody<Release>> {
     private static final Logger LOG= LoggerFactory.getLogger(CheckVersionTask.class);
     private static final String NET_URL="https://wwt.tealc.fun/release.json";
+    private static final String NET_DEV_URL="https://wwt.tealc.fun/release-dev.json";
     private static final String TIP="发现新版本：%s,可在设置中获取更新详细信息";
     private static final String TIP_ERROR="检查版本更新失败，请检查网络状况";
 
@@ -28,9 +30,61 @@ public class CheckVersionTask extends Task<ResponseBody<Release>> {
 
     @Override
     protected ResponseBody<Release> call() throws Exception {
+        if (Config.setting.isDevModel()){
+            return getLocalReleaseData();
+
+        }else {
+            ResponseBody<Release> releaseData = getNetReleaseData();
+            if (releaseData != null) return releaseData;
+        }
+        return new ResponseBody<>(-1,"无法检测更新");
+    }
+
+
+    private ResponseBody<Release> getLocalReleaseData() {
+        ObjectMapper mapper = new ObjectMapper();
+        ReleaseList releaseList = null;
+        try {
+            releaseList = mapper.readValue(new File("release.json"), ReleaseList.class);
+        } catch (IOException e) {
+            LOG.error("检测更新出现异常",e);
+            return new ResponseBody<>(-1, "无法检测更新");
+        }
+        if (releaseList != null) {
+            if (!true){ //开启预览版时
+
+            }else {
+                Release latestRelease = releaseList.getLatestRelease();
+                String version = latestRelease.getVersion();
+                double net = Double.parseDouble(version.replace(".",""));
+                double now = Double.parseDouble(Config.version.replace(".",""));
+                if (checkSkip && Config.setting.getSkipVersion() != null){
+                    double skip = Double.parseDouble(Config.setting.getSkipVersion().replace(".",""));
+                    if (net <= skip){ //网络版本低于跳过版本
+                        LOG.info("检测到跳过版本更新");
+                        return new ResponseBody<>(1, "无更新");
+                    }
+                }
+
+                if (now < net){
+                    LOG.info("检测到有新版本需要更新");
+                    ResponseBody<Release> body = new ResponseBody<>();
+                    body.setCode(200);
+                    body.setData(latestRelease);
+                    return body;
+                }else {
+                    LOG.info("检测到无新版本需要更新");
+                    return new ResponseBody<>(1, "无更新");
+                }
+            }
+        }
+        return new ResponseBody<>(-1,"无法检测更新");
+    }
+
+    private ResponseBody<Release> getNetReleaseData() {
         try (HttpClient client = HttpClient.newHttpClient()){
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create(NET_URL)).GET().build();
+                        .uri(URI.create(NET_URL)).GET().build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 ObjectMapper mapper = new ObjectMapper();
@@ -47,7 +101,7 @@ public class CheckVersionTask extends Task<ResponseBody<Release>> {
                             double skip = Double.parseDouble(Config.setting.getSkipVersion().replace(".",""));
                             if (net <= skip){ //网络版本低于跳过版本
                                 LOG.info("检测到跳过版本更新");
-                                return new ResponseBody<>(1,"无更新");//无新版本
+                                return new ResponseBody<>(1, "无更新");
                             }
                         }
 
@@ -56,23 +110,23 @@ public class CheckVersionTask extends Task<ResponseBody<Release>> {
                             ResponseBody<Release> body = new ResponseBody<>();
                             body.setCode(200);
                             body.setData(latestRelease);
-                            return body;//有新版本
+                            return body;
                         }else {
                             LOG.info("检测到无新版本需要更新");
-                            return new ResponseBody<>(1,"无更新");//无新版本
+                            return new ResponseBody<>(1, "无更新");
                         }
                     }
                 }
             }else if (response.statusCode() == 404){
-                return new ResponseBody<>(404,"找不到更新信息"); //无法检测更新
+                return new ResponseBody<>(404, "找不到更新信息");
             }else {
                 LOG.error("检测更新出现异常");
-                return new ResponseBody<>(-1,"无法检测更新"); //无法检测更新
+                return new ResponseBody<>(-1, "无法检测更新");
             }
         } catch (IOException | InterruptedException e) {
             LOG.error("检测更新出现异常",e);
-            return new ResponseBody<>(-1,"无法检测更新"); //无法检测更新
+            return new ResponseBody<>(-1, "无法检测更新");
         }
-        return new ResponseBody<>(-1,"无法检测更新");
+        return null;
     }
 }
