@@ -10,7 +10,7 @@ import java.util.List;
  * @create: 2025-02-10 16:16
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GameResource {
+public class GameResourceList {
     private List<FileInfo> resource;
 
     public List<FileInfo> getResource() {

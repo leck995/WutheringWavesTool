@@ -2,7 +2,7 @@ package com.kuro.game.model.launcher;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.kuro.game.model.game.GameResource;
+import com.kuro.game.model.game.GameResourceList;
 import com.kuro.game.model.launcher.item.UpdateData;
 
 import java.util.List;
@@ -17,7 +17,7 @@ public class LauncherResource {
     @JsonAlias("default")
     public UpdateData updateData;
     private List<String> keyFileCheckList;
-    private GameResource gameResource;
+    private GameResourceList gameResourceList;
     private UpdateData predownload;
 
     public UpdateData getUpdateData() {
@@ -36,12 +36,12 @@ public class LauncherResource {
         this.keyFileCheckList = keyFileCheckList;
     }
 
-    public GameResource getDownloadResource() {
-        return gameResource;
+    public GameResourceList getDownloadResource() {
+        return gameResourceList;
     }
 
-    public void setDownloadResource(GameResource gameResource) {
-        this.gameResource = gameResource;
+    public void setDownloadResource(GameResourceList gameResourceList) {
+        this.gameResourceList = gameResourceList;
     }
 
     public UpdateData getPredownload() {

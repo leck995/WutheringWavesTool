@@ -11,7 +11,7 @@ import java.util.List;
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class FileInfo {
-    private String dest;
+    private String dest; //文件的下载地址，以及保存地址
     private String md5;
     private Long size;
     private List<ChunkInfo> chunkInfos;

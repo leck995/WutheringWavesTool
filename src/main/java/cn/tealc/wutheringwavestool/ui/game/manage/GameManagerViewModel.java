@@ -14,7 +14,7 @@ import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuro.game.model.game.FileInfo;
-import com.kuro.game.model.game.GameResource;
+import com.kuro.game.model.game.GameResourceList;
 import com.kuro.game.model.launcher.item.CdnData;
 import com.kuro.game.model.launcher.LauncherResource;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -154,7 +154,7 @@ public class GameManagerViewModel implements ViewModel {
         try {
             LauncherResource launcherResource = mapper.readValue(new File("response-bili.json"), LauncherResource.class);
            // System.out.println(launcherResource.getDownloadResource().);
-            GameResource resource = mapper.readValue(new File("resources-bili.json"), GameResource.class);
+            GameResourceList resource = mapper.readValue(new File("resources-bili.json"), GameResourceList.class);
 
             List<FileInfo> fileList = resource.getResource().stream().filter(fileInfo -> fileInfo.getDest().startsWith("/Client/Binaries/Win64/ThirdParty/")).toList();
 

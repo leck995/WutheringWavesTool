@@ -13,6 +13,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -50,7 +51,7 @@ public class LauncherResourceTask extends Task<ResponseBody<LauncherResource>> {
                 .header("User-Agent",
                         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/132.0.0.0 Safari/537.36 Edg/132.0.0.0")
                 .header("Accept", "*/*")
-                .header("accept-encoding", "gzip")
+                .header("Accept-Encoding", "gzip")
                 .header("accept-language", "zh-CN,zh;q=0.9")
                 .GET()
                 .build();
@@ -63,16 +64,21 @@ public class LauncherResourceTask extends Task<ResponseBody<LauncherResource>> {
 
                     ObjectMapper mapper = new ObjectMapper();
                     LauncherResource launcherResource = mapper.readValue(reader, LauncherResource.class);
-                    System.out.println(response.statusCode());
                     System.out.println(launcherResource.getUpdateData().getVersion());
                     return ResponseBody.create(200, "", launcherResource);
                 } catch (IOException e) {
+
+                    ObjectMapper mapper = new ObjectMapper();
+                    LauncherResource launcherResource = mapper.readValue(response.body(), LauncherResource.class);
+
                     LOG.error(e.getMessage());
-                    return ResponseBody.create(-1, "获取最新版本信息失败", null);
+                    return ResponseBody.create(200, "", launcherResource);
                 }
             }else {
                 return ResponseBody.create(-1, "获取最新版本信息失败", null);
             }
+
+
         } catch (IOException | InterruptedException e) {
             LOG.error(e.getMessage());
             return ResponseBody.create(-1, "获取最新版本信息失败", null);

@@ -1,5 +1,6 @@
 package com.kuro.game.model.launcher.item;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.Comparator;
@@ -14,9 +15,11 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UpdateData {
     private List<CdnData> cdnList; //cdn
-    private String resources; //resource.json地址
-    private String resourcesBasePath; //下载地址前缀
+    private String resources; //最新的资源清单，resource.json请求地址
+    private String resourcesBasePath; //下载的第二个地址前缀
+    @JsonIgnore
     public ResourceChunk resourceChunk;
+    @JsonIgnore
     public ResourcesDiff resourcesDiff;
     private String version; //资源版本
     private Config config;
@@ -65,5 +68,29 @@ public class UpdateData {
 
     public void setVersion(String version) {
         this.version = version;
+    }
+
+    public ResourceChunk getResourceChunk() {
+        return resourceChunk;
+    }
+
+    public void setResourceChunk(ResourceChunk resourceChunk) {
+        this.resourceChunk = resourceChunk;
+    }
+
+    public ResourcesDiff getResourcesDiff() {
+        return resourcesDiff;
+    }
+
+    public void setResourcesDiff(ResourcesDiff resourcesDiff) {
+        this.resourcesDiff = resourcesDiff;
+    }
+
+    public Config getConfig() {
+        return config;
+    }
+
+    public void setConfig(Config config) {
+        this.config = config;
     }
 }
