@@ -9,6 +9,8 @@ import com.kuro.kujiequ.model.sign.UserInfo;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuro.kujiequ.thread.BaseTask;
+import com.kuro.util.HTTPRequestMultipartBody;
+import com.kuro.util.HttpRequestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +20,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.time.Duration;
+import java.util.Map;
 
 /**
  * @program: WutheringWavesTool
@@ -35,14 +38,17 @@ public class PlayerBaseDataTask extends BaseTask<ResponseBody<RoleInfo>> {
 
     @Override
     protected ResponseBody<RoleInfo> call() throws Exception {
-        return sign();
+        return request();
     }
 
-    private ResponseBody<RoleInfo> sign() {
+    private ResponseBody<RoleInfo> request() {
         String url = ApiConfig.BASE_DATA_URL;
-        String body = String.format("serverId=%s&type=2&roleId=%s&sizeType=1&gameId=%s"
-                , ApiConfig.PARAM_SERVER_ID, userInfo.getRoleId(), ApiConfig.PARAM_GAME_ID);
         try {
+            HTTPRequestMultipartBody body = new HTTPRequestMultipartBody.Builder()
+                    .addPart("serverId", ApiConfig.PARAM_SERVER_ID)
+                    .addPart("roleId", userInfo.getRoleId())
+                    .addPart("gameId", ApiConfig.PARAM_GAME_ID)
+                    .build();
             HttpRequest.Builder builder = getBuilder(url,body,userInfo);
             HttpRequest request = builder.build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());

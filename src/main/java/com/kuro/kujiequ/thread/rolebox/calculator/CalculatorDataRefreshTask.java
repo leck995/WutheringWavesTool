@@ -33,7 +33,7 @@ public class CalculatorDataRefreshTask extends BaseTask<ResponseBody<String>> {
         String url =String.format("%s?userId=%s&serverId=%s&roleId=%s",
                 ApiConfig.CALCULATOR_LIST_ROLE,userInfo.getUserId(),ApiConfig.PARAM_SERVER_ID,userInfo.getRoleId());
         try {
-            HttpRequest.Builder builder = getBuilder(url, null, userInfo);
+            HttpRequest.Builder builder = getBuilder(url, userInfo);
             HttpRequest request = builder.build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {

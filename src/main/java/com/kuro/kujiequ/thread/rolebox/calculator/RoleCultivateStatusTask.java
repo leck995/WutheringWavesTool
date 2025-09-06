@@ -47,7 +47,7 @@ public class RoleCultivateStatusTask extends BaseTask<ResponseBody<List<ExistedR
                 userInfo.getRoleId(),
                 ids);
         try {
-            HttpRequest request = getBuilder(url,null,userInfo).build();
+            HttpRequest request = getBuilder(url,userInfo).build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 200) {

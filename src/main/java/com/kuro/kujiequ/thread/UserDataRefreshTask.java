@@ -49,7 +49,7 @@ public class UserDataRefreshTask extends BaseTask<ResponseBody<String>> {
             ;
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
-            HttpRequest.Builder builder = getBuilder(url2, null, userInfo);
+            HttpRequest.Builder builder = getBuilder(url2, userInfo);
             HttpRequest request2 = builder.build();
             HttpResponse<String> response2 = httpClient.send(request2, HttpResponse.BodyHandlers.ofString());
       /*      HttpRequest request2 = HttpRequestUtil.getRequestWithSource(url2,token,"android");

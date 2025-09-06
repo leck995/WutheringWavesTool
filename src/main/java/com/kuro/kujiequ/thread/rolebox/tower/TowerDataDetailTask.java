@@ -14,6 +14,7 @@ import com.kuro.kujiequ.model.towerData.DifficultyTotal;
 import com.kuro.kujiequ.model.towerData.Floor;
 import com.kuro.kujiequ.model.towerData.TowerArea;
 import com.kuro.kujiequ.thread.BaseTask;
+import com.kuro.util.HTTPRequestMultipartBody;
 import com.kuro.util.HttpRequestUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,10 +46,13 @@ public class TowerDataDetailTask extends BaseTask<ResponseBody<DifficultyTotal>>
     }
 
     private ResponseBody<DifficultyTotal> sign() {
-        String body = String.format("roleId=%s&serverId=%s&gameId=%s"
-                , userInfo.getRoleId(), ApiConfig.PARAM_SERVER_ID, ApiConfig.PARAM_GAME_ID);
         String url = ApiConfig.SELF_TOWER_DATA_URL;
         try {
+            HTTPRequestMultipartBody body = new HTTPRequestMultipartBody.Builder()
+                    .addPart("serverId", ApiConfig.PARAM_SERVER_ID)
+                    .addPart("roleId", userInfo.getRoleId())
+                    .addPart("gameId", ApiConfig.PARAM_GAME_ID)
+                    .build();
             HttpRequest.Builder builder = getBuilder(url,body,userInfo);
             HttpRequest request = builder.build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());

@@ -42,7 +42,7 @@ public class ListRoleTask extends BaseTask<ResponseBody<List<RoleForCalculator>>
     private ResponseBody<List<RoleForCalculator>> request(){
         String url= ApiConfig.CALCULATOR_LIST_ROLE;
         try {
-            HttpRequest request = getBuilder(url,null,userInfo).build();
+            HttpRequest request = getBuilder(url,userInfo).build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 ObjectMapper mapper = new ObjectMapper();

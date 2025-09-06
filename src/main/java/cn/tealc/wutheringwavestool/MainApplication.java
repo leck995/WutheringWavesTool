@@ -10,6 +10,7 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.theme.Light;
 import cn.tealc.wutheringwavestool.theme.ThemeManager;
+import cn.tealc.wutheringwavestool.thread.system.ClearLogFileTask;
 import cn.tealc.wutheringwavestool.util.AppLocked;
 import cn.tealc.wutheringwavestool.thread.system.ResourcesSyncTask;
 import cn.tealc.wutheringwavestool.ui.tray.NewFxTrayIcon;
@@ -33,9 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import java.awt.*;
 import java.io.IOException;
-/**
-* 自1.3.0以后不再支持使用此类启动程序
-* */
+
 public class MainApplication extends Application {
     private static final Logger LOG=LoggerFactory.getLogger(MainApplication.class);
     public static Stage window;
@@ -73,9 +72,14 @@ public class MainApplication extends Application {
         appListener = GameAppListener.getInstance();
         gameAppListener = User32.INSTANCE.SetWinEventHook(0x0003, 0x0003, null, appListener, 0, 0, 0);
         createTrayIcon();
+        onStart();
+    }
+
+
+
+    private void onStart(){
+        Thread.startVirtualThread(new ClearLogFileTask());
         initExceptionHandler();
-
-
         syncRemoteResources();
     }
 

@@ -10,6 +10,7 @@ import com.kuro.kujiequ.ApiDecryptException;
 import com.kuro.kujiequ.model.roleData.Role;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.thread.BaseTask;
+import com.kuro.util.HTTPRequestMultipartBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,10 +39,15 @@ public class GameRoleDataTask extends BaseTask<ResponseBody<List<Role>>> {
     }
 
     private ResponseBody<List<Role>> getRoleDate() {
-        String url = String.format(
-                "%s?gameId=3&serverId=76402e5b20be2c39f095a152090afddc&roleId=%s", ApiConfig.ROLE_DATA_URL, userInfo.getRoleId());
+        String url = ApiConfig.ROLE_DATA_URL;
         try {
-            HttpRequest.Builder builder = getBuilder(url, null, userInfo);
+            HTTPRequestMultipartBody body = new HTTPRequestMultipartBody.Builder()
+                    .addPart("serverId", ApiConfig.PARAM_SERVER_ID)
+                    .addPart("roleId", userInfo.getRoleId())
+                    .addPart("gameId", ApiConfig.PARAM_GAME_ID)
+                    .build();
+            HttpRequest.Builder builder = getBuilder(url,body,userInfo);
+
             HttpRequest request = builder.build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             ResponseBody<List<Role>> responseBody = new ResponseBody<>();
