@@ -17,6 +17,8 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @program: WutheringWavesTool
@@ -25,6 +27,7 @@ import javafx.util.Duration;
  * @create: 2024-11-16 20:47
  */
 public class GameStatisticsView implements FxmlView<GameStatisticsViewModel>, Initializable {
+    private static final Logger LOG = LoggerFactory.getLogger(GameStatisticsView.class);
     @FXML
     private StackPane content;
 
@@ -37,7 +40,9 @@ public class GameStatisticsView implements FxmlView<GameStatisticsViewModel>, In
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
         createTime();
+
     }
 
     @FXML
@@ -58,8 +63,6 @@ public class GameStatisticsView implements FxmlView<GameStatisticsViewModel>, In
         }else {
             toggleButton.setSelected(true);
         }
-
-
     }
 
     @FXML

@@ -10,25 +10,23 @@ import cn.tealc.wutheringwavestool.plugin.FxPluginManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;
-import javafx.embed.swing.SwingFXUtils;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.SnapshotParameters;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,6 +34,7 @@ import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>, Initializable {
+    private static final Logger LOG = LoggerFactory.getLogger(CardAnalysisBaseView.class);
     @InjectViewModel
     private CardAnalysisBaseViewModel viewModel;
     @FXML
@@ -49,9 +48,9 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         playerComboBox.setItems(viewModel.getPlayerList());
-        if (!viewModel.getPlayerList().isEmpty()) {
-            playerComboBox.getSelectionModel().select(viewModel.getPlayerList().indexOf(viewModel.getPlayer()));
-        }
+//        if (!viewModel.getPlayerList().isEmpty()) {
+//            playerComboBox.getSelectionModel().select(viewModel.getPlayerList().indexOf(viewModel.getPlayer()));
+//        }
         playerComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, s, t1) -> {
             if (t1 != null) {
                 viewModel.changePlayer(t1);
@@ -59,7 +58,7 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
         });
 
 
-        viewModel.subscribe("update-player", (s, objects) -> {
+        viewModel.subscribe(CardAnalysisBaseViewModel.EVENT_SELECTED_PLAYER, (s, objects) -> {
             playerComboBox.getSelectionModel().select(viewModel.getPlayerList().indexOf(viewModel.getPlayer()));
         });
 
@@ -126,7 +125,7 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
         if (event.getSource() instanceof ToggleButton toggleButton){
             if (toggleButton.isSelected()) {
                 createCommonChild();
-                Animations.slideInLeft(commonChild, Duration.millis(300)).play();
+                Animations.slideInUp(commonChild, Duration.millis(300)).play();
                 if (viewModel.getPoolData() != null) {
                     NotificationManager.publish(NotificationKey.CARD_POOL_USER_UPDATE, viewModel.getPoolData());
                 }
@@ -139,10 +138,25 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
 
     private void createCommonChild(){
         if (commonChild == null) {
-            ViewTuple<CardCommonAnalysisView, CardCommonAnalysisViewModel> viewTuple = FluentViewLoader.fxmlView(CardCommonAnalysisView.class).load();
-            commonChild = viewTuple.getView();
+            Thread.startVirtualThread(()->{
+                ViewTuple<CardCommonAnalysisView, CardCommonAnalysisViewModel> viewTuple =
+                        FluentViewLoader
+                                .fxmlView(CardCommonAnalysisView.class)
+                                .viewModel(new CardCommonAnalysisViewModel(viewModel.getPoolData() != null))
+                                .load();
+                commonChild = viewTuple.getView();
+                Platform.runLater(()->{
+                    content.getChildren().setAll(commonChild);
+                });
+            });
+
+
+//            ViewTuple<CardCommonAnalysisView, CardCommonAnalysisViewModel> viewTuple = FluentViewLoader.fxmlView(CardCommonAnalysisView.class).load();
+//            commonChild = viewTuple.getView();
+        }else {
+            content.getChildren().setAll(commonChild);
         }
-        content.getChildren().setAll(commonChild);
+
 
     }
 
@@ -151,15 +165,21 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
         if (event.getSource() instanceof ToggleButton toggleButton){
             if (toggleButton.isSelected()) {
                 if (detailChild == null) {
-                    ViewTuple<CardDetailAnalysisView, CardDetailAnalysisViewModel> viewTuple = FluentViewLoader.fxmlView(CardDetailAnalysisView.class).load();
+                    ViewTuple<CardDetailAnalysisView, CardDetailAnalysisViewModel> viewTuple =
+                            FluentViewLoader
+                                    .fxmlView(CardDetailAnalysisView.class)
+                                    .viewModel(new CardDetailAnalysisViewModel(viewModel.getPoolData() != null))
+                                    .load();
                     detailChild = viewTuple.getView();
                 }
                 content.getChildren().setAll(detailChild);
 
                 if (viewModel.getPoolData() != null) {
                     NotificationManager.publish(NotificationKey.CARD_POOL_USER_UPDATE, viewModel.getPoolData());
+                }else{
+                    NotificationManager.publish(NotificationKey.CARD_POOL_USER_EMPTY);
                 }
-                Animations.slideInRight(detailChild, Duration.millis(300)).play();
+                Animations.slideInUp(detailChild, Duration.millis(300)).play();
             } else {
                 toggleButton.setSelected(true);
             }

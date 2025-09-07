@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -63,20 +65,28 @@ public class CardDetailAnalysisViewModel implements ViewModel {
     private SimpleStringProperty ssrEventAvgText=new SimpleStringProperty(); //限定平均抽数
 
     private SimpleBooleanProperty ssrModel=new SimpleBooleanProperty();
-    private SimpleBooleanProperty empty = new SimpleBooleanProperty(true);
+    private SimpleBooleanProperty empty = new SimpleBooleanProperty(false);
     private SimpleBooleanProperty poolEmpty = new SimpleBooleanProperty(true);
-    public CardDetailAnalysisViewModel() {
+    private SimpleBooleanProperty loading = new SimpleBooleanProperty(false);
+
+
+    public CardDetailAnalysisViewModel(boolean isEmpty) {
+        empty.set(isEmpty);
+        loading.set(!isEmpty);
+
         ssrModel.bindBidirectional(Config.setting.gachaListModelProperty());
         NotificationManager.subscribe(NotificationKey.CARD_POOL_USER_UPDATE,(s, objects) -> {
+            empty.set(false);
             @SuppressWarnings("unchecked")
             List<AnalysisData> list = (List<AnalysisData>) objects[0];
             updatePlayer(list);
-            empty.set(false);
+            loading.set(false);
         });
 
         NotificationManager.subscribe(NotificationKey.CARD_POOL_USER_EMPTY,(s, objects) -> {
             reset();
             empty.set(true);
+            loading.set(false);
         });
     }
 
@@ -357,5 +367,13 @@ public class CardDetailAnalysisViewModel implements ViewModel {
 
     public SimpleBooleanProperty poolEmptyProperty() {
         return poolEmpty;
+    }
+
+    public boolean isLoading() {
+        return loading.get();
+    }
+
+    public SimpleBooleanProperty loadingProperty() {
+        return loading;
     }
 }

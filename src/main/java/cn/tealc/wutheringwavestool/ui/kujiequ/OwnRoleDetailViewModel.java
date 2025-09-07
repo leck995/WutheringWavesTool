@@ -10,6 +10,7 @@ import com.kuro.kujiequ.thread.rolebox.role.GameRoleDetailTask;
 import cn.tealc.wutheringwavestool.util.LocalDataManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -32,6 +33,8 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @program: WutheringWavesTool
@@ -42,6 +45,8 @@ import java.util.Map;
 public class OwnRoleDetailViewModel implements ViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(OwnRoleDetailViewModel.class);
     public static final String EVENT_CHANGE_ROLE = "EVENT_CHANGE_ROLE";
+    public static final String EVENT_UPDATE_PHANTOM = "EVENT_UPDATE_PHANTOM";
+
     private static final LinearGradient SSR = new LinearGradient(
             0.0, 0.0, 1.0, 0.0, true, CycleMethod.NO_CYCLE,
             new Stop(0.0, Color.web("#fad9578c")),
@@ -56,6 +61,9 @@ public class OwnRoleDetailViewModel implements ViewModel {
             new Stop(1.0, Color.web("#bab9b9")));
 
     private static final Map<String, Double> propMaxValueMap = new HashMap<>();
+
+
+
 
     static {
         propMaxValueMap.put("暴击伤害", 21.0);
@@ -127,11 +135,17 @@ public class OwnRoleDetailViewModel implements ViewModel {
 
     private ObservableList<RoleAttribute> roleAttributeList = FXCollections.observableArrayList();
 
+    private SimpleBooleanProperty loading = new SimpleBooleanProperty(true);
+
     public OwnRoleDetailViewModel(UserInfo userInfo, int selectIndex, List<Pair<Role, Image>> rolePairList) {
         this.userInfo = userInfo;
         this.rolePairList.setAll(rolePairList);
         this.selectIndex.set(selectIndex);
-        load();
+
+        CompletableFuture.delayedExecutor(300, TimeUnit.MILLISECONDS)
+                .execute(() -> {
+                    load();;
+                });
     }
 
     public void select(int index) {
@@ -148,212 +162,183 @@ public class OwnRoleDetailViewModel implements ViewModel {
             ResponseBody<RoleDetail> value = task.getValue();
             if (value.getCode() == 200) {
                 RoleDetail data = value.getData();
-                roleName.set(data.getRole().getRoleName());
-                roleLevel.set(String.format("LV.%d -- %d", data.getRole().getLevel(), data.getRole().getChainUnlockNum()));
-                roleImage.set(LocalResourcesManager.imageBuffer(data.getRole().getRolePicUrl(), 500, 380, true, true));
+                analysis(data);
+            }
+        });
+        Thread.startVirtualThread(task);
+    }
 
-                roleAttrImage.set(
-                        new Image(
-                                FXResourcesLoader.load(
-                                        String.format("image/attr/%d.png", data.getRole().getAttributeId())
-                                ), true));
+    private void analysis(RoleDetail data) {
+        updateRoleInfo(data);
+        updateWeapon(data);
+        updateSkillInfo(data);
+        updateChainInfo(data);
 
-                roleAttributeList.setAll(data.getRoleAttributeList());
-
-                weaponName.set(data.getWeaponData().getWeapon().getWeaponName());
-                weaponResonLevel.set(String.format("突破%d", data.getWeaponData().getResonLevel()));
-                weaponLevel.set(String.format("LV.%d", data.getWeaponData().getLevel()));
-                weaponImage.set(LocalResourcesManager.imageBuffer(data.getWeaponData().getWeapon().getWeaponIcon()));
-                weaponStarLevel.set(data.getWeaponData().getWeapon().getWeaponStarLevel());
+        updateBackground(data);
+        updatePhantomInfo(data);
+    }
 
 
-                weaponBg.set(
-                        switch (weaponStarLevel.get()) {
-                            case 5 -> new Background(new BackgroundFill(SSR, new CornerRadii(8), null));
-                            case 4 -> new Background(new BackgroundFill(SR, new CornerRadii(8), null));
-                            default -> new Background(new BackgroundFill(R, new CornerRadii(8), null));
-                        });
+    private void updateBackground(RoleDetail data) {
+        ImgColorBgTask imgColorBgTask = new ImgColorBgTask(data.getRole().getRoleIconUrl());
+        imgColorBgTask.setOnSucceeded(workerStateEvent -> {
+            roleBg.set(imgColorBgTask.getValue());
+        });
+        Thread.startVirtualThread(imgColorBgTask);
+    }
 
-                skill01.set(String.format("LV.%d", data.getSkillList().get(4).getLevel()));
-                skill02.set(String.format("LV.%d", data.getSkillList().get(3).getLevel()));
-                skill03.set(String.format("LV.%d", data.getSkillList().get(2).getLevel()));
-                skill04.set(String.format("LV.%d", data.getSkillList().get(1).getLevel()));
-                skill05.set(String.format("LV.%d", data.getSkillList().get(0).getLevel()));
-                skillImg01.set(LocalResourcesManager.imageBuffer(data.getSkillList().get(4).getSkill().getIconUrl()));
-                skillImg02.set(LocalResourcesManager.imageBuffer(data.getSkillList().get(3).getSkill().getIconUrl()));
-                skillImg03.set(LocalResourcesManager.imageBuffer(data.getSkillList().get(2).getSkill().getIconUrl()));
-                skillImg04.set(LocalResourcesManager.imageBuffer(data.getSkillList().get(1).getSkill().getIconUrl()));
-                skillImg05.set(LocalResourcesManager.imageBuffer(data.getSkillList().get(0).getSkill().getIconUrl()));
+    private void updatePhantomInfo(RoleDetail data) {
+        phantomCost.set(String.format(String.format("COST: %d", data.getPhantomData().getCost())));
+        fetterDetails.clear();
+        totalPhantomValueList.clear();
+        phantomStatus.set(null);
+        phantomList.clear();
 
+        Thread.startVirtualThread(()->{
+            List<Phantom> equipPhantomList = data.getPhantomData().getEquipPhantomList();
+            Map<String, PhoantomMainProps> totalPhantomValueMap = new HashMap<>();
+            if (equipPhantomList != null) {
+                PhantomWeight weight;
+                if (getRoleName().equals("漂泊者")) {
+                    weight = LocalDataManager.getWeight(getRoleName() + "·" + data.getRole().getAttributeName());
+                } else {
+                    weight = LocalDataManager.getWeight(getRoleName());
+                }
+                int count = 0;
+                if (weight != null) {
+                    Map<String, Integer> subPropWeights = weight.getSubPropWeights();
+                    for (Phantom phantom : equipPhantomList) {
+                        if (phantom == null || phantom.getSubProps() == null) {
+                            continue;
+                        }
+                        int level3 = 0;
+                        int level2 = 0;
+                        int level1 = 0;
+                        int level0 = 0;
+                        LOG.debug("=================" + phantom.getPhantomProp().getName() + "==================");
+                        double subCount = 0.0;
+                        for (PhoantomMainProps subProp : phantom.getSubProps()) {
 
-       /*         skillImg02.set(new Image(data.getSkillList().get(1).getSkill().getIconUrl(),true));
-                skillImg03.set(new Image(data.getSkillList().get(2).getSkill().getIconUrl(),true));
-                skillImg04.set(new Image(data.getSkillList().get(3).getSkill().getIconUrl(),true));
-                skillImg05.set(new Image(data.getSkillList().get(4).getSkill().getIconUrl(),true));*/
-
-                chainImg01.set(LocalResourcesManager.imageBuffer(data.getChainList().get(0).getIconUrl()));
-                chainImg02.set(LocalResourcesManager.imageBuffer(data.getChainList().get(1).getIconUrl()));
-                chainImg03.set(LocalResourcesManager.imageBuffer(data.getChainList().get(2).getIconUrl()));
-                chainImg04.set(LocalResourcesManager.imageBuffer(data.getChainList().get(3).getIconUrl()));
-                chainImg05.set(LocalResourcesManager.imageBuffer(data.getChainList().get(4).getIconUrl()));
-                chainImg06.set(LocalResourcesManager.imageBuffer(data.getChainList().get(5).getIconUrl()));
-
-
-                chainImgVisible01.set(data.getChainList().get(0).isUnlocked());
-                chainImgVisible02.set(data.getChainList().get(1).isUnlocked());
-                chainImgVisible03.set(data.getChainList().get(2).isUnlocked());
-                chainImgVisible04.set(data.getChainList().get(3).isUnlocked());
-                chainImgVisible05.set(data.getChainList().get(4).isUnlocked());
-                chainImgVisible06.set(data.getChainList().get(5).isUnlocked());
-
-
-                phantomCost.set(String.format(String.format("COST: %d", data.getPhantomData().getCost())));
-                List<Phantom> equipPhantomList = data.getPhantomData().getEquipPhantomList();
-
-                fetterDetails.clear();
-                totalPhantomValueList.clear();
-                phantomStatus.set(null);
-                phantomList.clear();
-                Map<String, PhoantomMainProps> totalPhantomValueMap = new HashMap<>();
-                if (equipPhantomList != null) {
-                    PhantomWeight weight;
-                    if (getRoleName().equals("漂泊者")) {
-                        weight = LocalDataManager.getWeight(getRoleName() + "·" + data.getRole().getAttributeName());
-                    } else {
-                        weight = LocalDataManager.getWeight(getRoleName());
-                    }
-                    if (weight != null) {
-                        Map<String, Integer> subPropWeights = weight.getSubPropWeights();
-                        int count = 0;
-                        for (Phantom phantom : equipPhantomList) {
-                            if (phantom == null || phantom.getSubProps() == null) {
-                                continue;
-                            }
-                            int level3 = 0;
-                            int level2 = 0;
-                            int level1 = 0;
-                            int level0 = 0;
-                            LOG.debug("=================" + phantom.getPhantomProp().getName() + "==================");
-                            double subCount = 0.0;
-                            for (PhoantomMainProps subProp : phantom.getSubProps()) {
-
-                                String attributeName = subProp.getAttributeName();
-                                String currentValueString = subProp.getAttributeValue();
-                                if (attributeName.equals("攻击") || attributeName.equals("生命") || attributeName.equals("防御")) {
-                                    if (currentValueString.contains("%")) {
-                                        attributeName = attributeName + "百分比";
-                                        subProp.setAttributeName(attributeName);
-                                    }
+                            String attributeName = subProp.getAttributeName();
+                            String currentValueString = subProp.getAttributeValue();
+                            if (attributeName.equals("攻击") || attributeName.equals("生命") || attributeName.equals("防御")) {
+                                if (currentValueString.contains("%")) {
+                                    attributeName = attributeName + "百分比";
+                                    subProp.setAttributeName(attributeName);
                                 }
-
-
-                                double currentValue = Double.parseDouble(currentValueString.replace("%", ""));
-                                double maxValue = propMaxValueMap.get(attributeName);
-                                Integer level = subPropWeights.get(attributeName);
-
-                                //统计声骸词条总值
-                                PhoantomMainProps totalProps = totalPhantomValueMap.get(attributeName);
-                                if (totalProps != null) {
-                                    double v = Double.parseDouble(totalProps.getAttributeValue()) + currentValue;
-                                    totalProps.setAttributeValue(String.format("%.1f", v));
-                                } else {
-                                    totalProps = new PhoantomMainProps();
-                                    totalProps.setAttributeValue(String.format("%.1f", currentValue));
-                                    totalProps.setAttributeName(attributeName);
-                                    totalProps.setLevel(level);
-                                    totalProps.setIconUrl(subProp.getIconUrl());
-                                    totalPhantomValueMap.put(attributeName, totalProps);
-                                }
-
-
-                                if (level != null) {
-                                    subProp.setLevel(level);
-                                    double percent = currentValue / maxValue;
-                                    subProp.setPercent(percent);
-                                    subProp.setAttributeMaxValue(maxValue);
-                                    if (level == 3) {
-                                        level3 += 1;
-                                        subCount += percent;
-                                    } else if (level == 2) {
-                                        level2 += 1;
-                                        subCount += percent;
-                                    } else if (level == 1) {
-                                        level1 += 1;
-                                        subCount += percent;
-                                    } else {
-                                        level0 += 1;
-                                    }
-                                }
-
                             }
 
-                            if (level3 == 2 && level2 + level1 == 3) { //完美
-                                LOG.debug("声骸 {} 已完美", phantom.getPhantomProp().getName());
-                                phantom.setStatus(Phantom.Status.ACE);
-                                count += 5;
-                            } else if (level3 == 2 && level2 + level1 == 2) { //大毕业
-                                LOG.debug("声骸 {} 已大毕业", phantom.getPhantomProp().getName());
-                                phantom.setStatus(Phantom.Status.SSS);
-                                count += 4;
-                            } else if (level3 == 2 && level2 + level1 == 1 || level3 == 1 && level2 + level1 == 3) { //大毕业
-                                LOG.debug("声骸 {} 已毕业", phantom.getPhantomProp().getName());
-                                phantom.setStatus(Phantom.Status.SS);
-                                count += 3;
-                            } else if (level3 == 2 || level3 == 1 && level2 + level1 >= 2) { //小毕业
-                                LOG.debug("声骸 {} 已小毕业", phantom.getPhantomProp().getName());
-                                phantom.setStatus(Phantom.Status.S);
-                                count += 2;
-                            } else {//普通
-                                LOG.debug("声骸 {} 已不太行", phantom.getPhantomProp().getName());
-                                phantom.setStatus(Phantom.Status.N);
-                                count += 1;
-                            }
 
-                            if (level3 == 2 && subCount > 3.5) {
-                                LOG.debug("声骸词条 {} 已完美，分数：{}", phantom.getPhantomProp().getName(), subCount);
-                                phantom.setPropStatus(Phantom.Status.ACE);
-                                count += 5;
-                            } else if (level3 == 2 && subCount > 2.8) {
-                                LOG.debug("声骸词条 {} 已大毕业，分数：{}", phantom.getPhantomProp().getName(), subCount);
-                                phantom.setPropStatus(Phantom.Status.SSS);
-                                count += 4;
-                            } else if (level3 == 2 && subCount > 2.1 || level3 == 1 && subCount > 2.4) {
-                                LOG.debug("声骸词条 {} 已毕业，分数：{}", phantom.getPhantomProp().getName(), subCount);
-                                phantom.setPropStatus(Phantom.Status.SS);
-                                count += 3;
-                            } else if (level3 == 1 && subCount > 1.6 || level3 == 2 && subCount > 1.2) {
-                                LOG.debug("声骸词条 {} 已小毕业，分数：{}", phantom.getPhantomProp().getName(), subCount);
-                                phantom.setPropStatus(Phantom.Status.S);
-                                count += 2;
+                            double currentValue = Double.parseDouble(currentValueString.replace("%", ""));
+                            double maxValue = propMaxValueMap.get(attributeName);
+                            Integer level = subPropWeights.get(attributeName);
+
+                            //统计声骸词条总值
+                            PhoantomMainProps totalProps = totalPhantomValueMap.get(attributeName);
+                            if (totalProps != null) {
+                                double v = Double.parseDouble(totalProps.getAttributeValue()) + currentValue;
+                                totalProps.setAttributeValue(String.format("%.1f", v));
                             } else {
-                                LOG.debug("声骸词条 {} 已不太行，分数：{}", phantom.getPhantomProp().getName(), subCount);
-                                phantom.setPropStatus(Phantom.Status.N);
-                                count += 1;
+                                totalProps = new PhoantomMainProps();
+                                totalProps.setAttributeValue(String.format("%.1f", currentValue));
+                                totalProps.setAttributeName(attributeName);
+                                totalProps.setLevel(level);
+                                totalProps.setIconUrl(subProp.getIconUrl());
+                                totalPhantomValueMap.put(attributeName, totalProps);
                             }
+
+
+                            if (level != null) {
+                                subProp.setLevel(level);
+                                double percent = currentValue / maxValue;
+                                subProp.setPercent(percent);
+                                subProp.setAttributeMaxValue(maxValue);
+                                if (level == 3) {
+                                    level3 += 1;
+                                    subCount += percent;
+                                } else if (level == 2) {
+                                    level2 += 1;
+                                    subCount += percent;
+                                } else if (level == 1) {
+                                    level1 += 1;
+                                    subCount += percent;
+                                } else {
+                                    level0 += 1;
+                                }
+                            }
+
                         }
 
-                        if (count == 45) {
-                            phantomStatus.set(Phantom.Status.ACE);
-                        } else if (count >= 35) {
-                            phantomStatus.set(Phantom.Status.SSS);
-                        } else if (count >= 25) {
-                            phantomStatus.set(Phantom.Status.SS);
-                        } else if (count >= 18) {
-                            phantomStatus.set(Phantom.Status.S);
+                        if (level3 == 2 && level2 + level1 == 3) { //完美
+                            LOG.debug("声骸 {} 已完美", phantom.getPhantomProp().getName());
+                            phantom.setStatus(Phantom.Status.ACE);
+                            count += 5;
+                        } else if (level3 == 2 && level2 + level1 == 2) { //大毕业
+                            LOG.debug("声骸 {} 已大毕业", phantom.getPhantomProp().getName());
+                            phantom.setStatus(Phantom.Status.SSS);
+                            count += 4;
+                        } else if (level3 == 2 && level2 + level1 == 1 || level3 == 1 && level2 + level1 == 3) { //大毕业
+                            LOG.debug("声骸 {} 已毕业", phantom.getPhantomProp().getName());
+                            phantom.setStatus(Phantom.Status.SS);
+                            count += 3;
+                        } else if (level3 == 2 || level3 == 1 && level2 + level1 >= 2) { //小毕业
+                            LOG.debug("声骸 {} 已小毕业", phantom.getPhantomProp().getName());
+                            phantom.setStatus(Phantom.Status.S);
+                            count += 2;
+                        } else {//普通
+                            LOG.debug("声骸 {} 已不太行", phantom.getPhantomProp().getName());
+                            phantom.setStatus(Phantom.Status.N);
+                            count += 1;
+                        }
+
+                        if (level3 == 2 && subCount > 3.5) {
+                            LOG.debug("声骸词条 {} 已完美，分数：{}", phantom.getPhantomProp().getName(), subCount);
+                            phantom.setPropStatus(Phantom.Status.ACE);
+                            count += 5;
+                        } else if (level3 == 2 && subCount > 2.8) {
+                            LOG.debug("声骸词条 {} 已大毕业，分数：{}", phantom.getPhantomProp().getName(), subCount);
+                            phantom.setPropStatus(Phantom.Status.SSS);
+                            count += 4;
+                        } else if (level3 == 2 && subCount > 2.1 || level3 == 1 && subCount > 2.4) {
+                            LOG.debug("声骸词条 {} 已毕业，分数：{}", phantom.getPhantomProp().getName(), subCount);
+                            phantom.setPropStatus(Phantom.Status.SS);
+                            count += 3;
+                        } else if (level3 == 1 && subCount > 1.6 || level3 == 2 && subCount > 1.2) {
+                            LOG.debug("声骸词条 {} 已小毕业，分数：{}", phantom.getPhantomProp().getName(), subCount);
+                            phantom.setPropStatus(Phantom.Status.S);
+                            count += 2;
                         } else {
-                            phantomStatus.set(Phantom.Status.N);
+                            LOG.debug("声骸词条 {} 已不太行，分数：{}", phantom.getPhantomProp().getName(), subCount);
+                            phantom.setPropStatus(Phantom.Status.N);
+                            count += 1;
                         }
                     }
+                }
 
+                List<PhoantomMainProps> list = totalPhantomValueMap.values().stream().sorted((o1, o2) -> {
+                    if (o1.getLevel() > o2.getLevel()) {
+                        return -1;
+                    } else if (o1.getLevel() < o2.getLevel()) {
+                        return 1;
+                    }
+                    return 0;
+                }).toList();
+
+                int finalCount = count;
+                Platform.runLater(()->{
+                    if (finalCount == 45) {
+                        phantomStatus.set(Phantom.Status.ACE);
+                    } else if (finalCount >= 35) {
+                        phantomStatus.set(Phantom.Status.SSS);
+                    } else if (finalCount >= 25) {
+                        phantomStatus.set(Phantom.Status.SS);
+                    } else if (finalCount >= 18) {
+                        phantomStatus.set(Phantom.Status.S);
+                    } else if(finalCount > 0) {
+                        phantomStatus.set(Phantom.Status.N);
+                    }
                     totalPhantomValueList.setAll(totalPhantomValueMap.values());
-                    totalPhantomValueList.sort((o1, o2) -> {
-                        if (o1.getLevel() > o2.getLevel()) {
-                            return -1;
-                        } else if (o1.getLevel() < o2.getLevel()) {
-                            return 1;
-                        }
-                        return 0;
-                    });
+
 
                     for (Phantom phantom : equipPhantomList) {
                         if (phantom != null) {
@@ -362,19 +347,75 @@ public class OwnRoleDetailViewModel implements ViewModel {
                         }
                     }
 
-                }
-
-
-                ImgColorBgTask imgColorBgTask = new ImgColorBgTask(data.getRole().getRoleIconUrl());
-                imgColorBgTask.setOnSucceeded(workerStateEvent -> {
-                    roleBg.set(imgColorBgTask.getValue());
+                    loading.set(false);
+                    publish(EVENT_UPDATE_PHANTOM);
                 });
 
-                Thread.startVirtualThread(imgColorBgTask);
+
+
 
             }
         });
-        Thread.startVirtualThread(task);
+
+
+    }
+
+    private void updateChainInfo(RoleDetail data) {
+        chainImg01.set(LocalResourcesManager.imageBuffer(data.getChainList().get(0).getIconUrl()));
+        chainImg02.set(LocalResourcesManager.imageBuffer(data.getChainList().get(1).getIconUrl()));
+        chainImg03.set(LocalResourcesManager.imageBuffer(data.getChainList().get(2).getIconUrl()));
+        chainImg04.set(LocalResourcesManager.imageBuffer(data.getChainList().get(3).getIconUrl()));
+        chainImg05.set(LocalResourcesManager.imageBuffer(data.getChainList().get(4).getIconUrl()));
+        chainImg06.set(LocalResourcesManager.imageBuffer(data.getChainList().get(5).getIconUrl()));
+
+
+        chainImgVisible01.set(data.getChainList().get(0).isUnlocked());
+        chainImgVisible02.set(data.getChainList().get(1).isUnlocked());
+        chainImgVisible03.set(data.getChainList().get(2).isUnlocked());
+        chainImgVisible04.set(data.getChainList().get(3).isUnlocked());
+        chainImgVisible05.set(data.getChainList().get(4).isUnlocked());
+        chainImgVisible06.set(data.getChainList().get(5).isUnlocked());
+    }
+
+    private void updateSkillInfo(RoleDetail data) {
+        skill01.set(String.format("LV.%d", data.getSkillList().get(4).getLevel()));
+        skill02.set(String.format("LV.%d", data.getSkillList().get(3).getLevel()));
+        skill03.set(String.format("LV.%d", data.getSkillList().get(2).getLevel()));
+        skill04.set(String.format("LV.%d", data.getSkillList().get(1).getLevel()));
+        skill05.set(String.format("LV.%d", data.getSkillList().get(0).getLevel()));
+        skillImg01.set(LocalResourcesManager.imageBuffer(data.getSkillList().get(4).getSkill().getIconUrl()));
+        skillImg02.set(LocalResourcesManager.imageBuffer(data.getSkillList().get(3).getSkill().getIconUrl()));
+        skillImg03.set(LocalResourcesManager.imageBuffer(data.getSkillList().get(2).getSkill().getIconUrl()));
+        skillImg04.set(LocalResourcesManager.imageBuffer(data.getSkillList().get(1).getSkill().getIconUrl()));
+        skillImg05.set(LocalResourcesManager.imageBuffer(data.getSkillList().get(0).getSkill().getIconUrl()));
+    }
+
+    private void updateWeapon(RoleDetail data) {
+        weaponName.set(data.getWeaponData().getWeapon().getWeaponName());
+        weaponResonLevel.set(String.format("突破%d", data.getWeaponData().getResonLevel()));
+        weaponLevel.set(String.format("LV.%d", data.getWeaponData().getLevel()));
+        weaponImage.set(LocalResourcesManager.imageBuffer(data.getWeaponData().getWeapon().getWeaponIcon()));
+        weaponStarLevel.set(data.getWeaponData().getWeapon().getWeaponStarLevel());
+        weaponBg.set(
+                switch (weaponStarLevel.get()) {
+                    case 5 -> new Background(new BackgroundFill(SSR, new CornerRadii(8), null));
+                    case 4 -> new Background(new BackgroundFill(SR, new CornerRadii(8), null));
+                    default -> new Background(new BackgroundFill(R, new CornerRadii(8), null));
+                });
+    }
+
+    private void updateRoleInfo(RoleDetail data) {
+        roleName.set(data.getRole().getRoleName());
+        roleLevel.set(String.format("LV.%d -- %d", data.getRole().getLevel(), data.getRole().getChainUnlockNum()));
+        roleImage.set(LocalResourcesManager.imageBuffer(data.getRole().getRolePicUrl(), 500, 380, true, true));
+
+        roleAttrImage.set(
+                new Image(
+                        FXResourcesLoader.load(
+                                String.format("image/attr/%d.png", data.getRole().getAttributeId())
+                        ), true));
+
+        roleAttributeList.setAll(data.getRoleAttributeList());
     }
 
 
@@ -676,5 +717,13 @@ public class OwnRoleDetailViewModel implements ViewModel {
 
     public ObservableList<RoleAttribute> getRoleAttributeList() {
         return roleAttributeList;
+    }
+
+    public boolean isLoading() {
+        return loading.get();
+    }
+
+    public SimpleBooleanProperty loadingProperty() {
+        return loading;
     }
 }

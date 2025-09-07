@@ -545,7 +545,6 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
     }
 
     public void startNavAnim() {
-
         var t = new Timeline(
                 new KeyFrame(Duration.ZERO,
                         new KeyValue(child.scaleXProperty(), 0.9, Animations.EASE),
@@ -567,7 +566,9 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         t.play();
     }
 
-
+//    public void startNavAnim() {
+//        Animations.slideInUp(child, Duration.millis(200)).play();
+//    }
     public Button getMinBtn() {
         return minBtn;
     }

@@ -5,6 +5,9 @@ import cn.tealc.wutheringwavestool.model.analysis.SsrData;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
@@ -13,13 +16,17 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ResourceBundle;
 
 public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewModel>, Initializable {
+    private static final Logger LOG = LoggerFactory.getLogger(CardCommonAnalysisView.class);
     @InjectViewModel
     private CardCommonAnalysisViewModel viewModel;
 
@@ -135,12 +142,16 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
     private HBox contentPane;
 
     @FXML
-    private StackPane emptyPane;
+    private StackPane emptyPane,loadingPane;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        contentPane.visibleProperty().bind(viewModel.emptyProperty().not());
         emptyPane.visibleProperty().bind(viewModel.emptyProperty());
+        loadingPane.visibleProperty().bind(viewModel.loadingProperty());
+        BooleanBinding contentVisibleBinding = Bindings.and(viewModel.emptyProperty().not(), viewModel.loadingProperty().not());
+        contentPane.visibleProperty().bind(contentVisibleBinding);
+
 
         roleEventTitleLabel.textProperty().bind(viewModel.roleEventTitleLabelProperty());
         roleEventTimeLabel.textProperty().bind(viewModel.roleEventTimeLabelProperty());
@@ -152,8 +163,8 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
         roleEventSrCountLabel.textProperty().bind(viewModel.roleEventSrCountLabelProperty());
         roleEventSsrListView.setItems(viewModel.getRoleEventSsrList());
         roleEventSsrListView.setCellFactory(ssrDataListView -> new SsrCell());
-        
-        
+
+
         roleBaseTitleLabel.textProperty().bind(viewModel.roleBaseTitleLabelProperty());
         roleBaseTotalTimeLabel.textProperty().bind(viewModel.roleBaseTotalTimeLabelProperty());
         roleBaseTimeLabel.textProperty().bind(viewModel.roleBaseTimeLabelProperty());
@@ -191,17 +202,8 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
     }
 
 
-
-
-
-
-
-
-
-
-
     class SsrCell extends ListCell<SsrData> {
-        public static final String[] COLORS= {"#66cccc","#ff99cc","#1a7f37","#66cc99","#99cc00","#cccccc"};
+        public static final String[] COLORS = {"#66cccc", "#ff99cc", "#1a7f37", "#66cc99", "#99cc00", "#cccccc"};
         private final BorderPane root;
         private ImageView iv;
         private Label name;
@@ -211,7 +213,7 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
         private Label desc;
 
         public SsrCell() {
-            root=new BorderPane();
+            root = new BorderPane();
 
             iv = new ImageView();
             iv.setFitHeight(36);
@@ -221,25 +223,23 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
 
             name = new Label();
             name.getStyleClass().add("role-name");
-            date=new Label();
+            date = new Label();
             date.getStyleClass().add("role-date");
-            VBox center = new VBox(name,date);
-            center.setPadding(new Insets(0,0,0,5));
+            VBox center = new VBox(name, date);
+            center.setPadding(new Insets(0, 0, 0, 5));
             center.setAlignment(Pos.CENTER_LEFT);
 
-            desc=new Label();
+            desc = new Label();
             desc.getStyleClass().add("role-desc");
-            count=new Label();
+            count = new Label();
             count.getStyleClass().add("role-name");
-            HBox left = new HBox(5.0,count);
+            HBox left = new HBox(5.0, count);
             left.setAlignment(Pos.CENTER_RIGHT);
 
             progressBar = new ProgressBar();
             progressBar.setProgress(0);
             AnchorPane bottom = new AnchorPane(progressBar);
-            AnchorPaneUtil.setPosition(progressBar,0);
-
-
+            AnchorPaneUtil.setPosition(progressBar, 0);
 
 
             root.setLeft(iv);
@@ -256,19 +256,26 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
         @Override
         protected void updateItem(SsrData ssrData, boolean b) {
             super.updateItem(ssrData, b);
-            if (!b){
-                iv.setImage(LocalResourcesManager.header(ssrData.getId() ,60,60));
+            if (!b) {
+                Thread.startVirtualThread(()->{
+                    Image image = LocalResourcesManager.header(ssrData.getId(), 60, 60);
+                    Platform.runLater(()->{
+                        iv.setImage(image);
+                    });
+                });
+
+
                 name.setText(ssrData.getName());
                 date.setText(ssrData.getDate());
-                count.setText(String.format("%02d",ssrData.getCount()));
-                progressBar.setProgress(ssrData.getCount()/80.0);
+                count.setText(String.format("%02d", ssrData.getCount()));
+                progressBar.setProgress(ssrData.getCount() / 80.0);
 
-                if (ssrData.isEvent()){
+                if (ssrData.isEvent()) {
                     count.getStyleClass().remove("unup");
                     count.getStyleClass().add("up");
                     progressBar.getStyleClass().remove("unup");
                     progressBar.getStyleClass().add("up");
-                }else {
+                } else {
                     count.getStyleClass().remove("up");
                     count.getStyleClass().add("unup");
                     progressBar.getStyleClass().remove("up");
@@ -276,29 +283,11 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
 
                 }
                 setGraphic(root);
-            }else {
+            } else {
                 setGraphic(null);
             }
         }
 
     }
 
-    private class RoleCell extends ListCell<SsrData> {
-        private ImageView icon;
-        private Label name;
-        private Label date;
-        private Label count;
-        private ProgressBar progressBar;
-
-        public RoleCell() {
-
-
-
-        }
-
-        @Override
-        protected void updateItem(SsrData ssrData, boolean b) {
-            super.updateItem(ssrData, b);
-        }
-    }
 }

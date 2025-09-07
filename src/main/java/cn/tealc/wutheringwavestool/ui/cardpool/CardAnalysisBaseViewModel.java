@@ -16,6 +16,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -27,6 +28,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -36,40 +39,53 @@ import java.util.stream.Collectors;
  */
 public class CardAnalysisBaseViewModel implements ViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(CardAnalysisBaseViewModel.class);
+    public static final String EVENT_SELECTED_PLAYER = "EVENT_SELECTED_PLAYER";
     private SimpleStringProperty player = new SimpleStringProperty();
     private ObservableList<String> playerList = FXCollections.observableArrayList();
     private List<AnalysisData> poolData;
 
     public CardAnalysisBaseViewModel() {
         player.bindBidirectional(Config.setting.gachaCurrentPlayerIdProperty());
-        loadFile(player.get());
+        CompletableFuture.delayedExecutor(300, TimeUnit.MILLISECONDS).execute(()->{
+            Platform.runLater(()->{
+                loadFile(player.get());
+            });
+
+        });
     }
 
 
 
 
     public void loadFile(String playerId) {
-        //查看本地是否存有数据，有则加载
-        File dataDir = new File("data");
-        if (dataDir.exists()) {
-            File[] players = dataDir.listFiles(File::isDirectory);
-            if (players != null) {
-                List<String> directoryNames = Arrays.stream(players)
-                        .map(File::getName)
-                        .collect(Collectors.toList());
-                playerList.setAll(directoryNames);
-            }
-            if (playerId != null && !playerList.isEmpty() && playerList.contains(playerId)) {
-                player.set(playerId);
-                analysis(playerId);
-            } else {
-                if (!playerList.isEmpty()) {
-                    player.set(playerList.getLast());
-                    analysis(playerId);
+        Thread.startVirtualThread(()->{
+            //查看本地是否存有数据，有则加载
+            File dataDir = new File("data");
+            if (dataDir.exists()) {
+                File[] players = dataDir.listFiles(File::isDirectory);
+                if (players != null) {
+                    List<String> directoryNames = Arrays.stream(players)
+                            .map(File::getName)
+                            .collect(Collectors.toList());
+                    playerList.setAll(directoryNames);
                 }
+                if (playerId != null && !playerList.isEmpty() && playerList.contains(playerId)) {
+                    player.set(playerId);
+                    publish(EVENT_SELECTED_PLAYER);
+                } else {
+                    if (!playerList.isEmpty()) {
+                        player.set(playerList.getLast());
+                        publish(EVENT_SELECTED_PLAYER);
+                    }else{
+                        NotificationManager.publish(NotificationKey.CARD_POOL_USER_EMPTY);
+                    }
+                }
+            }else {
+                NotificationManager.publish(NotificationKey.CARD_POOL_USER_EMPTY);
             }
-        }
+        });
     }
+
 
 
     public void changePlayer(String playerId) {
@@ -77,7 +93,6 @@ public class CardAnalysisBaseViewModel implements ViewModel {
         if (index != -1){
             player.set(playerId);
             analysis(playerId);
-            publish("update-player");
         }
     }
 
@@ -164,7 +179,7 @@ public class CardAnalysisBaseViewModel implements ViewModel {
                     playerList.add(playerId);
                 }
                 this.player.set(playerId);
-                publish("update-player");
+                publish(EVENT_SELECTED_PLAYER);
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                         new MessageInfo(MessageType.SUCCESS, LanguageManager.getString("ui.analysis.message.type01")));
             } else {

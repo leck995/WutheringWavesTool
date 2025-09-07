@@ -6,6 +6,7 @@ import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.analysis.AnalysisData;
 import cn.tealc.wutheringwavestool.model.analysis.SsrData;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -14,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @description:
@@ -67,24 +70,29 @@ public class CardCommonAnalysisViewModel implements ViewModel {
     private SimpleStringProperty weaponEventTotalTimeLabel = new SimpleStringProperty();
     private ObservableList<SsrData> weaponEventSsrList = FXCollections.observableArrayList();
 
-    private SimpleBooleanProperty empty = new SimpleBooleanProperty(true);
-
-    public CardCommonAnalysisViewModel() {
+    private SimpleBooleanProperty empty = new SimpleBooleanProperty(false);
+    private SimpleBooleanProperty loading = new SimpleBooleanProperty(true);
+    public CardCommonAnalysisViewModel(boolean isEmpty) {
         gameRootDir.bindBidirectional(Config.setting.gameRootDirProperty());
         player.bindBidirectional(Config.setting.gachaCurrentPlayerIdProperty());
         //loadFile();
+
+        empty.set(isEmpty);
+        loading.set(!isEmpty);
 
 
         NotificationManager.subscribe(NotificationKey.CARD_POOL_USER_UPDATE,(s, objects) -> {
             @SuppressWarnings("unchecked")
             List<AnalysisData> list = (List<AnalysisData>) objects[0];
             updatePlayer(list);
+            loading.set(false);
             empty.set(false);
         });
 
         NotificationManager.subscribe(NotificationKey.CARD_POOL_USER_EMPTY,(s, objects) -> {
-            reset();
             empty.set(true);
+            loading.set(false);
+            reset();
         });
 
     }
@@ -526,5 +534,13 @@ public class CardCommonAnalysisViewModel implements ViewModel {
 
     public SimpleBooleanProperty emptyProperty() {
         return empty;
+    }
+
+    public boolean isLoading() {
+        return loading.get();
+    }
+
+    public SimpleBooleanProperty loadingProperty() {
+        return loading;
     }
 }

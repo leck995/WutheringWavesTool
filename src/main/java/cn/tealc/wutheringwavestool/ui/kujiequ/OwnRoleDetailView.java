@@ -8,6 +8,7 @@ import cn.tealc.wutheringwavestool.ui.component.OwnRoleDetailCell;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
+import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -129,6 +130,9 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        contentScrollPane.visibleProperty().bind(viewModel.loadingProperty().not());
+
+
         roleImageView.setSmooth(true);
         roleImageView.imageProperty().bind(viewModel.roleImageProperty());
         roleLevel.textProperty().bind(viewModel.roleLevelProperty());
@@ -213,30 +217,17 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
             }
         });
 
-        viewModel.getPhantomList().addListener((ListChangeListener<? super Pair<Phantom, Image>>) change -> {
-            phantomListGroup.getChildren().clear();
-            HBox phantomTop = PhantomTop();
-            phantomListGroup.getChildren().add(phantomTop);
 
-            FlowPane flowPane =new FlowPane();
-            flowPane.setHgap(15.0);
-            flowPane.setVgap(15.0);
 
-            phantomListGroup.getChildren().add(flowPane);
-
-            if (!change.getList().isEmpty()) {
-                for (Pair<Phantom, Image> phantomImagePair : change.getList()) {
-                    flowPane.getChildren().add(new PhantomItem(phantomImagePair));
-                }
-                flowPane.getChildren().add(phantomGuidance());
-            }
-
+        viewModel.subscribe(OwnRoleDetailViewModel.EVENT_UPDATE_PHANTOM,(s, objects) -> {
+            updateRoleAttribute();
+            updatePhantomView();
         });
 
 
 
 
-        viewModel.getRoleAttributeList().addListener((ListChangeListener<? super RoleAttribute>) change -> {
+/*        viewModel.getRoleAttributeList().addListener((ListChangeListener<? super RoleAttribute>) change -> {
             roleAttributePane.getChildren().clear();
             int index=0;
             for (RoleAttribute roleAttribute : change.getList()) {
@@ -247,10 +238,41 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
                     return;
                 }
             }
-        });
+        });*/
 
         viewModel.subscribe(OwnRoleDetailViewModel.EVENT_CHANGE_ROLE,(s, objects) -> contentScrollPane.setVvalue(0));
     }
+
+
+    private void updateRoleAttribute(){
+        roleAttributePane.getChildren().clear();
+        int index=0;
+        for (RoleAttribute roleAttribute : viewModel.getRoleAttributeList()) {
+            if (index < 6){
+                roleAttributePane.getChildren().add(new RoleItem(roleAttribute,false));
+                index++;
+            }else {
+                return;
+            }
+        }
+    }
+    private void updatePhantomView() {
+        FlowPane flowPane =new FlowPane();
+        flowPane.setHgap(15.0);
+        flowPane.setVgap(15.0);
+        for (Pair<Phantom, Image> phantomImagePair : viewModel.getPhantomList()) {
+            flowPane.getChildren().add(new PhantomItem(phantomImagePair));
+        }
+        flowPane.getChildren().add(phantomGuidance());
+        HBox phantomTop = PhantomTop();
+        phantomListGroup.getChildren().clear();
+        phantomListGroup.getChildren().add(phantomTop);
+        phantomListGroup.getChildren().add(flowPane);
+
+    }
+
+
+
 
 
     @FXML
@@ -603,6 +625,10 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
             setSpacing(8.0);
             getStyleClass().add("phantom");
         }
+
+
+
+
     }
 
 

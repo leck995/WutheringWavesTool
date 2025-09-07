@@ -50,7 +50,6 @@ public class OwnRoleViewModel implements ViewModel {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                             new MessageInfo(MessageType.WARNING,responseBody.getMsg()),false);
                 }
-
             });
             Thread.startVirtualThread(task);
         }else {

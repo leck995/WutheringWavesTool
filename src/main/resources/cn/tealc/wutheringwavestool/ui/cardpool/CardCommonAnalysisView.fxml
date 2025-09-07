@@ -195,5 +195,10 @@
             <Label styleClass="title-3" text="当前无数据，请先使用 获取 功能" translateY="-50.0" />
          </children>
       </StackPane>
+      <StackPane fx:id="loadingPane" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="200.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label styleClass="title-3" text="%ui.analysis.pool.tip.loading" translateY="-50.0" />
+         </children>
+      </StackPane>
    </children>
 </AnchorPane>

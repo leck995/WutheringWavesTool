@@ -1,9 +1,11 @@
 package cn.tealc.wutheringwavestool.ui.game;
 
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
+import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.ViewModel;
@@ -38,6 +40,12 @@ public class GameTimeViewModel implements ViewModel {
     public GameTimeViewModel() {
         GameTimeDao gameTimeDao = new GameTimeDao();
         List<String> allRoleId = gameTimeDao.getAllRoleId();
+        if (allRoleId == null || allRoleId.isEmpty()) {
+            NotificationManager.message(MessageInfo.warning("当前无记录"));
+            return;
+        }
+
+
         userInfoList.addAll(allRoleId);
         if (!Config.setting.isNoKuJieQu()){
             UserInfoDao dao = new UserInfoDao();

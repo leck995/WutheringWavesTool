@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.calculator;
 
+import atlantafx.base.util.Animations;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.kuro.kujiequ.model.calculator.list.RoleForCalculator;
 import com.kuro.kujiequ.model.calculator.list.WeaponForCalculator;
@@ -20,6 +21,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -67,11 +69,13 @@ public class CalculatorView implements FxmlView<CalculatorViewModel>, Initializa
     @FXML
     void toRoleTab(ActionEvent event) {
         tabPane.getSelectionModel().select(0);
+        Animations.slideInUp(tabPane.getTabs().get(0).getContent(), Duration.millis(300)).play();
     }
 
     @FXML
     void toWeaponTab(ActionEvent event) {
         tabPane.getSelectionModel().select(1);
+        Animations.slideInUp(tabPane.getTabs().get(1).getContent(), Duration.millis(300)).play();
     }
 
 

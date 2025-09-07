@@ -122,6 +122,11 @@
             <ToggleSwitch fx:id="ssrModelSwitch" selected="true" text="%ui.analysis.role.switch" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0" />
          </children>
       </AnchorPane>
+      <StackPane fx:id="loadingPane" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="200.0">
+         <children>
+            <Label styleClass="title-3" text="%ui.analysis.pool.tip.loading" translateY="-50.0" />
+         </children>
+      </StackPane>
       <StackPane fx:id="emptyPane" prefHeight="150.0" prefWidth="200.0">
          <children>
             <Label styleClass="title-3" text="%ui.analysis.pool.tip.empty01" translateY="-50.0" />

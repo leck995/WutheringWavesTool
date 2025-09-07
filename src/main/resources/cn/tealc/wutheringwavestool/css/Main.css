@@ -27,8 +27,7 @@
     -fx-text-fill: -color-font-default;
     -fx-content-display:graphic-only;
     -fx-pref-width: 36px;
-    -fx-padding: 5;
-    -fx-alignment: center-left;
+    -fx-alignment: center;
     -fx-min-width: 30;
 }
 .main .main-nav .toggle-button .ikonli-font-icon{

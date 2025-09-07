@@ -84,7 +84,7 @@ public class GameManagerView implements FxmlView<GameManagerViewModel>, Initiali
                     advanceChild = viewTuple.getView();
                 }
                 content.getChildren().setAll(advanceChild);
-                Animations.slideInRight(advanceChild, Duration.millis(300)).play();
+                Animations.slideInUp(advanceChild, Duration.millis(300)).play();
             } else {
                 toggleButton.setSelected(true);
             }
@@ -98,7 +98,7 @@ public class GameManagerView implements FxmlView<GameManagerViewModel>, Initiali
         if (event.getSource() instanceof ToggleButton toggleButton){
             if (toggleButton.isSelected()) {
                 createBaseChild();
-                Animations.slideInLeft(baseChild, Duration.millis(300)).play();
+                Animations.slideInUp(baseChild, Duration.millis(300)).play();
             } else {
                 toggleButton.setSelected(true);
             }

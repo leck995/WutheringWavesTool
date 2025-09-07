@@ -189,7 +189,6 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
 
 
         fileSourceType.getToggles().get(Config.setting.getResourceSource()).setSelected(true);
-
     }
 
 

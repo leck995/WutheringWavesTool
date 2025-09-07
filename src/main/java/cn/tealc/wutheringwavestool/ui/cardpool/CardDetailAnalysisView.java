@@ -16,6 +16,8 @@ import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.MvvmFX;
+import javafx.beans.binding.Bindings;
+import javafx.beans.binding.BooleanBinding;
 import javafx.collections.ListChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -77,15 +79,17 @@ public class CardDetailAnalysisView implements Initializable, FxmlView<CardDetai
     private AnchorPane contentPane;
 
     @FXML
-    private StackPane emptyPane;
+    private StackPane emptyPane,loadingPane;
 
     @FXML
     private StackPane poolEmptyPane;
     private boolean poolChange=false;//代码控制卡池切换标志
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        contentPane.visibleProperty().bind(viewModel.emptyProperty().not());
         emptyPane.visibleProperty().bind(viewModel.emptyProperty());
+        loadingPane.visibleProperty().bind(viewModel.loadingProperty());
+        BooleanBinding contentVisibleBinding = Bindings.and(viewModel.emptyProperty().not(), viewModel.loadingProperty().not());
+        contentPane.visibleProperty().bind(contentVisibleBinding);
         poolEmptyPane.visibleProperty().bind(viewModel.poolEmptyProperty());
         children.visibleProperty().bind(viewModel.poolEmptyProperty().not());
         ssrModelSwitch.selectedProperty().bindBidirectional(viewModel.ssrModelProperty());

@@ -61,7 +61,7 @@ public class MainApplication extends Application {
         ThemeManager.getInstance().setScene(window.getScene());
         ThemeManager.getInstance().setTheme(new Light());
 
-        window.show();
+        //window.show();
         if (Config.setting.isTheme()){
             //Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
         }else {
