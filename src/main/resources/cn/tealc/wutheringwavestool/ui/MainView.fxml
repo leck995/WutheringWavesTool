@@ -26,7 +26,7 @@
          <children>
             <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <StackPane minWidth="45.0">
+                  <StackPane>
                      <children>
                         <Region fx:id="navBg" styleClass="nav-bg" />
                         <VBox fx:id="nav" alignment="CENTER_LEFT" spacing="10.0" styleClass="main-nav">

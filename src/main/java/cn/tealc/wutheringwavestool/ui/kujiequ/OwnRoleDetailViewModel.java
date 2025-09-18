@@ -346,15 +346,13 @@ public class OwnRoleDetailViewModel implements ViewModel {
                             phantomList.add(new Pair<>(phantom, LocalResourcesManager.imageBuffer(phantom.getPhantomProp().getIconUrl(), 65, 65, true, true)));
                         }
                     }
-
                     loading.set(false);
                     publish(EVENT_UPDATE_PHANTOM);
                 });
-
-
-
-
             }
+
+            loading.set(false);
+            publish(EVENT_UPDATE_PHANTOM);
         });
 
 

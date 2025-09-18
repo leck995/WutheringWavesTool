@@ -4,6 +4,7 @@ import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.kuro.kujiequ.AccessTokenException;
 import com.kuro.kujiequ.ApiConfig;
 import com.kuro.kujiequ.model.sign.UserInfo;
+import com.kuro.util.HTTPRequestMultipartBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,15 +30,13 @@ public class UserDataRefreshTask extends BaseTask<ResponseBody<String>> {
 
     @Override
     protected ResponseBody<String> call() throws Exception {
-        return sign(userInfo.getRoleId(), userInfo.getToken());
+        return request(userInfo.getRoleId(), userInfo.getToken());
     }
 
-    private ResponseBody<String> sign(String roleId, String token) {
+    private ResponseBody<String> request(String roleId, String token) {
         String url1 = ApiConfig.GAME_DATA_URL + "?type=1&sizeType=2";
-        String url2 = String.format("%s?gameId=%s&serverId=%s&roleId=%s",
-                ApiConfig.REFRESH_URL, ApiConfig.PARAM_GAME_ID, ApiConfig.PARAM_SERVER_ID, roleId);
         try {
-            HttpRequest request = HttpRequest.newBuilder()
+            HttpRequest request01 = HttpRequest.newBuilder()
                     .uri(URI.create(url1))
                     .timeout(Duration.ofSeconds(20))
                     .header("Content-Type", "application/x-www-form-urlencoded")
@@ -46,15 +45,22 @@ public class UserDataRefreshTask extends BaseTask<ResponseBody<String>> {
                     .header("token", token)
                     .POST(HttpRequest.BodyPublishers.noBody())
                     .build();
-            ;
-            HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response01 = httpClient.send(request01, HttpResponse.BodyHandlers.ofString());
 
-            HttpRequest.Builder builder = getBuilder(url2, userInfo);
-            HttpRequest request2 = builder.build();
-            HttpResponse<String> response2 = httpClient.send(request2, HttpResponse.BodyHandlers.ofString());
+
+            HTTPRequestMultipartBody body = new HTTPRequestMultipartBody.Builder()
+                    .addPart("serverId", ApiConfig.PARAM_SERVER_ID)
+                    .addPart("roleId", userInfo.getRoleId())
+                    .addPart("gameId", ApiConfig.PARAM_GAME_ID)
+                    .build();
+            HttpRequest.Builder builder02 = getBuilder(ApiConfig.REFRESH_URL, body, userInfo);
+
+            HttpRequest request02 = builder02.build();
+            HttpResponse<String> response02 = httpClient.send(request02, HttpResponse.BodyHandlers.ofString());
       /*      HttpRequest request2 = HttpRequestUtil.getRequestWithSource(url2,token,"android");
             HttpResponse<String> response2 = client.send(request2, HttpResponse.BodyHandlers.ofString());*/
-            LOG.debug("角色刷新,每日数据状态码1: {},游戏进度状态码2: {}", response.statusCode(), response2.statusCode());
+            LOG.info("角色刷新,每日数据状态码1: {}", response01.body());
+            LOG.info("游戏进度状态码2: {}", response02.body());
             return new ResponseBody<>(200, "角色数据刷新成功");
         } catch (IOException | InterruptedException | AccessTokenException e) {
             LOG.error("错误", e);

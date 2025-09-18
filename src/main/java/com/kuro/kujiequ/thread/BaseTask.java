@@ -172,10 +172,11 @@ public abstract class BaseTask<V> extends Task<V> {
         HttpRequest.Builder builder = getBaseBuilder();
         builder.uri(URI.create(url))
                 .header("Content-Type", body.getContentType())
-                .header("source", userInfo.getIsWeb() ? "h5" : "android")
-                .header("devcode", getDevCode())
-                .headers("b-at", getAccessToken(userInfo))
-                .header("did", userInfo.getDevCode());
+                .header("Source",  "android")
+                .header("Devcode", getDevCode())
+                .headers("B-At", getAccessToken(userInfo))
+                .header("Did", userInfo.getDevCode());
+
 
         builder.POST(HttpRequest.BodyPublishers.ofByteArray(body.getBody()));
         return builder;
@@ -185,12 +186,12 @@ public abstract class BaseTask<V> extends Task<V> {
         HttpRequest.Builder builder = getBaseBuilder();
         builder.uri(URI.create(url))
                 .header("Content-Type", body.getContentType())
-                .header("source", userInfo.getIsWeb() ? "h5" : "android")
-                .header("devcode", getDevCode())
-                .headers("b-at", getAccessToken(userInfo))
-                .header("did", userInfo.getDevCode());
+                .header("Source", userInfo.getIsWeb() ? "h5" : "android")
+                .header("Devcode", getDevCode())
+                .headers("B-At", getAccessToken(userInfo))
+                .header("Did", userInfo.getDevCode());
         if (userInfo.getToken() != null) {
-            builder.header("token", userInfo.getToken());
+            builder.header("Token", userInfo.getToken());
         }
         builder.POST(HttpRequest.BodyPublishers.ofByteArray(body.getBody()));
         return builder;
@@ -201,13 +202,25 @@ public abstract class BaseTask<V> extends Task<V> {
         HttpRequest.Builder builder = getBaseBuilder();
         builder.uri(URI.create(url))
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("source", userInfo.getIsWeb() ? "h5" : "android")
-                .header("devcode", getDevCode())
-                .headers("b-at", getAccessToken(userInfo))
-                .header("did", userInfo.getDevCode());
+                .header("Source", userInfo.getIsWeb() ? "h5" : "android")
+                .header("Devcode", getDevCode())
+                .headers("B-At", getAccessToken(userInfo))
+                .header("Did", userInfo.getDevCode());
         if (userInfo.getToken() != null) {
             builder.header("token", userInfo.getToken());
         }
+        builder.POST(HttpRequest.BodyPublishers.noBody());
+        return builder;
+    }
+
+    public HttpRequest.Builder getBuilderWithoutToken(String url, UserInfo userInfo) throws AccessTokenException, IOException, InterruptedException {
+        HttpRequest.Builder builder = getBaseBuilder();
+        builder.uri(URI.create(url))
+                .header("Content-Type", "application/x-www-form-urlencoded")
+                .header("Source", userInfo.getIsWeb() ? "h5" : "android")
+                .header("Devcode", getDevCode())
+                .headers("B-At", getAccessToken(userInfo))
+                .header("Did", userInfo.getDevCode());
         builder.POST(HttpRequest.BodyPublishers.noBody());
         return builder;
     }
@@ -228,10 +241,10 @@ public abstract class BaseTask<V> extends Task<V> {
         HttpRequest.Builder builder = getBaseBuilder();
         builder.uri(URI.create(url))
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("source", userInfo.getIsWeb() ? "h5" : "android")
-                .header("devcode", getDevCode())
-                .headers("b-at", getAccessToken(userInfo))
-                .header("did", userInfo.getDevCode());
+                .header("Source", userInfo.getIsWeb() ? "h5" : "android")
+                .header("Devcode", getDevCode())
+                .headers("B-At", getAccessToken(userInfo))
+                .header("Did", userInfo.getDevCode());
         if (userInfo.getToken() != null) {
             builder.header("token", userInfo.getToken());
         }
@@ -247,18 +260,7 @@ public abstract class BaseTask<V> extends Task<V> {
         HttpRequest.Builder builder = HttpRequest.newBuilder();
         builder.timeout(Duration.ofSeconds(5))
                 .header("User-Agent", "Mozilla/5.0 (Linux; Android 9; 23116PN5BC Build/PQ3A.190605.02201427; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/124.0.6367.82 Mobile Safari/537.36 Kuro/2.5.0 KuroGameBox/2.5.0")
-                .header("Accept", "application/json, text/plain, */*")
-                .header("pragma", "no-cache")
-                .header("cache-control", "no-cache")
-                .header("sec-ch-ua", "\"Chromium\";v=\"124\", \"Android WebView\";v=\"124\", \"Not-A.Brand\";v=\"99\"")
-                .header("sec-ch-ua-platform", "\"Android\"")
-                .header("origin", "https://web-static.kurobbs.com")
-                .header("x-requested-with", "com.kurogame.kjq")
-                .header("sec-fetch-site", "same-site")
-                .header("sec-fetch-mode", "cors")
-                .header("sec-fetch-dest", "empty")
-                .header("accept-language", "zh-CN,zh;q=0.9,en-US;q=0.8,en;q=0.7")
-                .header("priority", "u=1, i");
+                .header("Accept", "application/json, text/plain, */*");
         return builder;
     }
 }

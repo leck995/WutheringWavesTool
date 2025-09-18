@@ -4,31 +4,20 @@ import atlantafx.base.controls.Message;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
 import cn.tealc.teafx.utils.AnchorPaneUtil;
-import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.MainApplication;
+import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.release.Release;
 import cn.tealc.wutheringwavestool.model.system.NavData;
 import cn.tealc.wutheringwavestool.thread.system.ui.MainBackgroundTask;
+import cn.tealc.wutheringwavestool.ui.base.UpdateView;
+import cn.tealc.wutheringwavestool.ui.base.UpdateViewModel;
 import cn.tealc.wutheringwavestool.ui.cardpool.CardAnalysisBaseView;
 import cn.tealc.wutheringwavestool.ui.cardpool.CardAnalysisBaseViewModel;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
-import cn.tealc.wutheringwavestool.ui.game.*;
-import cn.tealc.wutheringwavestool.ui.game.manage.GameManagerView;
-import cn.tealc.wutheringwavestool.ui.game.manage.GameManagerViewModel;
-import cn.tealc.wutheringwavestool.ui.kujiequ.*;
-import cn.tealc.wutheringwavestool.ui.base.UpdateView;
-import cn.tealc.wutheringwavestool.ui.base.UpdateViewModel;
-import cn.tealc.wutheringwavestool.ui.kujiequ.calculator.CalculatorView;
-import cn.tealc.wutheringwavestool.ui.kujiequ.calculator.CalculatorViewModel;
-import cn.tealc.wutheringwavestool.ui.kujiequ.tower.TowerGroupView;
-import cn.tealc.wutheringwavestool.ui.kujiequ.tower.TowerGroupViewModel;
-import cn.tealc.wutheringwavestool.ui.kujiequ.tower.TowerView;
-import cn.tealc.wutheringwavestool.ui.kujiequ.tower.TowerViewModel;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import cn.tealc.wutheringwavestool.util.NavLoader;
@@ -55,6 +44,7 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
@@ -94,11 +84,8 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
     private Button maxBtn;
     @FXML
     private Button closeBtn;
-
-
     @FXML
     private StackPane root;
-
     @FXML
     private VBox messagePane;
 
@@ -143,7 +130,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
                 }
             }
         }
-
+        initHeaderBar();
         initBackground();
         initNav();
         initContent();
@@ -205,8 +192,62 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         updateBg();
     }
 
+
+    private void initHeaderBar() {
+        HeaderBar headerbar = new HeaderBar();
+        headerbar.getStyleClass().add("headbar");
+
+        //左侧
+        Label titleLabel = new Label(Config.appTitle);
+        titleLabel.getStyleClass().add("title");
+        ImageView imageView = new ImageView(new Image(FXResourcesLoader.load("image/icon.png"),36,36,true,true));
+        titleLabel.setGraphic(imageView);
+        HBox leadingBox = new HBox();
+        leadingBox.getChildren().addAll(titleLabel);
+        leadingBox.getStyleClass().add("leading");
+        headerbar.setLeading(leadingBox);
+
+        //右侧
+        Button closeBtn = new Button(null,new FontIcon(Material2OutlinedAL.CLOSE));
+        Button maxBtn = new Button(null,new FontIcon());
+        Button minBtn = new Button(null,new FontIcon(Material2OutlinedMZ.MINUS));
+
+        closeBtn.setOnAction(event -> close());
+        HBox systemBox = new HBox(minBtn,maxBtn,closeBtn);
+        HeaderBar.setButtonType(maxBtn,HeaderButtonType.MAXIMIZE);
+        HeaderBar.setButtonType(minBtn,HeaderButtonType.ICONIFY);
+        closeBtn.getStyleClass().add("close-btn");
+        maxBtn.getStyleClass().add("max-btn");
+        systemBox.getStyleClass().add("system-func");
+        HBox trailingBox = new HBox(systemBox);
+        trailingBox.getStyleClass().add("trailing");
+        headerbar.setTrailing(trailingBox);
+
+
+
+
+        HBox.setHgrow(headerbar, Priority.ALWAYS);
+        titlebar.getChildren().clear();
+        titlebar.getChildren().add(headerbar);
+        Platform.runLater(()->{
+            Stage window = (Stage) root.getScene().getWindow();
+            HeaderBar.setPrefButtonHeight(window,0);
+            window.maximizedProperty().addListener((observableValue, aBoolean, t1) -> {
+                if (t1){
+                    maxBtn.getStyleClass().add("full-exit");
+                }else {
+                    maxBtn.getStyleClass().remove("full-exit");
+
+                }
+            });
+        });
+    }
+
+
+
+
     private void initNav() {
-        supportBtn = new ToggleButton(LanguageManager.getString("ui.main.button.nav.type09"),new FontIcon(Material2AL.LOCAL_CAFE));
+        supportBtn = new ToggleButton(LanguageManager.getString("ui.main.button.nav.type09"), new FontIcon(Material2AL.LOCAL_CAFE));
         supportBtn.getStyleClass().add("icon-only");
         supportBtn.setOnAction(this::toSupport);
         navBottom.getChildren().addFirst(supportBtn);
@@ -215,7 +256,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         List<NavData> navList = viewModel.getNavList();
 
         for (NavData navData : navList) {
-            if (Config.setting.isNoKuJieQu() && navData.isKujiequ()){
+            if (Config.setting.isNoKuJieQu() && navData.isKujiequ()) {
                 continue;
             }
             FontIcon fontIcon = new FontIcon(navData.getIcon());
@@ -266,7 +307,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         supportBtn.visibleProperty().bind(Config.setting.supportProperty().not());
     }
 
-    private void initContent(){
+    private void initContent() {
         if (Config.setting.isFirstViewWithPoolAnalysis()) {
             ViewTuple<CardAnalysisBaseView, CardAnalysisBaseViewModel> viewTuple = FluentViewLoader.fxmlView(CardAnalysisBaseView.class).load();
             child.getChildren().setAll(viewTuple.getView());
@@ -566,7 +607,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         t.play();
     }
 
-//    public void startNavAnim() {
+    //    public void startNavAnim() {
 //        Animations.slideInUp(child, Duration.millis(200)).play();
 //    }
     public Button getMinBtn() {

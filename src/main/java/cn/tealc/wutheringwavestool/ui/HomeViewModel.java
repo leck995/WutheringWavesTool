@@ -88,11 +88,13 @@ public class HomeViewModel implements ViewModel {
             if (objects.length > 0) {
                 long playTime = (long) objects[0];
                 updateGameTime(playTime);
-                updateKujiequRoleData();
             } else {
                 updateGameTime(0);
-                updateKujiequRoleData();
             }
+        });
+        MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_ROLE_DATA_REFRESH, (s, objects) -> {
+            System.out.println("刷新");
+            updateKujiequRoleData();
         });
     }
 
@@ -178,10 +180,6 @@ public class HomeViewModel implements ViewModel {
             }
         });
         Thread.startVirtualThread(task);
-
-        if (Config.setting.isAutoKujieQuSign()) {
-            startKujiequDailySign();
-        }
     }
 
 
@@ -291,7 +289,6 @@ public class HomeViewModel implements ViewModel {
             Platform.runLater(() -> {
                 onWeekEnd(true, null);
             });
-
         }
     }
 
@@ -315,7 +312,7 @@ public class HomeViewModel implements ViewModel {
                 } else {
                     weeklyInstCountTipText.set(LanguageManager.getString("ui.home.label.weekly"));
                 }
-                if (roleInfo.getRougeScore() < 5000) {
+                if (roleInfo.getRougeScore() < 10000) {
                     weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.weekly.tip"));
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message03"), MessageInfo.LONG));
                 } else {

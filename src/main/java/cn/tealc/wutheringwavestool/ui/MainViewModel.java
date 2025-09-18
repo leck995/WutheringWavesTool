@@ -17,6 +17,7 @@ import com.kuro.kujiequ.model.towerData.DifficultyTotal;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.system.CheckVersionTask;
+import com.kuro.kujiequ.thread.base.sign.SignTask;
 import com.kuro.kujiequ.thread.rolebox.slash.SlashDataDetailTask;
 import com.kuro.kujiequ.thread.rolebox.tower.TowerDataDetailTask;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
@@ -46,6 +47,7 @@ public class MainViewModel implements ViewModel {
         checkVersion();
         checkGameLogOpen();
         updateKujiequ();
+        autoSign();
     }
 
     public List<NavData> getNavList(){
@@ -62,6 +64,13 @@ public class MainViewModel implements ViewModel {
     }
 
 
+
+
+    private void autoSign(){
+        if (Config.setting.isAutoKujieQuSign()) {
+            Thread.startVirtualThread(new SignTask());
+        }
+    }
 
 
     public void checkVersion() {

@@ -49,14 +49,17 @@ public class PlayerBaseDataTask extends BaseTask<ResponseBody<RoleInfo>> {
                     .addPart("roleId", userInfo.getRoleId())
                     .addPart("gameId", ApiConfig.PARAM_GAME_ID)
                     .build();
+
             HttpRequest.Builder builder = getBuilder(url,body,userInfo);
             HttpRequest request = builder.build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                LOG.debug(response.body());
+                LOG.debug(response.body().replace("\\",""));
                 ObjectMapper mapper = new ObjectMapper();
                 ResponseBodyForApi responseBodyForApi = mapper.readValue(response.body(), new TypeReference<ResponseBodyForApi>() {
                 });
+
+
                 ResponseBody<RoleInfo> responseBody = new ResponseBody<>(responseBodyForApi.getCode(), responseBodyForApi.getMsg(), responseBodyForApi.getSuccess());
                 if (responseBody.getCode() == 200) {
                     String row = responseBodyForApi.getData();

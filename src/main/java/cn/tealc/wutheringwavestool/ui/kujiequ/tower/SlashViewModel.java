@@ -206,6 +206,8 @@ public class SlashViewModel implements ViewModel {
      */
     private void updateDate(SlashData data) {
         sourceDifficulties = data.getDifficultyList();
+
+        //getDifficulty == 0是禁忌海域，1是再生海域1-11,2是12
         List<SlashDifficulty> filterList = sourceDifficulties
                 .stream()
                 .filter(slashDifficulty -> slashDifficulty.getDifficulty() != 2)
@@ -217,7 +219,15 @@ public class SlashViewModel implements ViewModel {
                 })
                 .toList(); //过滤掉"无尽湍渊"
         difficulties.setAll(filterList);
-
+        Optional<SlashDifficulty> difficulty = filterList.stream().filter(slashDifficulty -> slashDifficulty.getDifficulty() == 1).findFirst();
+        List<Challenge> list = sourceDifficulties.stream()
+                .filter(slashDifficulty -> slashDifficulty.getDifficulty() == 2)
+                .map(SlashDifficulty::getChallengeList)
+                .flatMap(List::stream)
+                .toList();
+        difficulty.ifPresent(slashDifficulty -> {
+            slashDifficulty.getChallengeList().addAll(0,list);
+        });
 
         updateScore(data);
         updateSeasonEndTime(data.getSeasonEndTime());

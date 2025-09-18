@@ -36,12 +36,12 @@ public class UserDailyDataTask extends BaseTask<ResponseBody<RoleDailyData>> {
 
     @Override
     protected ResponseBody<RoleDailyData> call() throws Exception {
-        return sign();
+        return request();
     }
 
-    private ResponseBody<RoleDailyData> sign(){
-        String url=String.format("%s?type=2&roleId=%s&sizeType=1&gameId=%s"
-                , ApiConfig.DAILY_DATA_URL,userInfo.getRoleId(),ApiConfig.PARAM_GAME_ID);
+    private ResponseBody<RoleDailyData> request(){
+        String url=String.format("%s?type=2&roleId=%s&sizeType=1&gameId=%s&serverId=%s"
+                , ApiConfig.DAILY_DATA_URL,userInfo.getRoleId(),ApiConfig.PARAM_GAME_ID,ApiConfig.PARAM_SERVER_ID);
         try {
 
 //            HTTPRequestMultipartBody body = new HTTPRequestMultipartBody.Builder()
@@ -57,7 +57,7 @@ public class UserDailyDataTask extends BaseTask<ResponseBody<RoleDailyData>> {
             if (response.statusCode() == 200) {
                 ObjectMapper mapper=new ObjectMapper();
 
-                LOG.debug(response.body());
+                LOG.debug(response.body().replace("\\",""));
 
                 JsonNode tree = mapper.readTree(response.body());
                 int code = tree.get("code").asInt();

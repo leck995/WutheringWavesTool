@@ -41,18 +41,21 @@ public class SlashDataDetailTask extends BaseTask<ResponseBody<SlashData>> {
 
     @Override
     protected ResponseBody<SlashData> call() throws Exception {
-        String url = ApiConfig.SELF_SLASH_DATA_URL;
+        String url = String.format("%s?gameId=3&serverId=76402e5b20be2c39f095a152090afddc&roleId=%s",ApiConfig.SELF_SLASH_DATA_URL,userInfo.getRoleId());
+
+
         try {
-            HTTPRequestMultipartBody body = new HTTPRequestMultipartBody.Builder()
+        /*    HTTPRequestMultipartBody body = new HTTPRequestMultipartBody.Builder()
                     .addPart("serverId", ApiConfig.PARAM_SERVER_ID)
                     .addPart("roleId", userInfo.getRoleId())
-                    .addPart("gameId", ApiConfig.PARAM_GAME_ID)
-                    .build();
-            HttpRequest.Builder builder = getBuilder(url, body, userInfo);
+                    .addPart("userId", userInfo.getUserId())
+                    .build();*/
+            HttpRequest.Builder builder = getBuilderWithoutToken(url, userInfo);
+           // HttpRequest.Builder builder = getBuilder(url,body,userInfo);
             HttpRequest request = builder.build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                LOG.debug("海墟：{}", response.body());
+                LOG.debug("海墟：{}", response.body().replace("\\", ""));
                 ObjectMapper mapper = new ObjectMapper();
                 ResponseBodyForApi responseBodyForApi = mapper.readValue(response.body(), new TypeReference<ResponseBodyForApi>() {
                 });

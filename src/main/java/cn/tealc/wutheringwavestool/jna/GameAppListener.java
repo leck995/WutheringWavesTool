@@ -79,6 +79,7 @@ public class GameAppListener implements WinUser.WinEventProc{
                 //同时当主窗口为鸣潮助手时，刷新时间
                 if (title.equals("鸣潮助手")){
                     updateMainViewTime();
+
                 }
                 //检查是否结束
                 boolean isAlive = gameIsAlive();
@@ -139,6 +140,7 @@ public class GameAppListener implements WinUser.WinEventProc{
             GameLogFileAnalysisTask task = new GameLogFileAnalysisTask();
             task.setOnSucceeded(workerStateEvent -> {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_GAME_TIME_UPDATE);
+                MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_ROLE_DATA_REFRESH);
                 long startTime = startGameTime;
                 exit(startTime);
             });
