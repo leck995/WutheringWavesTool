@@ -8,6 +8,7 @@ import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.plugin.FxPluginManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
+import cn.tealc.wutheringwavestool.util.FileUploadUtil;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;
 import javafx.application.Platform;
@@ -194,5 +195,68 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
         clipboardContent.putImage(image);
         clipboard.setContent(clipboardContent);
         NotificationManager.message(MessageInfo.success(LanguageManager.getString("ui.analysis.message.snapshot.success")));
+    }
+
+    @FXML
+    void syncCardPoolData(ActionEvent event) {
+        String currentPlayer = viewModel.getPlayer();
+        if (currentPlayer == null || currentPlayer.isEmpty()) {
+            NotificationManager.message(MessageInfo.warning("请先选择或加载用户数据"));
+            return;
+        }
+
+        // 显示同步中的消息
+        NotificationManager.message(MessageInfo.info("正在同步抽卡记录..."));
+
+        // 执行智能同步
+        FileUploadUtil.syncCardPoolData(currentPlayer)
+            .thenAccept(result -> {
+                Platform.runLater(() -> {
+                    if (result.contains("失败") || result.contains("错误")) {
+                        NotificationManager.message(MessageInfo.error(result));
+                    } else {
+                        // 如果是上传成功，复制链接到剪贴板
+                        if (result.contains("http")) {
+                            String url = extractUrlFromMessage(result);
+                            if (url != null) {
+                                Clipboard clipboard = Clipboard.getSystemClipboard();
+                                ClipboardContent content = new ClipboardContent();
+                                content.putString(url);
+                                clipboard.setContent(content);
+                            }
+                        }
+
+                        // 如果有数据更新，刷新界面
+                        if (result.contains("已更新") || result.contains("已从云端恢复")) {
+                            viewModel.reAnalysis(currentPlayer);
+                        }
+
+                        NotificationManager.message(MessageInfo.success(result));
+                    }
+                    LOG.info("Sync completed for player {}: {}", currentPlayer, result);
+                });
+            })
+            .exceptionally(throwable -> {
+                Platform.runLater(() -> {
+                    NotificationManager.message(MessageInfo.error("同步过程中发生错误: " + throwable.getMessage()));
+                    LOG.error("Sync failed for player {}", currentPlayer, throwable);
+                });
+                return null;
+            });
+    }
+
+    /**
+     * 从消息中提取URL
+     */
+    private String extractUrlFromMessage(String message) {
+        try {
+            String[] parts = message.split("http");
+            if (parts.length > 1) {
+                return "http" + parts[1].trim();
+            }
+        } catch (Exception e) {
+            LOG.warn("Failed to extract URL from message: {}", message, e);
+        }
+        return null;
     }
 }
