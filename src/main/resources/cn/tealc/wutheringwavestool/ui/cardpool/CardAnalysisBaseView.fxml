@@ -63,6 +63,10 @@
                      <graphic>
                         <FontIcon iconLiteral="mdoal-cloud" />
                      </graphic></Button>
+                  <Button mnemonicParsing="false" onAction="#syncCardPoolData" styleClass="accent" text="同步抽卡记录">
+                     <graphic>
+                        <FontIcon iconLiteral="mdoal-cloud" />
+                     </graphic></Button>
                </children>
             </HBox>
             <Label styleClass="text-subtle" text="%ui.analysis.account.tip" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">

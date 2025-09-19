@@ -109,6 +109,13 @@ public class CardAnalysisBaseViewModel implements ViewModel {
         Thread.startVirtualThread(task);
     }
 
+    /**
+     * 公开的分析方法，供外部调用
+     */
+    public void reAnalysis(String playerId) {
+        analysis(playerId);
+    }
+
 
     public void refreshFromNet() {
         File dataJson = new File(String.format("data/%s/data.json", player.get()));
