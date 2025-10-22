@@ -14,14 +14,12 @@ import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @program: WutheringWavesTool
- * @description: 检测鸣潮日志功能是否被关闭
- * @author: Leck
- * @create: 2025-01-04 15:01
- */
+/*
+ * 检测鸣潮日志功能是否被关闭
+ * */
 public class CheckGameConfigTask extends Task<Boolean> {
     private static final Logger LOG = LoggerFactory.getLogger(CheckGameConfigTask.class);
+
     @Override
     protected Boolean call() throws Exception {
         File engineIni = GameResourcesManager.getGameEngineIni();

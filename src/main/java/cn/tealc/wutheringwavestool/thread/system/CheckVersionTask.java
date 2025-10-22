@@ -32,7 +32,6 @@ public class CheckVersionTask extends Task<ResponseBody<Release>> {
     protected ResponseBody<Release> call() throws Exception {
         if (Config.setting.isDevModel()){
             return getLocalReleaseData();
-
         }else {
             ResponseBody<Release> releaseData = getNetReleaseData();
             if (releaseData != null) return releaseData;

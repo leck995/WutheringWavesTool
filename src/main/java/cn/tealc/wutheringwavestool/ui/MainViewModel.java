@@ -29,7 +29,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -68,7 +73,8 @@ public class MainViewModel implements ViewModel {
 
     private void autoSign(){
         if (Config.setting.isAutoKujieQuSign()) {
-            Thread.startVirtualThread(new SignTask());
+            SignTask signTask = new SignTask();
+            Thread.startVirtualThread(signTask);
         }
     }
 

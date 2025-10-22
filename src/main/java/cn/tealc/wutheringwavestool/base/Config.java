@@ -1,6 +1,5 @@
 package cn.tealc.wutheringwavestool.base;
 
-import cn.tealc.wutheringwavestool.model.Setting;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 

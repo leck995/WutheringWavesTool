@@ -3,6 +3,7 @@ package cn.tealc.wutheringwavestool.ui;
 import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
@@ -93,9 +94,16 @@ public class HomeViewModel implements ViewModel {
             }
         });
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_ROLE_DATA_REFRESH, (s, objects) -> {
-            System.out.println("刷新");
             updateKujiequRoleData();
+            autoSign(); //如果结束游戏跨天，直接签到
         });
+    }
+
+    private void autoSign(){
+        if (Config.setting.isAutoKujieQuSign()) {
+            SignTask signTask = new SignTask();
+            Thread.startVirtualThread(signTask);
+        }
     }
 
 
@@ -302,7 +310,7 @@ public class HomeViewModel implements ViewModel {
         LocalDate today = LocalDate.now();
         if (today.getDayOfWeek() == DayOfWeek.SUNDAY) {
             if (isGlobal) {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message01"), MessageInfo.LONG));
+                NotificationManager.publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message01"), MessageInfo.LONG));
             } else {
                 if (roleInfo == null) {
                     return;
@@ -312,9 +320,11 @@ public class HomeViewModel implements ViewModel {
                 } else {
                     weeklyInstCountTipText.set(LanguageManager.getString("ui.home.label.weekly"));
                 }
-                if (roleInfo.getRougeScore() < 10000) {
+                if (roleInfo.getRougeScore() < 6000) {
                     weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.weekly.tip"));
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message03"), MessageInfo.LONG));
+                    NotificationManager.publish(NotificationKey.MESSAGE,
+                            new MessageInfo(MessageType.WARNING,
+                                    LanguageManager.getString("ui.home.label.weekly.message03"), MessageInfo.LONG));
                 } else {
                     weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.rouge"));
                 }

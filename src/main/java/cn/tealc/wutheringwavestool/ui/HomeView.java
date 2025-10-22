@@ -7,6 +7,7 @@ import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
