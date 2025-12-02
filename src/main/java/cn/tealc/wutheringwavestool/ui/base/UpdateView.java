@@ -2,12 +2,15 @@ package cn.tealc.wutheringwavestool.ui.base;
 
 import cn.tealc.teafx.stage.TeaStage;
 import cn.tealc.teafx.stage.handler.DragWindowHandler;
+import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.MainApplication;
+import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -15,9 +18,13 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.*;
+import javafx.stage.Stage;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2OutlinedAL;
+import org.kordamp.ikonli.material2.Material2OutlinedMZ;
 
 import java.awt.*;
 import java.io.IOException;
@@ -92,22 +99,33 @@ public class UpdateView implements FxmlView<UpdateViewModel>, Initializable {
         forceLabel.textProperty().bind(viewModel.forceLabelProperty());
     }
 
-    private void initTitleBar(){
-        DragWindowHandler handler=new DragWindowHandler((TeaStage) MainApplication.window,true);
-        titlebar.setOnMousePressed(handler);
-        titlebar.setOnMouseDragged(handler);
-        titlebar.setOnMouseReleased(handler);
-        titlebar.setOnMouseClicked(handler);
-
+    private void initTitleBar() {
+        HeaderBar headerbar = new HeaderBar();
+        headerbar.getStyleClass().add("headbar");
+        Button closeBtn = new Button(null, new FontIcon(Material2OutlinedAL.CLOSE));
+        Button minBtn = new Button(null, new FontIcon(Material2OutlinedMZ.MINUS));
         closeBtn.setOnAction(event -> MainApplication.exit());
-        minBtn.setOnAction(event -> MainApplication.window.setIconified(true));
+        HBox systemBox = new HBox(minBtn, closeBtn);
+        HeaderBar.setButtonType(minBtn, HeaderButtonType.ICONIFY);
+        closeBtn.getStyleClass().add("close-btn");
+        systemBox.getStyleClass().add("system-func");
+        HBox trailingBox = new HBox(systemBox);
+        trailingBox.getStyleClass().add("trailing");
+        headerbar.setTrailing(trailingBox);
+        HBox.setHgrow(headerbar, Priority.ALWAYS);
+        titlebar.getChildren().clear();
+        titlebar.getChildren().add(headerbar);
+        Platform.runLater(() -> {
+            Stage window = (Stage) root.getScene().getWindow();
+            HeaderBar.setPrefButtonHeight(window, 0);
+        });
     }
 
     @FXML
     void nextRemind(ActionEvent event) {
-        if (viewModel.isForce()){
+        if (viewModel.isForce()) {
             NotificationManager.message(MessageInfo.warning(LanguageManager.getString("ui.update.message01")));
-        }else {
+        } else {
             Pane parent = (Pane) root.getParent();
             parent.getChildren().remove(root);
         }
@@ -116,9 +134,9 @@ public class UpdateView implements FxmlView<UpdateViewModel>, Initializable {
 
     @FXML
     void skipUpdate(ActionEvent event) {
-        if (viewModel.isForce()){
+        if (viewModel.isForce()) {
             NotificationManager.message(MessageInfo.warning(LanguageManager.getString("ui.update.message01")));
-        }else {
+        } else {
             viewModel.setSkipVersion();
             Pane parent = (Pane) root.getParent();
             parent.getChildren().remove(root);
