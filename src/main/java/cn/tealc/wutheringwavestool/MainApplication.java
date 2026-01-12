@@ -9,7 +9,7 @@ import cn.tealc.wutheringwavestool.jna.GlobalKeyListener;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.theme.Light;
-import cn.tealc.wutheringwavestool.theme.ThemeManager;
+import java.util.Optional;
 import cn.tealc.wutheringwavestool.thread.system.ClearLogFileTask;
 import cn.tealc.wutheringwavestool.ui.MainView;
 import cn.tealc.wutheringwavestool.ui.MainViewModel;
@@ -31,7 +31,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
+import java.util.List;
 import javafx.stage.Stage;
 
 import javafx.stage.StageStyle;
@@ -110,16 +110,24 @@ public class MainApplication extends Application {
 
 
 
-    private void initFont(){
-        boolean contains = javafx.scene.text.Font.getFamilies().contains("Microsoft YaHei");
-        if (!contains){
-            LOG.info("默认字体不存在，加载内置字体");
-            javafx.scene.text.Font.loadFonts(FXResourcesLoader.loadStream("font/HarmonyOS_Sans_SC_Bold.ttf"),12);
-            Font.loadFonts(FXResourcesLoader.loadStream("font/HarmonyOS_Sans_SC_Bold.ttf"),12);
-            window.getScene().getRoot().setStyle("-fx-font-family: \"HarmonyOS Sans SC\"");
-        }else {
-            window.getScene().getRoot().setStyle("-fx-font-family: \"Microsoft YaHei\"");
-        }
+    private void initFont() {
+        List<String> candidateFonts = List.of("Microsoft YaHei", "微软雅黑");
+
+        Optional<String> detectedFont = javafx.scene.text.Font.getFamilies().stream().filter(candidateFonts::contains)
+                .findFirst();
+
+        detectedFont.ifPresentOrElse(this::applyFontStyle, this::loadFallbackFont);
+    }
+
+    private void applyFontStyle(String fontFamily) {
+        String style = String.format("-fx-font-family: \"%s\"", fontFamily);
+        window.getScene().getRoot().setStyle(style);
+    }
+
+    private void loadFallbackFont() {
+        LOG.info("默认字体不存在，加载内置字体");
+        javafx.scene.text.Font.loadFont(FXResourcesLoader.loadStream("font/HarmonyOS_Sans_SC_Bold.ttf"), 12);
+        applyFontStyle("HarmonyOS Sans SC");
     }
 
 
