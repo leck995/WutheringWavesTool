@@ -192,7 +192,6 @@ public class ResourcesSyncTask extends Task<String> {
      * @date:   2025/1/3
      */
     public void downloadFile(String fileUrl, String savePath) {
-        System.out.println(fileUrl);
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(fileUrl))
@@ -222,8 +221,9 @@ public class ResourcesSyncTask extends Task<String> {
      * @return
      */
     public String readJsonFile(String fileUrl) {
-        System.out.println(fileUrl);
-        HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .build();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(fileUrl))
                 .timeout(Duration.ofSeconds(3))
