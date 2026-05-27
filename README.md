@@ -6,7 +6,7 @@
 
 [点此下载程序](https://github.com/leck995/WutheringWavesTool/releases)
 
-[点此查看使用教程](https://wave.tealc.fun/)
+[点此查看使用教程](https://wave.999758.xyz/)
 
 
 <img src="./docs/image/image01.png" alt="主页" style="zoom:67%;" />

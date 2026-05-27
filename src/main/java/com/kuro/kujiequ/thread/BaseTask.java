@@ -1,5 +1,6 @@
 package com.kuro.kujiequ.thread;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -32,7 +33,7 @@ public abstract class BaseTask<V> extends Task<V> {
     private static final long CACHE_DURATION = 86400; // 缓存有效期，单位：秒
     private static String cachedIP = null;
     private static long lastFetchTime = 0;
-    protected static final HttpClient httpClient = HttpClient.newHttpClient();
+    protected static final HttpClient httpClient = AppInjector.getInstance(HttpClient.class);
     private static volatile String devCode;
     private static final Object devCodeLock = new Object();
     private static volatile String token;
@@ -149,7 +150,7 @@ public abstract class BaseTask<V> extends Task<V> {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 log.debug(response.body());
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 JsonNode tree = mapper.readTree(response.body());
                 int code = tree.get("code").asInt();
                 if (code == 200 || code == 10902) {

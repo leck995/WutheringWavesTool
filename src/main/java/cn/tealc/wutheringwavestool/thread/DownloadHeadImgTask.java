@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.thread;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
@@ -25,7 +26,7 @@ public class DownloadHeadImgTask extends Task<Boolean> {
         if (!hasUpdate){
             hasUpdate=true;
             URI uri = URI.create(HEAD_JSON_URL);
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
             HashMap<String, String> map = mapper.readValue(uri.toURL(), new TypeReference<HashMap<String, String>>() {
             });
             File dir=new File("assets/header/");

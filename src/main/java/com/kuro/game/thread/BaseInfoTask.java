@@ -1,5 +1,6 @@
 package com.kuro.game.thread;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -38,7 +39,7 @@ public class BaseInfoTask extends Task<ResponseBody<UpdateData>> {
 
     @Override
     protected ResponseBody<UpdateData> call() throws Exception {
-        HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = AppInjector.getInstance(HttpClient.class);
         try {
             HttpRequest request = HttpRequest.newBuilder()
                     .uri(URI.create("https://prod-cn-alicdn-gamestarter.kurogame.com/pcstarter/prod/game/G152/10003_Y8xXrXk65DqFHEDgApn3cpK5lfczpFx5/index.json"))
@@ -46,7 +47,7 @@ public class BaseInfoTask extends Task<ResponseBody<UpdateData>> {
                     .build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
             if (response.statusCode() == 200) {
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBody<UpdateData> responseBody = new ResponseBody<>();
 
                 System.out.println(response.body());

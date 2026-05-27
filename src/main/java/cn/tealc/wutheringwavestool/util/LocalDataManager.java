@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.util;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.Config;
 import com.kuro.kujiequ.model.roleData.weight.PhantomWeight;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,7 +39,7 @@ public class LocalDataManager {
     }
 
     public static PhantomWeight getWeight(String roleName){
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
         File file=new File(String.format(WEIGHT_CUSTOM_DIR_TEMPLATE, Config.setting.getLanguage(),roleName));
         try {
             if (file.exists()){

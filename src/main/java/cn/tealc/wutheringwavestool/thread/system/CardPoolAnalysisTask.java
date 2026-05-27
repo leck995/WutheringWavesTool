@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.thread.system;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.model.CardInfo;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.analysis.AnalysisData;
@@ -37,7 +38,7 @@ public class CardPoolAnalysisTask extends Task<ResponseBody<List<AnalysisData>>>
     @Override
     protected ResponseBody<List<AnalysisData>> call() {
         File poolJson = new File(String.format(POOL_FILE, playerId));
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
         try {
             if (poolJson.exists()) {
                 poolData = mapper.readValue(poolJson, new TypeReference<Map<String, List<CardInfo>>>() {

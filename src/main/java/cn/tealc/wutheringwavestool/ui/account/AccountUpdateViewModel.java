@@ -3,12 +3,13 @@ package cn.tealc.wutheringwavestool.ui.account;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.thread.base.user.LoginUserTask;
 import com.kuro.kujiequ.thread.rolebox.role.GameRoleSeekTask;
-import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -16,9 +17,12 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
 
-public class AccountUpdateViewModel implements ViewModel {
+public class AccountUpdateViewModel extends BaseViewModel {
     public static final String EVENT_CLOSE = "EVENT_CLOSE";
     public static final String EVENT_SELECT_ROLE = "EVENT_SELECT_ROLE";
+
+    @Inject
+    private UserInfoDao userInfoDao;
 
     private final SimpleBooleanProperty loginTabVisible = new SimpleBooleanProperty(true);
 
@@ -182,19 +186,18 @@ public class AccountUpdateViewModel implements ViewModel {
     }
 
     private boolean addUserToDB(UserInfo userInfo) {
-        UserInfoDao dao = new UserInfoDao();
-        UserInfo daoUserByRoleId = dao.getUserByRoleId(userInfo.getRoleId());
-        List<UserInfo> accountList = dao.getAll();
+        UserInfo daoUserByRoleId = userInfoDao.getUserByRoleId(userInfo.getRoleId());
+        List<UserInfo> accountList = userInfoDao.getAll();
         if (daoUserByRoleId == null) {
             if (userInfo.getMain()) {
                 for (UserInfo oldMainUser : accountList) {
                     if (oldMainUser.getMain()) {
                         oldMainUser.setMain(false);
-                        dao.updateUser(oldMainUser);
+                        userInfoDao.updateUser(oldMainUser);
                     }
                 }
             }
-            int id = dao.addUser(userInfo);
+            int id = userInfoDao.addUser(userInfo);
             userInfo.setId(id);
             return true;
         } else {
@@ -203,17 +206,16 @@ public class AccountUpdateViewModel implements ViewModel {
     }
 
     private boolean updateUserToDB(UserInfo newUser) {
-        UserInfoDao dao = new UserInfoDao();
-        List<UserInfo> accountList = dao.getAll();
+        List<UserInfo> accountList = userInfoDao.getAll();
         if (newUser.getMain()) {
             for (UserInfo oldMainUser : accountList) {
                 if (oldMainUser.getMain()) {
                     oldMainUser.setMain(false);
-                    dao.updateUser(oldMainUser);
+                    userInfoDao.updateUser(oldMainUser);
                 }
             }
         }
-        return dao.updateUser(newUser) > 0;
+        return userInfoDao.updateUser(newUser) > 0;
     }
 
 

@@ -1,5 +1,6 @@
 package com.kuro.kujiequ.thread.rolebox.tower;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.dao.GameTowerDataDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.ResponseBodyForApi;
@@ -58,7 +59,7 @@ public class TowerDataDetailTask extends BaseTask<ResponseBody<DifficultyTotal>>
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 LOG.debug("深塔：{}", response.body());
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBodyForApi responseBodyForApi = mapper.readValue(response.body(), new TypeReference<ResponseBodyForApi>() {
                 });
 
@@ -77,7 +78,7 @@ public class TowerDataDetailTask extends BaseTask<ResponseBody<DifficultyTotal>>
                     responseBody.setData(difficultyTotal);
 
                     /*把深渊数据保存到数据库中*/
-                    GameTowerDataDao dataDao = new GameTowerDataDao();
+                    GameTowerDataDao dataDao = AppInjector.getInstance(GameTowerDataDao.class);
                     Difficulty first = difficultyTotal.getDifficultyList().getFirst();
                     if (first.getDifficulty() == 3) {
                         for (TowerArea towerArea : first.getTowerAreaList()) {

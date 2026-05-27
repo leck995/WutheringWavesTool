@@ -5,6 +5,8 @@ import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.release.Release;
 import cn.tealc.wutheringwavestool.model.system.NavData;
@@ -22,7 +24,6 @@ import com.kuro.kujiequ.thread.rolebox.slash.SlashDataDetailTask;
 import com.kuro.kujiequ.thread.rolebox.tower.TowerDataDetailTask;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.MvvmFX;
-import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,8 +44,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author: Leck
  * @create: 2024-07-03 18:59
  */
-public class MainViewModel implements ViewModel {
+public class MainViewModel extends BaseViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(MainViewModel.class);
+
+    @Inject
+    private UserInfoDao userInfoDao;
+
+    @Inject
+    private ObjectMapper objectMapper;
+
     private final AtomicBoolean warningTower = new AtomicBoolean(false);
     private final AtomicBoolean warningSlash = new AtomicBoolean(false);
 
@@ -57,10 +65,9 @@ public class MainViewModel implements ViewModel {
 
     public List<NavData> getNavList(){
         InputStream inputStream = FXResourcesLoader.loadStream("/cn/tealc/wutheringwavestool/data/nav.json");
-        ObjectMapper mapper = new ObjectMapper();
         List<NavData> list = null;
         try {
-            list = mapper.readValue(inputStream, new TypeReference<List<NavData>>() {
+            list = objectMapper.readValue(inputStream, new TypeReference<List<NavData>>() {
             });
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -120,8 +127,7 @@ public class MainViewModel implements ViewModel {
         if (!Config.setting.isNoKuJieQu()) {
             Thread.startVirtualThread(()->{
                 //获取深塔刷新时间，同时更新深塔历史记录
-                UserInfoDao dao = new UserInfoDao();
-                List<UserInfo> users = dao.getAll();
+                List<UserInfo> users = userInfoDao.getAll();
                 for (int i = 0; i < users.size(); i++) {
                     syncSlash(users.get(i));
                     syncTower(users.get(i));

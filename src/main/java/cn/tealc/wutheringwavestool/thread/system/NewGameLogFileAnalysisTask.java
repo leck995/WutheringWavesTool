@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.thread.system;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.dao.GameRecordDao;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.model.game.GameRecordForLog;
@@ -207,7 +208,7 @@ public class NewGameLogFileAnalysisTask extends Task<List<GameTime>> {
      * @date:   2025/2/21
      */
     private void saveRecords(List<GameRecordForLog> records) {
-        GameRecordDao dao = new GameRecordDao();
+        GameRecordDao dao = AppInjector.getInstance(GameRecordDao.class);
         for (GameRecordForLog record : records) {
             if (hasValidRecordData(record)) {
                 record.setCreateDate(formatDate(record.getCloseTime(), GAME_DATE_FORMAT));
@@ -239,7 +240,7 @@ public class NewGameLogFileAnalysisTask extends Task<List<GameTime>> {
      * @date:   2025/2/21
      */
     private void saveGameTimes(List<GameTime> gameTimes) {
-        GameTimeDao dao = new GameTimeDao();
+        GameTimeDao dao = AppInjector.getInstance(GameTimeDao.class);
         for (GameTime gameTime : gameTimes) {
             if (gameTime.getStartTime() != null && gameTime.getEndTime() != null) {
                 saveGameTime(gameTime, dao);

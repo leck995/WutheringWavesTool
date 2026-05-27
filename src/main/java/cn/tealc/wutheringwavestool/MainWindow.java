@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
  * @author: Leck
  * @create: 2024-09-29 20:17
  */
+@Deprecated
 public class MainWindow extends RoundStage {
     private static final Logger LOG= LoggerFactory.getLogger(MainWindow.class);
     private final MainView mainView;

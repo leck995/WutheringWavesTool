@@ -1,5 +1,6 @@
 package com.kuro.kujiequ.thread.rolebox.role;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -52,7 +53,7 @@ public class GameRoleDataTask extends BaseTask<ResponseBody<List<Role>>> {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             ResponseBody<List<Role>> responseBody = new ResponseBody<>();
             if (response.statusCode() == 200) {
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 LOG.debug(response.body());
                 JsonNode tree = mapper.readTree(response.body());
                 int code = tree.get("code").asInt();

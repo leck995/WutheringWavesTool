@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.dao.GameSlashDataDao;
 import cn.tealc.wutheringwavestool.dao.GameTowerDataDao;
@@ -52,12 +53,12 @@ public class VersionUpdateUtil {
     private static void update01() {
         File signJson = new File("signInfo.json");
         if (signJson.exists()) {
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
             try {
                 List<SignUserInfo> list = mapper.readValue(signJson, new TypeReference<List<SignUserInfo>>() {
                 });
                 if (!list.isEmpty()) {
-                    UserInfoDao dao = new UserInfoDao();
+                    UserInfoDao dao = AppInjector.getInstance(UserInfoDao.class);
                     UserInfo user;
                     for (SignUserInfo userInfo : list) {
                         user = new UserInfo();
@@ -243,10 +244,10 @@ public class VersionUpdateUtil {
                 connection.setAutoCommit(true); // 恢复自动提交模式
 
 
-                UserInfoDao userInfoDao = new UserInfoDao();
+                UserInfoDao userInfoDao = AppInjector.getInstance(UserInfoDao.class);
                 UserInfo userInfo = userInfoDao.getMain();
                 if (userInfo != null) {
-                    GameTowerDataDao dao = new GameTowerDataDao();
+                    GameTowerDataDao dao = AppInjector.getInstance(GameTowerDataDao.class);
                     List<TowerData> all = dao.getAll();
                     for (TowerData towerData : all) {
                         towerData.setRoleId(userInfo.getRoleId());
@@ -305,10 +306,10 @@ public class VersionUpdateUtil {
                 FROM game_slash_old""");
 
                 connection.commit();
-                UserInfoDao userInfoDao = new UserInfoDao();
+                UserInfoDao userInfoDao = AppInjector.getInstance(UserInfoDao.class);
                 UserInfo userInfo = userInfoDao.getMain();
                 if (userInfo != null) {
-                    GameSlashDataDao dao = new GameSlashDataDao();
+                    GameSlashDataDao dao = AppInjector.getInstance(GameSlashDataDao.class);
                     List<SlashDataForDB> all = dao.getAll();
                     for (SlashDataForDB data : all) {
                         data.setRoleId(userInfo.getRoleId());

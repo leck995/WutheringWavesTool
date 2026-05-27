@@ -1,5 +1,6 @@
 package com.kuro.kujiequ.thread.rolebox.calculator;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -51,7 +52,7 @@ public class RoleCultivateStatusTask extends BaseTask<ResponseBody<List<ExistedR
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 200) {
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBody<List<ExistedRoleDataForCalculator>> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<List<ExistedRoleDataForCalculator>>>() {
                 });
                 return responseBody;

@@ -9,7 +9,8 @@ import cn.tealc.wutheringwavestool.model.tower.TowerData;
 import com.kuro.kujiequ.thread.rolebox.tower.TowerDataDetailTask;
 import com.kuro.kujiequ.model.towerData.*;
 import com.kuro.kujiequ.thread.rolebox.role.GameRoleDataTask;
-import de.saxsys.mvvmfx.ViewModel;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -33,7 +34,7 @@ import java.util.concurrent.Future;
  * @author: Leck
  * @create: 2024-10-15 23:40
  */
-public class TowerViewModel implements ViewModel {
+public class TowerViewModel extends BaseViewModel {
     private final UserInfo userInfo;
     private final ObservableList<Difficulty> difficultyList = FXCollections.observableArrayList();
     private final ObservableList<TowerArea> towerAreaList = FXCollections.observableArrayList();
@@ -43,8 +44,12 @@ public class TowerViewModel implements ViewModel {
 
     private final Map<Integer,Role> roleMap = new HashMap<>();
 
+    @Inject
+    private UserInfoDao userInfoDao;
+    @Inject
+    private GameTowerDataDao gameTowerDataDao;
+
     public TowerViewModel() {
-        UserInfoDao userInfoDao = new UserInfoDao();
         userInfo = userInfoDao.getMain();
         if (userInfo != null) {
            initialize();
@@ -104,8 +109,7 @@ public class TowerViewModel implements ViewModel {
 
 
     private void initHistory(){
-        GameTowerDataDao dataDao = new GameTowerDataDao();
-        List<Long> endTimeList = dataDao.getEndTimeListByRoleId(userInfo.getRoleId());
+        List<Long> endTimeList = gameTowerDataDao.getEndTimeListByRoleId(userInfo.getRoleId());
         SimpleDateFormat endFormat = new SimpleDateFormat("yyyy.MM.dd");
         DateTimeFormatter startFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd");
         // 定义一个截止日期
@@ -133,8 +137,7 @@ public class TowerViewModel implements ViewModel {
 
     public void changeHistory(long endTime){
         title.set("深境区");
-        GameTowerDataDao dao = new GameTowerDataDao();
-        Set<TowerData> list = dao.getListByRoleIdAndEndTime(userInfo.getRoleId(),endTime);
+        Set<TowerData> list = gameTowerDataDao.getListByRoleIdAndEndTime(userInfo.getRoleId(),endTime);
 
         Map<String,TowerArea> towerAreaMap = new LinkedHashMap<>();
         for (TowerData data : list) {

@@ -1,5 +1,6 @@
 package com.kuro.kujiequ;
 
+import cn.tealc.wutheringwavestool.base.AppConstants;
 import cn.tealc.wutheringwavestool.base.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +26,7 @@ public class ApiUtil {
     private static final Logger LOG = LoggerFactory.getLogger(ApiUtil.class);
     public static String decrypt(String value) throws ApiDecryptException {
         try {
-        String keyBase64 = Config.apiDecryptKey;
+        String keyBase64 = AppConstants.API_DECRYPT_KEY;
         byte[] key = Base64.getDecoder().decode(keyBase64);
         byte[] encryptedData = Base64.getDecoder().decode(value);
         SecretKeySpec secretKey = new SecretKeySpec(key, "AES");

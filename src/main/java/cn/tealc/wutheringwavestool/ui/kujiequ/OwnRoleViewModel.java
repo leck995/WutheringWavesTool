@@ -2,6 +2,8 @@ package cn.tealc.wutheringwavestool.ui.kujiequ;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
@@ -12,7 +14,6 @@ import com.kuro.kujiequ.thread.rolebox.role.GameRoleDataTask;
 import com.kuro.kujiequ.thread.rolebox.role.GameRoleDetailTask;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.MvvmFX;
-import de.saxsys.mvvmfx.ViewModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -31,14 +32,16 @@ import java.util.List;
  * @author: Leck
  * @create: 2024-07-29 22:14
  */
-public class OwnRoleViewModel implements ViewModel {
+public class OwnRoleViewModel extends BaseViewModel {
     private static final Logger LOG= LoggerFactory.getLogger(OwnRoleViewModel.class);
     private final ObservableList<Role> roleList= FXCollections.observableArrayList();
 
+    @Inject
+    private UserInfoDao userInfoDao;
+
     private UserInfo userInfo;
     public OwnRoleViewModel() {
-        UserInfoDao dao=new UserInfoDao();
-        userInfo= dao.getMain();
+        userInfo= userInfoDao.getMain();
         if (userInfo != null) {
             GameRoleDataTask task=new GameRoleDataTask(userInfo);
             task.setOnSucceeded(workerStateEvent -> {

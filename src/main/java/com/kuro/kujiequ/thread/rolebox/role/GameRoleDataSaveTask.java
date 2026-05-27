@@ -1,12 +1,12 @@
 package com.kuro.kujiequ.thread.rolebox.role;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.dao.GameRoleDataDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuro.kujiequ.ApiConfig;
-import com.kuro.kujiequ.ApiDecryptException;
 import com.kuro.kujiequ.model.roleData.Role;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.util.HttpRequestUtil;
@@ -43,13 +43,13 @@ public class GameRoleDataSaveTask extends Task<ResponseBody<List<Role>>> {
     private ResponseBody<List<Role>> getRoleDate() {
         String url = String.format(
                 "%s?gameId=3&serverId=76402e5b20be2c39f095a152090afddc&roleId=%s", ApiConfig.ROLE_DATA_URL, userInfo.getRoleId());
-        HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = AppInjector.getInstance(HttpClient.class);
         try {
             HttpRequest request = HttpRequestUtil.getRequestWithSource(url, userInfo.getToken(), userInfo.getIsWeb(), userInfo.getDevCode());
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             ResponseBody<List<Role>> responseBody = new ResponseBody<>();
             if (response.statusCode() == 200) {
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 JsonNode tree = mapper.readTree(response.body());
                 int code = tree.get("code").asInt();
                 responseBody.setCode(code);
@@ -63,7 +63,7 @@ public class GameRoleDataSaveTask extends Task<ResponseBody<List<Role>>> {
                     responseBody.setData(roleList);
 
 
-                    GameRoleDataDao dataDao = new GameRoleDataDao();
+                    GameRoleDataDao dataDao = AppInjector.getInstance(GameRoleDataDao.class);
                     for (Role role : roleList) {
                         dataDao.add(role);
                     }

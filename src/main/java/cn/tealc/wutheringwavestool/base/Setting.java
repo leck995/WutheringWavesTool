@@ -38,7 +38,7 @@ public class Setting {
     private SimpleStringProperty homeViewRole = new SimpleStringProperty(); //主页人物
     private SimpleStringProperty logLevel = new SimpleStringProperty("INFO"); //日志等级
 
-    private SimpleStringProperty skipVersion = new SimpleStringProperty(Config.version);
+    private SimpleStringProperty skipVersion = new SimpleStringProperty(AppConstants.VERSION);
 
     /*=================设置-首选===================*/
     private SimpleObjectProperty<SourceType> gameRootDirSource = new SimpleObjectProperty<>(SourceType.DEFAULT); //游戏来源类型

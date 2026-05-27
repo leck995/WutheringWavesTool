@@ -13,8 +13,9 @@ import com.kuro.kujiequ.model.calculator.result.Cost;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.thread.rolebox.calculator.BatchRoleCostTask;
 import com.kuro.kujiequ.thread.rolebox.calculator.RoleCultivateStatusTask;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import de.saxsys.mvvmfx.MvvmFX;
-import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -31,7 +32,7 @@ import java.util.List;
  * @author: Leck
  * @create: 2025-03-26 19:42
  */
-public class CalculatorRoleEditViewModel implements ViewModel {
+public class CalculatorRoleEditViewModel extends BaseViewModel {
     private final SimpleStringProperty roleName = new SimpleStringProperty();
     private final SimpleObjectProperty<Image> icon = new SimpleObjectProperty<>();
     private final SimpleDoubleProperty roleHighLevel = new SimpleDoubleProperty(90);
@@ -61,6 +62,10 @@ public class CalculatorRoleEditViewModel implements ViewModel {
     private final ObservableList<Cost> relateCostList = FXCollections.observableArrayList();
 
     private final RoleForCalculator role;
+
+    @Inject
+    private UserInfoDao userInfoDao;
+
     public CalculatorRoleEditViewModel(RoleForCalculator role,Image icon) {
         this.role = role;
         this.roleName.set(role.getRoleName());
@@ -71,7 +76,6 @@ public class CalculatorRoleEditViewModel implements ViewModel {
      * 同步角色练度
      */
     public void ready(){
-        UserInfoDao userInfoDao = new UserInfoDao();
         UserInfo userInfo = userInfoDao.getMain();
         if (userInfo != null) {
             RoleCultivateStatusTask task = new RoleCultivateStatusTask(userInfo,role.getRoleId());
@@ -118,8 +122,7 @@ public class CalculatorRoleEditViewModel implements ViewModel {
      * @param otherSkills
      */
     public void calculate(List<String> otherSkills){
-        UserInfoDao dao = new UserInfoDao();
-        UserInfo userInfo = dao.getMain();
+        UserInfo userInfo = userInfoDao.getMain();
         if (userInfo != null) {
             RoleAim roleAim = new RoleAim();
             roleAim.setRoleId(role.getRoleId());

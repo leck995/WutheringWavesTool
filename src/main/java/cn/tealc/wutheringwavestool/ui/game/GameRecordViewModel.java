@@ -6,8 +6,10 @@ import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.game.GameRecord;
+import cn.tealc.wutheringwavestool.service.GameRecordService;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import de.saxsys.mvvmfx.ViewModel;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -25,7 +27,7 @@ import java.util.Objects;
  * @author: Leck
  * @create: 2024-11-16 22:44
  */
-public class GameRecordViewModel implements ViewModel {
+public class GameRecordViewModel extends BaseViewModel {
     private final ObservableList<String> roleIdList= FXCollections.observableArrayList();
     private final SimpleIntegerProperty roleIdIndex= new SimpleIntegerProperty();
     private final SimpleIntegerProperty battle = new SimpleIntegerProperty();
@@ -47,14 +49,19 @@ public class GameRecordViewModel implements ViewModel {
     private final SimpleIntegerProperty totalTransfer = new SimpleIntegerProperty();
     private final SimpleIntegerProperty transfer = new SimpleIntegerProperty();
 
+    @Inject
+    private GameRecordDao gameRecordDao;
+    @Inject
+    private UserInfoDao userInfoDao;
+
+    @Inject
+    private GameRecordService gameRecordService;
 
     public GameRecordViewModel() {
-        GameRecordDao recordDao = new GameRecordDao();
-        List<String> roleIds = recordDao.getAllRoleId();
+        List<String> roleIds = gameRecordDao.getAllRoleId();
         roleIdList.addAll(roleIds);
         if (!Config.setting.isNoKuJieQu()){
-            UserInfoDao dao = new UserInfoDao();
-            UserInfo main = dao.getMain();
+            UserInfo main = userInfoDao.getMain();
             if (main != null) {
                 boolean hasUser =false;
                 for (int i = 0; i < roleIdList.size(); i++) {
@@ -83,61 +90,40 @@ public class GameRecordViewModel implements ViewModel {
      */
     public void updateIndex(int index){
         roleIdIndex.set(index);
-        GameRecordDao recordDao = new GameRecordDao();
         String today = getToday();
         String roleId = roleIdList.get(getRoleIdIndex());
-        List<GameRecord> list = recordDao.getRecordListByRoleIdAndDate(roleId,today);
+        List<GameRecord> list = gameRecordDao.getRecordListByRoleIdAndDate(roleId,today);
         updateTodayData(list);
-        List<GameRecord> allRecordList = recordDao.getRecordListByRoleId(roleId);
+        List<GameRecord> allRecordList = gameRecordDao.getRecordListByRoleId(roleId);
         updateTotalData(allRecordList);
     }
 
 
     private void updateTodayData(List<GameRecord> list) {
-        roleChange.set(0);
-        roleDeath.set(0);
-        battle.set(0);
-        phantomGet.set(0);
-        phantomSkill.set(0);
-        paralysis.set(0);
-        transfer.set(0);
-        parry.set(0);
-        parryAttack.set(0);
-        for (GameRecord gameRecord : list) {
-            roleChange.set(roleChange.get() + gameRecord.getRoleChange());
-            roleDeath.set(roleDeath.get()+ gameRecord.getRoleDeath());
-            battle.set(battle.get()+gameRecord.getBattle());
-            phantomGet.set(phantomGet.get()+gameRecord.getPhantomGet());
-            phantomSkill.set(phantomSkill.get()+gameRecord.getPhantomCallSkill() + gameRecord.getPhantomTransformSkill());
-            paralysis.set(paralysis.get()+gameRecord.getParalysis());
-            transfer.set(transfer.get()+gameRecord.getTransfer());
-            parry.set(parry.get()+gameRecord.getParryFront() + gameRecord.getParryBack());
-            parryAttack.set(parryAttack.get()+gameRecord.getParryAttack());
-        }
+        GameRecordService.GameRecordAggregation agg = gameRecordService.aggregate(list);
+        roleChange.set(agg.roleChange);
+        roleDeath.set(agg.roleDeath);
+        battle.set(agg.battle);
+        phantomGet.set(agg.phantomGet);
+        phantomSkill.set(agg.getPhantomSkillTotal());
+        paralysis.set(agg.paralysis);
+        transfer.set(agg.transfer);
+        parry.set(agg.getParryTotal());
+        parryAttack.set(agg.parryAttack);
     }
 
 
     private void updateTotalData(List<GameRecord> list) {
-        totalRoleChange.set(0);
-        totalRoleDeath.set(0);
-        totalBattle.set(0);
-        totalPhantomGet.set(0);
-        totalPhantomSkill.set(0);
-        totalParalysis.set(0);
-        totalTransfer.set(0);
-        totalParry.set(0);
-        totalParryAttack.set(0);
-        for (GameRecord gameRecord : list) {
-            totalRoleChange.set(totalRoleChange.get() + gameRecord.getRoleChange());
-            totalRoleDeath.set(totalRoleDeath.get()+ gameRecord.getRoleDeath());
-            totalBattle.set(totalBattle.get()+gameRecord.getBattle());
-            totalPhantomGet.set(totalPhantomGet.get()+gameRecord.getPhantomGet());
-            totalPhantomSkill.set(totalPhantomSkill.get()+gameRecord.getPhantomCallSkill() + gameRecord.getPhantomTransformSkill());
-            totalParalysis.set(totalParalysis.get()+gameRecord.getParalysis());
-            totalTransfer.set(totalTransfer.get()+gameRecord.getTransfer());
-            totalParry.set(totalParry.get()+gameRecord.getParryFront() + gameRecord.getParryBack());
-            totalParryAttack.set(totalParryAttack.get()+gameRecord.getParryAttack());
-        }
+        GameRecordService.GameRecordAggregation agg = gameRecordService.aggregate(list);
+        totalRoleChange.set(agg.roleChange);
+        totalRoleDeath.set(agg.roleDeath);
+        totalBattle.set(agg.battle);
+        totalPhantomGet.set(agg.phantomGet);
+        totalPhantomSkill.set(agg.getPhantomSkillTotal());
+        totalParalysis.set(agg.paralysis);
+        totalTransfer.set(agg.transfer);
+        totalParry.set(agg.getParryTotal());
+        totalParryAttack.set(agg.parryAttack);
     }
 
 

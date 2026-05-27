@@ -13,9 +13,10 @@ import cn.tealc.wutheringwavestool.thread.system.CardPoolRequestTask;
 import cn.tealc.wutheringwavestool.util.FileIO;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.fasterxml.jackson.core.type.TypeReference;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.inject.Inject;
 import de.saxsys.mvvmfx.MvvmFX;
-import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -37,9 +38,12 @@ import java.util.stream.Collectors;
  * @author: Leck
  * @create: 2025-03-23 12:30
  */
-public class CardAnalysisBaseViewModel implements ViewModel {
+public class CardAnalysisBaseViewModel extends BaseViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(CardAnalysisBaseViewModel.class);
     public static final String EVENT_SELECTED_PLAYER = "EVENT_SELECTED_PLAYER";
+
+    @Inject
+    private ObjectMapper objectMapper;
     private SimpleStringProperty player = new SimpleStringProperty();
     private ObservableList<String> playerList = FXCollections.observableArrayList();
     private List<AnalysisData> poolData;
@@ -112,10 +116,9 @@ public class CardAnalysisBaseViewModel implements ViewModel {
 
     public void refreshFromNet() {
         File dataJson = new File(String.format("data/%s/data.json", player.get()));
-        ObjectMapper mapper = new ObjectMapper();
         try {
             if (dataJson.exists()) {
-                Map<String, String> playerParams = mapper.readValue(dataJson, new TypeReference<Map<String, String>>() {
+                Map<String, String> playerParams = objectMapper.readValue(dataJson, new TypeReference<Map<String, String>>() {
                 });
                 if (player != null && playerParams != null) {
                     CardPoolRequestTask task = new CardPoolRequestTask(playerParams);

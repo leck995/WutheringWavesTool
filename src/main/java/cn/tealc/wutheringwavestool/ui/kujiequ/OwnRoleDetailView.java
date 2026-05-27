@@ -2,6 +2,7 @@ package cn.tealc.wutheringwavestool.ui.kujiequ;
 
 import atlantafx.base.controls.Popover;
 import atlantafx.base.controls.Spacer;
+import cn.tealc.wutheringwavestool.base.AppConstants;
 import cn.tealc.wutheringwavestool.base.Config;
 import com.kuro.kujiequ.model.roleData.*;
 import cn.tealc.wutheringwavestool.ui.component.OwnRoleDetailCell;
@@ -428,7 +429,7 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
         button.setOnAction(actionEvent -> {
             try {
                 Desktop.getDesktop().browse(
-                        URI.create(Config.URL_PHANTOM_GUIDE));
+                        URI.create(AppConstants.URL_PHANTOM_GUIDE));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

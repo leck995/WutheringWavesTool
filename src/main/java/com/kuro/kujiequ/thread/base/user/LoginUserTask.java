@@ -1,5 +1,6 @@
 package com.kuro.kujiequ.thread.base.user;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,7 +56,7 @@ public class LoginUserTask extends BaseTask<ResponseBody<UserInfo>> {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 200) {
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 JsonNode tree = mapper.readTree(response.body());
                 int code = tree.get("code").asInt();
                 if (code == 200) {

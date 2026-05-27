@@ -1,5 +1,6 @@
 package com.kuro.kujiequ.thread.rolebox.calculator;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,7 +37,7 @@ public class BatchWeaponCostTask extends BaseTask<ResponseBody<CalculatorResult>
 
     @Override
     protected ResponseBody<CalculatorResult> call() {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
         try {
             String content = mapper.writeValueAsString(weapon);
             content = URLEncoder.encode(content, StandardCharsets.UTF_8);

@@ -1,5 +1,6 @@
 package com.kuro.kujiequ.thread.rolebox.slash;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.dao.GameSlashDataDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.ResponseBodyForApi;
@@ -56,7 +57,7 @@ public class SlashDataDetailTask extends BaseTask<ResponseBody<SlashData>> {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 LOG.debug("海墟：{}", response.body().replace("\\", ""));
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBodyForApi responseBodyForApi = mapper.readValue(response.body(), new TypeReference<ResponseBodyForApi>() {
                 });
                 if (responseBodyForApi.getCode() == 200 || responseBodyForApi.getCode() == 10902) {
@@ -110,7 +111,7 @@ public class SlashDataDetailTask extends BaseTask<ResponseBody<SlashData>> {
         data.setData(json);
         data.setEndTime(date);
 
-        GameSlashDataDao dataDao = new GameSlashDataDao();
+        GameSlashDataDao dataDao = AppInjector.getInstance(GameSlashDataDao.class);
         dataDao.add(data);
     }
 

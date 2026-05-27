@@ -1,5 +1,6 @@
 package com.kuro.game.thread;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuro.game.ApiConfig;
@@ -17,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.zip.GZIPInputStream;
 
 /**
- * @description: 获启动器的Json文件数据
+ * @description: 获启动器的Json文件数据,游戏资源文字下载json在其中
  * @author: Leck
  * @create: 2025-02-10 17:22
  */
@@ -38,7 +39,7 @@ public class LauncherResourceTask extends Task<ResponseBody<LauncherResource>> {
 
     @Override
     protected ResponseBody<LauncherResource> call() {
-        HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = AppInjector.getInstance(HttpClient.class);
         String url;
         switch (type) {
             case BILIBILI -> url =ApiConfig.INDEX_BILIBILI;
@@ -62,13 +63,13 @@ public class LauncherResourceTask extends Task<ResponseBody<LauncherResource>> {
                 try (GZIPInputStream gzipInputStream = new GZIPInputStream(response.body());
                      BufferedReader reader = new BufferedReader(new InputStreamReader(gzipInputStream))) {
 
-                    ObjectMapper mapper = new ObjectMapper();
+                    ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                     LauncherResource launcherResource = mapper.readValue(reader, LauncherResource.class);
                     System.out.println(launcherResource.getUpdateData().getVersion());
                     return ResponseBody.create(200, "", launcherResource);
                 } catch (IOException e) {
 
-                    ObjectMapper mapper = new ObjectMapper();
+                    ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                     LauncherResource launcherResource = mapper.readValue(response.body(), LauncherResource.class);
 
                     LOG.error(e.getMessage());

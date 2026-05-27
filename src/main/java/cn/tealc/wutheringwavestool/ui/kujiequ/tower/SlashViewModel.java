@@ -14,7 +14,8 @@ import com.kuro.kujiequ.model.slash.SlashData;
 import com.kuro.kujiequ.model.slash.SlashDifficulty;
 import com.kuro.kujiequ.thread.rolebox.role.GameRoleDataTask;
 import com.kuro.kujiequ.thread.rolebox.slash.SlashDataDetailTask;
-import de.saxsys.mvvmfx.ViewModel;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -32,7 +33,7 @@ import java.util.*;
 import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
-public class SlashViewModel implements ViewModel {
+public class SlashViewModel extends BaseViewModel {
     private final ObservableList<SlashDifficulty> difficulties = FXCollections.observableArrayList();
     private final ObservableList<Challenge> challenges = FXCollections.observableArrayList();
     private final ObservableList<Pair<Long, Pair<String, String>>> historyList = FXCollections.observableArrayList();
@@ -45,8 +46,14 @@ public class SlashViewModel implements ViewModel {
     private List<SlashDifficulty> sourceDifficulties;
     private final Map<Integer, Role> roleMap = new HashMap<>();
 
+    @Inject
+    private UserInfoDao userInfoDao;
+    @Inject
+    private GameSlashDataDao gameSlashDataDao;
+    @Inject
+    private ObjectMapper objectMapper;
+
     public SlashViewModel() {
-        UserInfoDao userInfoDao = new UserInfoDao();
         userInfo = userInfoDao.getMain();
         initialize();
     }
@@ -90,8 +97,7 @@ public class SlashViewModel implements ViewModel {
      */
     private void initHistory() {
         if (userInfo != null) {
-            GameSlashDataDao dao = new GameSlashDataDao();
-            List<Long> endTimeList = dao.getEndTimesByRoleId(userInfo.getRoleId());
+            List<Long> endTimeList = gameSlashDataDao.getEndTimesByRoleId(userInfo.getRoleId());
             SimpleDateFormat endFormat = new SimpleDateFormat("yyyy.MM.dd");
             DateTimeFormatter startFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd");
             endTimeList.forEach(endTime -> {
@@ -117,12 +123,10 @@ public class SlashViewModel implements ViewModel {
      * @date: 2025/5/29
      */
     public void changHistory(long timestamp) {
-        GameSlashDataDao dao = new GameSlashDataDao();
-        Optional<SlashDataForDB> data = dao.getByRoleIdAndEndTime(userInfo.getRoleId(),timestamp);
+        Optional<SlashDataForDB> data = gameSlashDataDao.getByRoleIdAndEndTime(userInfo.getRoleId(),timestamp);
         data.ifPresent(slashData -> {
-            ObjectMapper mapper = new ObjectMapper();
             try {
-                List<SlashDifficulty> list = mapper.readValue(slashData.getData(), new TypeReference<List<SlashDifficulty>>() {
+                List<SlashDifficulty> list = objectMapper.readValue(slashData.getData(), new TypeReference<List<SlashDifficulty>>() {
                 });
                 updateHistoryDifficulty(list);
             } catch (JsonProcessingException e) {

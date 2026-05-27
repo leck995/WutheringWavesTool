@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.base;
 
+import cn.tealc.wutheringwavestool.base.AppConstants;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
@@ -39,7 +40,7 @@ public class UpdateViewModel implements ViewModel {
 
     public UpdateViewModel(Release release) {
         this.release = release;
-        version.set(String.format("V%s -> V%s", Config.version, release.getVersion()));
+        version.set(String.format("V%s -> V%s", AppConstants.VERSION, release.getVersion()));
         name.set(release.getName());
         description.set(release.getDescription());
         dateTime.set(release.getDate());

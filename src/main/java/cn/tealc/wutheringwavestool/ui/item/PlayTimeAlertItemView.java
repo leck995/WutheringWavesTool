@@ -4,6 +4,7 @@ import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
@@ -25,7 +26,7 @@ import java.util.List;
  * @description: 修改游戏时间的View
  */
 public class PlayTimeAlertItemView extends JFXDialogLayout {
-    private final GameTimeDao dao = new GameTimeDao();
+    private final GameTimeDao dao = AppInjector.getInstance(GameTimeDao.class);
     private final Button okBtn;
     private final Button cancelBtn;
     private final String date;

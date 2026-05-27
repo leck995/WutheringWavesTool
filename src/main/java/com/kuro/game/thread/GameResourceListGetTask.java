@@ -1,5 +1,6 @@
 package com.kuro.game.thread;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuro.game.ApiConfig;
@@ -32,7 +33,7 @@ public class GameResourceListGetTask extends Task<ResponseBody<GameResourceList>
 
     @Override
     protected ResponseBody<GameResourceList> call() {
-        HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = AppInjector.getInstance(HttpClient.class);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("User-Agent",
@@ -45,8 +46,8 @@ public class GameResourceListGetTask extends Task<ResponseBody<GameResourceList>
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                ObjectMapper mapper = new ObjectMapper();
-                System.out.println(response.body());
+                ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
+                //System.out.println(response.body());
                 GameResourceList resourceList = mapper.readValue(response.body(), GameResourceList.class);
                 return ResponseBody.create(200, "", resourceList);
 

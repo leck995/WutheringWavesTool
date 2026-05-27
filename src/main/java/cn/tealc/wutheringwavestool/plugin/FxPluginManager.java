@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.plugin;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.fxplugin.FxPlugin;
 import cn.tealc.fxplugin.FxPluginLoader;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,7 +39,7 @@ public class FxPluginManager {
     private void loadPluginConfig(){
         File dir = new File("plugins");
         if (dir.exists()) {
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
             File[] files = dir.listFiles(File::isDirectory);
             if (files != null) {
                 try {

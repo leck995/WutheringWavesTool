@@ -3,6 +3,8 @@ package cn.tealc.wutheringwavestool.ui.kujiequ;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.SignHistoryDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
@@ -12,7 +14,6 @@ import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.thread.base.sign.SignGoodsTask;
 import com.kuro.kujiequ.thread.base.sign.SignTask;
 import de.saxsys.mvvmfx.MvvmFX;
-import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -28,7 +29,13 @@ import java.util.*;
  * @author: Leck
  * @create: 2024-07-07 17:53
  */
-public class SignViewModel implements ViewModel {
+public class SignViewModel extends BaseViewModel {
+    @Inject
+    private UserInfoDao userInfoDao;
+
+    @Inject
+    private SignHistoryDao signHistoryDao;
+
     private final ObservableList<UserInfo> userInfoList= FXCollections.observableArrayList();
     private final SimpleIntegerProperty userIndex = new SimpleIntegerProperty(-1);
     private final ObservableList<SignGood> goodsList= FXCollections.observableArrayList();
@@ -37,10 +44,9 @@ public class SignViewModel implements ViewModel {
     private final ObservableList<SignRecord> signHistoryList= FXCollections.observableArrayList();
 
     public SignViewModel() {
-        UserInfoDao dao=new UserInfoDao();
-        List<UserInfo> userInfos = dao.getAll();
+        List<UserInfo> userInfos = userInfoDao.getAll();
         userInfoList.setAll(userInfos);
-        UserInfo main = dao.getMain();
+        UserInfo main = userInfoDao.getMain();
         if (main != null) {
             for (int i = 0; i < userInfoList.size(); i++) {
                 if (Objects.equals(userInfoList.get(i).getId(), main.getId())) {
@@ -66,8 +72,7 @@ public class SignViewModel implements ViewModel {
     }
 
     private void getSignHistory(UserInfo userInfo){
-        SignHistoryDao dao=new SignHistoryDao();
-        List<SignRecord> histories = dao.getHistoriesByRoleId(userInfo.getRoleId());
+        List<SignRecord> histories = signHistoryDao.getHistoriesByRoleId(userInfo.getRoleId());
 
 
         Map<String,SignRecord> map=new HashMap<>();

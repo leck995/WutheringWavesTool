@@ -122,13 +122,20 @@ public class JdbcUtils {
 
             String createGameSlash= """
                     CREATE TABLE IF NOT EXISTS game_slash (
-                        id INTEGER PRIMARY KEY  AUTOINCREMENT,
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
                         data TEXT NOT NULL,
                         end_time BIGINT NOT NULL,
                         role_id VARCHAR,
                         UNIQUE (role_id, end_time)
                     );
                     """;
+            String createConfig= """
+                    CREATE TABLE IF NOT EXISTS config (
+                        key VARCHAR NOT NULL UNIQUE,
+                        value VARCHAR
+                    );
+                    """;
+
             Statement st = con.createStatement();
             st.execute(createGameTime);
             st.execute(createGameRole);
@@ -137,6 +144,7 @@ public class JdbcUtils {
             st.execute(createGameTower);
             st.execute(createGameRecord);
             st.execute(createGameSlash);
+            st.execute(createConfig);
             st.close();
             con.close();
         } catch (SQLException e) {

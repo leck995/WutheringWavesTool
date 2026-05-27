@@ -1,5 +1,6 @@
 package com.kuro.kujiequ.thread.base.sign;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.kuro.kujiequ.ApiConfig;
 import com.kuro.kujiequ.model.sign.SignGood;
@@ -37,13 +38,13 @@ public class SignGoodsTask extends Task<ResponseBody<Pair<Boolean,List<SignGood>
     protected ResponseBody<Pair<Boolean,List<SignGood>>> call() throws Exception {
         String url=String.format("%s?gameId=%s&serverId=%s&roleId=%s&userId=%s"
                 , ApiConfig.SIGNIN_INIT_URL,ApiConfig.PARAM_GAME_ID,ApiConfig.PARAM_SERVER_ID,userInfo.getRoleId(),userInfo.getUserId());
-        HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = AppInjector.getInstance(HttpClient.class);
         ResponseBody<Pair<Boolean,List<SignGood>>> body =new ResponseBody<>();
         try {
             HttpRequest request = HttpRequestUtil.getRequestWithSource(url, userInfo.getToken(), userInfo.getIsWeb(), userInfo.getDevCode());
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                ObjectMapper mapper=new ObjectMapper();
+                ObjectMapper mapper=AppInjector.getInstance(ObjectMapper.class);
                 JsonNode tree = mapper.readTree(response.body());
                 int code = tree.get("code").asInt();
                 if (code == 200) {

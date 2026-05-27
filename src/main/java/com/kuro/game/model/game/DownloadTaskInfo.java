@@ -21,7 +21,7 @@ public class DownloadTaskInfo{
         this.gameDir = gameDir;
         this.fileInfo = fileInfo;
         this.size = fileInfo.getSize();
-        this.aimPath = gameDir + fileInfo.getDest();
+        this.aimPath = gameDir +"/"+ fileInfo.getDest();
         this.md5 = fileInfo.getMd5();
 
 

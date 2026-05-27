@@ -8,7 +8,8 @@ import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
-import de.saxsys.mvvmfx.ViewModel;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -26,7 +27,7 @@ import java.util.*;
  * @author: Leck
  * @create: 2024-08-04 04:57
  */
-public class GameTimeViewModel implements ViewModel {
+public class GameTimeViewModel extends BaseViewModel {
     private final ObservableList<XYChart.Series<String,Double>> chartData= FXCollections.observableArrayList();
     private final ObservableList<String> userInfoList= FXCollections.observableArrayList();
     private final SimpleIntegerProperty userIndex = new SimpleIntegerProperty(-1);
@@ -37,8 +38,13 @@ public class GameTimeViewModel implements ViewModel {
     private final SimpleStringProperty currentUserName=new SimpleStringProperty();
     private final SimpleDoubleProperty currentProgressValue=new SimpleDoubleProperty();
     private final SimpleDoubleProperty totalProgressValue=new SimpleDoubleProperty();
+
+    @Inject
+    private GameTimeDao gameTimeDao;
+    @Inject
+    private UserInfoDao userInfoDao;
+
     public GameTimeViewModel() {
-        GameTimeDao gameTimeDao = new GameTimeDao();
         List<String> allRoleId = gameTimeDao.getAllRoleId();
         if (allRoleId == null || allRoleId.isEmpty()) {
             NotificationManager.message(MessageInfo.warning("当前无记录"));
@@ -48,8 +54,7 @@ public class GameTimeViewModel implements ViewModel {
 
         userInfoList.addAll(allRoleId);
         if (!Config.setting.isNoKuJieQu()){
-            UserInfoDao dao = new UserInfoDao();
-            UserInfo main = dao.getMain();
+            UserInfo main = userInfoDao.getMain();
             if (main != null) {
                 boolean hasUser =false;
                 for (int i = 0; i < userInfoList.size(); i++) {
@@ -89,7 +94,6 @@ public class GameTimeViewModel implements ViewModel {
      */
     private void freshWithAccount() {
         chartData.clear();
-        GameTimeDao gameTimeDao = new GameTimeDao();
         //统计所有账号全部时长
         List<GameTime> gameTimeList = gameTimeDao.getAllTime();
         Map<String, List<GameTime>> allTimeMap = getMap(gameTimeList);
@@ -110,8 +114,7 @@ public class GameTimeViewModel implements ViewModel {
         currentTotalTimeText.set(String.format("%.2f", currentTotalTime));
 
 
-        UserInfoDao dao = new UserInfoDao();
-        UserInfo userInfo = dao.getUserByRoleId(roleId);
+        UserInfo userInfo = userInfoDao.getUserByRoleId(roleId);
         if (userInfo != null) {
             currentUserName.set(userInfo.getRoleName());
         }else {
@@ -210,7 +213,6 @@ public class GameTimeViewModel implements ViewModel {
      * @date:   2024/8/4
      */
     private void updateCurrentGameTime(){
-        GameTimeDao gameTimeDao=new GameTimeDao();
         LocalDate localDate = LocalDate.now();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String date = dateTimeFormatter.format(localDate);

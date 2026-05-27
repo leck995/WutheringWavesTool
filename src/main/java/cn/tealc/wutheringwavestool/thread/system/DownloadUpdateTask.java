@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.thread.system;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.release.Release;
@@ -56,7 +57,8 @@ public class DownloadUpdateTask extends Task<ResponseBody<Boolean>> {
                 deleteZip();
             }
         }
-        try (HttpClient client = HttpClient.newHttpClient()) {
+        HttpClient client = AppInjector.getInstance(HttpClient.class);
+        try {
             HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).timeout(Duration.ofSeconds(5)).build();
             HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
             if (response.statusCode() == 200) {

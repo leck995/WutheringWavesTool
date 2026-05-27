@@ -10,7 +10,8 @@ import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.thread.rolebox.calculator.CalculatorDataRefreshTask;
 import com.kuro.kujiequ.thread.rolebox.calculator.ListRoleTask;
 import com.kuro.kujiequ.thread.rolebox.calculator.ListWeaponTask;
-import de.saxsys.mvvmfx.ViewModel;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -21,15 +22,17 @@ import java.util.List;
  * @author: Leck
  * @create: 2025-03-26 17:00
  */
-public class CalculatorViewModel implements ViewModel {
+public class CalculatorViewModel extends BaseViewModel {
     private ObservableList<RoleForCalculator> roleList = FXCollections.observableArrayList();
     private ObservableList<WeaponForCalculator> weaponList = FXCollections.observableArrayList();
+    @Inject
+    private UserInfoDao userInfoDao;
+
     public CalculatorViewModel() {
 
     }
 
     public void ready(){
-        UserInfoDao userInfoDao = new UserInfoDao();
         UserInfo userInfo = userInfoDao.getMain();
         //刷新缓存数据后再获取
         CalculatorDataRefreshTask calculatorDataRefreshTask = new CalculatorDataRefreshTask(userInfo);

@@ -1,5 +1,7 @@
 package cn.tealc.wutheringwavestool.thread.system;
 
+import cn.tealc.wutheringwavestool.base.AppConstants;
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.release.Release;
@@ -18,8 +20,7 @@ import java.net.http.HttpResponse;
 
 public class CheckVersionTask extends Task<ResponseBody<Release>> {
     private static final Logger LOG= LoggerFactory.getLogger(CheckVersionTask.class);
-    private static final String NET_URL="https://wwt.tealc.fun/release.json";
-    private static final String NET_DEV_URL="https://wwt.tealc.fun/release-dev.json";
+
     private static final String TIP="发现新版本：%s,可在设置中获取更新详细信息";
     private static final String TIP_ERROR="检查版本更新失败，请检查网络状况";
 
@@ -41,7 +42,7 @@ public class CheckVersionTask extends Task<ResponseBody<Release>> {
 
 
     private ResponseBody<Release> getLocalReleaseData() {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
         ReleaseList releaseList = null;
         try {
             releaseList = mapper.readValue(new File("release.json"), ReleaseList.class);
@@ -56,7 +57,7 @@ public class CheckVersionTask extends Task<ResponseBody<Release>> {
                 Release latestRelease = releaseList.getLatestRelease();
                 String version = latestRelease.getVersion();
                 double net = Double.parseDouble(version.replace(".",""));
-                double now = Double.parseDouble(Config.version.replace(".",""));
+                double now = Double.parseDouble(AppConstants.VERSION.replace(".",""));
                 if (checkSkip && Config.setting.getSkipVersion() != null){
                     double skip = Double.parseDouble(Config.setting.getSkipVersion().replace(".",""));
                     if (net <= skip){ //网络版本低于跳过版本
@@ -81,12 +82,13 @@ public class CheckVersionTask extends Task<ResponseBody<Release>> {
     }
 
     private ResponseBody<Release> getNetReleaseData() {
-        try (HttpClient client = HttpClient.newHttpClient()){
+        HttpClient client = AppInjector.getInstance(HttpClient.class);
+        try {
             HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(NET_URL)).GET().build();
+                        .uri(URI.create(AppConstants.URL_APP_UPDATE)).GET().build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ReleaseList releaseList = mapper.readValue(response.body(), ReleaseList.class);
                 if (releaseList != null) {
                     if (!true){ //开启预览版时
@@ -95,7 +97,7 @@ public class CheckVersionTask extends Task<ResponseBody<Release>> {
                         Release latestRelease = releaseList.getLatestRelease();
                         String version = latestRelease.getVersion();
                         double net = Double.parseDouble(version.replace(".",""));
-                        double now = Double.parseDouble(Config.version.replace(".",""));
+                        double now = Double.parseDouble(AppConstants.VERSION.replace(".",""));
                         if (checkSkip && Config.setting.getSkipVersion() != null){
                             double skip = Double.parseDouble(Config.setting.getSkipVersion().replace(".",""));
                             if (net <= skip){ //网络版本低于跳过版本

@@ -1,5 +1,6 @@
 package com.kuro.kujiequ.thread.base;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.kuro.kujiequ.AccessTokenException;
 import com.kuro.kujiequ.ApiConfig;
@@ -55,7 +56,7 @@ public class UserDailyDataTask extends BaseTask<ResponseBody<RoleDailyData>> {
             HttpRequest request = getBuilder(url,userInfo).build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                ObjectMapper mapper=new ObjectMapper();
+                ObjectMapper mapper=AppInjector.getInstance(ObjectMapper.class);
 
                 LOG.debug(response.body().replace("\\",""));
 

@@ -3,6 +3,7 @@ package cn.tealc.wutheringwavestool.ui;
 import atlantafx.base.controls.ToggleSwitch;
 import atlantafx.base.controls.ToggleSwitchSkin;
 import atlantafx.base.theme.Styles;
+import cn.tealc.wutheringwavestool.base.AppConstants;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
@@ -149,8 +150,8 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
 
 
         appName.setText(Config.appTitle);
-        appVersion.setText(Config.version);
-        appAuthor.setText(Config.appAuthor);
+        appVersion.setText(AppConstants.VERSION);
+        appAuthor.setText(AppConstants.APP_AUTHOR);
 
 
         appIconIv.setFitWidth(80);
@@ -269,7 +270,7 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
         Hyperlink browserBtn = new Hyperlink(LanguageManager.getString("ui.setting.sponsor.dialog.browser"));
         browserBtn.setOnAction(actionEvent -> {
             try {
-                Desktop.getDesktop().browse(new URI(Config.URL_SUPPORT_LIST));
+                Desktop.getDesktop().browse(new URI(AppConstants.URL_SUPPORT_LIST));
             } catch (IOException | URISyntaxException e) {
                 LOG.error("打开赞助名单失败{}", e.getMessage());
             }

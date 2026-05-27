@@ -1,5 +1,6 @@
 package com.kuro.kujiequ.thread.rolebox.role;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.ResponseBodyForApi;
 import com.kuro.kujiequ.AccessTokenException;
@@ -56,7 +57,7 @@ public class GameRoleDetailTask extends BaseTask<ResponseBody<RoleDetail>> {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 LOG.debug(response.body());
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBodyForApi responseBodyForApi = mapper.readValue(response.body(), new TypeReference<ResponseBodyForApi>() {
                 });
                 if (responseBodyForApi.getCode() == 200 || responseBodyForApi.getCode() == 10902) {

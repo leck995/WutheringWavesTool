@@ -1,5 +1,6 @@
 package com.kuro.kujiequ.thread.rolebox.calculator;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.kuro.kujiequ.AccessTokenException;
 import com.kuro.kujiequ.model.sign.UserInfo;
@@ -40,7 +41,7 @@ public class QueryOwnedRoleTask extends BaseTask<ResponseBody<List<Integer>>> {
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() == 200) {
-                ObjectMapper mapper = new ObjectMapper();
+                ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBody<List<Integer>> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<List<Integer>>>() {
                 });
                 return responseBody;

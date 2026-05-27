@@ -3,9 +3,10 @@ package cn.tealc.wutheringwavestool.ui.kujiequ;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.thread.rolebox.PlayerBaseDataTask;
-import de.saxsys.mvvmfx.ViewModel;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -18,7 +19,10 @@ import java.util.Objects;
  * @author: Leck
  * @create: 2024-08-04 00:26
  */
-public class AccountViewModel implements ViewModel {
+public class AccountViewModel extends BaseViewModel {
+    @Inject
+    private UserInfoDao userInfoDao;
+
     private final ObservableList<UserInfo> accountList= FXCollections.observableArrayList();
     public AccountViewModel() {
         refreshUserList();
@@ -27,8 +31,7 @@ public class AccountViewModel implements ViewModel {
 
 
     private void refreshUserList(){
-        UserInfoDao dao=new UserInfoDao();
-        List<UserInfo> userInfos = dao.getAll();
+        List<UserInfo> userInfos = userInfoDao.getAll();
         accountList.setAll(userInfos);
     }
 
@@ -40,18 +43,17 @@ public class AccountViewModel implements ViewModel {
 
 
     public boolean addUser(UserInfo userInfo) {
-        UserInfoDao dao=new UserInfoDao();
-        UserInfo daoUserByRoleId = dao.getUserByRoleId(userInfo.getRoleId());
+UserInfo daoUserByRoleId = userInfoDao.getUserByRoleId(userInfo.getRoleId());
         if (daoUserByRoleId == null){
             if (userInfo.getMain()){
                 for (UserInfo oldMainUser : accountList) {
                     if (oldMainUser.getMain()){
                         oldMainUser.setMain(false);
-                        dao.updateUser(oldMainUser);
+                        userInfoDao.updateUser(oldMainUser);
                     }
                 }
             }
-            int id = dao.addUser(userInfo);
+            int id = userInfoDao.addUser(userInfo);
             userInfo.setId(id);
             accountList.add(userInfo);
             return true;
@@ -62,20 +64,19 @@ public class AccountViewModel implements ViewModel {
     
     public boolean updateUser(int index,UserInfo userInfo) {
         UserInfo oldUserInfo = accountList.get(index);
-        UserInfoDao dao=new UserInfoDao();
-        UserInfo daoUserByRoleId = dao.getUserByRoleId(oldUserInfo.getRoleId());
+UserInfo daoUserByRoleId = userInfoDao.getUserByRoleId(oldUserInfo.getRoleId());
         if (daoUserByRoleId != null && Objects.equals(daoUserByRoleId.getId(), oldUserInfo.getId())){ //当roleid存在，且id是一个，允许更新
             if (userInfo.getMain()){
                 for (UserInfo oldMainUser : accountList) {
                     if (oldMainUser.getMain()){
                         oldMainUser.setMain(false);
-                        dao.updateUser(oldMainUser);
+                        userInfoDao.updateUser(oldMainUser);
                     }
                 }
             }
             userInfo.setId(oldUserInfo.getId());
             userInfo.setLastSignTime(oldUserInfo.getLastSignTime());
-            dao.updateUser(userInfo);
+            userInfoDao.updateUser(userInfo);
             accountList.set(index,userInfo);
             return true;
         }
@@ -84,8 +85,7 @@ public class AccountViewModel implements ViewModel {
     }
     
     public boolean deleteUser(int index,UserInfo userInfo) {
-        UserInfoDao dao=new UserInfoDao();
-        int i = dao.deleteUser(userInfo.getId());
+int i = userInfoDao.deleteUser(userInfo.getId());
         if (i > 0){
             accountList.remove(index);
             return true;

@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.thread.system;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.model.CardInfo;
 import cn.tealc.wutheringwavestool.model.Message;
@@ -119,7 +120,7 @@ public class CardPoolRequestTask extends Task<ResponseBody<Map<String, List<Card
         String playerId = params.get("playerId");
         File poolJson=new File(String.format("data/%s/pool.json",playerId));
         if(poolJson.exists()){
-            ObjectMapper mapper = new ObjectMapper();
+            ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
             try {
                 map = mapper.readValue(poolJson, new TypeReference<Map<String, List<CardInfo>>>() {});
             } catch (IOException e) {
@@ -205,8 +206,8 @@ public class CardPoolRequestTask extends Task<ResponseBody<Map<String, List<Card
      */
     private Message query(Map<String,String> params,String cardPoolType){
         params.replace("cardPoolType",cardPoolType);
-        HttpClient client = HttpClient.newHttpClient();
-        ObjectMapper mapper = new ObjectMapper();
+        HttpClient client = AppInjector.getInstance(HttpClient.class);
+        ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
         String s = null;
         try {
             s = mapper.writeValueAsString(params);
@@ -257,7 +258,7 @@ public class CardPoolRequestTask extends Task<ResponseBody<Map<String, List<Card
      */
     private void savePoolData(Map<String, String> params,Map<String, List<CardInfo>> data){
         String playerId = params.get("playerId");
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
         File poolJson=new File(String.format("data/%s/pool.json",playerId));
         File dateJson=new File(String.format("data/%s/data.json",playerId));
 

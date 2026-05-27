@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.base;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -15,19 +16,12 @@ import java.util.ResourceBundle;
  * @create: 2024-07-03 00:37
  */
 public class Config {
-    public static final String version = "1.3.3";
-    public static final String appAuthor = "Leck";
-
-    public static final String apiDecryptKey = "XSNLFgNCth8j8oJI3cNIdw==";
-    public static final String URL_SUPPORT_LIST = "https://www.yuque.com/chashuisuipian/sm05lg/ag7ct2or8ecz98cp";
-    public static final String URL_PHANTOM_GUIDE = "https://wave.tealc.fun/pages/advance/phantom.html";
-
     public static Setting setting;
     public static ResourceBundle language;
     public static String appTitle;
 
     static {
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = new ObjectMapper(); // 不能通过 Guice：静态初始化块在 AppInjector 之前执行
         File settingFile = new File("settings.json");
         if (settingFile.exists()) {
             try {
@@ -50,7 +44,7 @@ public class Config {
 
     public static void save() {
         File file = new File("settings.json");
-        ObjectMapper mapper = new ObjectMapper();
+        ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
         try {
             mapper.writerWithDefaultPrettyPrinter().writeValue(file, setting);
         } catch (IOException e) {

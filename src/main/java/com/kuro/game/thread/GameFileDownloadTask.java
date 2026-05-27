@@ -1,7 +1,6 @@
 package com.kuro.game.thread;
 
 import com.kuro.game.model.game.DownloadTaskInfo;
-import com.kuro.game.model.game.FileInfo;
 import javafx.concurrent.Task;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
@@ -14,16 +13,14 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.Duration;
-import java.time.Instant;
 
 /**
  * @description:
  * @author: Leck
  * @create: 2025-08-28 17:43
  */
-public class GameFileDownloadTask implements Runnable {
+public class GameFileDownloadTask extends Task<Boolean> {
     private static final Logger LOG = LoggerFactory.getLogger(GameFileDownloadTask.class);
     private HttpClient client;
     private DownloadTaskInfo taskInfo;
@@ -35,7 +32,7 @@ public class GameFileDownloadTask implements Runnable {
     }
 
     @Override
-    public void run() {
+    protected Boolean call() {
         boolean success = false;
         taskInfo.setStatus(DownloadTaskInfo.Status.IN_PROGRESS);
         for (int i = 0; i < recoveryTime && !success && recoveryTime > 0; i++) {
@@ -50,6 +47,7 @@ public class GameFileDownloadTask implements Runnable {
         }else {
             taskInfo.setStatus(DownloadTaskInfo.Status.FAILED);
         }
+        return success;
     }
 
 
@@ -72,11 +70,13 @@ public class GameFileDownloadTask implements Runnable {
         }
 
         Path aimFile = Path.of(taskInfo.getAimPath());
+
         if (Files.exists(aimFile)) {
             try (FileInputStream fileInputStream = new FileInputStream(aimFile.toFile())) {
                 String md5Hex = DigestUtils.md5Hex(fileInputStream);
                 fileInputStream.close();
                 if (md5Hex.equals(taskInfo.getMd5())) {
+                    System.out.println("文件存在，跳过");
                     return true;
                 } else {
                     Files.delete(aimFile);
@@ -87,7 +87,14 @@ public class GameFileDownloadTask implements Runnable {
         }
 
 
-
+        File parentDir = aimFile.toFile().getParentFile();
+        if (parentDir != null && !parentDir.exists()) {
+            boolean dirsCreated = parentDir.mkdirs();
+            if (!dirsCreated) {
+                LOG.error("Failed to create directories: " + parentDir.getAbsolutePath());
+                return false;
+            }
+        }
         try (BufferedInputStream in = new BufferedInputStream(response.body());
              FileOutputStream fileOutputStream = new FileOutputStream(aimFile.toFile())) {
             byte[] dataBuffer = new byte[8192];
@@ -114,7 +121,7 @@ public class GameFileDownloadTask implements Runnable {
             }
 
         }catch (IOException e){
-            LOG.error(e.getMessage());
+            LOG.error(e.getMessage(),e);
         }
 
 

@@ -2,6 +2,8 @@ package cn.tealc.wutheringwavestool.ui.kujiequ;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
@@ -13,14 +15,17 @@ import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.thread.resourcebriefing.BriefingDetailGetTask;
 import com.kuro.kujiequ.thread.resourcebriefing.BriefingListGetTask;
 import de.saxsys.mvvmfx.MvvmFX;
-import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
-public class ResourceBriefingViewModel implements ViewModel {
+public class ResourceBriefingViewModel extends BaseViewModel {
     public static final String EVENT_SELECT_BOX = "selectBox";
+
+    @Inject
+    private UserInfoDao userInfoDao;
+
     private ObservableList<Item> starList = FXCollections.observableArrayList();
     private ObservableList<Item> coinList = FXCollections.observableArrayList();
     private SimpleLongProperty starNum = new SimpleLongProperty();
@@ -30,8 +35,7 @@ public class ResourceBriefingViewModel implements ViewModel {
     private UserInfo userInfo;
     private BriefingDetailGetTask.Type currentType = BriefingDetailGetTask.Type.MONTH;
     public ResourceBriefingViewModel() {
-        UserInfoDao dao = new UserInfoDao();
-        userInfo = dao.getMain();
+        userInfo = userInfoDao.getMain();
         initList();
     }
 

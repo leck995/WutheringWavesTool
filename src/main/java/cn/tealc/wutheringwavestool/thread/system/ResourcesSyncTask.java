@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.thread.system;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.model.netResource.Resource;
 import cn.tealc.wutheringwavestool.model.netResource.RootResource;
@@ -42,7 +43,7 @@ public class ResourcesSyncTask extends Task<String> {
     private static final String LOCAL_ROOT_JSON = "assets/data/Root_%s.json";
     private final String url;
     private final String resource_template;
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
 
     private int filesSize = 0;
 
@@ -192,7 +193,7 @@ public class ResourcesSyncTask extends Task<String> {
      * @date:   2025/1/3
      */
     public void downloadFile(String fileUrl, String savePath) {
-        HttpClient client = HttpClient.newHttpClient();
+        HttpClient client = AppInjector.getInstance(HttpClient.class);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(fileUrl))
                 .header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36 Edg/126.0.0.0")

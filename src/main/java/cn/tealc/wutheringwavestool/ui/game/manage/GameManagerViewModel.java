@@ -3,6 +3,8 @@ package cn.tealc.wutheringwavestool.ui.game.manage;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
@@ -18,7 +20,6 @@ import com.kuro.game.model.game.GameResourceList;
 import com.kuro.game.model.launcher.item.CdnData;
 import com.kuro.game.model.launcher.LauncherResource;
 import de.saxsys.mvvmfx.MvvmFX;
-import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -38,7 +39,14 @@ import java.util.concurrent.Executors;
  * @author: Leck
  * @create: 2025-02-10 19:18
  */
-public class GameManagerViewModel implements ViewModel {
+public class GameManagerViewModel extends BaseViewModel {
+
+    @Inject
+    private ObjectMapper objectMapper;
+
+    @Inject
+    private HttpClient httpClient;
+
     private final ObservableList<ServerData> serverList = FXCollections.observableArrayList();
 
 
@@ -150,11 +158,10 @@ public class GameManagerViewModel implements ViewModel {
 
 
     public void download(){
-        ObjectMapper mapper = new ObjectMapper();
         try {
-            LauncherResource launcherResource = mapper.readValue(new File("response-bili.json"), LauncherResource.class);
+            LauncherResource launcherResource = objectMapper.readValue(new File("response-bili.json"), LauncherResource.class);
            // System.out.println(launcherResource.getDownloadResource().);
-            GameResourceList resource = mapper.readValue(new File("resources-bili.json"), GameResourceList.class);
+            GameResourceList resource = objectMapper.readValue(new File("resources-bili.json"), GameResourceList.class);
 
             List<FileInfo> fileList = resource.getResource().stream().filter(fileInfo -> fileInfo.getDest().startsWith("/Client/Binaries/Win64/ThirdParty/")).toList();
 
@@ -170,9 +177,8 @@ public class GameManagerViewModel implements ViewModel {
             if (gameDir != null) {
 
                 try (ExecutorService pool = Executors.newFixedThreadPool(8)) {
-                    HttpClient client = HttpClient.newHttpClient();
                     for (FileInfo fileInfo : fileList) {
-                        DownloadGameTask task = new DownloadGameTask(client, gameDir.getAbsolutePath(), host, fileInfo);
+                        DownloadGameTask task = new DownloadGameTask(httpClient, gameDir.getAbsolutePath(), host, fileInfo);
                         task.setOnSucceeded(workerStateEvent -> System.out.println("Download completed" + fileInfo.getDest()));
                         pool.submit(task);
                     }

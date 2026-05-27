@@ -1,8 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.game;
 
 import atlantafx.base.util.Animations;
-import cn.tealc.wutheringwavestool.ui.HomeView;
-import cn.tealc.wutheringwavestool.ui.HomeViewModel;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.ViewTuple;

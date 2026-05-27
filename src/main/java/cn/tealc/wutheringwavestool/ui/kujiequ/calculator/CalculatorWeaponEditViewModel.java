@@ -12,8 +12,9 @@ import com.kuro.kujiequ.model.calculator.result.CalculatorResult;
 import com.kuro.kujiequ.model.calculator.result.Cost;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.thread.rolebox.calculator.BatchWeaponCostTask;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import de.saxsys.mvvmfx.MvvmFX;
-import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -26,7 +27,7 @@ import javafx.scene.image.Image;
  * @author: Leck
  * @create: 2025-03-26 22:33
  */
-public class CalculatorWeaponEditViewModel implements ViewModel {
+public class CalculatorWeaponEditViewModel extends BaseViewModel {
     private SimpleStringProperty weaponName = new SimpleStringProperty();
     private SimpleObjectProperty<Image> icon = new SimpleObjectProperty<>();
     private SimpleDoubleProperty startLevel = new SimpleDoubleProperty(1);
@@ -35,6 +36,10 @@ public class CalculatorWeaponEditViewModel implements ViewModel {
     private ObservableList<Cost> missingCostList = FXCollections.observableArrayList();
     private final ObservableList<Cost> relateCostList = FXCollections.observableArrayList();
     private WeaponForCalculator weapon;
+
+    @Inject
+    private UserInfoDao userInfoDao;
+
     public CalculatorWeaponEditViewModel(WeaponForCalculator weapon, Image icon) {
         this.weapon = weapon;
         this.weaponName.set(weapon.getWeaponName());
@@ -47,8 +52,7 @@ public class CalculatorWeaponEditViewModel implements ViewModel {
             return;
         }
 
-        UserInfoDao dao = new UserInfoDao();
-        UserInfo userInfo = dao.getMain();
+        UserInfo userInfo = userInfoDao.getMain();
         if (userInfo != null) {
             WeaponAim weaponAim = new WeaponAim();
             weaponAim.setWeaponId(weapon.getWeaponId());

@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.thread.system;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.dao.GameRecordDao;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.model.game.GameRecordForLog;
@@ -197,7 +198,7 @@ public class GameLogFileAnalysisTask extends Task<List<GameTime>>{
      * @date:   2024/11/22
      */
     private void saveRecordData(List<GameRecordForLog> records){
-        GameRecordDao dao =new GameRecordDao();
+        GameRecordDao dao = AppInjector.getInstance(GameRecordDao.class);
         //LOG.debug("本次游戏共统计 {} 名角色",records.size());
         for (GameRecordForLog record : records) {
             //LOG.debug("开始保存 {} 的游玩数据",record.getRoleId());
@@ -243,7 +244,7 @@ public class GameLogFileAnalysisTask extends Task<List<GameTime>>{
         LocalDate endDate = endZdt.toLocalDate(); //介绍日期
 
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-        GameTimeDao dao=new GameTimeDao();
+        GameTimeDao dao=AppInjector.getInstance(GameTimeDao.class);
 
         if (startDate.isBefore(endDate)){ //跨天
             LocalDateTime endOfDay = startDate.plusDays(1).atStartOfDay();

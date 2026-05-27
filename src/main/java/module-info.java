@@ -28,6 +28,10 @@ open module cn.tealc.wutheringwavestool {
     requires ch.qos.logback.classic;
     requires cn.tealc.fxplugin;
     requires org.controlsfx.controls;
+    requires com.fasterxml.jackson.core;
+    requires com.google.guice;
+    requires java.sql;
+
 
 
     exports cn.tealc.wutheringwavestool;
@@ -64,6 +68,7 @@ open module cn.tealc.wutheringwavestool {
     exports com.kuro.kujiequ;
     exports com.kuro.game.model.game;
     exports com.kuro.game.model.launcher;
+    exports com.kuro.game.thread.server;
     exports com.kuro.util;
     exports com.kuro.kujiequ.thread.rolebox.tower;
     exports com.kuro.kujiequ.thread.base.sign;
@@ -71,5 +76,9 @@ open module cn.tealc.wutheringwavestool {
     exports com.kuro.kujiequ.thread.base;
     exports com.kuro.game.model.launcher.item;
 
+    exports com.kuro.launcher.thread.api;
+    exports com.kuro.launcher.model.api;
+    exports cn.tealc.wutheringwavestool.ui.system.home;
+    exports com.kuro.launcher.model;
 
 }

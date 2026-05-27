@@ -6,6 +6,7 @@ import atlantafx.base.util.Animations;
 import cn.tealc.teafx.utils.AnchorPaneUtil;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.MainApplication;
+import cn.tealc.wutheringwavestool.base.AppConstants;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
@@ -18,6 +19,10 @@ import cn.tealc.wutheringwavestool.ui.base.UpdateViewModel;
 import cn.tealc.wutheringwavestool.ui.cardpool.CardAnalysisBaseView;
 import cn.tealc.wutheringwavestool.ui.cardpool.CardAnalysisBaseViewModel;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
+import cn.tealc.wutheringwavestool.ui.system.home.HomeView;
+import cn.tealc.wutheringwavestool.ui.system.home.HomeView2;
+import cn.tealc.wutheringwavestool.ui.system.home.HomeViewModel;
+import cn.tealc.wutheringwavestool.ui.system.home.HomeViewModel2;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import cn.tealc.wutheringwavestool.util.NavLoader;
@@ -314,7 +319,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
             //navToggleGroup.selectToggle(analysisBtn);
             bgPane.setVisible(false);
         } else {
-            ViewTuple<HomeView, HomeViewModel> viewTuple = FluentViewLoader.fxmlView(HomeView.class).load();
+            ViewTuple<HomeView2, HomeViewModel2> viewTuple = FluentViewLoader.fxmlView(HomeView2.class).load();
             child.getChildren().setAll(viewTuple.getView());
         }
     }
@@ -495,7 +500,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         Hyperlink browserBtn = new Hyperlink(LanguageManager.getString("ui.setting.sponsor.dialog.browser"));
         browserBtn.setOnAction(actionEvent -> {
             try {
-                Desktop.getDesktop().browse(new URI(Config.URL_SUPPORT_LIST));
+                Desktop.getDesktop().browse(new URI(AppConstants.URL_SUPPORT_LIST));
             } catch (IOException | URISyntaxException e) {
                 LOG.error("打开赞助名单失败{}", e.getMessage());
             }
