@@ -150,7 +150,7 @@ public class GameBaseSettingViewModel implements ViewModel, SceneLifecycle {
     @Override
     public void onViewRemoved() {
         checkGameLogOpen();
-        Config.save();
+        Config.setting().save();
     }
     /**
      * description: 检测游戏日志是否被关闭

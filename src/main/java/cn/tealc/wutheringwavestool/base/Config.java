@@ -1,10 +1,7 @@
 package cn.tealc.wutheringwavestool.base;
 
 import cn.tealc.wutheringwavestool.util.LanguageManager;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -31,13 +28,4 @@ public class Config {
         return setting;
     }
 
-    public static void save() {
-        File file = new File("settings.json");
-        ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
-        try {
-            mapper.writerWithDefaultPrettyPrinter().writeValue(file, setting());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }

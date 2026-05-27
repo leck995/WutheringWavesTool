@@ -99,7 +99,7 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
     @Override
     public void onViewRemoved() {
         checkGameLogOpen();
-        Config.save();
+        Config.setting().save();
     }
 
 

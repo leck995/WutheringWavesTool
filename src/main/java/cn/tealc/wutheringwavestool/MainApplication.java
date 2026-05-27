@@ -192,7 +192,7 @@ public class MainApplication extends Application {
         window.setX(-10000);
         window.setMaximized(false);
         window.close();;
-        Config.save();
+        Config.setting().save();
         appLocked.release();
         System.exit(0);
     }

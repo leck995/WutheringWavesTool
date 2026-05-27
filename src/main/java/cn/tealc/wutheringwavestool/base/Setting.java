@@ -7,7 +7,9 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import java.io.File;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -522,5 +524,15 @@ public class Setting {
 
     public void setLastKujiequSignTime(int lastKujiequSignTime) {
         this.lastKujiequSignTime.set(lastKujiequSignTime);
+    }
+
+    /** 将当前设置持久化到 settings.json */
+    public void save() {
+        ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
+        try {
+            mapper.writerWithDefaultPrettyPrinter().writeValue(new File("settings.json"), this);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
