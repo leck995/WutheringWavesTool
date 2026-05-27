@@ -207,7 +207,7 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
         if (source instanceof RadioButton button) {
             switch (button.getAccessibleText()) {
                 case "default" -> {
-                    Config.setting.setGameStartAppCustom(false);
+                    Config.setting().setGameStartAppCustom(false);
                     File gameExeClient = GameResourcesManager.getGameExeBase();
                     if (gameExeClient != null) {
                         gameStartAppField.setText(gameExeClient.getAbsolutePath());
@@ -218,7 +218,7 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
                     gameStartAppField.positionCaret(gameStartAppField.getText().length());
                 }
                 case "custom" -> {
-                    Config.setting.setGameStartAppCustom(true);
+                    Config.setting().setGameStartAppCustom(true);
                     File gameExeClient = GameResourcesManager.getGameExeClient();
                     if (gameExeClient != null) {
                         gameStartAppField.setText(gameExeClient.getAbsolutePath());

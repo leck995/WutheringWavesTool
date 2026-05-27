@@ -48,7 +48,7 @@ public class ResourcesSyncTask extends Task<String> {
     private int filesSize = 0;
 
     public ResourcesSyncTask() {
-        Locale locale = Config.setting.getLanguage();
+        Locale locale = Config.setting().getLanguage();
         String language = null;
 
         if (locale.getLanguage().equals("zh")) {
@@ -61,7 +61,7 @@ public class ResourcesSyncTask extends Task<String> {
             language = Locale.ENGLISH.toString();
         }
 
-        if (Config.setting.getResourceSource() == 1) {
+        if (Config.setting().getResourceSource() == 1) {
             url = String.format(ROOT_RESOURCE_URL_2, language);
             resource_template = RESOURCE_TEMPLATE_2;
         } else {
@@ -81,7 +81,7 @@ public class ResourcesSyncTask extends Task<String> {
         try {
             RootResource remoteResource = mapper.readValue(row, RootResource.class);
             if (remoteResource != null) {
-                File localFile = new File(String.format(LOCAL_ROOT_JSON, Config.setting.getLanguage()));
+                File localFile = new File(String.format(LOCAL_ROOT_JSON, Config.setting().getLanguage()));
                 if (localFile.exists()) {
                     RootResource localResources = mapper.readValue(localFile, RootResource.class);
                     if (localResources != null) {

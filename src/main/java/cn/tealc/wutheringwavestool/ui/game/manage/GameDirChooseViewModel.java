@@ -45,8 +45,8 @@ public class GameDirChooseViewModel implements ViewModel {
     public boolean finishLocal(){
         boolean checked = checkLocalDirCurrent(new File(localDir.get()));
         if (checked) {
-            Config.setting.setGameRootDir(localDir.get());
-            Config.setting.setGameRootDirSource(localSourceType.get());
+            Config.setting().setGameRootDir(localDir.get());
+            Config.setting().setGameRootDirSource(localSourceType.get());
             return true;
         }
         return false;

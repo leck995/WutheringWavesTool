@@ -60,7 +60,7 @@ public class GameRecordViewModel extends BaseViewModel {
     public GameRecordViewModel() {
         List<String> roleIds = gameRecordDao.getAllRoleId();
         roleIdList.addAll(roleIds);
-        if (!Config.setting.isNoKuJieQu()){
+        if (!Config.setting().isNoKuJieQu()){
             UserInfo main = userInfoDao.getMain();
             if (main != null) {
                 boolean hasUser =false;

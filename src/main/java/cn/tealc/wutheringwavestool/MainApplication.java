@@ -57,7 +57,7 @@ public class MainApplication extends Application {
         MvvmFX.setGlobalResourceBundle(Config.language);
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory
                 .getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
-        root.setLevel(Level.toLevel(Config.setting.getLogLevel()));
+        root.setLevel(Level.toLevel(Config.setting().getLogLevel()));
         Platform.setImplicitExit(false);
         appLocked = new AppLocked();
     }
@@ -80,10 +80,10 @@ public class MainApplication extends Application {
         stage.setTitle(LanguageManager.getString("app.title"));
         stage.setMinWidth(1200);
         stage.setMinHeight(700);
-        stage.setWidth(Config.setting.getAppWidth()  < 1200 ? 1200 : Config.setting.getAppWidth());
-        stage.setHeight(Config.setting.getAppHeight() < 700 ? 700 : Config.setting.getAppHeight());
-        Config.setting.appWidthProperty().bind(scene.widthProperty());
-        Config.setting.appHeightProperty().bind(scene.heightProperty());
+        stage.setWidth(Config.setting().getAppWidth()  < 1200 ? 1200 : Config.setting().getAppWidth());
+        stage.setHeight(Config.setting().getAppHeight() < 700 ? 700 : Config.setting().getAppHeight());
+        Config.setting().appWidthProperty().bind(scene.widthProperty());
+        Config.setting().appHeightProperty().bind(scene.heightProperty());
 
         stage.initStyle(StageStyle.EXTENDED);
 
@@ -97,7 +97,7 @@ public class MainApplication extends Application {
         ThemeManager.getInstance().setTheme(new Light());*/
 
 
-        if (Config.setting.isTheme()){
+        if (Config.setting().isTheme()){
             //Application.setUserAgentStylesheet(new PrimerDark().getUserAgentStylesheet());
         }else {
             //Application.setUserAgentStylesheet(new PrimerLight().getUserAgentStylesheet());

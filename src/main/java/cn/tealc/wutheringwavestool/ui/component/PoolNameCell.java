@@ -32,7 +32,7 @@ public class PoolNameCell extends ListCell<String> {
     protected void updateItem(String s, boolean b) {
         super.updateItem(s, b);
         if (!b){
-            if (Config.setting.getLanguage() == Locale.ENGLISH){
+            if (Config.setting().getLanguage() == Locale.ENGLISH){
                 label.setPrefHeight(90);
             }else {
                 label.setPrefHeight(50);

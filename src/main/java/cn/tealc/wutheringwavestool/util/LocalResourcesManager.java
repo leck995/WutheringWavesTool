@@ -139,10 +139,10 @@ public class LocalResourcesManager {
     }
 
     public static File homeIcon(){
-        return new File(String.format(HOME_ICON_DIR_TEMPLATE_2, Config.setting.getHomeViewIcon()));
+        return new File(String.format(HOME_ICON_DIR_TEMPLATE_2, Config.setting().getHomeViewIcon()));
     }
     public static File homeRole(){
-        return new File(String.format(HOME_ROLE_DIR_TEMPLATE_2, Config.setting.getHomeViewRole()));
+        return new File(String.format(HOME_ROLE_DIR_TEMPLATE_2, Config.setting().getHomeViewRole()));
     }
 
     /**

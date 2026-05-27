@@ -22,14 +22,14 @@ public class LocalDataManager {
     private static final String WEIGHT_CUSTOM_DIR_TEMPLATE="assets/data/%s/weight/custom/%s.json";
 
     static {
-        File dir=new File(String.format(WEIGHT_DEFAULT_DIR_TEMPLATE, Config.setting.getLanguage(),"A")).getParentFile();
+        File dir=new File(String.format(WEIGHT_DEFAULT_DIR_TEMPLATE, Config.setting().getLanguage(),"A")).getParentFile();
         if (!dir.exists()) {
             boolean result = dir.mkdirs();
             if (!result){
                 LOG.error("无法创建默认声骸权重目录");
             }
         }
-        File dir2=new File(String.format(WEIGHT_CUSTOM_DIR_TEMPLATE, Config.setting.getLanguage(),"A")).getParentFile();
+        File dir2=new File(String.format(WEIGHT_CUSTOM_DIR_TEMPLATE, Config.setting().getLanguage(),"A")).getParentFile();
         if (!dir2.exists()) {
             boolean result = dir2.mkdirs();
             if (!result){
@@ -40,12 +40,12 @@ public class LocalDataManager {
 
     public static PhantomWeight getWeight(String roleName){
         ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
-        File file=new File(String.format(WEIGHT_CUSTOM_DIR_TEMPLATE, Config.setting.getLanguage(),roleName));
+        File file=new File(String.format(WEIGHT_CUSTOM_DIR_TEMPLATE, Config.setting().getLanguage(),roleName));
         try {
             if (file.exists()){
                 return mapper.readValue(file, PhantomWeight.class);
             }else {
-                file=new File(String.format(WEIGHT_DEFAULT_DIR_TEMPLATE, Config.setting.getLanguage(),roleName));
+                file=new File(String.format(WEIGHT_DEFAULT_DIR_TEMPLATE, Config.setting().getLanguage(),roleName));
                 if (file.exists()){
                     return mapper.readValue(file, PhantomWeight.class);
                 }

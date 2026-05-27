@@ -17,8 +17,8 @@ public class Main {
         System.setProperty("LcdFontSmoothing", "true");
         System.setProperty("prism.text", "t2k");
 
-        if (Config.setting.getUiScale() != 100){
-            System.setProperty("glass.win.uiScale", Config.setting.getUiScale() + "%");
+        if (Config.setting().getUiScale() != 100){
+            System.setProperty("glass.win.uiScale", Config.setting().getUiScale() + "%");
         }
 
         Application.launch(MainApplication.class,args);

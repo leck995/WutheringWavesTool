@@ -49,7 +49,7 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
     private List<AnalysisData> poolData;
 
     public CardAnalysisBaseViewModel() {
-        player.bindBidirectional(Config.setting.gachaCurrentPlayerIdProperty());
+        player.bindBidirectional(Config.setting().gachaCurrentPlayerIdProperty());
         CompletableFuture.delayedExecutor(300, TimeUnit.MILLISECONDS).execute(()->{
             Platform.runLater(()->{
                 loadFile(player.get());

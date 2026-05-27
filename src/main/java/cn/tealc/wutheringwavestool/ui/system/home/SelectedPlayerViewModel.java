@@ -39,7 +39,7 @@ public class SelectedPlayerViewModel extends BaseViewModel {
             System.err.println("错误: 无法找到 APPDATA 环境变量。");
         }
         String path = null;
-        if (Config.setting.getGameRootDirSource() == SourceType.GLOBAL) {
+        if (Config.setting().getGameRootDirSource() == SourceType.GLOBAL) {
             path = Paths.get(appData, "KR_G153", "A1730", "KRSDKUserLauncherCache.json").toString();
         } else {
             path = Paths.get(appData, "KR_G152", "A1381", "KRSDKUserLauncherCache.json").toString();

@@ -77,7 +77,7 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
         signHistoryListView.setCellFactory(signRecordListView -> new SignHistoryListCell());
 
 
-        autoSignSwitch.selectedProperty().bindBidirectional(Config.setting.autoKujieQuSignProperty());
+        autoSignSwitch.selectedProperty().bindBidirectional(Config.setting().autoKujieQuSignProperty());
 
     }
 

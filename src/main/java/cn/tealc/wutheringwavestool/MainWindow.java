@@ -71,10 +71,10 @@ public class MainWindow extends RoundStage {
         scene.getRoot().setScaleX(scale);
         scene.getRoot().setScaleY(scale);
         setMinSize(1000,  600);
-        setWidth(Config.setting.getAppWidth()  < 1000 ? 1000 : Config.setting.getAppWidth());
-        setHeight(Config.setting.getAppHeight() < 600 ? 600 : Config.setting.getAppHeight());
-        Config.setting.appWidthProperty().bind(scene.widthProperty());
-        Config.setting.appHeightProperty().bind(scene.heightProperty());
+        setWidth(Config.setting().getAppWidth()  < 1000 ? 1000 : Config.setting().getAppWidth());
+        setHeight(Config.setting().getAppHeight() < 600 ? 600 : Config.setting().getAppHeight());
+        Config.setting().appWidthProperty().bind(scene.widthProperty());
+        Config.setting().appHeightProperty().bind(scene.heightProperty());
         initFont();
     }
 

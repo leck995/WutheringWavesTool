@@ -107,7 +107,7 @@ public class HomeViewModel extends BaseViewModel {
     }
 
     private void autoSign(){
-        if (Config.setting.isAutoKujieQuSign()) {
+        if (Config.setting().isAutoKujieQuSign()) {
             SignTask signTask = new SignTask();
             Thread.startVirtualThread(signTask);
         }
@@ -168,7 +168,7 @@ public class HomeViewModel extends BaseViewModel {
      * @date: 2024/10/8
      */
     public void updateKujiequRoleData() {
-        if (Config.setting.isNoKuJieQu()) {
+        if (Config.setting().isNoKuJieQu()) {
             hasSign.set(true);
             return;
         }
@@ -298,7 +298,7 @@ public class HomeViewModel extends BaseViewModel {
 
 
     public void checkIsWeekEnd() {
-        if (Config.setting.getGameRootDirSource() == SourceType.GLOBAL) {
+        if (Config.setting().getGameRootDirSource() == SourceType.GLOBAL) {
             Platform.runLater(() -> {
                 onWeekEnd(true, null);
             });
@@ -339,11 +339,11 @@ public class HomeViewModel extends BaseViewModel {
 
 
     public void startUpdate() {
-        if (Config.setting.getGameRootDirSource() == SourceType.WE_GAME) {
+        if (Config.setting().getGameRootDirSource() == SourceType.WE_GAME) {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                     new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type02")), false);
         } else {
-            String dir = Config.setting.getGameRootDir();
+            String dir = Config.setting().getGameRootDir();
             if (dir != null) {
                 File gameDir = GameResourcesManager.getGameDir();
                 if (gameDir != null) {
@@ -409,12 +409,12 @@ public class HomeViewModel extends BaseViewModel {
         //删除游戏过去的日志，避免数据污染
         deleteLogFiles();
 
-        String dir = Config.setting.getGameRootDir();
+        String dir = Config.setting().getGameRootDir();
         if (dir != null) {
             File exe = null;
             //当自定义启动程序时
-            if (Config.setting.isGameStartAppCustom()) {
-                exe = new File(Config.setting.getGameStarAppPath());
+            if (Config.setting().isGameStartAppCustom()) {
+                exe = new File(Config.setting().getGameStarAppPath());
                 if (!exe.exists()) {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                             new MessageInfo(MessageType.WARNING,
@@ -429,8 +429,8 @@ public class HomeViewModel extends BaseViewModel {
             }
 
             if (exe != null) {
-                if (Config.setting.isUserAdvanceGameSettings()) { //使用高级启动设置
-                    List<String> paramsList = new ArrayList<String>(Config.setting.getStartUpParams());
+                if (Config.setting().isUserAdvanceGameSettings()) { //使用高级启动设置
+                    List<String> paramsList = new ArrayList<String>(Config.setting().getStartUpParams());
                     if (!paramsList.isEmpty()) {
                         paramsList.addFirst(exe.getAbsolutePath());
                         String[] newArray = new String[paramsList.size()];
@@ -461,7 +461,7 @@ public class HomeViewModel extends BaseViewModel {
      * @date: 2024/11/16
      */
     private void hideMainWindow() {
-        if (Config.setting.isHideWhenGameStart()) {
+        if (Config.setting().isHideWhenGameStart()) {
             MainApplication.window.hide();
         }
     }
@@ -514,7 +514,7 @@ public class HomeViewModel extends BaseViewModel {
         try {
             GameAppListener.getInstance().setStartFromApp(true);
             Desktop.getDesktop().open(exe);
-            if (Config.setting.isHideWhenGameStart()) {
+            if (Config.setting().isHideWhenGameStart()) {
                 MainApplication.window.hide();
             }
         } catch (IOException e) {

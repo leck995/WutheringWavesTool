@@ -34,16 +34,16 @@ public class GameBaseSettingViewModel implements ViewModel, SceneLifecycle {
 
     private final ObservableList<String> startUpParams;
     public GameBaseSettingViewModel() {
-        startUpParams = Config.setting.getStartUpParams();
+        startUpParams = Config.setting().getStartUpParams();
     }
 
 
 
     public void init() {
-        gameSourceType.bindBidirectional(Config.setting.gameRootDirSourceProperty());
-        gameDir.bindBidirectional(Config.setting.gameRootDirProperty());
-        gameAppStartPath.bindBidirectional(Config.setting.gameStarAppPathProperty());
-        gameAppStartCustom.bindBidirectional(Config.setting.gameStartAppCustomProperty());
+        gameSourceType.bindBidirectional(Config.setting().gameRootDirSourceProperty());
+        gameDir.bindBidirectional(Config.setting().gameRootDirProperty());
+        gameAppStartPath.bindBidirectional(Config.setting().gameStarAppPathProperty());
+        gameAppStartCustom.bindBidirectional(Config.setting().gameStartAppCustomProperty());
 
         checkServerExist();
     }

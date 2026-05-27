@@ -73,8 +73,8 @@ public class CardCommonAnalysisViewModel implements ViewModel {
     private SimpleBooleanProperty empty = new SimpleBooleanProperty(false);
     private SimpleBooleanProperty loading = new SimpleBooleanProperty(true);
     public CardCommonAnalysisViewModel(boolean isEmpty) {
-        gameRootDir.bindBidirectional(Config.setting.gameRootDirProperty());
-        player.bindBidirectional(Config.setting.gachaCurrentPlayerIdProperty());
+        gameRootDir.bindBidirectional(Config.setting().gameRootDirProperty());
+        player.bindBidirectional(Config.setting().gachaCurrentPlayerIdProperty());
         //loadFile();
 
         empty.set(isEmpty);

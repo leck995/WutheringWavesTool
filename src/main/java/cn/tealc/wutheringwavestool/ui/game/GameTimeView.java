@@ -62,7 +62,7 @@ public class GameTimeView implements FxmlView<GameTimeViewModel>, Initializable 
         headImageView.setClip(circle);
         headImageView.setFitWidth(80);
         headImageView.setFitHeight(80);
-        if (Config.setting.getHomeViewIcon() != null){
+        if (Config.setting().getHomeViewIcon() != null){
             File roleIVFile = LocalResourcesManager.homeIcon();
             if (roleIVFile.exists()){
                 headImageView.setImage(new Image(roleIVFile.toURI().toString(),80,80,true,true,true));

@@ -79,7 +79,7 @@ public class MainViewModel extends BaseViewModel {
 
 
     private void autoSign(){
-        if (Config.setting.isAutoKujieQuSign()) {
+        if (Config.setting().isAutoKujieQuSign()) {
             SignTask signTask = new SignTask();
             Thread.startVirtualThread(signTask);
         }
@@ -87,7 +87,7 @@ public class MainViewModel extends BaseViewModel {
 
 
     public void checkVersion() {
-        if (Config.setting.isCheckNewVersion()) {
+        if (Config.setting().isCheckNewVersion()) {
             Platform.runLater(() -> {
                 CheckVersionTask task = new CheckVersionTask(true);
                 task.setOnSucceeded(workerStateEvent -> {
@@ -124,7 +124,7 @@ public class MainViewModel extends BaseViewModel {
 
 
     private void updateKujiequ() {
-        if (!Config.setting.isNoKuJieQu()) {
+        if (!Config.setting().isNoKuJieQu()) {
             Thread.startVirtualThread(()->{
                 //获取深塔刷新时间，同时更新深塔历史记录
                 List<UserInfo> users = userInfoDao.getAll();

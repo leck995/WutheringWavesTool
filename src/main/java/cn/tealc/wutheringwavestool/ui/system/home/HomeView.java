@@ -174,7 +174,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
      * @date:   2025/2/18
      */
     private void setChangeBgEnable() {
-        if (Config.setting.getDiyHomeBgType() == 2) {
+        if (Config.setting().getDiyHomeBgType() == 2) {
             root.setOnMouseClicked(event -> {
                 if (event.getClickCount() == 2) {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
@@ -191,7 +191,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
      * @date:   2025/2/18
      */
     private void changeHeaderIv(){
-        if (Config.setting.getHomeViewIcon() != null) {
+        if (Config.setting().getHomeViewIcon() != null) {
             File roleIVFile = LocalResourcesManager.homeIcon();
             if (roleIVFile.exists()) {
                 headIV.setImage(new Image(roleIVFile.toURI().toString(), 60, 60, true, true, true));

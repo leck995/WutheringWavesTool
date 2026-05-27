@@ -31,7 +31,7 @@ public class BaseInfoTask extends Task<ResponseBody<UpdateData>> {
 
     private String url;
     public BaseInfoTask() {
-        switch (Config.setting.getGameRootDirSource()){
+        switch (Config.setting().getGameRootDirSource()){
             case DEFAULT -> url= ApiConfig.INDEX_CN;
             case GLOBAL -> url= ApiConfig.INDEX_GLOBAL;
         }

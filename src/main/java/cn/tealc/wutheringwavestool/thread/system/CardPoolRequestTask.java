@@ -72,7 +72,7 @@ public class CardPoolRequestTask extends Task<ResponseBody<Map<String, List<Card
     @Override
     protected ResponseBody<Map<String, List<CardInfo>>> call() throws Exception {
         if (params == null){
-            String dir = Config.setting.getGameRootDir();
+            String dir = Config.setting().getGameRootDir();
             if (dir != null) {
                 File gameLogFile = GameResourcesManager.getGameLogFile();
                 if (gameLogFile.exists()) {

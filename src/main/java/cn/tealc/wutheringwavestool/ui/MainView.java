@@ -124,7 +124,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         icon.setImage(new Image(FXResourcesLoader.load("image/icon.png"), 45, 45, true, true));
 
         //禁用库街区，系统语言为英文也会默认禁用库街区
-        if (Config.setting.isNoKuJieQu()) {
+        if (Config.setting().isNoKuJieQu()) {
             Iterator<Node> iterator = nav.getChildren().iterator();
             while (iterator.hasNext()) {
                 Node next = iterator.next();
@@ -261,7 +261,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         List<NavData> navList = viewModel.getNavList();
 
         for (NavData navData : navList) {
-            if (Config.setting.isNoKuJieQu() && navData.isKujiequ()) {
+            if (Config.setting().isNoKuJieQu() && navData.isKujiequ()) {
                 continue;
             }
             FontIcon fontIcon = new FontIcon(navData.getIcon());
@@ -308,12 +308,12 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
                 supportBtn.getStyleClass().add("icon-only");
             }
         });
-        navBtn.selectedProperty().bindBidirectional(Config.setting.leftBarShowProperty());
-        supportBtn.visibleProperty().bind(Config.setting.supportProperty().not());
+        navBtn.selectedProperty().bindBidirectional(Config.setting().leftBarShowProperty());
+        supportBtn.visibleProperty().bind(Config.setting().supportProperty().not());
     }
 
     private void initContent() {
-        if (Config.setting.isFirstViewWithPoolAnalysis()) {
+        if (Config.setting().isFirstViewWithPoolAnalysis()) {
             ViewTuple<CardAnalysisBaseView, CardAnalysisBaseViewModel> viewTuple = FluentViewLoader.fxmlView(CardAnalysisBaseView.class).load();
             child.getChildren().setAll(viewTuple.getView());
             //navToggleGroup.selectToggle(analysisBtn);
@@ -326,17 +326,17 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
 
     private void updateBg() {
         Image image = null;
-        if (Config.setting.getDiyHomeBgType() == 0) {
+        if (Config.setting().getDiyHomeBgType() == 0) {
             image = new Image(FXResourcesLoader.load("image/bg.png"));
-        } else if (Config.setting.getDiyHomeBgType() == 1) {
-            image = LocalResourcesManager.getHomeBg(Config.setting.getDiyHomeBgName());
+        } else if (Config.setting().getDiyHomeBgType() == 1) {
+            image = LocalResourcesManager.getHomeBg(Config.setting().getDiyHomeBgName());
             if (image == null) {
                 image = new Image(FXResourcesLoader.load("image/bg.png"));
-                Config.setting.setDiyHomeBg(false);
-                Config.setting.setDiyHomeBgName(null);
+                Config.setting().setDiyHomeBg(false);
+                Config.setting().setDiyHomeBgName(null);
                 LOG.warn("自定义壁纸出现问题，取消自定义");
             }
-        } else if (Config.setting.getDiyHomeBgType() == 2) {
+        } else if (Config.setting().getDiyHomeBgType() == 2) {
             image = getImageFormBgDir();
             if (image == null) {
                 image = new Image(FXResourcesLoader.load("image/bg.png"));
@@ -363,7 +363,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
     }
 
     private Image getImageFormBgDir() {
-        File bgDir = new File(Config.setting.getDiyHomeBgDir());
+        File bgDir = new File(Config.setting().getDiyHomeBgDir());
         if (bgDir.exists()) {
             File[] bgs = bgDir.listFiles((dir, name) -> name.endsWith(".png") || name.endsWith(".jpg") || name.endsWith(".jpeg") || name.endsWith(".gif"));
             if (bgs != null && bgs.length > 0) {
@@ -444,7 +444,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
 
 
     public void close() {
-        switch (Config.setting.getCloseEvent()) {
+        switch (Config.setting().getCloseEvent()) {
             case 0 -> showExitDialog();
             case 1 -> MainApplication.exit();
             case 2 -> MainApplication.window.hide();
@@ -511,7 +511,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
 
         okBtn.setOnAction(actionEvent -> {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.SUCCESS, "感谢您的支持，谢谢", Duration.seconds(5)));
-            Config.setting.setSupport(true);
+            Config.setting().setSupport(true);
             cancelBtn.fireEvent(actionEvent);
         });
 

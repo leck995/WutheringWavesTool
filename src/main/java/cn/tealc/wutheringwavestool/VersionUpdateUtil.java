@@ -176,10 +176,10 @@ public class VersionUpdateUtil {
 
     //助手1.3.0版本，更改游戏根目录
     public static void update05() {
-        String dirPath = Config.setting.getGameRootDir();
+        String dirPath = Config.setting().getGameRootDir();
         File dir = new File(dirPath, "Wuthering Waves Game");
         if (dir.exists() && dir.isDirectory()) {
-            Config.setting.setGameRootDir(dir.getAbsolutePath());
+            Config.setting().setGameRootDir(dir.getAbsolutePath());
         }
 
     }

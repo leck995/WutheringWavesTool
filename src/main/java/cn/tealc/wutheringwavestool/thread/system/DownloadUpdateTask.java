@@ -37,7 +37,7 @@ public class DownloadUpdateTask extends Task<ResponseBody<Boolean>> {
         if (release.getUrls().length == 1){
             url = release.getUrls()[0];
         }else if (release.getUrls().length > 1){
-            if (Config.setting.getResourceSource() == 0){
+            if (Config.setting().getResourceSource() == 0){
                 url = release.getUrls()[0];
             }else {
                 url = release.getUrls()[1];

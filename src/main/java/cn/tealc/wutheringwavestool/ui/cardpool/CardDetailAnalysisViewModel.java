@@ -74,7 +74,7 @@ public class CardDetailAnalysisViewModel implements ViewModel {
         empty.set(isEmpty);
         loading.set(!isEmpty);
 
-        ssrModel.bindBidirectional(Config.setting.gachaListModelProperty());
+        ssrModel.bindBidirectional(Config.setting().gachaListModelProperty());
         NotificationManager.subscribe(NotificationKey.CARD_POOL_USER_UPDATE,(s, objects) -> {
             empty.set(false);
             @SuppressWarnings("unchecked")

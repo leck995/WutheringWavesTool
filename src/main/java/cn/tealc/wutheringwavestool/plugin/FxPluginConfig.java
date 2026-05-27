@@ -34,16 +34,16 @@ public class FxPluginConfig {
 
     @JsonIgnore
     public String getTitle(){
-        if (languages.containsKey(Config.setting.getLanguage())){
-            return languages.get(Config.setting.getLanguage()).getTitle();
+        if (languages.containsKey(Config.setting().getLanguage())){
+            return languages.get(Config.setting().getLanguage()).getTitle();
         }else {
             return "Unknown";
         }
     }
     @JsonIgnore
     public String getDescription(){
-        if (languages.containsKey(Config.setting.getLanguage())){
-            return languages.get(Config.setting.getLanguage()).getDescription();
+        if (languages.containsKey(Config.setting().getLanguage())){
+            return languages.get(Config.setting().getLanguage()).getDescription();
         }else {
             return "Unknown";
         }

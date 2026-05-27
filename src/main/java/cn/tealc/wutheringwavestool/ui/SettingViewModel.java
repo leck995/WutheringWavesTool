@@ -57,15 +57,15 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
     private ObservableList<Pair<String, Locale>> languages = FXCollections.observableArrayList();
 
     public SettingViewModel() {
-        startWithAnalysis.bindBidirectional(Config.setting.firstViewWithPoolAnalysisProperty());
-        exitWhenGameOver.bindBidirectional(Config.setting.exitWhenGameOverProperty());
-        hideWhenGameStart.bindBidirectional(Config.setting.hideWhenGameStartProperty());
+        startWithAnalysis.bindBidirectional(Config.setting().firstViewWithPoolAnalysisProperty());
+        exitWhenGameOver.bindBidirectional(Config.setting().exitWhenGameOverProperty());
+        hideWhenGameStart.bindBidirectional(Config.setting().hideWhenGameStartProperty());
         fontFamilyList.setAll(Font.getFamilies());
-        diyHomeBg.bindBidirectional(Config.setting.diyHomeBgProperty());
-        diyHomeBgName.bindBidirectional(Config.setting.diyHomeBgNameProperty());
-        checkNewVersion.bindBidirectional(Config.setting.checkNewVersionProperty());
-        homeBgType.bindBidirectional(Config.setting.diyHomeBgTypeProperty());
-        homeBgDir.bindBidirectional(Config.setting.diyHomeBgDirProperty());
+        diyHomeBg.bindBidirectional(Config.setting().diyHomeBgProperty());
+        diyHomeBgName.bindBidirectional(Config.setting().diyHomeBgNameProperty());
+        checkNewVersion.bindBidirectional(Config.setting().checkNewVersionProperty());
+        homeBgType.bindBidirectional(Config.setting().diyHomeBgTypeProperty());
+        homeBgDir.bindBidirectional(Config.setting().diyHomeBgDirProperty());
 
         diyHomeBgName.addListener((observableValue, s1, s2) -> {
             if (getDiyHomeBgName() != null) {
@@ -161,8 +161,8 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
 
 
     public void setLanguages(Locale locale) {
-        Config.setting.setLanguage(locale);
-        Config.language = ResourceBundle.getBundle("cn.tealc/wutheringwavestool/language/local", Config.setting.getLanguage());
+        Config.setting().setLanguage(locale);
+        Config.language = ResourceBundle.getBundle("cn.tealc/wutheringwavestool/language/local", Config.setting().getLanguage());
         MvvmFX.setGlobalResourceBundle(Config.language);
     }
 

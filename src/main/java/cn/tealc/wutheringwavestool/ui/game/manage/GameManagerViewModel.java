@@ -57,8 +57,8 @@ public class GameManagerViewModel extends BaseViewModel {
 
 
     public GameManagerViewModel() {
-        gameRootDirSource.bindBidirectional(Config.setting.gameRootDirSourceProperty());
-        gameRootDir.bindBidirectional(Config.setting.gameRootDirProperty());
+        gameRootDirSource.bindBidirectional(Config.setting().gameRootDirSourceProperty());
+        gameRootDir.bindBidirectional(Config.setting().gameRootDirProperty());
         checkService();
     }
 

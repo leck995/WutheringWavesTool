@@ -53,7 +53,7 @@ public class GameTimeViewModel extends BaseViewModel {
 
 
         userInfoList.addAll(allRoleId);
-        if (!Config.setting.isNoKuJieQu()){
+        if (!Config.setting().isNoKuJieQu()){
             UserInfo main = userInfoDao.getMain();
             if (main != null) {
                 boolean hasUser =false;

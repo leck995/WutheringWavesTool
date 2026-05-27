@@ -62,7 +62,7 @@ public class HeaderImageSelectView extends JFXDialogLayout {
     }
 
     private void setImage(File file) {
-        Config.setting.setHomeViewIcon(file.getName());
+        Config.setting().setHomeViewIcon(file.getName());
         NotificationManager.publish(NotificationKey.CHANGE_HEADER);
         cancelBtn.fireEvent(new ActionEvent());
     }

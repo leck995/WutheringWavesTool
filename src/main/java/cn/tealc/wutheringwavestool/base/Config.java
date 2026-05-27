@@ -1,6 +1,5 @@
 package cn.tealc.wutheringwavestool.base;
 
-import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -9,44 +8,34 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
-/**
- * @program: WutheringWavesTool
- * @description:
- * @author: Leck
- * @create: 2024-07-03 00:37
- */
 public class Config {
-    public static Setting setting;
+    private static volatile Setting setting;
+
     public static ResourceBundle language;
     public static String appTitle;
 
     static {
-        ObjectMapper mapper = new ObjectMapper(); // 不能通过 Guice：静态初始化块在 AppInjector 之前执行
-        File settingFile = new File("settings.json");
-        if (settingFile.exists()) {
-            try {
-                setting = mapper.readValue(settingFile, Setting.class);
-                if (setting.getAppParams() != null) { //暂时解决启动参数变更，未来版本删除
-                    setting.getStartUpParams().addAll(setting.getAppParams().split(" "));
-                    setting.setAppParams(null);
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (setting == null) {
-            setting = new Setting();
-        }
         language = ResourceBundle.getBundle("cn/tealc/wutheringwavestool/language/local", Locale.SIMPLIFIED_CHINESE);
         appTitle = LanguageManager.getString("app.title");
     }
 
+    /** 获取 Guice 管理的 Setting 单例 */
+    public static Setting setting() {
+        if (setting == null) {
+            synchronized (Config.class) {
+                if (setting == null) {
+                    setting = AppInjector.getInstance(Setting.class);
+                }
+            }
+        }
+        return setting;
+    }
 
     public static void save() {
         File file = new File("settings.json");
         ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
         try {
-            mapper.writerWithDefaultPrettyPrinter().writeValue(file, setting);
+            mapper.writerWithDefaultPrettyPrinter().writeValue(file, setting());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

@@ -22,8 +22,8 @@ public class GameResourcesManager {
     private static final Logger LOG = LoggerFactory.getLogger(GameResourcesManager.class);
 
     public static File getGameDir(){
-        if (Config.setting.getGameRootDir() != null) {
-            File dir = new File(Config.setting.getGameRootDir());
+        if (Config.setting().getGameRootDir() != null) {
+            File dir = new File(Config.setting().getGameRootDir());
             if (!dir.exists()) {
                 return null;
             }
@@ -33,7 +33,7 @@ public class GameResourcesManager {
     }
 
     public static File getGameDB(){
-        String dir = Config.setting.getGameRootDir();
+        String dir = Config.setting().getGameRootDir();
         File exe = null;
         if (dir != null) {
             exe = new File(dir + File.separator + "Client/Saved/LocalStorage/LocalStorage.db");
@@ -45,7 +45,7 @@ public class GameResourcesManager {
     }
 
     public static File getGameExeClient(){
-        String dir = Config.setting.getGameRootDir();
+        String dir = Config.setting().getGameRootDir();
         File exe = null;
         if (dir != null) {
             exe = new File(dir + File.separator + "Client/Binaries/Win64/Client-Win64-Shipping.exe");
@@ -56,7 +56,7 @@ public class GameResourcesManager {
         return exe;
     }
     public static File getGameExeBase(){
-        String dir = Config.setting.getGameRootDir();
+        String dir = Config.setting().getGameRootDir();
         File exe = null;
         if (dir != null) {
             exe = new File(dir + File.separator + "Wuthering Waves.exe");
@@ -68,7 +68,7 @@ public class GameResourcesManager {
     }
 
     public static File getGameEngineIni() {
-        String dir = Config.setting.getGameRootDir();
+        String dir = Config.setting().getGameRootDir();
         File exe = null;
         if (dir != null) {
             exe = new File(dir + File.separator + "Client/Saved/Config/WindowsNoEditor/Engine.ini");
@@ -81,10 +81,10 @@ public class GameResourcesManager {
 
 
     public static File getGameScreenShoot(){
-        String dir = Config.setting.getGameRootDir();
+        String dir = Config.setting().getGameRootDir();
         File exe = null;
         if (dir != null) {
-            exe =new File(Config.setting.getGameRootDir()+File.separator+"Client/Saved/ScreenShot");
+            exe =new File(Config.setting().getGameRootDir()+File.separator+"Client/Saved/ScreenShot");
             if (!exe.exists()) {
                 return null;
             }
@@ -99,7 +99,7 @@ public class GameResourcesManager {
      * @date:   2024/11/13
      */
     public static File getGameLogDir() {
-        String dir = Config.setting.getGameRootDir();
+        String dir = Config.setting().getGameRootDir();
         File exe = null;
         if (dir != null) {
             exe = new File(dir + File.separator + "Client/Saved/Logs");
@@ -111,7 +111,7 @@ public class GameResourcesManager {
     }
 
     public static File getGameLogFile() {
-        String dir = Config.setting.getGameRootDir();
+        String dir = Config.setting().getGameRootDir();
         File file = null;
         if (dir != null) {
             file=new File(dir + File.separator + "Client/Saved/Logs/Client.log");
