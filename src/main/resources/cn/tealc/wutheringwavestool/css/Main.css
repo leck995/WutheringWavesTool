@@ -151,6 +151,90 @@
     -fx-icon-code: mdral-fullscreen_exit;
 }
 
+/* 下载进度按钮 */
+.main .headbar .trailing .download-progress-btn {
+    -fx-background-radius: 50%;
+    -fx-min-width: 32px;
+    -fx-min-height: 32px;
+    -fx-max-width: 32px;
+    -fx-max-height: 32px;
+    -fx-padding: 0;
+}
+
+.main .headbar .trailing .download-progress-btn .ikonli-font-icon {
+    -fx-icon-size: 18px;
+    -fx-icon-color: -color-fg-default;
+}
+
+
+
+
+
+    /* 下载进度弹窗 */
+.download-progress-popup {
+    -fx-background-color: -color-bg-default;
+    -fx-background-radius: 8px;
+    -fx-border-radius: 8px;
+    -fx-border-color: -color-border-muted;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 4);
+    -fx-padding: 12px;
+    -fx-min-width: 300px;
+    -fx-max-width: 380px;
+}
+
+.download-progress-popup .popup-header {
+    -fx-font-size: 1.1em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+    -fx-padding: 0 0 8 0;
+}
+
+.download-progress-popup .task-list {
+    -fx-spacing: 8;
+}
+
+.download-progress-popup .task-row {
+    -fx-background-color: -color-bg-subtle;
+    -fx-background-radius: 6px;
+    -fx-padding: 8 10 8 10;
+    -fx-spacing: 4;
+}
+
+.download-progress-popup .task-row .task-name {
+    -fx-font-size: 0.95em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+}
+
+.download-progress-popup .task-row .task-progress {
+    -fx-pref-height: 6px;
+    -fx-min-height: 6px;
+}
+
+.download-progress-popup .task-row.task-running .task-progress > .bar {
+    -fx-background-color: -color-accent-emphasis;
+}
+
+.download-progress-popup .task-row.task-completed .task-progress > .bar {
+    -fx-background-color: -color-success-emphasis;
+}
+
+.download-progress-popup .task-row.task-failed .task-progress > .bar {
+    -fx-background-color: -color-danger-emphasis;
+}
+
+.download-progress-popup .task-row .task-message {
+    -fx-font-size: 0.85em;
+    -fx-text-fill: -color-fg-muted;
+}
+
+.download-progress-popup .empty-label {
+    -fx-font-size: 0.9em;
+    -fx-text-fill: -color-fg-muted;
+    -fx-padding: 8 0 8 0;
+}
+
 
 
 

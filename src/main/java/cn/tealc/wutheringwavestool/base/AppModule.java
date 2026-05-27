@@ -26,5 +26,6 @@ public class AppModule extends AbstractModule {
         bind(SignHistoryDao.class).in(Singleton.class);
         bind(ConfigDao.class).in(Singleton.class);
         bind(GameSettingDao.class).in(Singleton.class);
+        bind(DownloadProgressService.class).in(Singleton.class);
     }
 }

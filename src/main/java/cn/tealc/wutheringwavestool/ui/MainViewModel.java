@@ -2,6 +2,7 @@ package cn.tealc.wutheringwavestool.ui;
 
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.base.DownloadProgressService;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
@@ -53,6 +54,9 @@ public class MainViewModel extends BaseViewModel {
     @Inject
     private ObjectMapper objectMapper;
 
+    @Inject
+    private DownloadProgressService downloadProgressService;
+
     private final AtomicBoolean warningTower = new AtomicBoolean(false);
     private final AtomicBoolean warningSlash = new AtomicBoolean(false);
 
@@ -61,6 +65,10 @@ public class MainViewModel extends BaseViewModel {
         checkGameLogOpen();
         updateKujiequ();
         autoSign();
+    }
+
+    public DownloadProgressService getDownloadProgressService() {
+        return downloadProgressService;
     }
 
     public List<NavData> getNavList(){

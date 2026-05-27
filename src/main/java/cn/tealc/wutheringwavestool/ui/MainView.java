@@ -8,7 +8,9 @@ import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.base.AppConstants;
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.base.DownloadProgressService;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.model.DownloadProgressModel;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.release.Release;
@@ -32,8 +34,10 @@ import de.saxsys.mvvmfx.*;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.KeyValue;
+import javafx.animation.RotateTransition;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -49,10 +53,12 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
+import javafx.stage.Popup;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
+import org.kordamp.ikonli.material2.Material2MZ;
 import org.kordamp.ikonli.material2.Material2OutlinedAL;
 import org.kordamp.ikonli.material2.Material2OutlinedMZ;
 import org.slf4j.Logger;
@@ -116,6 +122,12 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
     private HBox titlebar;
     private ToggleGroup navToggleGroup;
     private ToggleButton supportBtn;
+
+    private DownloadProgressService downloadProgressService;
+    private Button downloadBtn;
+    private Popup progressPopup;
+    private RotateTransition rotateTransition;
+    private VBox popupTaskListBox;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -212,6 +224,9 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         leadingBox.getStyleClass().add("leading");
         headerbar.setLeading(leadingBox);
 
+        // 下载进度按钮
+        createDownloadProgressButton();
+
         //右侧
         Button closeBtn = new Button(null,new FontIcon(Material2OutlinedAL.CLOSE));
         Button maxBtn = new Button(null,new FontIcon());
@@ -224,7 +239,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         closeBtn.getStyleClass().add("close-btn");
         maxBtn.getStyleClass().add("max-btn");
         systemBox.getStyleClass().add("system-func");
-        HBox trailingBox = new HBox(systemBox);
+        HBox trailingBox = new HBox(downloadBtn, systemBox);
         trailingBox.getStyleClass().add("trailing");
         headerbar.setTrailing(trailingBox);
 
@@ -250,6 +265,126 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
 
 
 
+
+    private void createDownloadProgressButton() {
+        downloadProgressService = viewModel.getDownloadProgressService();
+
+        downloadBtn = new Button(null, new FontIcon(Material2MZ.SYNC));
+        downloadBtn.getStyleClass().add("download-progress-btn");
+        downloadBtn.setVisible(false);
+        downloadBtn.setOnAction(e -> toggleProgressPopup());
+
+        rotateTransition = new RotateTransition(Duration.seconds(1.5), downloadBtn.getGraphic());
+        rotateTransition.setByAngle(360);
+        rotateTransition.setCycleCount(Animation.INDEFINITE);
+        rotateTransition.setInterpolator(javafx.animation.Interpolator.LINEAR);
+
+        // 列表非空时显示按钮
+        downloadProgressService.getTasks().addListener((javafx.collections.ListChangeListener<DownloadProgressModel>) change -> {
+            Platform.runLater(() -> downloadBtn.setVisible(!downloadProgressService.getTasks().isEmpty()));
+        });
+        // 有活跃下载时旋转
+        downloadProgressService.hasActiveTasksProperty().addListener((obs, old, active) -> {
+            if (active) {
+                rotateTransition.play();
+            } else {
+                rotateTransition.stop();
+            }
+        });
+
+        progressPopup = new Popup();
+        progressPopup.setAutoHide(true);
+        progressPopup.setHideOnEscape(true);
+
+        VBox popupContent = new VBox();
+        popupContent.getStyleClass().add("download-progress-popup");
+        popupContent.setFillWidth(true);
+        popupContent.getStylesheets().add(FXResourcesLoader.load("css/Main.css"));
+
+        Label header = new Label(LanguageManager.getString("ui.download.progress.title"));
+        header.getStyleClass().add("popup-header");
+        popupContent.getChildren().add(header);
+
+        popupTaskListBox = new VBox();
+        popupTaskListBox.getStyleClass().add("task-list");
+        popupContent.getChildren().add(popupTaskListBox);
+
+        downloadProgressService.getTasks().addListener((javafx.collections.ListChangeListener<DownloadProgressModel>) change -> {
+            Platform.runLater(this::rebuildPopupTasks);
+        });
+
+        progressPopup.getContent().add(popupContent);
+    }
+
+    private void toggleProgressPopup() {
+        if (progressPopup.isShowing()) {
+            progressPopup.hide();
+        } else {
+            rebuildPopupTasks();
+            progressPopup.show(downloadBtn,
+                    downloadBtn.localToScreen(0, 0).getX(),
+                    downloadBtn.localToScreen(0, 0).getY() + downloadBtn.getHeight() + 4);
+        }
+    }
+
+    private void rebuildPopupTasks() {
+        popupTaskListBox.getChildren().clear();
+        ObservableList<DownloadProgressModel> tasks = downloadProgressService.getTasks();
+        if (tasks.isEmpty()) {
+            Label emptyLabel = new Label(LanguageManager.getString("ui.download.progress.empty"));
+            emptyLabel.getStyleClass().add("empty-label");
+            popupTaskListBox.getChildren().add(emptyLabel);
+        } else {
+            for (DownloadProgressModel task : tasks) {
+                popupTaskListBox.getChildren().add(createTaskRow(task));
+            }
+        }
+    }
+
+    private Node createTaskRow(DownloadProgressModel task) {
+        VBox row = new VBox();
+        row.getStyleClass().add("task-row");
+        row.getStyleClass().add(
+                switch (task.getStatus()) {
+                    case RUNNING -> "task-running";
+                    case COMPLETED -> "task-completed";
+                    case FAILED -> "task-failed";
+                }
+        );
+
+        Label nameLabel = new Label(task.getTaskName());
+        nameLabel.getStyleClass().add("task-name");
+
+        ProgressBar progressBar = new ProgressBar();
+        progressBar.getStyleClass().add("task-progress");
+        progressBar.setMaxWidth(Double.MAX_VALUE);
+        progressBar.progressProperty().bind(
+                javafx.beans.binding.Bindings.createDoubleBinding(() -> {
+                    double p = task.getProgress();
+                    return p < 0 ? ProgressBar.INDETERMINATE_PROGRESS : p;
+                }, task.progressProperty())
+        );
+
+        Label messageLabel = new Label();
+        messageLabel.getStyleClass().add("task-message");
+        messageLabel.textProperty().bind(task.messageProperty());
+        messageLabel.setWrapText(true);
+
+        row.getChildren().addAll(nameLabel, progressBar, messageLabel);
+
+        task.statusProperty().addListener((obs, old, status) -> {
+            row.getStyleClass().removeAll("task-running", "task-completed", "task-failed");
+            row.getStyleClass().add(
+                    switch (status) {
+                        case RUNNING -> "task-running";
+                        case COMPLETED -> "task-completed";
+                        case FAILED -> "task-failed";
+                    }
+            );
+        });
+
+        return row;
+    }
 
     private void initNav() {
         supportBtn = new ToggleButton(LanguageManager.getString("ui.main.button.nav.type09"), new FontIcon(Material2AL.LOCAL_CAFE));

@@ -2,6 +2,8 @@ package cn.tealc.wutheringwavestool.thread.system;
 
 import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.base.DownloadProgressService;
+import cn.tealc.wutheringwavestool.model.DownloadProgressModel;
 import cn.tealc.wutheringwavestool.model.netResource.Resource;
 import cn.tealc.wutheringwavestool.model.netResource.RootResource;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -25,6 +27,7 @@ import java.time.Duration;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @program: WutheringWavesTool
@@ -44,6 +47,9 @@ public class ResourcesSyncTask extends Task<String> {
     private final ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
 
     private int filesSize = 0;
+    private DownloadProgressService progressService;
+    private String progressTaskId;
+    private AtomicInteger downloadedCount = new AtomicInteger(0);
 
     public ResourcesSyncTask() {
         Locale locale = Config.setting().getLanguage();
@@ -90,14 +96,24 @@ public class ResourcesSyncTask extends Task<String> {
                         remoteResource.getVersion(),
                         localResources != null ? localResources.getVersion() : "无");
                 updateMessage("start");
-                updateDateFile(remoteResource);
+
+                progressService = AppInjector.getInstance(DownloadProgressService.class);
+                DownloadProgressModel progress = progressService.createTask("资源同步");
+                progressTaskId = progress.getTaskId();
+                downloadedCount.set(0);
+
+                updateDataFile(remoteResource);
                 downloadFile(url, localFile.getPath());
                 updateMessage("success");
+                progressService.completeTask(progressTaskId, "资源同步完成");
             } else {
                 LOG.warn("资源更新：获取资源文件更新失败");
             }
         } catch (IOException e) {
             LOG.error("资源更新：错误", e);
+            if (progressService != null && progressTaskId != null) {
+                progressService.failTask(progressTaskId, "资源同步失败: " + e.getMessage());
+            }
         }
         LOG.debug("资源更新：同步结束");
         return "资源同步完成";
@@ -109,9 +125,9 @@ public class ResourcesSyncTask extends Task<String> {
 
 
 
-    private void updateDateFile(RootResource remoteResource) {
+    private void updateDataFile(RootResource remoteResource) {
         filesSize = remoteResource.getResources().size();
-        CountDownLatch latch = new CountDownLatch(remoteResource.getResources().size()); // 等待任务完成
+        CountDownLatch latch = new CountDownLatch(remoteResource.getResources().size());
         for (Resource resource : remoteResource.getResources().values()) {
             Thread.startVirtualThread(() -> {
                 boolean same = checkLocalFile(resource);
@@ -121,15 +137,13 @@ public class ResourcesSyncTask extends Task<String> {
                         String url = String.format(resource_template, resource.getFilePath());
                         String row = readJsonFile(url);
                         if (row != null) {
-                            Map<String, Resource> map = mapper.readValue(row, new TypeReference<Map<String, Resource>>() {
-                            });
+                            Map<String, Resource> map = mapper.readValue(row, new TypeReference<Map<String, Resource>>() {});
                             for (Resource value : map.values()) {
                                 boolean checked = checkLocalFile(value);
                                 if (!checked) {
                                     LOG.debug("资源更新：{} 下的 {} 的MD5与本地不同", resource.getName(), value.getName());
                                     String fileUrl = String.format(resource_template, value.getFilePath());
                                     downloadFile(fileUrl, value.getAimPath());
-                                    Thread.sleep(50);
                                 }
                             }
                             String fileUrl = String.format(resource_template, resource.getFilePath());
@@ -138,18 +152,18 @@ public class ResourcesSyncTask extends Task<String> {
                         } else {
                             LOG.warn("资源更新：分类JSON {} 无法下载", resource.getName());
                         }
-                    } catch (IOException | InterruptedException e) {
+                    } catch (IOException e) {
                         LOG.error("ERROR", e);
                     }
-                }else {
-                    LOG.info("资源更新：{}没有新的更新内容跳过",resource.getName());
+                } else {
+                    LOG.info("资源更新：{}没有新的更新内容跳过", resource.getName());
                 }
                 latch.countDown();
             });
         }
 
         try {
-            latch.await(); // 等待所有任务完成
+            latch.await();
         } catch (InterruptedException e) {
             LOG.error("资源更新：更新下载线程执行失败", e);
         }
@@ -202,6 +216,11 @@ public class ResourcesSyncTask extends Task<String> {
             Files.copy(response.body(), outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
             String md5Hex = DigestUtils.md5Hex(new FileInputStream(outputFile));
             LOG.debug("资源更新：文件已下载并保存到:{},当前MD5：{}", savePath, md5Hex);
+            int count = downloadedCount.incrementAndGet();
+            if (progressService != null && progressTaskId != null) {
+                progressService.updateProgress(progressTaskId, -1,
+                        "已下载 " + count + " 个文件: " + outputFile.getName());
+            }
         } catch (IOException | InterruptedException e) {
             LOG.error("资源更新：", e);
         }
