@@ -35,7 +35,9 @@ public class DataSourceModule extends AbstractModule {
     @Provides
     @Singleton
     HttpClient provideHttpClient() {
-        return HttpClient.newHttpClient();
+        return HttpClient.newBuilder()
+                .followRedirects(HttpClient.Redirect.NORMAL)
+                .build();
     }
 
     @Provides

@@ -38,8 +38,6 @@ public class ResourcesSyncTask extends Task<String> {
     private static final String ROOT_RESOURCE_URL_2 = "https://gitee.com/tealc/WutheringWavesToolResources/raw/main-24.10.22/data/Root_%s.json";
     private static final String RESOURCE_TEMPLATE_1 = "https://raw.githubusercontent.com/leck995/WutheringWavesToolResources/main-24.10.22/%s";
     private static final String RESOURCE_TEMPLATE_2 = "https://gitee.com/tealc/WutheringWavesToolResources/raw/main-24.10.22/%s";
-
-
     private static final String LOCAL_ROOT_JSON = "assets/data/Root_%s.json";
     private final String url;
     private final String resource_template;
@@ -82,25 +80,19 @@ public class ResourcesSyncTask extends Task<String> {
             RootResource remoteResource = mapper.readValue(row, RootResource.class);
             if (remoteResource != null) {
                 File localFile = new File(String.format(LOCAL_ROOT_JSON, Config.setting().getLanguage()));
-                if (localFile.exists()) {
-                    RootResource localResources = mapper.readValue(localFile, RootResource.class);
-                    if (localResources != null) {
-                        if (localResources.getVersion().equals(remoteResource.getVersion())) {
-                            LOG.debug("资源更新：远程仓库无更新");
-                            return null;
-                        } else {
-                            updateMessage("start");
-                            updateDateFile(remoteResource);
-                            downloadFile(url, localFile.getPath());
-                            updateMessage("success");
-                        }
-                    }
-                } else {
-                    updateMessage("start");
-                    updateDateFile(remoteResource);
-                    downloadFile(url, localFile.getPath());
-                    updateMessage("success");
+                RootResource localResources = readLocalRootResource(localFile);
+                if (localResources != null
+                        && localResources.getVersion().equals(remoteResource.getVersion())) {
+                    LOG.debug("资源更新：远程仓库无更新, 版本: {}", remoteResource.getVersion());
+                    return null;
                 }
+                LOG.info("资源更新：开始同步, 远程版本: {}, 本地版本: {}",
+                        remoteResource.getVersion(),
+                        localResources != null ? localResources.getVersion() : "无");
+                updateMessage("start");
+                updateDateFile(remoteResource);
+                downloadFile(url, localFile.getPath());
+                updateMessage("success");
             } else {
                 LOG.warn("资源更新：获取资源文件更新失败");
             }
@@ -221,10 +213,21 @@ public class ResourcesSyncTask extends Task<String> {
      * @param fileUrl 保存下载文件具体信息的json
      * @return
      */
+    /** 安全读取本地 RootResource 文件，文件不存在或解析失败返回 null */
+    private RootResource readLocalRootResource(File localFile) {
+        if (!localFile.exists() || localFile.length() == 0) {
+            return null;
+        }
+        try {
+            return mapper.readValue(localFile, RootResource.class);
+        } catch (IOException e) {
+            LOG.warn("资源更新：本地缓存文件损坏，将重新下载: {}", e.getMessage());
+            return null;
+        }
+    }
+
     public String readJsonFile(String fileUrl) {
-        HttpClient client = HttpClient.newBuilder()
-                .followRedirects(HttpClient.Redirect.NORMAL)
-                .build();
+        HttpClient client = AppInjector.getInstance(HttpClient.class);
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(fileUrl))
                 .timeout(Duration.ofSeconds(3))
