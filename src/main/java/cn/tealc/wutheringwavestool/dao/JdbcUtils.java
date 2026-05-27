@@ -135,6 +135,14 @@ public class JdbcUtils {
                         value VARCHAR
                     );
                     """;
+            String createOAuthCredential= """
+                    CREATE TABLE IF NOT EXISTS oauth_credential (
+                        id INTEGER PRIMARY KEY,
+                        role_id VARCHAR,
+                        oauth_code VARCHAR NOT NULL UNIQUE,
+                        update_time INTEGER NOT NULL
+                    );
+                    """;
 
             Statement st = con.createStatement();
             st.execute(createGameTime);
@@ -145,6 +153,7 @@ public class JdbcUtils {
             st.execute(createGameRecord);
             st.execute(createGameSlash);
             st.execute(createConfig);
+            st.execute(createOAuthCredential);
             st.close();
             con.close();
         } catch (SQLException e) {

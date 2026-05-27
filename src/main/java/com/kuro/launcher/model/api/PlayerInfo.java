@@ -1,18 +1,18 @@
 package com.kuro.launcher.model.api;
 
 public class PlayerInfo {
-    private long roleId;
+    private String roleId;
     private String roleName;
     private int level;
     private int sex;
     private String headPhoto;
     private String region;
 
-    public long getRoleId() {
+    public String getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(long roleId) {
+    public void setRoleId(String roleId) {
         this.roleId = roleId;
     }
 
