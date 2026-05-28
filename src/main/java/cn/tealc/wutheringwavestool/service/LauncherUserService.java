@@ -44,6 +44,9 @@ public class LauncherUserService {
         List<LocalCacheUser> cacheUser1 = getCacheUser(path1, SourceType.DEFAULT);
         List<LocalCacheUser> cacheUser2 = getCacheUser(path2, SourceType.DEFAULT);
         cacheUser1.addAll(cacheUser2);
+        if (cacheUser1.isEmpty()){
+            return Optional.empty();
+        }
         return Optional.of(cacheUser1);
     }
 

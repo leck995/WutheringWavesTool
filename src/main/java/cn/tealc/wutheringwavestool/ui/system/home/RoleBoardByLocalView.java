@@ -5,6 +5,7 @@ import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.ui.item.HeaderImageSelectView;
+import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;
@@ -101,12 +102,6 @@ public class RoleBoardByLocalView implements FxmlView<RoleBoardByLocalViewModel>
     @FXML
     private Label weeklyInstCountTipLabel;
 
-    @FXML
-    private Label weeklyRougeLabel;
-
-    @FXML
-    private Label weeklyRougeTipLabel;
-
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         energyTimeLabel.textProperty().bind(viewModel.energyTimeTextProperty());
@@ -128,12 +123,12 @@ public class RoleBoardByLocalView implements FxmlView<RoleBoardByLocalViewModel>
         box3Label.textProperty().bind(viewModel.box3TextProperty());
         box4Label.textProperty().bind(viewModel.box4TextProperty());
 
-        weeklyRougeLabel.textProperty().bind(viewModel.weeklyRougeTextProperty());
-        weeklyRougeTipLabel.textProperty().bind(viewModel.weeklyRougeTipTextProperty());
         Circle circle = new Circle(30, 30, 30);
         headIV.setClip(circle);
-        changeHeaderIv();
-        MvvmFX.getNotificationCenter().subscribe(NotificationKey.CHANGE_HEADER,((s, objects) -> changeHeaderIv()));
+
+        headIV.imageProperty().bind(viewModel.headIconProperty());
+        //changeHeaderIv();
+        //MvvmFX.getNotificationCenter().subscribe(NotificationKey.CHANGE_HEADER,((s, objects) -> changeHeaderIv()));
 
     }
 
@@ -159,8 +154,8 @@ public class RoleBoardByLocalView implements FxmlView<RoleBoardByLocalViewModel>
 
     @FXML
     void changeHeaderImage(MouseEvent event) {
-        HeaderImageSelectView view = new HeaderImageSelectView();
-        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, view);
+//        HeaderImageSelectView view = new HeaderImageSelectView();
+//        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, view);
     }
 
     @FXML

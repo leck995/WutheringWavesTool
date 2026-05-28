@@ -38,7 +38,8 @@ public class SelectPlayerView extends JFXDialogLayout implements JavaView<Select
         setHeading(title);
 
         listview = new ListView<>();
-        Label tip = new Label("您可选择游戏内已登录账号");
+        Label tip = new Label("账号不存在的进入一次游戏后重试");
+        tip.setWrapText(true);
         tip.getStyleClass().addAll(Styles.TEXT_MUTED,Styles.TEXT_SMALL);
         VBox box = new VBox(10,tip,listview);
         setBody(box);
@@ -62,7 +63,8 @@ public class SelectPlayerView extends JFXDialogLayout implements JavaView<Select
 
 
     void onOk(ActionEvent event) {
-        listview.getSelectionModel().getSelectedIndex();
+        viewModel.update(listview.getSelectionModel().getSelectedIndex());
+        cancelBtn.fire();
     }
 
 
@@ -70,6 +72,7 @@ public class SelectPlayerView extends JFXDialogLayout implements JavaView<Select
     private static class PlayerCell extends ListCell<LocalCacheUser> {
         private final CheckBox checkBox = new CheckBox();
         private final Label text = new Label();
+        private final static String TEMPLATE_TEXT = "%s (%s)";
         public PlayerCell() {
             checkBox.setMouseTransparent(true);
             checkBox.setFocusTraversable(true);
@@ -87,7 +90,12 @@ public class SelectPlayerView extends JFXDialogLayout implements JavaView<Select
         protected void updateItem(LocalCacheUser localCacheUser, boolean empty) {
             super.updateItem(localCacheUser, empty);
             if (!empty) {
-                text.setText(localCacheUser.getPhone());
+                if (localCacheUser.getThirdNickName() != null){
+                    text.setText(String.format(TEMPLATE_TEXT,localCacheUser.getPhone(),localCacheUser.getThirdNickName()));
+                }else {
+                    text.setText(localCacheUser.getPhone());
+                }
+
             }else {
                 text.setText(null);
             }

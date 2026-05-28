@@ -2,25 +2,31 @@ package cn.tealc.wutheringwavestool.ui.system.home;
 
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.model.OAuthCredential;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
+import cn.tealc.wutheringwavestool.model.LocalCachePlayerData;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.wutheringwavestool.service.ConfigService;
 import cn.tealc.wutheringwavestool.service.LauncherUserService;
-import cn.tealc.wutheringwavestool.service.OAuthCredentialService;
+import cn.tealc.wutheringwavestool.service.LocalCachePlayerDataService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
+import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.google.inject.Inject;
 import com.kuro.launcher.model.LocalCacheUser;
 import com.kuro.launcher.model.api.BaseData;
 import com.kuro.launcher.model.api.BattlePassData;
+import com.kuro.launcher.model.api.PlayerData;
 import com.kuro.launcher.model.api.PlayerInfo;
 import com.kuro.launcher.thread.api.QueryPlayerInfoTask;
 import com.kuro.launcher.thread.api.QueryRoleTask;
 import de.saxsys.mvvmfx.MvvmFX;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.scene.image.Image;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,10 +40,13 @@ import java.util.Optional;
 
 public class RoleBoardByLocalViewModel extends BaseViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(HomeViewModel2.class);
+    public static final String LOCAL_CACHE_SELECTED_ROLE = "LOCAL_CACHE_SELECTED_ROLE";
     @Inject
     private LauncherUserService launcherUserService;
     @Inject
-    private OAuthCredentialService oAuthCredentialService;
+    private LocalCachePlayerDataService localCachePlayerDataService;
+    @Inject
+    private ConfigService configService;
     private SimpleStringProperty energyText = new SimpleStringProperty();
     private SimpleStringProperty energyTimeText = new SimpleStringProperty();
     private SimpleStringProperty storeEnergyText = new SimpleStringProperty();
@@ -53,16 +62,20 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
     private SimpleStringProperty box2Text = new SimpleStringProperty();
     private SimpleStringProperty box3Text = new SimpleStringProperty();
     private SimpleStringProperty box4Text = new SimpleStringProperty();
-    private SimpleStringProperty weeklyRougeText = new SimpleStringProperty();
-    private SimpleStringProperty weeklyRougeTipText = new SimpleStringProperty("肉鸽");
+
     private SimpleStringProperty weeklyInstCountText = new SimpleStringProperty();
-    private SimpleStringProperty weeklyInstCountTipText = new SimpleStringProperty("周本");
+    private SimpleStringProperty weeklyInstCountTipText = new SimpleStringProperty(LanguageManager.getString("ui.home.label.weekly"));
+    private SimpleObjectProperty<Image> headIcon = new SimpleObjectProperty<>();
 
 
     public RoleBoardByLocalViewModel() {
         updateRoleData();
-        MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_ROLE_DATA_REFRESH, (s, objects) -> {
+        NotificationManager.subscribe(NotificationKey.HOME_ROLE_DATA_REFRESH, (s, objects) -> {
             updateRoleData();
+        });
+
+        NotificationManager.subscribe(NotificationKey.HOME_ROLE_LOCAL_CHANGE, (s, objects) -> {
+            loadLocalCacheUser((LocalCacheUser) objects[0]);
         });
     }
 
@@ -79,42 +92,86 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
             return;
         }
 
+        Optional<String> optional = configService.get(LOCAL_CACHE_SELECTED_ROLE);
+        if (optional.isPresent()){
+            Optional<LocalCachePlayerData> userFormDB = localCachePlayerDataService.getByRoleId(optional.get());
+            if (userFormDB.isPresent() && !isCacheExpired(userFormDB.get().getUpdateTime())){
+                freshRoleData(userFormDB.get().getRoleId(), userFormDB.get().getOauthCode());
+            }else {
+                loadLocalCacheUser();
+            }
+        }else {
+            loadLocalCacheUser();
+        }
+    }
+
+    private static final long ONE_DAY_SECONDS = 24 * 60 * 60;
+
+    private boolean isCacheExpired(long updateTime) {
+        long now = System.currentTimeMillis() / 1000;
+        return now - updateTime > ONE_DAY_SECONDS;
+    }
+
+    private void loadLocalCacheUser() {
         Optional<List<LocalCacheUser>> list = launcherUserService.readLocalCacheUser();
-        list.ifPresent(localCacheUsers -> {
-            LocalCacheUser user = localCacheUsers.getFirst();
-            Optional<OAuthCredential> userFormDB = oAuthCredentialService.getByOauthCode(user.getOauthCode());
-            if (userFormDB.isPresent()) {//如果数据库存在，则直接刷新数据
-                freshRoleData(userFormDB.get().getRoleId(), user.getOauthCode());
-            } else {//否则，调用接口查询当前角色ID
-                QueryPlayerInfoTask queryPlayerInfoTask = new QueryPlayerInfoTask(user.getOauthCode(), user.getType());
-                queryPlayerInfoTask.setOnSucceeded(event -> {
-                    ResponseBody<PlayerInfo> body = queryPlayerInfoTask.getValue();
-                    if (body.getCode() == 200) {
-                        PlayerInfo data = body.getData();
-                        oAuthCredentialService.saveOrUpdate(data.getRoleId(), user.getOauthCode());
-                        freshRoleData(data.getRoleId(), user.getOauthCode());
-                    }
-                });
-                Thread.startVirtualThread(queryPlayerInfoTask);
+        if (list.isPresent()){
+            LocalCacheUser user = list.get().getFirst();
+            Optional<LocalCachePlayerData> userFormDB = localCachePlayerDataService.getByOauthCode(user.getOauthCode());
+            if (userFormDB.isPresent() && !isCacheExpired(userFormDB.get().getUpdateTime())) {
+                freshRoleData(userFormDB.get().getRoleId(), userFormDB.get().getOauthCode());
+                configService.set(LOCAL_CACHE_SELECTED_ROLE, userFormDB.get().getRoleId());
+            } else {
+                queryPlayer(user);
+            }
+        }else {
+            NotificationManager.message(MessageInfo.info(LanguageManager.getString("ui.home.label.no_data")));
+        }
+
+    }
+
+    private void loadLocalCacheUser(LocalCacheUser user) {
+        Optional<LocalCachePlayerData> userFormDB = localCachePlayerDataService.getByOauthCode(user.getOauthCode());
+        if (userFormDB.isPresent() && !isCacheExpired(userFormDB.get().getUpdateTime())) {
+            freshRoleData(userFormDB.get().getRoleId(), userFormDB.get().getOauthCode());
+            configService.set(LOCAL_CACHE_SELECTED_ROLE, userFormDB.get().getRoleId());
+        } else {
+            queryPlayer(user);
+        }
+    }
+
+    private void queryPlayer(LocalCacheUser user) {
+        QueryPlayerInfoTask queryPlayerInfoTask = new QueryPlayerInfoTask(user.getOauthCode(), user.getType());
+        queryPlayerInfoTask.setOnSucceeded(event -> {
+            ResponseBody<PlayerInfo> body = queryPlayerInfoTask.getValue();
+            if (body.getCode() == 200) {
+                PlayerInfo data = body.getData();
+                LocalCachePlayerData playerData = new LocalCachePlayerData(data);
+                playerData.setOauthCode(user.getOauthCode());
+                playerData.setCuid(user.getCuid());
+                localCachePlayerDataService.saveOrUpdate(playerData);
+                configService.set(LOCAL_CACHE_SELECTED_ROLE,data.getRoleId());
+                freshRoleData(data.getRoleId(), user.getOauthCode());
             }
         });
-
+        Thread.startVirtualThread(queryPlayerInfoTask);
     }
 
     private void freshRoleData(String roleId, String oauthCode) {
         QueryRoleTask task = new QueryRoleTask(roleId, oauthCode);
         task.setOnSucceeded(event -> {
-            System.out.println("获取到角色数据");
-            System.out.println(task.getValue().getData().getBaseData().getActiveDays());
+            ResponseBody<PlayerData> data = (ResponseBody<PlayerData>) event.getSource().getValue();
+            getBaseData(data.getData().getBaseData());
+            getBoxData(data.getData().getBaseData());
+            getBattlePassData(data.getData().getBattlePassData());
 
-            getBaseData(task.getValue().getData().getBaseData());
-            getBoxData(task.getValue().getData().getBaseData());
-            getBattlePassData(task.getValue().getData().getBattlePassData());
-
+            Optional<LocalCachePlayerData> playerData = localCachePlayerDataService.getByRoleId(String.valueOf(data.getData().getBaseData().getId()));
+            playerData.ifPresent(p -> {
+                int headPhoto = Integer.parseInt(p.getHeadPhoto().substring(4));
+                Image header = LocalResourcesManager.header(headPhoto, 60, 60);
+                headIcon.set(header);
+            });
         });
-
         Thread.startVirtualThread(task);
-
     }
 
 
@@ -144,7 +201,7 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
         if (baseData.getEnergyRecoverTime() == 0) { //体力
             energyTimeText.set(strengths[2]);
         } else {
-            long timestamp = baseData.getEnergyRecoverTime() * 1000;
+            long timestamp = baseData.getEnergyRecoverTime();
             Date date = new Date(timestamp);
             Instant instant = Instant.ofEpochMilli(timestamp);
             LocalDate dateFromTimestamp = instant.atZone(ZoneId.systemDefault()).toLocalDate();
@@ -166,7 +223,7 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
         livenessText.set(String.valueOf(baseData.getLiveness()));
         roleNameText.set(baseData.getName());
         energyText.set(String.format("%d/%d", baseData.getEnergy(), baseData.getMaxEnergy()));
-        weeklyInstCountText.set(String.format("%d/%d", 3 - baseData.getWeeklyInstCount(), 3));
+        weeklyInstCountText.set(String.format("%d", baseData.getWeeklyInstCount()));
         storeEnergyText.set(String.format("%d/%d", baseData.getStoreEnergy(), baseData.getMaxStoreEnergy()));
         // weeklyRougeText.set(String.format("%d", roleInfo.getRougeScore())); //肉鸽数据没有提供
         rolePaneVisible.set(true);
@@ -311,22 +368,6 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
         return box4Text;
     }
 
-    public String getWeeklyRougeText() {
-        return weeklyRougeText.get();
-    }
-
-    public SimpleStringProperty weeklyRougeTextProperty() {
-        return weeklyRougeText;
-    }
-
-    public String getWeeklyRougeTipText() {
-        return weeklyRougeTipText.get();
-    }
-
-    public SimpleStringProperty weeklyRougeTipTextProperty() {
-        return weeklyRougeTipText;
-    }
-
     public String getWeeklyInstCountText() {
         return weeklyInstCountText.get();
     }
@@ -341,5 +382,13 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
 
     public SimpleStringProperty weeklyInstCountTipTextProperty() {
         return weeklyInstCountTipText;
+    }
+
+    public Image getHeadIcon() {
+        return headIcon.get();
+    }
+
+    public SimpleObjectProperty<Image> headIconProperty() {
+        return headIcon;
     }
 }

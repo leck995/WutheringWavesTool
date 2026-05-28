@@ -135,11 +135,17 @@ public class JdbcUtils {
                         value VARCHAR
                     );
                     """;
-            String createOAuthCredential= """
-                    CREATE TABLE IF NOT EXISTS oauth_credential (
+            String createLocalCachePlayerData= """
+                    CREATE TABLE IF NOT EXISTS local_cache_player_data (
                         id INTEGER PRIMARY KEY,
                         role_id VARCHAR,
+                        role_name VARCHAR,
+                        level INTEGER DEFAULT 0,
+                        sex INTEGER DEFAULT 0,
+                        head_photo VARCHAR,
+                        region VARCHAR,
                         oauth_code VARCHAR NOT NULL UNIQUE,
+                        cuid VARCHAR,
                         update_time INTEGER NOT NULL
                     );
                     """;
@@ -153,7 +159,8 @@ public class JdbcUtils {
             st.execute(createGameRecord);
             st.execute(createGameSlash);
             st.execute(createConfig);
-            st.execute(createOAuthCredential);
+            st.execute(createLocalCachePlayerData);
+            try { st.execute("ALTER TABLE local_cache_player_data ADD COLUMN cuid VARCHAR"); } catch (SQLException ignored) {}
             st.close();
             con.close();
         } catch (SQLException e) {

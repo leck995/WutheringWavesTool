@@ -17,6 +17,7 @@ public class NotificationKey {
 
     public static final String HOME_GAME_TIME_UPDATE="HOME_GAME_TIME_UPDATE";
     public static final String HOME_ROLE_DATA_REFRESH="HOME_ROLE_DATA_REFRESH";
+    public static final String HOME_ROLE_LOCAL_CHANGE="HOME_ROLE_LOCAL_CHANGE";
 
     public static final String NOTIFICATION_SHOW_UPDATE= "SHOW_UPDATE"; //显示升级界面
 

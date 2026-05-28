@@ -7,14 +7,13 @@ import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
-import cn.tealc.wutheringwavestool.model.OAuthCredential;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.service.LauncherUserService;
-import cn.tealc.wutheringwavestool.service.OAuthCredentialService;
+import cn.tealc.wutheringwavestool.service.LocalCachePlayerDataService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
@@ -77,7 +76,7 @@ public class HomeViewModel2 extends BaseViewModel {
     private LauncherUserService launcherUserService;
 
     @Inject
-    private OAuthCredentialService oAuthCredentialService;
+    private LocalCachePlayerDataService oAuthCredentialService;
 
     private SimpleStringProperty energyText = new SimpleStringProperty();
     private SimpleStringProperty energyTimeText = new SimpleStringProperty();
