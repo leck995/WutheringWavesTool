@@ -12,10 +12,9 @@ import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialogLayout;
-import de.saxsys.mvvmfx.FxmlView;
-import de.saxsys.mvvmfx.InjectViewModel;
-import de.saxsys.mvvmfx.MvvmFX;
+import de.saxsys.mvvmfx.*;
 import javafx.animation.RotateTransition;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -49,61 +48,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     private HomeViewModel viewModel;
 
     @FXML
-    private ImageView battlePassIV;
-
-    @FXML
-    private Label battlePassLevelLabel;
-
-    @FXML
-    private Label battlePassNumLabel;
-
-    @FXML
-    private ProgressBar battlePassProgress;
-
-    @FXML
-    private Label box1Label;
-
-    @FXML
-    private Label box2Label;
-
-    @FXML
-    private Label box3Label;
-
-    @FXML
-    private Label box4Label;
-
-    @FXML
-    private ImageView energyIv;
-
-    @FXML
-    private Label energyLabel;
-
-    @FXML
-    private Label energyTimeLabel;
-
-    @FXML
-    private Label gameLifeLabel;
-
-    @FXML
-    private ImageView headIV;
-
-    @FXML
-    private Label levelLabel;
-
-    @FXML
-    private ImageView livenessIV;
-
-    @FXML
-    private Label livenessLabel;
-
-    @FXML
-    private Label storeEnergyLabel;
-
-    @FXML
-    private Label roleNameLabel;
-
-    @FXML
-    private VBox rolePane;
+    private VBox roleBoardGroup;
 
     @FXML
     private BorderPane root;
@@ -114,56 +59,33 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @FXML
     private Button startGameBtn;
 
-    @FXML
-    private Label weeklyRougeLabel,weeklyRougeTipLabel;
-
-    @FXML
-    private Label weeklyInstCountLabel,weeklyInstCountTipLabel;
 
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        energyTimeLabel.textProperty().bind(viewModel.energyTimeTextProperty());
-        energyLabel.textProperty().bind(viewModel.energyTextProperty());
-        storeEnergyLabel.textProperty().bind(viewModel.storeEnergyTextProperty());
-        weeklyInstCountLabel.textProperty().bind(viewModel.weeklyInstCountTextProperty());
-        weeklyInstCountTipLabel.textProperty().bind(viewModel.weeklyInstCountTipTextProperty());
-        livenessLabel.textProperty().bind(viewModel.livenessTextProperty());
-        battlePassProgress.progressProperty().bind(viewModel.battlePassProgressProperty());
-        battlePassLevelLabel.textProperty().bind(viewModel.battlePassLevelTextProperty());
-        battlePassNumLabel.textProperty().bind(viewModel.battlePassNumTextProperty());
-
-        rolePane.visibleProperty().bind(viewModel.rolePaneVisibleProperty());
-        roleNameLabel.textProperty().bind(viewModel.roleNameTextProperty());
-        levelLabel.textProperty().bind(viewModel.levelTextProperty());
-        gameLifeLabel.textProperty().bind(viewModel.gameLifeTextProperty());
-        box1Label.textProperty().bind(viewModel.box1TextProperty());
-        box2Label.textProperty().bind(viewModel.box2TextProperty());
-        box3Label.textProperty().bind(viewModel.box3TextProperty());
-        box4Label.textProperty().bind(viewModel.box4TextProperty());
-
         startGameBtn.disableProperty().bind(viewModel.startGameBtnDisabledProperty());
 
-        weeklyRougeLabel.textProperty().bind(viewModel.weeklyRougeTextProperty());
-        weeklyRougeTipLabel.textProperty().bind(viewModel.weeklyRougeTipTextProperty());
         Tooltip gameTimeTip = new Tooltip();
         gameTimeTip.textProperty().bind(viewModel.gameTimeTipTextProperty());
         gameTimeBtn.setTooltip(gameTimeTip);
         gameTimeBtn.textProperty().bind(viewModel.gameTimeTextProperty());
 
+        if (Config.setting().isUseLocalCacheUser()){
+            Platform.runLater(()->{
+                ViewTuple<RoleBoardByLocalView, RoleBoardByLocalViewModel> viewTuple = FluentViewLoader.fxmlView(RoleBoardByLocalView.class).load();
+                roleBoardGroup.getChildren().add(viewTuple.getView());
+            });
 
-        Circle circle = new Circle(30, 30, 30);
-        headIV.setClip(circle);
-        changeHeaderIv();
+        }else {
+          Platform.runLater(()->{
+              ViewTuple<RoleBoardByKujiequView, RoleBoardByKujiequViewModel> viewTuple = FluentViewLoader.fxmlView(RoleBoardByKujiequView.class).load();
+              roleBoardGroup.getChildren().add(viewTuple.getView());
+          });
+        }
 
         setChangeBgEnable();
-
-
         viewModel.checkIsWeekEnd();
-
-        MvvmFX.getNotificationCenter().subscribe(NotificationKey.CHANGE_HEADER,((s, objects) -> changeHeaderIv()));
-
     }
 
 
@@ -184,56 +106,38 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     }
 
 
-    /**
-     * @description: 改变头像
-     * @param:
-     * @return  void
-     * @date:   2025/2/18
-     */
-    private void changeHeaderIv(){
-        if (Config.setting().getHomeViewIcon() != null) {
-            File roleIVFile = LocalResourcesManager.homeIcon();
-            if (roleIVFile.exists()) {
-                headIV.setImage(new Image(roleIVFile.toURI().toString(), 60, 60, true, true, true));
-            } else {
-                headIV.setImage(new Image(FXResourcesLoader.load("image/icon.png"), 60, 60, true, true, true));
-            }
-        } else {
-            headIV.setImage(new Image(FXResourcesLoader.load("image/icon.png"), 60, 60, true, true, true));
-        }
-    }
+
 
     @FXML
     void startGame(ActionEvent event) {
-        if (viewModel.isHasSign()) {
-            viewModel.startGame();
-        } else {
-            JFXDialogLayout dialogLayout = new JFXDialogLayout();
-            Label title = new Label("签到提醒");
-            title.getStyleClass().add(Styles.TITLE_2);
-            dialogLayout.setHeading(title);
-            dialogLayout.setBody(new Label("检测到还没有签到，是否签到并启动游戏?"));
-
-            Button okBtn = new Button("签到并启动");
-            Button directBtn = new Button("启动");
-            Button cancelBtn = new Button("取消");
-
-            okBtn.setOnAction(event1 -> {
-                viewModel.signAndGame();
-                cancelBtn.fireEvent(event1);
-            });
-            directBtn.setOnAction(event1 -> {
-                viewModel.startGame();
-                cancelBtn.fireEvent(event1);
-            });
-
-            cancelBtn.setCancelButton(true);
-            dialogLayout.setActions(okBtn, directBtn, cancelBtn);
-
-            MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, dialogLayout);
-        }
-
-
+        viewModel.startGame();
+//        if (viewModel.isHasSign()) {
+//            viewModel.startGame();
+//        } else {
+//            JFXDialogLayout dialogLayout = new JFXDialogLayout();
+//            Label title = new Label("签到提醒");
+//            title.getStyleClass().add(Styles.TITLE_2);
+//            dialogLayout.setHeading(title);
+//            dialogLayout.setBody(new Label("检测到还没有签到，是否签到并启动游戏?"));
+//
+//            Button okBtn = new Button("签到并启动");
+//            Button directBtn = new Button("启动");
+//            Button cancelBtn = new Button("取消");
+//
+//            okBtn.setOnAction(event1 -> {
+//                viewModel.signAndGame();
+//                cancelBtn.fireEvent(event1);
+//            });
+//            directBtn.setOnAction(event1 -> {
+//                viewModel.startGame();
+//                cancelBtn.fireEvent(event1);
+//            });
+//
+//            cancelBtn.setCancelButton(true);
+//            dialogLayout.setActions(okBtn, directBtn, cancelBtn);
+//
+//            MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, dialogLayout);
+//        }
     }
 
     @FXML
@@ -243,27 +147,13 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     }
 
 
-    @FXML
-    void changeHeaderImage(MouseEvent event) {
-        HeaderImageSelectView view = new HeaderImageSelectView();
-        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, view);
-    }
-
 
     @FXML
     void startUpdate(ActionEvent event) {
         viewModel.startUpdate();
     }
 
-    @FXML
-    void refreshRoleData(ActionEvent event) {
-        Button button = (Button) event.getSource();
-        Node graphic = button.getGraphic();
-        RotateTransition transition = new RotateTransition(Duration.millis(300), graphic);
-        transition.setByAngle(360);
-        transition.play();
-        viewModel.updateKujiequRoleData();
-    }
+
 
     @FXML
     void toWiki01(ActionEvent event) {

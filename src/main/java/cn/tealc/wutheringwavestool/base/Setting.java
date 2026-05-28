@@ -58,6 +58,9 @@ public class Setting {
 
     private SimpleBooleanProperty noKuJieQu = new SimpleBooleanProperty(getLanguage() != Locale.CHINA); //不使用库街区
     private SimpleIntegerProperty closeEvent = new SimpleIntegerProperty(0); //关闭主界面行为，0选择，1退出，2最小化
+
+    private SimpleBooleanProperty useLocalCacheUser = new SimpleBooleanProperty(true);
+
     /*=================设置-游戏行为===================*/
     private SimpleBooleanProperty exitWhenGameOver = new SimpleBooleanProperty(false); //检测到游戏关闭自动关闭程序
     private SimpleBooleanProperty hideWhenGameStart = new SimpleBooleanProperty(false); //检测到游戏启动自动隐藏程序至托盘
@@ -524,6 +527,18 @@ public class Setting {
 
     public void setLastKujiequSignTime(int lastKujiequSignTime) {
         this.lastKujiequSignTime.set(lastKujiequSignTime);
+    }
+
+    public boolean isUseLocalCacheUser() {
+        return useLocalCacheUser.get();
+    }
+
+    public SimpleBooleanProperty useLocalCacheUserProperty() {
+        return useLocalCacheUser;
+    }
+
+    public void setUseLocalCacheUser(boolean useLocalCacheUser) {
+        this.useLocalCacheUser.set(useLocalCacheUser);
     }
 
     /** 将当前设置持久化到 settings.json */

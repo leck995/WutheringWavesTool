@@ -45,6 +45,7 @@ import java.util.ResourceBundle;
  * @author: Leck
  * @create: 2024-07-03 19:57
  */
+@Deprecated
 public class HomeView2 implements Initializable, FxmlView<HomeViewModel2> {
     @InjectViewModel
     private HomeViewModel2 viewModel;

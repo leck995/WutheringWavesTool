@@ -454,7 +454,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
             //navToggleGroup.selectToggle(analysisBtn);
             bgPane.setVisible(false);
         } else {
-            ViewTuple<HomeView2, HomeViewModel2> viewTuple = FluentViewLoader.fxmlView(HomeView2.class).load();
+            ViewTuple<HomeView, HomeViewModel> viewTuple = FluentViewLoader.fxmlView(HomeView.class).load();
             child.getChildren().setAll(viewTuple.getView());
         }
     }
