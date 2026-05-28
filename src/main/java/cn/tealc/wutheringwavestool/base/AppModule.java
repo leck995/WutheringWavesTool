@@ -10,6 +10,7 @@ import cn.tealc.wutheringwavestool.dao.GameTowerDataDao;
 import cn.tealc.wutheringwavestool.dao.OAuthCredentialDao;
 import cn.tealc.wutheringwavestool.dao.SignHistoryDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.ConfigService;
 import cn.tealc.wutheringwavestool.service.OAuthCredentialService;
 
 import com.google.inject.AbstractModule;
@@ -30,6 +31,7 @@ public class AppModule extends AbstractModule {
         bind(GameSettingDao.class).in(Singleton.class);
         bind(OAuthCredentialDao.class).in(Singleton.class);
         bind(OAuthCredentialService.class).in(Singleton.class);
+        bind(ConfigService.class).in(Singleton.class);
         bind(DownloadProgressService.class).in(Singleton.class);
     }
 }
