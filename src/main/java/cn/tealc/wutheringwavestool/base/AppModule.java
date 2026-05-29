@@ -10,6 +10,7 @@ import cn.tealc.wutheringwavestool.dao.GameTowerDataDao;
 import cn.tealc.wutheringwavestool.dao.LocalCachePlayerDataDao;
 import cn.tealc.wutheringwavestool.dao.SignHistoryDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.AutoSignService;
 import cn.tealc.wutheringwavestool.service.ConfigService;
 import cn.tealc.wutheringwavestool.service.LocalCachePlayerDataService;
 
@@ -33,5 +34,6 @@ public class AppModule extends AbstractModule {
         bind(LocalCachePlayerDataService.class).in(Singleton.class);
         bind(ConfigService.class).in(Singleton.class);
         bind(DownloadProgressService.class).in(Singleton.class);
+        bind(AutoSignService.class).in(Singleton.class);
     }
 }

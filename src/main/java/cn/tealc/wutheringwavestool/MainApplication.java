@@ -3,6 +3,7 @@ package cn.tealc.wutheringwavestool;
 import ch.qos.logback.classic.Level;
 import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.service.AutoSignService;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
@@ -66,6 +67,7 @@ public class MainApplication extends Application {
     public void start(Stage stage) throws IOException {
         JdbcUtils.init();
         AppInjector.getInjector(); // 初始化 Guice，确保所有单例就绪
+        AppInjector.getInstance(AutoSignService.class).start(); // 启动自动签到
         VersionUpdateUtil.update();
 
         window = stage;

@@ -6,6 +6,7 @@ import cn.tealc.wutheringwavestool.base.DownloadProgressService;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.thread.download.GlobalServerFileDownloadTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
@@ -20,7 +21,6 @@ import com.kuro.kujiequ.model.towerData.DifficultyTotal;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.system.CheckVersionTask;
-import com.kuro.kujiequ.thread.base.sign.SignTask;
 import com.kuro.kujiequ.thread.rolebox.slash.SlashDataDetailTask;
 import com.kuro.kujiequ.thread.rolebox.tower.TowerDataDetailTask;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
@@ -64,7 +64,6 @@ public class MainViewModel extends BaseViewModel {
         checkVersion();
         checkGameLogOpen();
         updateKujiequ();
-        autoSign();
     }
 
     public DownloadProgressService getDownloadProgressService() {
@@ -84,14 +83,6 @@ public class MainViewModel extends BaseViewModel {
     }
 
 
-
-
-    private void autoSign(){
-        if (Config.setting().isAutoKujieQuSign()) {
-            SignTask signTask = new SignTask();
-            Thread.startVirtualThread(signTask);
-        }
-    }
 
 
     public void checkVersion() {
