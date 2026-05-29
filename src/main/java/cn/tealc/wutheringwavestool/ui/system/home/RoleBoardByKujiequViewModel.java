@@ -57,6 +57,9 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
     private SimpleStringProperty weeklyRougeTipText = new SimpleStringProperty("肉鸽");
     private SimpleStringProperty weeklyInstCountText = new SimpleStringProperty();
     private SimpleStringProperty weeklyInstCountTipText = new SimpleStringProperty("周本");
+    private SimpleStringProperty phantomBox1Text = new SimpleStringProperty();
+    private SimpleStringProperty phantomBox2Text = new SimpleStringProperty();
+    private SimpleStringProperty phantomBox3Text = new SimpleStringProperty();
 
     private SimpleBooleanProperty hasSign = new SimpleBooleanProperty(true);
     private SimpleStringProperty signText = new SimpleStringProperty();
@@ -137,6 +140,16 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
                         box3Text.set(String.valueOf(boxInfo.getNum()));
                     } else if (boxInfo.getBoxName().equals(chests[3])) {
                         box4Text.set(String.valueOf(boxInfo.getNum()));
+                    }
+                }
+                String[] phantoms = LanguageManager.getStringArray("ui.home.label.chest.phantoms");
+                for (BoxInfo boxInfo : roleInfo.getPhantomBoxList()) {
+                    if (boxInfo.getBoxName().equals(phantoms[0])) {
+                        phantomBox1Text.set(String.valueOf(boxInfo.getNum()));
+                    } else if (boxInfo.getBoxName().equals(phantoms[1])) {
+                        phantomBox2Text.set(String.valueOf(boxInfo.getNum()));
+                    } else if (boxInfo.getBoxName().equals(phantoms[2])) {
+                        phantomBox3Text.set(String.valueOf(boxInfo.getNum()));
                     }
                 }
                 weeklyRougeText.set(String.format("%d", roleInfo.getRougeScore()));
@@ -419,5 +432,29 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
 
     public SimpleStringProperty signTextProperty() {
         return signText;
+    }
+
+    public String getPhantomBox3Text() {
+        return phantomBox3Text.get();
+    }
+
+    public SimpleStringProperty phantomBox3TextProperty() {
+        return phantomBox3Text;
+    }
+
+    public String getPhantomBox2Text() {
+        return phantomBox2Text.get();
+    }
+
+    public SimpleStringProperty phantomBox2TextProperty() {
+        return phantomBox2Text;
+    }
+
+    public String getPhantomBox1Text() {
+        return phantomBox1Text.get();
+    }
+
+    public SimpleStringProperty phantomBox1TextProperty() {
+        return phantomBox1Text;
     }
 }

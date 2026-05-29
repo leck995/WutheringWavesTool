@@ -98,6 +98,14 @@ public class RoleBoardByLocalView implements FxmlView<RoleBoardByLocalViewModel>
 
     @FXML
     private Label weeklyInstCountTipLabel;
+    @FXML
+    private Label phantomBox1Label;
+
+    @FXML
+    private Label phantomBox2Label;
+
+    @FXML
+    private Label phantomBox3Label;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -119,6 +127,9 @@ public class RoleBoardByLocalView implements FxmlView<RoleBoardByLocalViewModel>
         box2Label.textProperty().bind(viewModel.box2TextProperty());
         box3Label.textProperty().bind(viewModel.box3TextProperty());
         box4Label.textProperty().bind(viewModel.box4TextProperty());
+        phantomBox1Label.textProperty().bind(viewModel.phantomBox1TextProperty());
+        phantomBox2Label.textProperty().bind(viewModel.phantomBox2TextProperty());
+        phantomBox3Label.textProperty().bind(viewModel.phantomBox3TextProperty());
 
         Circle circle = new Circle(30, 30, 30);
         headIV.setClip(circle);

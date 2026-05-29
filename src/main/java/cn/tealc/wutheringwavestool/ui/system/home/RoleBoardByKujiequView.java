@@ -107,6 +107,15 @@ public class RoleBoardByKujiequView implements FxmlView<RoleBoardByKujiequViewMo
     @FXML
     private Label weeklyRougeTipLabel;
 
+    @FXML
+    private Label phantomBox1Label;
+
+    @FXML
+    private Label phantomBox2Label;
+
+    @FXML
+    private Label phantomBox3Label;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         energyTimeLabel.textProperty().bind(viewModel.energyTimeTextProperty());
@@ -127,6 +136,10 @@ public class RoleBoardByKujiequView implements FxmlView<RoleBoardByKujiequViewMo
         box2Label.textProperty().bind(viewModel.box2TextProperty());
         box3Label.textProperty().bind(viewModel.box3TextProperty());
         box4Label.textProperty().bind(viewModel.box4TextProperty());
+
+        phantomBox1Label.textProperty().bind(viewModel.phantomBox1TextProperty());
+        phantomBox2Label.textProperty().bind(viewModel.phantomBox2TextProperty());
+        phantomBox3Label.textProperty().bind(viewModel.phantomBox3TextProperty());
 
         weeklyRougeLabel.textProperty().bind(viewModel.weeklyRougeTextProperty());
         weeklyRougeTipLabel.textProperty().bind(viewModel.weeklyRougeTipTextProperty());

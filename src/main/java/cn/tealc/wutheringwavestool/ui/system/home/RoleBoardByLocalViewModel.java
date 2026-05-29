@@ -62,6 +62,9 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
     private SimpleStringProperty box2Text = new SimpleStringProperty();
     private SimpleStringProperty box3Text = new SimpleStringProperty();
     private SimpleStringProperty box4Text = new SimpleStringProperty();
+    private SimpleStringProperty phantomBox1Text = new SimpleStringProperty();
+    private SimpleStringProperty phantomBox2Text = new SimpleStringProperty();
+    private SimpleStringProperty phantomBox3Text = new SimpleStringProperty();
 
     private SimpleStringProperty weeklyInstCountText = new SimpleStringProperty();
     private SimpleStringProperty weeklyInstCountTipText = new SimpleStringProperty(LanguageManager.getString("ui.home.label.weekly"));
@@ -187,6 +190,13 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
                 case "2" -> box2Text.set(String.valueOf(baseData.getBasicBoxes().get(key)));
                 case "3" -> box3Text.set(String.valueOf(baseData.getBasicBoxes().get(key)));
                 case "4" -> box4Text.set(String.valueOf(baseData.getBasicBoxes().get(key)));
+            }
+        }
+        for (String key : baseData.getPhantomBoxes().keySet()) {
+            switch (key) {
+                case "1" -> phantomBox1Text.set(String.valueOf(baseData.getPhantomBoxes().get(key)));
+                case "2" -> phantomBox2Text.set(String.valueOf(baseData.getPhantomBoxes().get(key)));
+                case "3" -> phantomBox3Text.set(String.valueOf(baseData.getPhantomBoxes().get(key)));
             }
         }
 
@@ -390,5 +400,29 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
 
     public SimpleObjectProperty<Image> headIconProperty() {
         return headIcon;
+    }
+
+    public String getPhantomBox1Text() {
+        return phantomBox1Text.get();
+    }
+
+    public SimpleStringProperty phantomBox1TextProperty() {
+        return phantomBox1Text;
+    }
+
+    public String getPhantomBox2Text() {
+        return phantomBox2Text.get();
+    }
+
+    public SimpleStringProperty phantomBox2TextProperty() {
+        return phantomBox2Text;
+    }
+
+    public String getPhantomBox3Text() {
+        return phantomBox3Text.get();
+    }
+
+    public SimpleStringProperty phantomBox3TextProperty() {
+        return phantomBox3Text;
     }
 }

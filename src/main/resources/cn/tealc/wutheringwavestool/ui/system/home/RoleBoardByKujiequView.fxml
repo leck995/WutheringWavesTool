@@ -185,6 +185,40 @@
             </children>
         </HBox>
         <Separator prefWidth="200.0" />
+      <HBox alignment="CENTER" prefWidth="65.0" spacing="10.0" styleClass="box-data" translateY="5.0">
+         <children>
+            <VBox alignment="CENTER">
+               <children>
+                  <ImageView fitHeight="26.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true" styleClass="data-icon">
+                     <image>
+                        <Image url="@../../../image/icon/cx1.png" />
+                     </image>
+                  </ImageView>
+                  <Label fx:id="phantomBox1Label" styleClass="data-label-1" text="251" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" layoutX="10.0" layoutY="10.0">
+               <children>
+                  <ImageView fitHeight="26.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true" styleClass="data-icon">
+                     <image>
+                        <Image url="@../../../image/icon/cx2.png" />
+                     </image>
+                  </ImageView>
+                  <Label fx:id="phantomBox2Label" styleClass="data-label-1" text="251" />
+               </children>
+            </VBox>
+            <VBox alignment="CENTER" layoutX="66.0" layoutY="10.0">
+               <children>
+                  <ImageView fitHeight="26.0" fitWidth="26.0" pickOnBounds="true" preserveRatio="true" styleClass="data-icon">
+                     <image>
+                        <Image url="@../../../image/icon/cx3.png" />
+                     </image>
+                  </ImageView>
+                  <Label fx:id="phantomBox3Label" styleClass="data-label-1" text="251" />
+               </children>
+            </VBox>
+         </children>
+      </HBox>
         <HBox alignment="CENTER" prefWidth="65.0" spacing="10.0" styleClass="box-data">
             <children>
                 <VBox alignment="CENTER">
