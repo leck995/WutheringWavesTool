@@ -231,7 +231,7 @@
                                         implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                                 <transformer
                                         implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>cn.tealc.wutheringwavestool.Main</mainClass>
+                                    <mainClass>cn.tealc.wutheringwavestool.Launcher</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>
@@ -248,7 +248,7 @@
                         <!-- Default configuration for running with: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>cn.tealc.wutheringwavestool/cn.tealc.wutheringwavestool.Main</mainClass>
+                            <mainClass>cn.tealc.wutheringwavestool/cn.tealc.wutheringwavestool.Launcher</mainClass>
                             <launcher>app</launcher>
                             <jlinkImageName>runtime</jlinkImageName>
                             <noManPages>true</noManPages>

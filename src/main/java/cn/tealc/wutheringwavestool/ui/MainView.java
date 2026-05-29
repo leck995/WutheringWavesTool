@@ -4,8 +4,8 @@ import atlantafx.base.controls.Message;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
 import cn.tealc.teafx.utils.AnchorPaneUtil;
+import cn.tealc.wutheringwavestool.Application;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
-import cn.tealc.wutheringwavestool.MainApplication;
 import cn.tealc.wutheringwavestool.base.AppConstants;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.DownloadProgressService;
@@ -22,20 +22,14 @@ import cn.tealc.wutheringwavestool.ui.cardpool.CardAnalysisBaseView;
 import cn.tealc.wutheringwavestool.ui.cardpool.CardAnalysisBaseViewModel;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
 import cn.tealc.wutheringwavestool.ui.system.home.HomeView;
-import cn.tealc.wutheringwavestool.ui.system.home.HomeView2;
 import cn.tealc.wutheringwavestool.ui.system.home.HomeViewModel;
-import cn.tealc.wutheringwavestool.ui.system.home.HomeViewModel2;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import cn.tealc.wutheringwavestool.util.NavLoader;
 import com.jfoenixN.controls.JFXDialog;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.RotateTransition;
-import javafx.animation.Timeline;
+import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -581,8 +575,8 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
     public void close() {
         switch (Config.setting().getCloseEvent()) {
             case 0 -> showExitDialog();
-            case 1 -> MainApplication.exit();
-            case 2 -> MainApplication.window.hide();
+            case 1 -> Application.exit();
+            case 2 -> Application.getWindow().hide();
         }
     }
 
@@ -602,10 +596,10 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         JFXDialog jfxDialog = new JFXDialog(root, dialogLayout, JFXDialog.DialogTransition.CENTER);
 
         exitBtn.setOnAction(event -> {
-            MainApplication.exit();
+            Application.exit();
         });
         iconBtn.setOnAction(event -> {
-            MainApplication.window.hide();
+            Application.getWindow().hide();
             jfxDialog.close();
         });
 

@@ -1,11 +1,10 @@
 package cn.tealc.wutheringwavestool.ui;
 
 import cn.tealc.wutheringwavestool.base.Config;
-import cn.tealc.wutheringwavestool.MainApplication;
+import cn.tealc.wutheringwavestool.Application;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.release.Release;
@@ -19,7 +18,6 @@ import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -121,7 +119,7 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
 
 
     public void setFontFamily(String fontFamily) {
-        MainApplication.window.getScene().getRoot().setStyle("-fx-font-family: \"" + fontFamily + "\"");
+        Application.getWindow().getScene().getRoot().setStyle("-fx-font-family: \"" + fontFamily + "\"");
     }
 
     public void setBgFile(File file) {

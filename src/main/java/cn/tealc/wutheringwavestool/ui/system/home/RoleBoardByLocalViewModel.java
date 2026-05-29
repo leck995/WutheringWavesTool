@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class RoleBoardByLocalViewModel extends BaseViewModel {
-    private static final Logger LOG = LoggerFactory.getLogger(HomeViewModel2.class);
+    private static final Logger LOG = LoggerFactory.getLogger(RoleBoardByLocalViewModel.class);
     public static final String LOCAL_CACHE_SELECTED_ROLE = "LOCAL_CACHE_SELECTED_ROLE";
     @Inject
     private LauncherUserService launcherUserService;

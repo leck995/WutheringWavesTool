@@ -1,12 +1,11 @@
 package cn.tealc.wutheringwavestool.ui;
 
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
-import cn.tealc.wutheringwavestool.base.Config;
-import cn.tealc.wutheringwavestool.base.DownloadProgressService;
-import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.base.NotificationManager;
+import cn.tealc.wutheringwavestool.base.*;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.AutoSignService;
 import cn.tealc.wutheringwavestool.thread.download.GlobalServerFileDownloadTask;
+import cn.tealc.wutheringwavestool.thread.system.ResourcesSyncTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
@@ -64,6 +63,35 @@ public class MainViewModel extends BaseViewModel {
         checkVersion();
         checkGameLogOpen();
         updateKujiequ();
+        syncAppResources();
+        autoSign();
+    }
+
+    private void autoSign() {
+        AppInjector.getInstance(AutoSignService.class).start();
+    }
+
+    private static void syncAppResources() {
+        ResourcesSyncTask task = new ResourcesSyncTask();
+        task.messageProperty().addListener((observableValue, s, t1) -> {
+            if (t1 != null) {
+                switch (t1) {
+                    case "success" -> MvvmFX.getNotificationCenter().publish(
+                            NotificationKey.MESSAGE,
+                            new MessageInfo(MessageType.SUCCESS,
+                                    LanguageManager.getString("ui.main.sync.message.success")));
+                    case "error" -> MvvmFX.getNotificationCenter().publish(
+                            NotificationKey.MESSAGE,
+                            new MessageInfo(MessageType.ERROR,
+                                    LanguageManager.getString("ui.main.sync.message.error")));
+                    case "start" -> MvvmFX.getNotificationCenter().publish(
+                            NotificationKey.MESSAGE,
+                            new MessageInfo(MessageType.INFO,
+                                    LanguageManager.getString("ui.main.sync.message.start")));
+                }
+            }
+        });
+        Thread.startVirtualThread(task);
     }
 
     public DownloadProgressService getDownloadProgressService() {

@@ -1,10 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.base;
 
-import cn.tealc.teafx.stage.TeaStage;
-import cn.tealc.teafx.stage.handler.DragWindowHandler;
-import cn.tealc.wutheringwavestool.FXResourcesLoader;
-import cn.tealc.wutheringwavestool.MainApplication;
-import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.Application;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
@@ -18,8 +14,6 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -104,7 +98,7 @@ public class UpdateView implements FxmlView<UpdateViewModel>, Initializable {
         headerbar.getStyleClass().add("headbar");
         Button closeBtn = new Button(null, new FontIcon(Material2OutlinedAL.CLOSE));
         Button minBtn = new Button(null, new FontIcon(Material2OutlinedMZ.MINUS));
-        closeBtn.setOnAction(event -> MainApplication.exit());
+        closeBtn.setOnAction(event -> Application.exit());
         HBox systemBox = new HBox(minBtn, closeBtn);
         HeaderBar.setButtonType(minBtn, HeaderButtonType.ICONIFY);
         closeBtn.getStyleClass().add("close-btn");

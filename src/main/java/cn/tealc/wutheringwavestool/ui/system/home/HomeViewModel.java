@@ -1,6 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.system.home;
 
-import cn.tealc.wutheringwavestool.MainApplication;
+import cn.tealc.wutheringwavestool.Application;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
@@ -20,10 +20,7 @@ import de.saxsys.mvvmfx.MvvmFX;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.scene.image.Image;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -279,7 +276,7 @@ public class HomeViewModel extends BaseViewModel {
      */
     private void hideMainWindow() {
         if (Config.setting().isHideWhenGameStart()) {
-            MainApplication.window.hide();
+            Application.getWindow().hide();
         }
     }
 
@@ -312,7 +309,7 @@ public class HomeViewModel extends BaseViewModel {
                 GameAppListener.getInstance().setStartFromApp(true);
                 processBuilder.start();
             } catch (IOException e) {
-                MainApplication.window.show();
+                Application.getWindow().show();
                 GameAppListener.getInstance().setStartFromApp(false);
                 LOG.error("高级启动无法启动鸣潮", e);
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.ERROR, LanguageManager.getString("ui.home.message.type07") + e.getMessage()));
@@ -332,12 +329,12 @@ public class HomeViewModel extends BaseViewModel {
             GameAppListener.getInstance().setStartFromApp(true);
             Desktop.getDesktop().open(exe);
             if (Config.setting().isHideWhenGameStart()) {
-                MainApplication.window.hide();
+                Application.getWindow().hide();
             }
         } catch (IOException e) {
             GameAppListener.getInstance().setStartFromApp(false);
             LOG.info("启动游戏错误:{}", e.getMessage());
-            MainApplication.window.show();
+            Application.getWindow().show();
         }
     }
 

@@ -1,15 +1,11 @@
 package cn.tealc.wutheringwavestool.jna;
 
-import cn.tealc.wutheringwavestool.MainApplication;
+import cn.tealc.wutheringwavestool.Application;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.system.GameLogFileAnalysisTask;
 import cn.tealc.wutheringwavestool.thread.system.NewGameLogFileAnalysisTask;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
-import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.sun.jna.Native;
 import com.sun.jna.platform.win32.User32;
 import com.sun.jna.platform.win32.WinDef;
@@ -171,7 +167,7 @@ public class GameAppListener implements WinUser.WinEventProc{
             long endGameTime = System.currentTimeMillis();
             long totalGameTime = endGameTime - startTime;//总共游玩时间
             if (totalGameTime > 60000){ //当游戏时长大于1分钟才自动关闭，以防鸣潮SB更新重启
-                MainApplication.exit();
+                Application.exit();
             }else {
                 LOG.info("检测到鸣潮已经结束，游戏时长小于一分钟，不自动退出助手");
             }
