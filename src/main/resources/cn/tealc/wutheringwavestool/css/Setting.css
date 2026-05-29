@@ -15,11 +15,18 @@
 .setting:hover .scroll-bar:vertical .thumb{
     -fx-background-color: -color-bg-default-60;
 }
-
+.setting .param{
+    -fx-font-size: 14;
+    -fx-text-fill: -color-font-muted;
+}
+.setting .param .label{
+    -fx-font-size: 14;
+    -fx-text-fill: -color-font-muted;
+}
 
 .setting .tip{
     -fx-font-size: 12;
-    -fx-text-fill: -color-font-muted;
+    -fx-text-fill: -color-font-subtle;
     -fx-padding: 0 0 0 0;
 }
 .setting .left{

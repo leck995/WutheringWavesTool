@@ -61,6 +61,9 @@ public class Setting {
 
     private SimpleBooleanProperty useLocalCacheUser = new SimpleBooleanProperty(true);
 
+
+
+
     /*=================设置-游戏行为===================*/
     private SimpleBooleanProperty exitWhenGameOver = new SimpleBooleanProperty(false); //检测到游戏关闭自动关闭程序
     private SimpleBooleanProperty hideWhenGameStart = new SimpleBooleanProperty(false); //检测到游戏启动自动隐藏程序至托盘

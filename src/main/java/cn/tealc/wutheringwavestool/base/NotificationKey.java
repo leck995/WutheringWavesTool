@@ -18,7 +18,7 @@ public class NotificationKey {
     public static final String HOME_GAME_TIME_UPDATE="HOME_GAME_TIME_UPDATE";
     public static final String HOME_ROLE_DATA_REFRESH="HOME_ROLE_DATA_REFRESH";
     public static final String HOME_ROLE_LOCAL_CHANGE="HOME_ROLE_LOCAL_CHANGE";
-
+    public static final String HOME_ROLE_KUJIEQU_CHANGE="HOME_ROLE_KUJIEQU_CHANGE";
     public static final String NOTIFICATION_SHOW_UPDATE= "SHOW_UPDATE"; //显示升级界面
 
     public static final String CARD_POOL_USER_UPDATE="CARD_POOL_USER_UPDATE"; //当抽卡页面选中用户切换时使用

@@ -2,7 +2,7 @@ package cn.tealc.wutheringwavestool.ui.kujiequ;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
 import com.kuro.kujiequ.model.sign.UserInfo;
@@ -21,83 +21,65 @@ import java.util.Objects;
  */
 public class AccountViewModel extends BaseViewModel {
     @Inject
-    private UserInfoDao userInfoDao;
+    private UserInfoService userInfoService;
 
-    private final ObservableList<UserInfo> accountList= FXCollections.observableArrayList();
+    private final ObservableList<UserInfo> accountList = FXCollections.observableArrayList();
+
     public AccountViewModel() {
         refreshUserList();
-        NotificationManager.subscribe(NotificationKey.ACCOUNT_UPDATE,(s, objects) -> refreshUserList());
+        NotificationManager.subscribe(NotificationKey.ACCOUNT_UPDATE, (s, objects) -> refreshUserList());
     }
 
 
-    private void refreshUserList(){
-        List<UserInfo> userInfos = userInfoDao.getAll();
+    private void refreshUserList() {
+        List<UserInfo> userInfos = userInfoService.getAllUsers();
         accountList.setAll(userInfos);
     }
 
 
-
-
-
-
-
-
     public boolean addUser(UserInfo userInfo) {
-UserInfo daoUserByRoleId = userInfoDao.getUserByRoleId(userInfo.getRoleId());
-        if (daoUserByRoleId == null){
-            if (userInfo.getMain()){
-                for (UserInfo oldMainUser : accountList) {
-                    if (oldMainUser.getMain()){
-                        oldMainUser.setMain(false);
-                        userInfoDao.updateUser(oldMainUser);
-                    }
-                }
-            }
-            int id = userInfoDao.addUser(userInfo);
-            userInfo.setId(id);
-            accountList.add(userInfo);
-            return true;
-        }else {
+        if (userInfoService.existsByRoleId(userInfo.getRoleId())) {
             return false;
         }
+        if (userInfo.getMain()) {
+            userInfoService.changeMainUser(userInfo);
+        }
+        int id = userInfoService.addUser(userInfo);
+        userInfo.setId(id);
+        accountList.add(userInfo);
+        return true;
     }
-    
-    public boolean updateUser(int index,UserInfo userInfo) {
+
+    public boolean updateUser(int index, UserInfo userInfo) {
         UserInfo oldUserInfo = accountList.get(index);
-UserInfo daoUserByRoleId = userInfoDao.getUserByRoleId(oldUserInfo.getRoleId());
-        if (daoUserByRoleId != null && Objects.equals(daoUserByRoleId.getId(), oldUserInfo.getId())){ //当roleid存在，且id是一个，允许更新
-            if (userInfo.getMain()){
-                for (UserInfo oldMainUser : accountList) {
-                    if (oldMainUser.getMain()){
-                        oldMainUser.setMain(false);
-                        userInfoDao.updateUser(oldMainUser);
-                    }
-                }
+        UserInfo daoUserByRoleId = userInfoService.getUserByRoleId(oldUserInfo.getRoleId());
+        if (daoUserByRoleId != null && Objects.equals(daoUserByRoleId.getId(), oldUserInfo.getId())) {
+            if (userInfo.getMain()) {
+                userInfoService.changeMainUser(userInfo);
             }
             userInfo.setId(oldUserInfo.getId());
             userInfo.setLastSignTime(oldUserInfo.getLastSignTime());
-            userInfoDao.updateUser(userInfo);
-            accountList.set(index,userInfo);
+            userInfoService.updateUser(userInfo);
+            accountList.set(index, userInfo);
             return true;
         }
-
         return false;
     }
-    
-    public boolean deleteUser(int index,UserInfo userInfo) {
-int i = userInfoDao.deleteUser(userInfo.getId());
-        if (i > 0){
+
+    public boolean deleteUser(int index, UserInfo userInfo) {
+        boolean i = userInfoService.deleteUser(userInfo.getId());
+        if (i) {
             accountList.remove(index);
             return true;
         }
         return false;
     }
 
-    public void getUserInfo(UserInfo userInfo){
+    public void getUserInfo(UserInfo userInfo) {
         PlayerBaseDataTask task = new PlayerBaseDataTask(userInfo);
-        task.setOnSucceeded(event -> {});
+        task.setOnSucceeded(event -> {
+        });
     }
-
 
 
     public ObservableList<UserInfo> getAccountList() {

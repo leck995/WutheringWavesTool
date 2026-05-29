@@ -88,6 +88,8 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
     @FXML
     private ToggleGroup closeEventToggleGroup;
     @FXML
+    private ToggleGroup homeViewDataToggleGroup;
+    @FXML
     private ComboBox<Pair<String, Locale>> languageBox;
     @FXML
     private ToggleGroup fileSourceType;
@@ -163,6 +165,12 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
 
         if (Config.setting().getCloseEvent() >= 0 && Config.setting().getCloseEvent() <= 2)
             closeEventToggleGroup.selectToggle(closeEventToggleGroup.getToggles().get(Config.setting().getCloseEvent()));
+
+        if (Config.setting().isUseLocalCacheUser()) {
+
+        }
+
+        homeViewDataToggleGroup.selectToggle(Config.setting().isUseLocalCacheUser() ? homeViewDataToggleGroup.getToggles().get(0) : homeViewDataToggleGroup.getToggles().get(1));
 
 
         languageBox.setItems(viewModel.getLanguages());
@@ -304,6 +312,19 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
                 case "0" -> Config.setting().setCloseEvent(0);
                 case "1" -> Config.setting().setCloseEvent(1);
                 case "2" -> Config.setting().setCloseEvent(2);
+            }
+        }
+    }
+
+    @FXML
+    void setHomeViewDataEvent(ActionEvent event) {
+        Object source = event.getSource();
+        if (source instanceof RadioButton button) {
+            switch (button.getAccessibleText()) {
+                case "0" -> Config.setting().setUseLocalCacheUser(true);
+                case "1" -> {
+                    Config.setting().setUseLocalCacheUser(false);
+                }
             }
         }
     }

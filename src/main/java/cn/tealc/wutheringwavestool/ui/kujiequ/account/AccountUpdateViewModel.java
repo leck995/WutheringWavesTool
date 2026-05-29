@@ -1,28 +1,26 @@
-package cn.tealc.wutheringwavestool.ui.account;
+package cn.tealc.wutheringwavestool.ui.kujiequ.account;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
-import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
-import com.google.inject.Inject;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+import cn.tealc.wutheringwavestool.service.UserInfoService;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.thread.base.user.LoginUserTask;
 import com.kuro.kujiequ.thread.rolebox.role.GameRoleSeekTask;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
-import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.UUID;
 
 public class AccountUpdateViewModel extends BaseViewModel {
     public static final String EVENT_CLOSE = "EVENT_CLOSE";
     public static final String EVENT_SELECT_ROLE = "EVENT_SELECT_ROLE";
 
     @Inject
-    private UserInfoDao userInfoDao;
+    private UserInfoService userInfoService;
 
     private final SimpleBooleanProperty loginTabVisible = new SimpleBooleanProperty(true);
 
@@ -93,6 +91,7 @@ public class AccountUpdateViewModel extends BaseViewModel {
 
     /**
      * 添加用户时，请求获取账号列表
+     *
      * @param token
      * @param isWeb
      * @param did
@@ -118,6 +117,7 @@ public class AccountUpdateViewModel extends BaseViewModel {
 
     /**
      * 修改用户时，请求获取账号列表
+     *
      * @param token
      * @param isWeb
      * @param did
@@ -144,6 +144,7 @@ public class AccountUpdateViewModel extends BaseViewModel {
 
     /**
      * 处理获取的账号列表
+     *
      * @param userList
      */
     private void checkUserList(List<UserInfo> userList) {
@@ -186,36 +187,22 @@ public class AccountUpdateViewModel extends BaseViewModel {
     }
 
     private boolean addUserToDB(UserInfo userInfo) {
-        UserInfo daoUserByRoleId = userInfoDao.getUserByRoleId(userInfo.getRoleId());
-        List<UserInfo> accountList = userInfoDao.getAll();
-        if (daoUserByRoleId == null) {
-            if (userInfo.getMain()) {
-                for (UserInfo oldMainUser : accountList) {
-                    if (oldMainUser.getMain()) {
-                        oldMainUser.setMain(false);
-                        userInfoDao.updateUser(oldMainUser);
-                    }
-                }
-            }
-            int id = userInfoDao.addUser(userInfo);
-            userInfo.setId(id);
-            return true;
-        } else {
+        if (userInfoService.existsByRoleId(userInfo.getRoleId())) {
             return false;
         }
+        if (userInfo.getMain()) {
+            userInfoService.changeMainUser(userInfo);
+        }
+        int id = userInfoService.addUser(userInfo);
+        userInfo.setId(id);
+        return true;
     }
 
     private boolean updateUserToDB(UserInfo newUser) {
-        List<UserInfo> accountList = userInfoDao.getAll();
         if (newUser.getMain()) {
-            for (UserInfo oldMainUser : accountList) {
-                if (oldMainUser.getMain()) {
-                    oldMainUser.setMain(false);
-                    userInfoDao.updateUser(oldMainUser);
-                }
-            }
+            userInfoService.changeMainUser(newUser);
         }
-        return userInfoDao.updateUser(newUser) > 0;
+        return userInfoService.updateUser(newUser);
     }
 
 

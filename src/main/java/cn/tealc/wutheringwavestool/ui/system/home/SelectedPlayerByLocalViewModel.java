@@ -18,8 +18,8 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Optional;
 
-public class SelectedPlayerViewModel extends BaseViewModel {
-    private static final Logger LOG = LoggerFactory.getLogger(SelectedPlayerViewModel.class);
+public class SelectedPlayerByLocalViewModel extends BaseViewModel {
+    private static final Logger LOG = LoggerFactory.getLogger(SelectedPlayerByLocalViewModel.class);
 
     @Inject
     private ObjectMapper objectMapper;
@@ -32,7 +32,7 @@ public class SelectedPlayerViewModel extends BaseViewModel {
 
     private final ObservableList<LocalCacheUser> localCacheUserList = FXCollections.observableArrayList();
 
-    public SelectedPlayerViewModel() {
+    public SelectedPlayerByLocalViewModel() {
         readLocalCacheUser();
     }
 

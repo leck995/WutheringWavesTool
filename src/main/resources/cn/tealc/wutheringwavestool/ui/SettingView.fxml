@@ -29,38 +29,54 @@
                   <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="left" HBox.hgrow="ALWAYS">
                      <children>
                         <Label styleClass="title-3" text="%ui.setting.base.title" />
-                        <Label contentDisplay="RIGHT" styleClass="title-4" text="%ui.setting.default.language">
-                           <graphic>
-                              <Label styleClass="tip" text="%ui.setting.default.language.tip" />
-                           </graphic>
-                        </Label>
-                        <ComboBox fx:id="languageBox" disable="true" prefWidth="150.0" />
                         <VBox spacing="10.0">
                            <children>
+                              <Label contentDisplay="RIGHT" styleClass="title-4" text="%ui.setting.default.language">
+                                 <graphic>
+                                    <Label styleClass="tip" text="%ui.setting.default.language.tip" />
+                                 </graphic>
+                              </Label>
+                              <ComboBox fx:id="languageBox" disable="true" prefWidth="150.0" />
                               <Label contentDisplay="RIGHT" styleClass="title-4" text="%ui.setting.base.ui_scale">
                                  <graphic>
                                     <Label styleClass="tip" text="%ui.setting.base.ui_scale.tip" />
                                  </graphic></Label>
-                              <Spinner fx:id="uiScaleSpinner" />
-                              <Label styleClass="title-4" text="%ui.setting.base.firstView" />
-                              <CheckBox fx:id="startWithAnalysisView" mnemonicParsing="false" text="%ui.setting.base.firstView.card" />
-                              <Label contentDisplay="RIGHT" styleClass="title-4" text="%ui.setting.base.kujiequ">
-                                 <graphic>
-                                    <Label contentDisplay="RIGHT" styleClass="tip" text="%ui.setting.base.kujiequ.tip" />
-                                 </graphic></Label>
-                              <ToggleSwitch fx:id="noKuJieQuSwitch" labelPosition="RIGHT" text="%ui.setting.base.kujiequ.switch" />
+                              <Spinner fx:id="uiScaleSpinner" styleClass="param" />
                               <Label styleClass="title-4" text="%ui.setting.base.close_event" />
                               <HBox prefHeight="100.0" prefWidth="200.0" spacing="15.0">
                                  <children>
-                                    <RadioButton accessibleText="0" mnemonicParsing="false" onAction="#setCloseEvent" text="%ui.setting.base.close_event.type01">
+                                    <RadioButton accessibleText="0" mnemonicParsing="false" onAction="#setCloseEvent" styleClass="param" text="%ui.setting.base.close_event.type01">
                                        <toggleGroup>
                                           <ToggleGroup fx:id="closeEventToggleGroup" />
                                        </toggleGroup>
                                     </RadioButton>
-                                    <RadioButton accessibleText="1" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setCloseEvent" text="%ui.setting.base.close_event.type02" toggleGroup="$closeEventToggleGroup" />
-                                    <RadioButton accessibleText="2" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setCloseEvent" text="%ui.setting.base.close_event.type03" toggleGroup="$closeEventToggleGroup" />
+                                    <RadioButton accessibleText="1" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setCloseEvent" styleClass="param" text="%ui.setting.base.close_event.type02" toggleGroup="$closeEventToggleGroup" />
+                                    <RadioButton accessibleText="2" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setCloseEvent" styleClass="param" text="%ui.setting.base.close_event.type03" toggleGroup="$closeEventToggleGroup" />
                                  </children>
                               </HBox>
+                           </children>
+                        </VBox>
+                        <Label layoutX="10.0" layoutY="10.0" styleClass="title-3" text="%ui.setting.view.title" />
+                        <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                           <children>
+                              <Label styleClass="title-4" text="%ui.setting.base.firstView" />
+                              <CheckBox fx:id="startWithAnalysisView" mnemonicParsing="false" styleClass="param" text="%ui.setting.base.firstView.card" />
+                              <Label styleClass="title-4" text="%ui.setting.base.home_view.data_source" />
+                              <HBox prefHeight="100.0" prefWidth="200.0" spacing="15.0">
+                                 <children>
+                                    <RadioButton accessibleText="0" mnemonicParsing="false" onAction="#setHomeViewDataEvent" styleClass="param" text="%ui.setting.base.home_view.data_source.button01">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="homeViewDataToggleGroup" />
+                                       </toggleGroup>
+                                    </RadioButton>
+                                    <RadioButton accessibleText="1" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setHomeViewDataEvent" styleClass="param" text="%ui.setting.base.home_view.data_source.button02" toggleGroup="$homeViewDataToggleGroup" />
+                                 </children>
+                              </HBox>
+                              <Label contentDisplay="RIGHT" styleClass="title-4" text="%ui.setting.base.kujiequ">
+                                 <graphic>
+                                    <Label contentDisplay="RIGHT" styleClass="tip" text="%ui.setting.base.kujiequ.tip" />
+                                 </graphic></Label>
+                              <ToggleSwitch fx:id="noKuJieQuSwitch" labelPosition="RIGHT" styleClass="param" text="%ui.setting.base.kujiequ.switch" />
                            </children>
                         </VBox>
                         <Label styleClass="title-3" text="%ui.setting.base.diy.title" />
@@ -69,18 +85,18 @@
                               <Label styleClass="title-4" text="%ui.setting.base.background.diy" />
                               <HBox spacing="20.0">
                                  <children>
-                                    <RadioButton mnemonicParsing="false" text="%ui.setting.base.background.type01">
+                                    <RadioButton mnemonicParsing="false" styleClass="param" text="%ui.setting.base.background.type01">
                                        <toggleGroup>
                                           <ToggleGroup fx:id="homeBgType" />
                                        </toggleGroup>
                                     </RadioButton>
-                                    <RadioButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="%ui.setting.base.background.type02" toggleGroup="$homeBgType" />
-                                    <RadioButton layoutX="119.0" layoutY="10.0" mnemonicParsing="false" text="%ui.setting.base.background.type03" toggleGroup="$homeBgType" />
+                                    <RadioButton layoutX="10.0" layoutY="10.0" mnemonicParsing="false" styleClass="param" text="%ui.setting.base.background.type02" toggleGroup="$homeBgType" />
+                                    <RadioButton layoutX="119.0" layoutY="10.0" mnemonicParsing="false" styleClass="param" text="%ui.setting.base.background.type03" toggleGroup="$homeBgType" />
                                  </children>
                               </HBox>
                               <StackPane fx:id="diyBgInputGroup" maxWidth="350.0" styleClass="input-group">
                                  <children>
-                                    <TextField fx:id="diyBgField" prefWidth="250.0" />
+                                    <TextField fx:id="diyBgField" prefWidth="250.0" styleClass="param" />
                                     <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setBgFile" StackPane.alignment="CENTER_RIGHT">
                                        <graphic>
                                           <FontIcon iconLiteral="mdoal-image" />
@@ -90,7 +106,7 @@
                               </StackPane>
                               <StackPane fx:id="diyBgDirInputGroup" maxWidth="350.0" styleClass="input-group">
                                  <children>
-                                    <TextField fx:id="diyBgDirField" prefWidth="250.0" />
+                                    <TextField fx:id="diyBgDirField" prefWidth="250.0" styleClass="param" />
                                     <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setBgFile" StackPane.alignment="CENTER_RIGHT">
                                        <graphic>
                                           <FontIcon iconLiteral="mdoal-image" />
@@ -105,26 +121,26 @@
                         <VBox spacing="10.0">
                            <children>
                               <Label styleClass="title-4" text="%ui.setting.game.hide" />
-                              <ToggleSwitch fx:id="hideWhenGameStart" labelPosition="RIGHT" text="%ui.setting.game.switch" />
+                              <ToggleSwitch fx:id="hideWhenGameStart" labelPosition="RIGHT" styleClass="param" text="%ui.setting.game.switch" />
                               <Label styleClass="title-4" text="%ui.setting.game.exit" />
-                              <ToggleSwitch fx:id="exitWhenGameOver" labelPosition="RIGHT" text="%ui.setting.game.switch" />
+                              <ToggleSwitch fx:id="exitWhenGameOver" labelPosition="RIGHT" styleClass="param" text="%ui.setting.game.switch" />
                            </children>
                         </VBox>
                         <Label layoutX="10.0" layoutY="471.0" styleClass="title-3" text="%ui.setting.other" />
                         <VBox spacing="10.0">
                            <children>
                               <Label styleClass="title-4" text="%ui.setting.other.check_version" />
-                              <ToggleSwitch fx:id="versionCheckSwitch" labelPosition="RIGHT" text="%ui.setting.other.switch" />
+                              <ToggleSwitch fx:id="versionCheckSwitch" labelPosition="RIGHT" styleClass="param" text="%ui.setting.other.switch" />
                               <Label styleClass="tip" text="%ui.setting.other.check_version.tip" />
                               <Label layoutX="10.0" layoutY="10.0" styleClass="title-4" text="%ui.setting.other.file_source" />
                               <HBox spacing="15.0">
                                  <children>
-                                    <RadioButton accessibleText="0" mnemonicParsing="false" onAction="#setFileSource" selected="true" text="%ui.setting.other.file_source.github">
+                                    <RadioButton accessibleText="0" mnemonicParsing="false" onAction="#setFileSource" selected="true" styleClass="param" text="%ui.setting.other.file_source.github">
                                        <toggleGroup>
                                           <ToggleGroup fx:id="fileSourceType" />
                                        </toggleGroup>
                                     </RadioButton>
-                                    <RadioButton accessibleText="1" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setFileSource" text="%ui.setting.other.file_source.gitee" toggleGroup="$fileSourceType" />
+                                    <RadioButton accessibleText="1" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setFileSource" styleClass="param" text="%ui.setting.other.file_source.gitee" toggleGroup="$fileSourceType" />
                                  </children>
                               </HBox>
                            </children>

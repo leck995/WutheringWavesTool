@@ -2,8 +2,8 @@ package cn.tealc.wutheringwavestool.ui.kujiequ;
 
 import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.ui.account.AccountUpdateView;
-import cn.tealc.wutheringwavestool.ui.account.AccountUpdateViewModel;
+import cn.tealc.wutheringwavestool.ui.kujiequ.account.AccountUpdateView;
+import cn.tealc.wutheringwavestool.ui.kujiequ.account.AccountUpdateViewModel;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;

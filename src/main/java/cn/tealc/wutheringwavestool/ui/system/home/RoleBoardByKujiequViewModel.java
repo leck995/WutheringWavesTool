@@ -3,10 +3,10 @@ package cn.tealc.wutheringwavestool.ui.system.home;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.google.inject.Inject;
@@ -19,7 +19,6 @@ import com.kuro.kujiequ.thread.base.UserDailyDataTask;
 import com.kuro.kujiequ.thread.base.sign.SignTask;
 import com.kuro.kujiequ.thread.rolebox.PlayerBaseDataTask;
 import de.saxsys.mvvmfx.MvvmFX;
-import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -37,7 +36,7 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
 
     private static final Logger LOG = LoggerFactory.getLogger(RoleBoardByKujiequViewModel.class);
     @Inject
-    private UserInfoDao userInfoDao;
+    private UserInfoService userInfoService;
 
     private SimpleStringProperty energyText = new SimpleStringProperty();
     private SimpleStringProperty energyTimeText = new SimpleStringProperty();
@@ -67,6 +66,10 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_ROLE_DATA_REFRESH, (s, objects) -> {
             updateKujiequRoleData();
         });
+
+        MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_ROLE_KUJIEQU_CHANGE, (s, objects) -> {
+            updateKujiequRoleData();
+        });
     }
 
     /**
@@ -81,7 +84,7 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
             return;
         }
 
-        UserInfo userInfo = userInfoDao.getMain();
+        UserInfo userInfo = userInfoService.getMainUser();
         if (userInfo == null) {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                     new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type01")));

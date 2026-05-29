@@ -3,11 +3,11 @@ package cn.tealc.wutheringwavestool.ui.system.home;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.ui.item.HeaderImageSelectView;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
-import de.saxsys.mvvmfx.FxmlView;
-import de.saxsys.mvvmfx.InjectViewModel;
-import de.saxsys.mvvmfx.MvvmFX;
+import com.jfoenixN.controls.JFXDialogLayout;
+import de.saxsys.mvvmfx.*;
 import javafx.animation.RotateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -165,7 +165,8 @@ public class RoleBoardByKujiequView implements FxmlView<RoleBoardByKujiequViewMo
 
     @FXML
     void changeRole(ActionEvent event) {
-
+        ViewTuple<SelectedPlayerByKujiequView, SelectedPlayerByKujiequViewModel> viewTuple = FluentViewLoader.javaView(SelectedPlayerByKujiequView.class).load();
+        NotificationManager.dialog((JFXDialogLayout) viewTuple.getView());
     }
 
     @FXML

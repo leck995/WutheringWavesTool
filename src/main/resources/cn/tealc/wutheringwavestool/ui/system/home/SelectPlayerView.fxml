@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox prefWidth="450.0" spacing="10.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.system.home.SelectPlayerView">
+<VBox prefWidth="450.0" spacing="10.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.system.home.SelectedPlayerByLocalView">
    <children>
       <Label styleClass="title-2" text="选择账号" />
       <Label text="您可选择游戏内已登录账号" />

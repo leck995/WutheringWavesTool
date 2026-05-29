@@ -2,10 +2,7 @@ package cn.tealc.wutheringwavestool.ui.system.home;
 
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.Config;
-import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.ui.item.HeaderImageSelectView;
-import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;
@@ -160,7 +157,7 @@ public class RoleBoardByLocalView implements FxmlView<RoleBoardByLocalViewModel>
 
     @FXML
     void changeRole(ActionEvent event) {
-        ViewTuple<SelectPlayerView, SelectedPlayerViewModel> viewTuple = FluentViewLoader.javaView(SelectPlayerView.class).load();
+        ViewTuple<SelectedPlayerByLocalView, SelectedPlayerByLocalViewModel> viewTuple = FluentViewLoader.javaView(SelectedPlayerByLocalView.class).load();
         NotificationManager.dialog((JFXDialogLayout) viewTuple.getView());
     }
 

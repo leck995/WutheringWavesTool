@@ -1,4 +1,4 @@
-package cn.tealc.wutheringwavestool.ui.account;
+package cn.tealc.wutheringwavestool.ui.kujiequ.account;
 
 import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.NotificationKey;

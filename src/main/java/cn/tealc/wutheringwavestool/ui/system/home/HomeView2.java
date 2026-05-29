@@ -14,11 +14,9 @@ import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;
-import javafx.animation.RotateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
@@ -29,7 +27,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
-import javafx.util.Duration;
 
 import java.awt.*;
 import java.io.File;
@@ -267,7 +264,7 @@ public class HomeView2 implements Initializable, FxmlView<HomeViewModel2> {
         viewModel.updateKujiequRoleData();*/
 
 
-        ViewTuple<SelectPlayerView, SelectedPlayerViewModel> viewTuple = FluentViewLoader.javaView(SelectPlayerView.class).load();
+        ViewTuple<SelectedPlayerByLocalView, SelectedPlayerByLocalViewModel> viewTuple = FluentViewLoader.javaView(SelectedPlayerByLocalView.class).load();
         NotificationManager.dialog((JFXDialogLayout) viewTuple.getView());
 
     }

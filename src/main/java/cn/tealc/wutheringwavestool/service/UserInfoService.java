@@ -8,11 +8,11 @@ import com.kuro.kujiequ.model.sign.UserInfo;
 import java.util.List;
 
 @Singleton
-public class AccountService {
+public class UserInfoService {
     private final UserInfoDao userInfoDao;
 
     @Inject
-    public AccountService(UserInfoDao userInfoDao) {
+    public UserInfoService(UserInfoDao userInfoDao) {
         this.userInfoDao = userInfoDao;
     }
 
@@ -37,14 +37,25 @@ public class AccountService {
             }
         }
         newMainUser.setMain(true);
+        userInfoDao.updateUser(newMainUser);
     }
 
-    public void addUser(UserInfo user) {
-        userInfoDao.addUser(user);
+    public void changeMainUser(UserInfo newMainUser) {
+        UserInfo oldMain = userInfoDao.getMain();
+        if (oldMain != null && !oldMain.getRoleId().equals(newMainUser.getRoleId())) {
+            oldMain.setMain(false);
+            userInfoDao.updateUser(oldMain);
+        }
+        newMainUser.setMain(true);
+        userInfoDao.updateUser(newMainUser);
     }
 
-    public void updateUser(UserInfo user) {
-        userInfoDao.updateUser(user);
+    public int addUser(UserInfo user) {
+        return userInfoDao.addUser(user);
+    }
+
+    public boolean updateUser(UserInfo user) {
+        return userInfoDao.updateUser(user) > 0;
     }
 
     public boolean deleteUser(int id) {
