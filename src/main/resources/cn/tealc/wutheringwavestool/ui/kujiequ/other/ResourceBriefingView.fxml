@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="800.0" prefWidth="1300.0" styleClass="resource-briefing" stylesheets="@../../css/kujiequ/ResourceBriefing.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.ResourceBriefingView">
+<AnchorPane prefHeight="800.0" prefWidth="1300.0" styleClass="resource-briefing" stylesheets="@../../../css/kujiequ/ResourceBriefing.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.other.ResourceBriefingView">
     <children>
         <HBox fx:id="headerPane" layoutX="20.0" layoutY="20.0" prefHeight="35.0" spacing="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
             <children>
@@ -59,7 +59,7 @@
                                  <graphic>
                                     <ImageView fx:id="starIcon" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../../image/kujiequ/star.png" />
+                                          <Image url="@../../../image/kujiequ/star.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>
@@ -80,7 +80,7 @@
                                  <graphic>
                                     <ImageView fx:id="starIcon1" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../../image/kujiequ/coin.png" />
+                                          <Image url="@../../../image/kujiequ/coin.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>

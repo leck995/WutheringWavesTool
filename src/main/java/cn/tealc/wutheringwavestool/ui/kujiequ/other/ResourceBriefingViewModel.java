@@ -1,4 +1,4 @@
-package cn.tealc.wutheringwavestool.ui.kujiequ;
+package cn.tealc.wutheringwavestool.ui.kujiequ.other;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
@@ -16,7 +16,6 @@ import com.kuro.kujiequ.thread.resourcebriefing.BriefingDetailGetTask;
 import com.kuro.kujiequ.thread.resourcebriefing.BriefingListGetTask;
 import de.saxsys.mvvmfx.MvvmFX;
 import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 

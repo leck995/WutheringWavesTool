@@ -1,4 +1,4 @@
-package cn.tealc.wutheringwavestool.ui.kujiequ;
+package cn.tealc.wutheringwavestool.ui.kujiequ.other;
 
 import atlantafx.base.controls.Spacer;
 import com.kuro.kujiequ.model.resourcebriefing.Item;

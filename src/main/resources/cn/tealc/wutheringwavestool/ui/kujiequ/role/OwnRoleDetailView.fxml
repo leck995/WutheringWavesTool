@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<StackPane prefHeight="800.0" prefWidth="1100.0" styleClass="role-detail" stylesheets="@../../css/kujiequ/OwnRoleDetail.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.OwnRoleDetailView">
+<StackPane prefHeight="800.0" prefWidth="1100.0" styleClass="role-detail" stylesheets="@../../../css/kujiequ/OwnRoleDetail.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.role.OwnRoleDetailView">
    <children>
       <AnchorPane prefHeight="200.0" prefWidth="200.0">
          <children>
@@ -35,7 +35,7 @@
                                     <Pane fx:id="roleBgPane" maxHeight="370.0" prefHeight="380.0" styleClass="role-bg" StackPane.alignment="BOTTOM_CENTER" />
                                     <ImageView fx:id="roleImageView" fitHeight="380.0" fitWidth="500.0" pickOnBounds="true" preserveRatio="true" styleClass="role-image" translateX="-20.0" StackPane.alignment="BOTTOM_RIGHT">
                                        <image>
-                                          <Image url="@../../image/role.png" />
+                                          <Image url="@../../../image/role.png" />
                                        </image>
                                     </ImageView>
                                  </children>
@@ -44,7 +44,7 @@
                                  <children>
                                     <ImageView fx:id="roleAttrImageView" fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../../image/attr/2.png" />
+                                          <Image url="@../../../image/attr/2.png" />
                                        </image>
                                     </ImageView>
                                     <Label fx:id="roleName" styleClass="role-name" text="长离" />
@@ -59,7 +59,7 @@
                                              <children>
                                                 <ImageView fx:id="weaponImageView" fitHeight="45.0" fitWidth="45.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
-                                                      <Image url="@../../image/role-weapon.png" />
+                                                      <Image url="@../../../image/role-weapon.png" />
                                                    </image>
                                                 </ImageView>
                                              </children>
@@ -79,7 +79,7 @@
                                              <graphic>
                                                 <ImageView fx:id="skillImg05" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
-                                                      <Image url="@../../image/role-skill.png" />
+                                                      <Image url="@../../../image/role-skill.png" />
                                                    </image>
                                                 </ImageView>
                                              </graphic>
@@ -88,7 +88,7 @@
                                              <graphic>
                                                 <ImageView fx:id="skillImg04" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
-                                                      <Image url="@../../image/role-skill.png" />
+                                                      <Image url="@../../../image/role-skill.png" />
                                                    </image>
                                                 </ImageView>
                                              </graphic>
@@ -97,7 +97,7 @@
                                              <graphic>
                                                 <ImageView fx:id="skillImg03" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
-                                                      <Image url="@../../image/role-skill.png" />
+                                                      <Image url="@../../../image/role-skill.png" />
                                                    </image>
                                                 </ImageView>
                                              </graphic>
@@ -106,7 +106,7 @@
                                              <graphic>
                                                 <ImageView fx:id="skillImg02" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
-                                                      <Image url="@../../image/role-skill.png" />
+                                                      <Image url="@../../../image/role-skill.png" />
                                                    </image>
                                                 </ImageView>
                                              </graphic>
@@ -115,7 +115,7 @@
                                              <graphic>
                                                 <ImageView fx:id="skillImg01" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                                    <image>
-                                                      <Image url="@../../image/role-skill.png" />
+                                                      <Image url="@../../../image/role-skill.png" />
                                                    </image>
                                                 </ImageView>
                                              </graphic>
@@ -142,32 +142,32 @@
                                  <children>
                                     <ImageView fx:id="chain01" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../../image/role-chain.png" />
+                                          <Image url="@../../../image/role-chain.png" />
                                        </image>
                                     </ImageView>
                                     <ImageView fx:id="chain02" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../../image/role-chain.png" />
+                                          <Image url="@../../../image/role-chain.png" />
                                        </image>
                                     </ImageView>
                                     <ImageView fx:id="chain03" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../../image/role-chain.png" />
+                                          <Image url="@../../../image/role-chain.png" />
                                        </image>
                                     </ImageView>
                                     <ImageView fx:id="chain04" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../../image/role-chain.png" />
+                                          <Image url="@../../../image/role-chain.png" />
                                        </image>
                                     </ImageView>
                                     <ImageView fx:id="chain05" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../../image/role-chain.png" />
+                                          <Image url="@../../../image/role-chain.png" />
                                        </image>
                                     </ImageView>
                                     <ImageView fx:id="chain06" fitHeight="40.0" fitWidth="40.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
-                                          <Image url="@../../image/role-chain.png" />
+                                          <Image url="@../../../image/role-chain.png" />
                                        </image>
                                     </ImageView>
                                  </children>

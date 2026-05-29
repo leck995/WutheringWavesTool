@@ -43,7 +43,6 @@ open module cn.tealc.wutheringwavestool {
     exports cn.tealc.wutheringwavestool.base;
     exports cn.tealc.wutheringwavestool.jna;
     exports cn.tealc.wutheringwavestool.ui;
-    exports cn.tealc.wutheringwavestool.ui.kujiequ;
     exports cn.tealc.wutheringwavestool.ui.game;
     exports cn.tealc.wutheringwavestool.dao;
     exports cn.tealc.wutheringwavestool.util;
@@ -80,5 +79,9 @@ open module cn.tealc.wutheringwavestool {
     exports com.kuro.launcher.model.api;
     exports cn.tealc.wutheringwavestool.ui.system.home;
     exports com.kuro.launcher.model;
+    exports cn.tealc.wutheringwavestool.ui.kujiequ.account;
+    exports cn.tealc.wutheringwavestool.ui.kujiequ.role;
+    exports cn.tealc.wutheringwavestool.ui.kujiequ.sign;
+    exports cn.tealc.wutheringwavestool.ui.kujiequ.other;
 
 }
