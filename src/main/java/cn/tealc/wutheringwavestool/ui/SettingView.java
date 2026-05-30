@@ -84,6 +84,12 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
     @FXML
     private ToggleSwitch versionCheckSwitch;
     @FXML
+    private ToggleSwitch autoStartSwitch;
+    @FXML
+    private ToggleSwitch silentStartSwitch;
+    @FXML
+    private ToggleSwitch autoStartGameSwitch;
+    @FXML
     private ToggleSwitch noKuJieQuSwitch;
     @FXML
     private ToggleGroup closeEventToggleGroup;
@@ -161,6 +167,9 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
         appIconIv.setImage(new Image(FXResourcesLoader.load("image/icon.png"), 80, 80, true, true, true));
 
         versionCheckSwitch.selectedProperty().bindBidirectional(viewModel.checkNewVersionProperty());
+        autoStartSwitch.selectedProperty().bindBidirectional(viewModel.autoStartProperty());
+        silentStartSwitch.selectedProperty().bindBidirectional(viewModel.silentStartProperty());
+        autoStartGameSwitch.selectedProperty().bindBidirectional(viewModel.autoStartGameProperty());
 
 
         if (Config.setting().getCloseEvent() >= 0 && Config.setting().getCloseEvent() <= 2)

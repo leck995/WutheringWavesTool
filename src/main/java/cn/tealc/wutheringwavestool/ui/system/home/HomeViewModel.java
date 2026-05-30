@@ -1,6 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.system.home;
 
-import cn.tealc.wutheringwavestool.Application;
+import cn.tealc.wutheringwavestool.WwtApp;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
@@ -62,6 +62,9 @@ public class HomeViewModel extends BaseViewModel {
         });
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_ROLE_DATA_REFRESH, (s, objects) -> {
             autoSign(); //如果结束游戏跨天，直接签到
+        });
+        MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_AUTO_START_GAME, (s, objects) -> {
+            startGame();
         });
     }
 
@@ -276,7 +279,7 @@ public class HomeViewModel extends BaseViewModel {
      */
     private void hideMainWindow() {
         if (Config.setting().isHideWhenGameStart()) {
-            Application.getWindow().hide();
+            WwtApp.getWindow().hide();
         }
     }
 
@@ -309,7 +312,7 @@ public class HomeViewModel extends BaseViewModel {
                 GameAppListener.getInstance().setStartFromApp(true);
                 processBuilder.start();
             } catch (IOException e) {
-                Application.getWindow().show();
+                WwtApp.getWindow().show();
                 GameAppListener.getInstance().setStartFromApp(false);
                 LOG.error("高级启动无法启动鸣潮", e);
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.ERROR, LanguageManager.getString("ui.home.message.type07") + e.getMessage()));
@@ -329,12 +332,12 @@ public class HomeViewModel extends BaseViewModel {
             GameAppListener.getInstance().setStartFromApp(true);
             Desktop.getDesktop().open(exe);
             if (Config.setting().isHideWhenGameStart()) {
-                Application.getWindow().hide();
+                WwtApp.getWindow().hide();
             }
         } catch (IOException e) {
             GameAppListener.getInstance().setStartFromApp(false);
             LOG.info("启动游戏错误:{}", e.getMessage());
-            Application.getWindow().show();
+            WwtApp.getWindow().show();
         }
     }
 

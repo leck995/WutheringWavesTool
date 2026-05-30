@@ -67,9 +67,12 @@ public class Setting {
     /*=================设置-游戏行为===================*/
     private SimpleBooleanProperty exitWhenGameOver = new SimpleBooleanProperty(false); //检测到游戏关闭自动关闭程序
     private SimpleBooleanProperty hideWhenGameStart = new SimpleBooleanProperty(false); //检测到游戏启动自动隐藏程序至托盘
+    private SimpleBooleanProperty autoStartGame = new SimpleBooleanProperty(false); //手动启动程序时自动启动游戏
 
     /*=================设置-其他设置===================*/
     private SimpleBooleanProperty checkNewVersion = new SimpleBooleanProperty(true); //检查更新
+    private SimpleBooleanProperty autoStart = new SimpleBooleanProperty(false); //开机自启
+    private SimpleBooleanProperty silentStart = new SimpleBooleanProperty(false); //静默启动，不显示窗口
 
     /*=============资源库=============*/
     private SimpleIntegerProperty resourceSource = new SimpleIntegerProperty(getLanguage() == Locale.CHINA ? 1 : 0); //0代表Github，1代表码云或其他
@@ -224,6 +227,18 @@ public class Setting {
         this.hideWhenGameStart.set(hideWhenGameStart);
     }
 
+    public boolean isAutoStartGame() {
+        return autoStartGame.get();
+    }
+
+    public SimpleBooleanProperty autoStartGameProperty() {
+        return autoStartGame;
+    }
+
+    public void setAutoStartGame(boolean autoStartGame) {
+        this.autoStartGame.set(autoStartGame);
+    }
+
     public boolean isDiyHomeBg() {
         return diyHomeBg.get();
     }
@@ -306,6 +321,30 @@ public class Setting {
 
     public void setCheckNewVersion(boolean checkNewVersion) {
         this.checkNewVersion.set(checkNewVersion);
+    }
+
+    public boolean isAutoStart() {
+        return autoStart.get();
+    }
+
+    public SimpleBooleanProperty autoStartProperty() {
+        return autoStart;
+    }
+
+    public void setAutoStart(boolean autoStart) {
+        this.autoStart.set(autoStart);
+    }
+
+    public boolean isSilentStart() {
+        return silentStart.get();
+    }
+
+    public SimpleBooleanProperty silentStartProperty() {
+        return silentStart;
+    }
+
+    public void setSilentStart(boolean silentStart) {
+        this.silentStart.set(silentStart);
     }
 
     public boolean isLeftBarShow() {

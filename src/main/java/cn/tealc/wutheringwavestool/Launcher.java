@@ -2,8 +2,6 @@ package cn.tealc.wutheringwavestool;
 
 import cn.tealc.wutheringwavestool.base.Config;
 
-import java.io.File;
-
 /**
  * @program: WutheringWavesTool
  * @description:
@@ -20,22 +18,7 @@ public class Launcher {
             System.setProperty("glass.win.uiScale", Config.setting().getUiScale() + "%");
         }
 
-        javafx.application.Application.launch(Application.class,args);
+        javafx.application.Application.launch(WwtApp.class,args);
     }
 
-    private static void checkUpdate(){
-        File file = new File(".");
-        assert file.exists();
-        if (file.getName().equals("update")){
-            File[] files = file.getParentFile().listFiles((dir, name) -> name.equals("WutheringWavesTool.exe"));
-            if (files != null && files.length > 0){
-
-            }
-        }
-
-    }
-
-    private static void move(){
-
-    }
 }

@@ -1,6 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.base;
 
-import cn.tealc.wutheringwavestool.Application;
+import cn.tealc.wutheringwavestool.WwtApp;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
@@ -98,7 +98,7 @@ public class UpdateView implements FxmlView<UpdateViewModel>, Initializable {
         headerbar.getStyleClass().add("headbar");
         Button closeBtn = new Button(null, new FontIcon(Material2OutlinedAL.CLOSE));
         Button minBtn = new Button(null, new FontIcon(Material2OutlinedMZ.MINUS));
-        closeBtn.setOnAction(event -> Application.exit());
+        closeBtn.setOnAction(event -> WwtApp.exit());
         HBox systemBox = new HBox(minBtn, closeBtn);
         HeaderBar.setButtonType(minBtn, HeaderButtonType.ICONIFY);
         closeBtn.getStyleClass().add("close-btn");

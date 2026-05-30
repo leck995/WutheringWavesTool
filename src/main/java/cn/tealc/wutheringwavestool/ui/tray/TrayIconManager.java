@@ -1,7 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.tray;
 
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
-import cn.tealc.wutheringwavestool.Application;
+import cn.tealc.wutheringwavestool.WwtApp;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.google.inject.Singleton;
@@ -39,7 +39,7 @@ public class TrayIconManager {
         Button exit = new Button(
                 LanguageManager.getString("ui.tray.exit"),
                 new FontIcon(Material2OutlinedMZ.POWER_SETTINGS_NEW));
-        exit.setOnAction(event -> Platform.runLater(Application::exit));
+        exit.setOnAction(event -> Platform.runLater(WwtApp::exit));
 
         VBox vbox = new VBox(show, exit);
         vbox.getStyleClass().add("tray");

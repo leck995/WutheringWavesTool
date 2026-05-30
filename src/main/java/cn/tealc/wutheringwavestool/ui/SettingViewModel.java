@@ -1,13 +1,15 @@
 package cn.tealc.wutheringwavestool.ui;
 
+import cn.tealc.wutheringwavestool.WwtApp;
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.Config;
-import cn.tealc.wutheringwavestool.Application;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.release.Release;
+import cn.tealc.wutheringwavestool.service.AutoStartService;
 import cn.tealc.wutheringwavestool.thread.system.CheckGameConfigTask;
 import cn.tealc.wutheringwavestool.thread.system.CheckVersionTask;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
@@ -46,6 +48,9 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
     private SimpleBooleanProperty hideWhenGameStart = new SimpleBooleanProperty();
     private ObservableList<String> fontFamilyList = FXCollections.observableArrayList();
     private SimpleBooleanProperty checkNewVersion = new SimpleBooleanProperty();
+    private SimpleBooleanProperty autoStart = new SimpleBooleanProperty();
+    private SimpleBooleanProperty silentStart = new SimpleBooleanProperty();
+    private SimpleBooleanProperty autoStartGame = new SimpleBooleanProperty();
 
     private SimpleBooleanProperty diyHomeBg = new SimpleBooleanProperty();
     private SimpleStringProperty diyHomeBgName = new SimpleStringProperty();
@@ -62,6 +67,9 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
         diyHomeBg.bindBidirectional(Config.setting().diyHomeBgProperty());
         diyHomeBgName.bindBidirectional(Config.setting().diyHomeBgNameProperty());
         checkNewVersion.bindBidirectional(Config.setting().checkNewVersionProperty());
+        autoStart.bindBidirectional(Config.setting().autoStartProperty());
+        silentStart.bindBidirectional(Config.setting().silentStartProperty());
+        autoStartGame.bindBidirectional(Config.setting().autoStartGameProperty());
         homeBgType.bindBidirectional(Config.setting().diyHomeBgTypeProperty());
         homeBgDir.bindBidirectional(Config.setting().diyHomeBgDirProperty());
 
@@ -74,6 +82,15 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
         homeBgDir.addListener((observableValue, s1, s2) -> {
             if (getHomeBgDir() != null) {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);
+            }
+        });
+
+        autoStart.addListener((observableValue, oldVal, newVal) -> {
+            AutoStartService service = AppInjector.getInstance(AutoStartService.class);
+            if (Boolean.TRUE.equals(newVal)) {
+                service.enable();
+            } else {
+                service.disable();
             }
         });
 
@@ -119,7 +136,7 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
 
 
     public void setFontFamily(String fontFamily) {
-        Application.getWindow().getScene().getRoot().setStyle("-fx-font-family: \"" + fontFamily + "\"");
+        WwtApp.getWindow().getScene().getRoot().setStyle("-fx-font-family: \"" + fontFamily + "\"");
     }
 
     public void setBgFile(File file) {
@@ -225,6 +242,14 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
         return checkNewVersion;
     }
 
+    public boolean isAutoStart() {
+        return autoStart.get();
+    }
+
+    public SimpleBooleanProperty autoStartProperty() {
+        return autoStart;
+    }
+
     public ObservableList<Pair<String, Locale>> getLanguages() {
         return languages;
     }
@@ -251,5 +276,29 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
 
     public void setHomeBgDir(String homeBgDir) {
         this.homeBgDir.set(homeBgDir);
+    }
+
+    public boolean isSilentStart() {
+        return silentStart.get();
+    }
+
+    public SimpleBooleanProperty silentStartProperty() {
+        return silentStart;
+    }
+
+    public void setSilentStart(boolean silentStart) {
+        this.silentStart.set(silentStart);
+    }
+
+    public boolean isAutoStartGame() {
+        return autoStartGame.get();
+    }
+
+    public SimpleBooleanProperty autoStartGameProperty() {
+        return autoStartGame;
+    }
+
+    public void setAutoStartGame(boolean autoStartGame) {
+        this.autoStartGame.set(autoStartGame);
     }
 }

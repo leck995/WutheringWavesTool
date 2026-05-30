@@ -3,6 +3,7 @@ package cn.tealc.wutheringwavestool;
 import ch.qos.logback.classic.Level;
 import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import cn.tealc.wutheringwavestool.jna.GlobalKeyListener;
 import cn.tealc.wutheringwavestool.service.GameWindowMonitorService;
@@ -17,6 +18,7 @@ import com.github.kwhat.jnativehook.NativeHookException;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewTuple;
+import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -28,12 +30,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class Application extends javafx.application.Application {
-    private static final Logger LOG = LoggerFactory.getLogger(Application.class);
+public class WwtApp extends Application {
+    private static final Logger LOG = LoggerFactory.getLogger(WwtApp.class);
     private static Stage window;
     private static AppLocked appLocked;
+    private static boolean autoStarted = false;
 
-    public Application() {
+    public WwtApp() {
         MvvmFX.setGlobalResourceBundle(Config.language);
         ch.qos.logback.classic.Logger root = (ch.qos.logback.classic.Logger) org.slf4j.LoggerFactory
                 .getLogger(ch.qos.logback.classic.Logger.ROOT_LOGGER_NAME);
@@ -44,6 +47,8 @@ public class Application extends javafx.application.Application {
 
     @Override
     public void start(Stage stage) throws IOException {
+        autoStarted = getParameters().getRaw().contains("--auto-start");
+
         JdbcUtils.init();
         AppInjector.getInjector();
         VersionUpdateUtil.update();
@@ -53,11 +58,22 @@ public class Application extends javafx.application.Application {
         initFont();
         stage.show();
 
+        if (autoStarted && Config.setting().isSilentStart()) {
+            stage.hide();
+            LOG.info("静默启动，窗口已隐藏");
+        }
+
         AppInjector.getInstance(GameWindowMonitorService.class).start();
         AppInjector.getInstance(TrayIconManager.class).install(stage);
         Thread.startVirtualThread(new ClearLogFileTask());
         Thread.setDefaultUncaughtExceptionHandler((t, e) ->
                 LOG.error("线程：{}，出现异常：{}", t.getName(), e.getMessage(), e));
+
+        if (!autoStarted && Config.setting().isAutoStartGame()) {
+            javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(2));
+            delay.setOnFinished(e -> MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_AUTO_START_GAME));
+            delay.play();
+        }
     }
 
     private void setupStage(Stage stage) {
@@ -95,6 +111,10 @@ public class Application extends javafx.application.Application {
             throw new RuntimeException(e);
         }
         GlobalScreen.addNativeKeyListener(new GlobalKeyListener());
+    }
+
+    public static boolean isAutoStarted() {
+        return autoStarted;
     }
 
     public static Stage getWindow() {

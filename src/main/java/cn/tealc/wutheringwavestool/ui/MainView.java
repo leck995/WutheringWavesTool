@@ -4,7 +4,7 @@ import atlantafx.base.controls.Message;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
 import cn.tealc.teafx.utils.AnchorPaneUtil;
-import cn.tealc.wutheringwavestool.Application;
+import cn.tealc.wutheringwavestool.WwtApp;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.AppConstants;
 import cn.tealc.wutheringwavestool.base.Config;
@@ -575,8 +575,8 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
     public void close() {
         switch (Config.setting().getCloseEvent()) {
             case 0 -> showExitDialog();
-            case 1 -> Application.exit();
-            case 2 -> Application.getWindow().hide();
+            case 1 -> WwtApp.exit();
+            case 2 -> WwtApp.getWindow().hide();
         }
     }
 
@@ -596,10 +596,10 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         JFXDialog jfxDialog = new JFXDialog(root, dialogLayout, JFXDialog.DialogTransition.CENTER);
 
         exitBtn.setOnAction(event -> {
-            Application.exit();
+            WwtApp.exit();
         });
         iconBtn.setOnAction(event -> {
-            Application.getWindow().hide();
+            WwtApp.getWindow().hide();
             jfxDialog.close();
         });
 
