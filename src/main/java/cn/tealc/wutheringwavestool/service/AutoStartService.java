@@ -6,6 +6,8 @@ import com.sun.jna.platform.win32.WinReg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Path;
+
 @Singleton
 public class AutoStartService {
     private static final Logger LOG = LoggerFactory.getLogger(AutoStartService.class);
@@ -18,7 +20,10 @@ public class AutoStartService {
             LOG.warn("无法获取 exe 路径，跳过注册表写入: {}", exePath);
             return;
         }
-        String command = exePath + " --auto-start";
+        String workDir = Path.of(exePath).getParent().toString();
+        String command = String.format(
+                "cmd.exe /c start \"\" /D \"%s\" \"%s\" --auto-start",
+                workDir, exePath);
         Advapi32Util.registrySetStringValue(WinReg.HKEY_CURRENT_USER, RUN_KEY, APP_NAME, command);
         LOG.info("已设置开机启动: {}", command);
     }
