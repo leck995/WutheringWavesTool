@@ -10,6 +10,7 @@ import com.google.inject.Inject;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.thread.base.user.LoginUserTask;
 import com.kuro.kujiequ.thread.rolebox.role.GameRoleSeekTask;
+import com.kuro.kujiequ.thread.sms.SendSmsTask;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -52,14 +53,13 @@ public class AccountUpdateViewModel extends BaseViewModel {
         did.set(userInfo.getDevCode());
         mobileSource.set(!userInfo.getIsWeb());
         mainAccount.set(userInfo.getMain());
-
     }
 
 
     /**
      * 手动添加账号方法
      */
-    public void submit() {
+    public void loginByToken() {
         if (isAdd) {
             addUser(token.get(), !mobileSource.get(), did.get());
         } else {
@@ -71,7 +71,7 @@ public class AccountUpdateViewModel extends BaseViewModel {
     /**
      * 验证码登陆的处理方法，与submit()区别在于多一条请求获取Token与生成did
      */
-    public void login() {
+    public void loginBySMS() {
         LoginUserTask task = new LoginUserTask(getPhone(), getCode(), false);
         task.setOnSucceeded(workerStateEvent -> {
             ResponseBody<UserInfo> value = task.getValue();
@@ -83,6 +83,22 @@ public class AccountUpdateViewModel extends BaseViewModel {
                 }
             } else {
                 NotificationManager.message(MessageInfo.error("登录账号失败，原因：" + value.getMsg()));
+
+            }
+        });
+        Thread.startVirtualThread(task);
+    }
+
+    public void sendSMS(Runnable callback) {
+        SendSmsTask task = new SendSmsTask(getPhone());
+        task.setOnSucceeded(event -> {
+            ResponseBody<Boolean> value = task.getValue();
+            if (value.getCode() == 200) {
+                NotificationManager.message(MessageInfo.success("验证码发送成功"));
+            } else if (value.getCode() == 41000) {
+                callback.run();
+            } else {
+                NotificationManager.message(MessageInfo.warning(value.getMsg()));
             }
         });
         Thread.startVirtualThread(task);

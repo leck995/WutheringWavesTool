@@ -83,5 +83,6 @@ open module cn.tealc.wutheringwavestool {
     exports cn.tealc.wutheringwavestool.ui.kujiequ.role;
     exports cn.tealc.wutheringwavestool.ui.kujiequ.sign;
     exports cn.tealc.wutheringwavestool.ui.kujiequ.other;
+    exports com.kuro.kujiequ.thread.sms;
 
 }

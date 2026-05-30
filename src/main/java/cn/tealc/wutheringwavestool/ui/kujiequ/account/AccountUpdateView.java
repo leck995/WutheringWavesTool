@@ -12,10 +12,10 @@ import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.*;
 import javafx.scene.layout.VBox;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,7 +102,7 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
         loginSourceRadioBox.selectedProperty().bindBidirectional(viewModel.mobileSourceProperty());
         loginMainAccountCheckBox.selectedProperty().bindBidirectional(viewModel.mainAccountProperty());
         BooleanBinding isPhoneAndCodeEmpty = Bindings.createBooleanBinding(
-                () -> loginPhoneFiled.getText().isEmpty() || loginCodeField.getText().isEmpty(),
+                () -> loginPhoneFiled.getText().isEmpty() || loginPhoneFiled.getText().length() != 11 || loginCodeField.getText().isEmpty(),
                 loginPhoneFiled.textProperty(),
                 loginCodeField.textProperty()
         );
@@ -119,7 +119,7 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
 
     @FXML
     void onSubmit(ActionEvent event) {
-        viewModel.submit();
+        viewModel.loginByToken();
     }
 
     @FXML
@@ -139,17 +139,21 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
 
     @FXML
     void onLogin(ActionEvent event) {
-        viewModel.login();
+        viewModel.loginBySMS();
     }
 
 
     @FXML
     void sendLoginCode(ActionEvent event) {
-        Label titleLabel = new Label("如何获取验证码");
+        viewModel.sendSMS(this::showSmsFailDialog);
+    }
+
+    private void showSmsFailDialog() {
+        Label titleLabel = new Label("自动获取验证码失败");
         titleLabel.getStyleClass().add("title-2");
 
         Label contentLabel = new Label("""
-                由于开发者能力有限，助手不支持发送验证码功能，故采用迂回的方式获取验证码。
+                助手发送验证码失败，请采用以下方法获取验证码。
                 
                 第一种方法：
                     点击下方按钮前往网页版库街区，输入手机号登录，获取到验证码(收到验证码即停止)；
@@ -221,7 +225,7 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
         JFXDialogLayout layout = new JFXDialogLayout();
         layout.setHeading(titleLabel);
         layout.setBody(content);
-        layout.setActions(submitBtn,cancelBtn);
+        layout.setActions(submitBtn, cancelBtn);
         NotificationManager.publish(NotificationKey.DIALOG, layout);
     }
 }
