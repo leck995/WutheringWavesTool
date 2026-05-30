@@ -307,7 +307,7 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
     @FXML
     void toWiki(ActionEvent event) {
         try {
-            Desktop.getDesktop().browse(new URI("https://wave.tealc.fun/#/"));
+            Desktop.getDesktop().browse(new URI("https://wave.999758.xyz/#/"));
         } catch (IOException | URISyntaxException e) {
             LOG.info(e.getMessage());
         }
