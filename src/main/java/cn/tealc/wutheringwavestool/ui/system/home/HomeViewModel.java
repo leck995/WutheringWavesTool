@@ -60,19 +60,10 @@ public class HomeViewModel extends BaseViewModel {
                 updateGameTime(0);
             }
         });
-        MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_ROLE_DATA_REFRESH, (s, objects) -> {
-            autoSign(); //如果结束游戏跨天，直接签到
-        });
+
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_AUTO_START_GAME, (s, objects) -> {
             startGame();
         });
-    }
-
-    private void autoSign(){
-        if (Config.setting().isAutoKujieQuSign()) {
-            SignTask signTask = new SignTask();
-            Thread.startVirtualThread(signTask);
-        }
     }
 
 

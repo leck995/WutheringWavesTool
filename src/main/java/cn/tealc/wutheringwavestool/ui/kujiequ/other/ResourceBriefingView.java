@@ -11,6 +11,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
@@ -52,14 +54,14 @@ public class ResourceBriefingView implements FxmlView<ResourceBriefingViewModel>
         viewModel.getStarList().addListener((ListChangeListener<? super Item>) change -> {
             starGroup.getChildren().clear();
             for (Item item : change.getList()) {
-                starGroup.getChildren().add(new ItemCell(item,viewModel.getStarNum()));
+                starGroup.getChildren().add(new ItemCell(item, viewModel.getStarNum(), "star-bar"));
             }
         });
 
         viewModel.getCoinList().addListener((ListChangeListener<? super Item>) change -> {
             coinGroup.getChildren().clear();
             for (Item item : change.getList()) {
-                coinGroup.getChildren().add(new ItemCell(item,viewModel.getCoinNum()));
+                coinGroup.getChildren().add(new ItemCell(item, viewModel.getCoinNum(), "coin-bar"));
             }
         });
 
@@ -92,18 +94,42 @@ public class ResourceBriefingView implements FxmlView<ResourceBriefingViewModel>
     }
 
 
-    static class ItemCell extends HBox{
-        public ItemCell(Item item,long size) {
-            Label name = new Label(item.getType());
-            double numValue = item.getNum();
-            Label num;
-            if (size > 0){
-                num = new Label(String.format("%d -- %02.1f%%", item.getNum(), numValue / (double) size * 100));
-            }else {
-                num = new Label(String.format("%d", item.getNum()));
-            }
+    static class ItemCell extends VBox {
+        private static final double BAR_WIDTH = 240.0;
 
-            getChildren().addAll(name,new Spacer(),num);
+        public ItemCell(Item item, long total, String barStyleClass) {
+            setSpacing(3);
+            getStyleClass().add("item-row-container");
+
+            HBox row = new HBox();
+            row.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+            row.getStyleClass().add("item-row");
+
+            Label name = new Label(item.getType());
+            name.getStyleClass().add("item-name");
+
+            Label count = new Label(String.format("%,d", item.getNum()));
+            count.getStyleClass().add("item-count");
+
+            Region spacer = new Region();
+            HBox.setHgrow(spacer, Priority.ALWAYS);
+
+            row.getChildren().addAll(name, spacer, count);
+
+            if (total > 0) {
+                double pct = item.getNum() / (double) total;
+                Label pctLabel = new Label(String.format("%.1f%%", pct * 100));
+                pctLabel.getStyleClass().add("item-pct");
+                row.getChildren().add(pctLabel);
+
+                ProgressBar bar = new ProgressBar(pct);
+                bar.setPrefWidth(BAR_WIDTH);
+                bar.setMaxWidth(BAR_WIDTH);
+                bar.getStyleClass().addAll("item-bar", barStyleClass);
+                getChildren().addAll(row, bar);
+            } else {
+                getChildren().add(row);
+            }
         }
     }
 }
