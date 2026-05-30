@@ -56,7 +56,7 @@
                 <HBox alignment="CENTER" spacing="40.0" StackPane.alignment="CENTER">
                     <children>
                         <!-- Star Card -->
-                        <VBox maxWidth="380.0" minHeight="280.0" prefWidth="380.0" styleClass="item-card">
+                        <VBox maxHeight="500.0" maxWidth="380.0" minHeight="280.0" prefWidth="380.0" styleClass="item-card">
                             <children>
                                 <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="card-header">
                                     <children>
@@ -81,7 +81,7 @@
                         </VBox>
 
                         <!-- Coin Card -->
-                        <VBox maxWidth="380.0" minHeight="280.0" prefWidth="380.0" styleClass="item-card">
+                        <VBox maxHeight="500.0" maxWidth="380.0" minHeight="280.0" prefWidth="380.0" styleClass="item-card">
                             <children>
                                 <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="card-header">
                                     <children>

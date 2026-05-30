@@ -184,6 +184,10 @@ public class SlashView implements FxmlView<SlashViewModel> {
             title = new Label();
             level = new Label();
             score = new Label();
+            Label scoreTip = new Label("积分:");
+            scoreTip.getStyleClass().add("area-label");
+            score.setGraphic(scoreTip);
+
 
             titleVBox.getChildren().addAll(title, new Spacer(), level, score);
             titleVBox.setAlignment(Pos.CENTER_LEFT);
@@ -214,7 +218,7 @@ public class SlashView implements FxmlView<SlashViewModel> {
                 level.setText(challenge.getRank());
                 level.getStyleClass().addAll("area-level", challenge.getRank().toLowerCase());
             }
-            score.setText(String.format("积分：%s", challenge.getScore()));
+            score.setText(String.format("%s", challenge.getScore()));
             score.getStyleClass().add("area-score");
             //ImageView icon = new ImageView(challenge.get);
 

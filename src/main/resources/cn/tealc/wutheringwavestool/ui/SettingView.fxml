@@ -130,8 +130,8 @@
                               <Label styleClass="title-4" text="%ui.setting.game.exit" />
                               <ToggleSwitch fx:id="exitWhenGameOver" labelPosition="RIGHT" styleClass="param" text="%ui.setting.game.switch" />
                               <Label styleClass="title-4" text="%ui.setting.game.auto_start_game" />
-                              <Label styleClass="tip" text="%ui.setting.other.auto_start_game.tip" />
                               <ToggleSwitch fx:id="autoStartGameSwitch" labelPosition="RIGHT" styleClass="param" text="%ui.setting.game.switch" />
+                              <Label styleClass="tip" text="%ui.setting.other.auto_start_game.tip" />
                            </children>
                         </VBox>
                         <Label layoutX="10.0" layoutY="471.0" styleClass="title-3" text="%ui.setting.other" />

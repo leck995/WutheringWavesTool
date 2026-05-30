@@ -109,9 +109,16 @@
     -fx-font-size: 20;
     -fx-font-weight: bold;
 }
+.tower .right .area .area-label{
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+}
+
+
 .tower .right .area .area-score{
     -fx-font-size: 16;
     -fx-font-weight: bold;
+    -fx-text-fill: -color-accent-fg;
 }
 
 .tower .right .area .area-level{
@@ -121,6 +128,7 @@
 }
 .tower .right .area .area-level.s{
     -fx-text-fill: #fff624;
+    -fx-background-color: #fff62420;
 }
 .tower .right .area .area-level.a,
 .tower .right .area .area-level.b,
