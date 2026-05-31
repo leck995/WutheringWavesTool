@@ -206,9 +206,9 @@ public class HomeViewModel extends BaseViewModel {
      * 启动鸣潮，先删除旧日志，然后判断是否启动参数，并进行启动
      */
     public void startGame() {
-        //先设置1s的禁止点击，防止双击启动
-        PauseTransition pauseTransition = new PauseTransition(Duration.seconds(1));
+        //先设置3s的禁止点击，防止双击启动
         startGameBtnDisabled.set(true);
+        PauseTransition pauseTransition = new PauseTransition(Duration.seconds(3));
         pauseTransition.setOnFinished(event -> {
             startGameBtnDisabled.set(false);
         });

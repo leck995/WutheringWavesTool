@@ -111,33 +111,6 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @FXML
     void startGame(ActionEvent event) {
         viewModel.startGame();
-//        if (viewModel.isHasSign()) {
-//            viewModel.startGame();
-//        } else {
-//            JFXDialogLayout dialogLayout = new JFXDialogLayout();
-//            Label title = new Label("签到提醒");
-//            title.getStyleClass().add(Styles.TITLE_2);
-//            dialogLayout.setHeading(title);
-//            dialogLayout.setBody(new Label("检测到还没有签到，是否签到并启动游戏?"));
-//
-//            Button okBtn = new Button("签到并启动");
-//            Button directBtn = new Button("启动");
-//            Button cancelBtn = new Button("取消");
-//
-//            okBtn.setOnAction(event1 -> {
-//                viewModel.signAndGame();
-//                cancelBtn.fireEvent(event1);
-//            });
-//            directBtn.setOnAction(event1 -> {
-//                viewModel.startGame();
-//                cancelBtn.fireEvent(event1);
-//            });
-//
-//            cancelBtn.setCancelButton(true);
-//            dialogLayout.setActions(okBtn, directBtn, cancelBtn);
-//
-//            MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, dialogLayout);
-//        }
     }
 
     @FXML

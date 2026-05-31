@@ -154,7 +154,7 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
                 }
                 weeklyRougeText.set(String.format("%d", roleInfo.getRougeScore()));
                 rolePaneVisible.set(true);
-                onWeekEnd(false, roleInfo);
+                onWeekEnd(roleInfo);
             } else {
                 rolePaneVisible.set(false);
             }
@@ -202,14 +202,10 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
                     battlePassProgress.set(cur / total);
                     rolePaneVisible.set(true);
 
-
-                    //原本放在userInfo
                     roleNameText.set(data.getRoleName());
                     energyText.set(String.format("%d/%d", data.getEnergyData().getCur(), data.getEnergyData().getTotal()));
-                    weeklyInstCountText.set(String.format("%d/%d", data.getWeeklyData().getTotal() - data.getWeeklyData().getCur(), data.getWeeklyData().getTotal()));
+                    weeklyInstCountText.set(String.format("%d", data.getWeeklyData().getCur()));
                     storeEnergyText.set(String.format("%d/%d", data.getStoreEnergyData().getCur(), data.getStoreEnergyData().getTotal()));
-
-
                 } else {
                     rolePaneVisible.set(false);
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
@@ -223,31 +219,26 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
     /**
      * 检查每周最后一天，并进行提醒完成周活动
      *
-     * @param isGlobal
      * @param roleInfo
      */
-    private void onWeekEnd(boolean isGlobal, RoleInfo roleInfo) {
+    private void onWeekEnd(RoleInfo roleInfo) {
+        if (roleInfo == null) {
+            return;
+        }
         LocalDate today = LocalDate.now();
         if (today.getDayOfWeek() == DayOfWeek.SUNDAY) {
-            if (isGlobal) {
-                NotificationManager.publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message01"), MessageInfo.LONG));
+            if (roleInfo.getWeeklyInstCount() != 0) {
+                weeklyInstCountTipText.set(LanguageManager.getString("ui.home.label.weekly.tip"));
             } else {
-                if (roleInfo == null) {
-                    return;
-                }
-                if (roleInfo.getWeeklyInstCount() != 0) {
-                    weeklyInstCountTipText.set(LanguageManager.getString("ui.home.label.weekly.tip"));
-                } else {
-                    weeklyInstCountTipText.set(LanguageManager.getString("ui.home.label.weekly"));
-                }
-                if (roleInfo.getRougeScore() < 6000) {
-                    weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.weekly.tip"));
-                    NotificationManager.publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING,
-                                    LanguageManager.getString("ui.home.label.weekly.message03"), MessageInfo.LONG));
-                } else {
-                    weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.rouge"));
-                }
+                weeklyInstCountTipText.set(LanguageManager.getString("ui.home.label.weekly"));
+            }
+            if (roleInfo.getRougeScore() < 6000) {
+                weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.weekly.tip"));
+                NotificationManager.publish(NotificationKey.MESSAGE,
+                        new MessageInfo(MessageType.WARNING,
+                                LanguageManager.getString("ui.home.label.weekly.message03"), MessageInfo.LONG));
+            } else {
+                weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.rouge"));
             }
         }
     }

@@ -3,7 +3,9 @@ package cn.tealc.wutheringwavestool.ui.tray;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.WwtApp;
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.service.GameLaunchService;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
+import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import javafx.application.Platform;
 import javafx.embed.swing.SwingFXUtils;
@@ -16,10 +18,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
+import java.io.File;
 
 @Singleton
 public class TrayIconManager {
     private static final Logger LOG = LoggerFactory.getLogger(TrayIconManager.class);
+
+    @Inject
+    private GameLaunchService gameLaunchService;
 
     public void install(Stage stage) {
         if (!SystemTray.isSupported()) {
@@ -41,11 +47,20 @@ public class TrayIconManager {
                 new FontIcon(Material2OutlinedMZ.POWER_SETTINGS_NEW));
         exit.setOnAction(event -> Platform.runLater(WwtApp::exit));
 
-        VBox vbox = new VBox(show, exit);
+        Button startGameApp = new Button(
+                LanguageManager.getString("ui.tray.start_game"),
+                new FontIcon(Material2OutlinedMZ.PLAY_ARROW));
+        startGameApp.setOnAction(event -> {
+            launchGame();
+            Button source = (Button) event.getSource();
+            source.getScene().getWindow().hide();
+        });
+
+        VBox vbox = new VBox(show, startGameApp, exit);
         vbox.getStyleClass().add("tray");
         vbox.getStylesheets().add(FXResourcesLoader.load("css/TrayIcon.css"));
-        vbox.setPrefWidth(80);
-        vbox.setPrefHeight(60);
+        vbox.setPrefWidth(120);
+        vbox.setPrefHeight(80);
 
         NewFxTrayIcon trayIcon = new NewFxTrayIcon(
                 SwingFXUtils.fromFXImage(stage.getIcons().getFirst(), null),
@@ -61,6 +76,19 @@ public class TrayIconManager {
         } catch (AWTException e) {
             LOG.error("Tray Error", e);
         }
+    }
+
+    private void launchGame() {
+        gameLaunchService.deleteLogFiles();
+        File exe = gameLaunchService.resolveGameExecutable();
+        if (exe == null) {
+            LOG.warn("无法找到游戏可执行文件");
+            return;
+        }
+        Thread.startVirtualThread(() -> {
+            String[] params = gameLaunchService.buildLaunchCommand(exe);
+            gameLaunchService.launchWithCustomParams(params);
+        });
     }
 
     public void remove() {

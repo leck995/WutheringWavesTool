@@ -18,6 +18,7 @@ import com.github.kwhat.jnativehook.NativeHookException;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.ViewTuple;
+import javafx.animation.PauseTransition;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
@@ -48,7 +49,6 @@ public class WwtApp extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         autoStarted = getParameters().getRaw().contains("--auto-start");
-
         JdbcUtils.init();
         AppInjector.getInjector();
         VersionUpdateUtil.update();
@@ -56,11 +56,11 @@ public class WwtApp extends Application {
         setupStage(stage);
         stage.initStyle(StageStyle.EXTENDED);
         initFont();
-        stage.show();
-
         if (autoStarted && Config.setting().isSilentStart()) {
             stage.hide();
             LOG.info("静默启动，窗口已隐藏");
+        }else {
+            stage.show();
         }
 
         AppInjector.getInstance(GameWindowMonitorService.class).start();
@@ -70,14 +70,14 @@ public class WwtApp extends Application {
                 LOG.error("线程：{}，出现异常：{}", t.getName(), e.getMessage(), e));
 
         if (!autoStarted && Config.setting().isAutoStartGame()) {
-            javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.seconds(2));
+            PauseTransition delay = new PauseTransition(javafx.util.Duration.seconds(2));
             delay.setOnFinished(e -> MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_AUTO_START_GAME));
             delay.play();
         }
     }
 
     private void setupStage(Stage stage) {
-        javafx.application.Application.setUserAgentStylesheet(FXResourcesLoader.load("css/light.css"));
+        Application.setUserAgentStylesheet(FXResourcesLoader.load("css/light.css"));
         ViewTuple<MainView, MainViewModel> viewTuple = FluentViewLoader.fxmlView(MainView.class).load();
 
         Scene scene = new Scene(viewTuple.getView());

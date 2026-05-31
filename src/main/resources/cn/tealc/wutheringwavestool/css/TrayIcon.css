@@ -1,22 +1,25 @@
 .tray{
-    -fx-pref-width: 120;
+    -fx-pref-width: 150;
+
     -fx-spacing: 0;
     -fx-alignment: top-center;
-    -fx-padding:  5 0 5 0;
+    -fx-padding:  5 5 5 5;
     -fx-background-radius: 5;
     -fx-background-color: white;
 }
 
 .tray > .button{
-    -fx-padding:0;
+    -fx-padding:2;
     -fx-border-color: transparent;
     -fx-background-insets: 0;
-    -fx-background-radius: 0;
     -fx-graphic-text-gap: 10px;
     -fx-text-fill: -color-button-fg;
+    -fx-alignment: center-left;
     -fx-pref-width: 120;
     -fx-pref-height: 25;
-    -fx-font-size: 12;
+    -fx-font-size: 13;
+    -fx-background-radius: 3;
+
 
 }
 
