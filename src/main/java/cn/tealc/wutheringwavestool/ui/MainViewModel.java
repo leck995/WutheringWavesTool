@@ -3,11 +3,13 @@ package cn.tealc.wutheringwavestool.ui;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.*;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.model.AnnouncementItem;
 import cn.tealc.wutheringwavestool.model.RedemptionCodeItem;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.service.AutoSignService;
 import cn.tealc.wutheringwavestool.service.ConfigService;
 import cn.tealc.wutheringwavestool.thread.download.GlobalServerFileDownloadTask;
+import cn.tealc.wutheringwavestool.thread.system.AnnouncementGetTask;
 import cn.tealc.wutheringwavestool.thread.system.RedemptionCodeGetTask;
 import cn.tealc.wutheringwavestool.thread.system.ResourcesSyncTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
@@ -63,6 +65,7 @@ public class MainViewModel extends BaseViewModel {
     private ConfigService configService;
 
     private static final String REDEMPTION_CODE = "REDEMPTION_CODE";
+    private static final String ANNOUNCEMENTS = "ANNOUNCEMENTS";
 
     private final AtomicBoolean warningTower = new AtomicBoolean(false);
     private final AtomicBoolean warningSlash = new AtomicBoolean(false);
@@ -71,6 +74,7 @@ public class MainViewModel extends BaseViewModel {
         checkVersion();
         checkGameLogOpen();
         checkRedemptionCodes();
+        checkAnnouncements();
         updateKujiequ();
         syncAppResources();
         autoSign();
@@ -180,6 +184,29 @@ public class MainViewModel extends BaseViewModel {
                     notifiedKeys.addAll(newKeys);
                     configService.setObject(REDEMPTION_CODE, notifiedKeys);
                 }
+            }
+        });
+        Thread.startVirtualThread(task);
+    }
+
+    private void checkAnnouncements() {
+        String gameId = Config.setting().getGameRootDirSource() == SourceType.GLOBAL ? "mc1002" : "mc1001";
+        AnnouncementGetTask task = new AnnouncementGetTask(gameId);
+        task.setOnSucceeded(workerStateEvent -> {
+            ResponseBody<List<AnnouncementItem>> value = task.getValue();
+            if (value.getCode() == 200 && value.getData() != null) {
+                Set<Integer> notifiedIds = configService.getObject(ANNOUNCEMENTS, new TypeReference<Set<Integer>>() {})
+                        .orElse(new HashSet<>());
+                for (AnnouncementItem item : value.getData()) {
+                    if (!notifiedIds.contains(item.getId())) {
+                        Platform.runLater(() -> {
+                            NotificationManager.message(new MessageInfo(MessageType.INFO,
+                                    item.getTitle() + "\n" + item.getContent(), Duration.seconds(8)));
+                        });
+                        notifiedIds.add(item.getId());
+                    }
+                }
+                configService.setObject(ANNOUNCEMENTS, notifiedIds);
             }
         });
         Thread.startVirtualThread(task);
