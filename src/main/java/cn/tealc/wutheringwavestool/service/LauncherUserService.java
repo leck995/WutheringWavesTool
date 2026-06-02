@@ -1,6 +1,5 @@
 package cn.tealc.wutheringwavestool.service;
 
-import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.util.DecodeUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -33,28 +32,59 @@ public class LauncherUserService {
         this.objectMapper = objectMapper;
     }
 
+    /**
+     * 读取本地启动器缓存的所有用户数据
+     * 扫描 KR_G152（国服）和 KR_G153（国际服）下所有二级目录中的 KRSDKUserLauncherCache.json
+     */
     public Optional<List<LocalCacheUser>> readLocalCacheUser() {
         String appData = System.getenv("APPDATA");
         if (appData == null) {
             System.err.println("错误: 无法找到 APPDATA 环境变量。");
             return Optional.empty();
         }
-        String path1 = Paths.get(appData, "KR_G152", "A1381", "KRSDKUserLauncherCache.json").toString();
-        String path2 = Paths.get(appData, "KR_G153", "A1730", "KRSDKUserLauncherCache.json").toString();
-        List<LocalCacheUser> cacheUser1 = getCacheUser(path1, SourceType.DEFAULT);
-        List<LocalCacheUser> cacheUser2 = getCacheUser(path2, SourceType.DEFAULT);
-        cacheUser1.addAll(cacheUser2);
-        if (cacheUser1.isEmpty()){
+        List<LocalCacheUser> allUsers = new ArrayList<>();
+        // KR_G152 目录下的用户标记为国服
+        allUsers.addAll(readFromParentDir(Paths.get(appData, "KR_G152").toString(), SourceType.DEFAULT));
+        // KR_G153 目录下的用户标记为国际服
+        allUsers.addAll(readFromParentDir(Paths.get(appData, "KR_G153").toString(), SourceType.GLOBAL));
+        if (allUsers.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.of(cacheUser1);
+        return Optional.of(allUsers);
+    }
+
+    /**
+     * 遍历父目录下的所有一级子目录，读取每个子目录中的 KRSDKUserLauncherCache.json
+     *
+     * @param parentDir 父目录路径（如 KR_G152 或 KR_G153）
+     * @param type      用户来源类型，国服为 DEFAULT，国际服为 GLOBAL
+     */
+    private List<LocalCacheUser> readFromParentDir(String parentDir, SourceType type) {
+        List<LocalCacheUser> allUsers = new ArrayList<>();
+        File dir = new File(parentDir);
+        if (!dir.exists() || !dir.isDirectory()) {
+            return allUsers;
+        }
+        File[] subDirs = dir.listFiles(File::isDirectory);
+        if (subDirs == null) {
+            return allUsers;
+        }
+        for (File subDir : subDirs) {
+            String path = Paths.get(subDir.getAbsolutePath(), "KRSDKUserLauncherCache.json").toString();
+            allUsers.addAll(getCacheUser(path, type));
+        }
+        return allUsers;
     }
 
 
     private List<LocalCacheUser> getCacheUser(String path,SourceType type){
         File file = new File(path);
         if (!file.exists()) {
-            LOG.info("错误: 文件未找到: {}", path);
+            LOG.info("读取本地用户数据失败: 文件未找到: {}", path);
+            return new ArrayList<>();
+        }
+        if (file.length() == 0) {
+            LOG.debug("KRSDKUserLauncherCache 文件为空: {}", path);
             return new ArrayList<>();
         }
         try {

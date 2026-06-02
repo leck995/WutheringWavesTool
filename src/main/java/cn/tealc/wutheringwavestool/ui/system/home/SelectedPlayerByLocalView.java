@@ -89,9 +89,9 @@ public class SelectedPlayerByLocalView extends JFXDialogLayout implements JavaVi
             super.updateItem(localCacheUser, empty);
             if (!empty) {
                 if (localCacheUser.getThirdNickName() != null){
-                    text.setText(String.format(TEMPLATE_TEXT,localCacheUser.getPhone(),localCacheUser.getThirdNickName()));
+                    text.setText(String.format(TEMPLATE_TEXT,localCacheUser.getPhoneOrEmail(),localCacheUser.getThirdNickName()));
                 }else {
-                    text.setText(localCacheUser.getPhone());
+                    text.setText(localCacheUser.getPhoneOrEmail());
                 }
 
             }else {

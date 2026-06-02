@@ -1,7 +1,7 @@
 package cn.tealc.wutheringwavestool.thread.system;
 
 import cn.tealc.wutheringwavestool.base.AppInjector;
-import cn.tealc.wutheringwavestool.model.CardInfo;
+import cn.tealc.wutheringwavestool.model.game.pool.CardInfo;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.analysis.AnalysisData;
 import cn.tealc.wutheringwavestool.model.analysis.SsrData;

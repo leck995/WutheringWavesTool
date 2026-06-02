@@ -51,12 +51,7 @@ public class QueryPlayerInfoTask extends Task<ResponseBody<PlayerInfo>> {
         try {
             String jsonPayload = getRequestJson();
             // 开始请求，初始重试计数为 0
-            PlayerInfo data = startRequest(url, jsonPayload, 0);
-            if (data != null) {
-                return ResponseBody.create(200, "success", data);
-            } else {
-                return ResponseBody.create(-1, "获取玩家数据失败或重试次数过多", null);
-            }
+            return startRequest(url, jsonPayload, 0);
         } catch (Exception e) {
             logger.error("请求任务异常", e);
             return ResponseBody.create(-1, "异常: " + e.getMessage(), null);
@@ -66,7 +61,7 @@ public class QueryPlayerInfoTask extends Task<ResponseBody<PlayerInfo>> {
     /**
      * 递归请求核心方法
      */
-    private PlayerInfo startRequest(String url,String json, int retryCount) throws IOException, InterruptedException {
+    private ResponseBody<PlayerInfo> startRequest(String url,String json, int retryCount) throws IOException, InterruptedException {
         if (retryCount >= MAX_RETRIES) {
             logger.error("达到最大重试次数，停止请求");
             return null;
@@ -93,7 +88,6 @@ public class QueryPlayerInfoTask extends Task<ResponseBody<PlayerInfo>> {
             } else if (code == 200 || code == 0) {
                 // 库洛返回的 data 是一个对象，key 是服务器名 (如 "China")
                 JsonNode dataNode = tree.get("data");
-
                 if (dataNode != null) {
                     Iterator<String> iterator = dataNode.fieldNames();
                     if (iterator.hasNext()) {
@@ -101,15 +95,17 @@ public class QueryPlayerInfoTask extends Task<ResponseBody<PlayerInfo>> {
                         String rawPlayerDataJson = dataNode.get(key).asText();
                         PlayerInfo playerInfo = mapper.readValue(rawPlayerDataJson, PlayerInfo.class);
                         playerInfo.setRegion(key);
-                        return playerInfo;
+                        return ResponseBody.create(200,"Success",playerInfo);
                     }
-
                 }
-            } else {
+            } else if(code == 1001){
+                return ResponseBody.create(-1, "玩家Token失效，无法获取", null);
+            }else {
                 logger.error("接口返回错误码: {}, 信息: {}", code, message);
+                return ResponseBody.create(-1, "获取玩家数据失败", null);
             }
         }
-        return null;
+        return ResponseBody.create(-1, "获取玩家数据失败", null);
     }
 
     private String getRequestJson() throws JsonProcessingException {

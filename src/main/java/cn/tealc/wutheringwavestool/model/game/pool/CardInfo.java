@@ -1,6 +1,4 @@
-package cn.tealc.wutheringwavestool.model;
-
-import java.time.LocalDateTime;
+package cn.tealc.wutheringwavestool.model.game.pool;
 
 /**
  * @program: WutheringWavesTool

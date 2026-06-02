@@ -135,6 +135,22 @@ public class JdbcUtils {
                         value VARCHAR
                     );
                     """;
+            String createGameGacha= """
+                    CREATE TABLE IF NOT EXISTS game_gacha (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        player_id VARCHAR,
+                        gacha_name VARCHAR NOT NULL,
+                        card_pool_type VARCHAR,
+                        resource_id INTEGER NOT NULL,
+                        quality_level INTEGER NOT NULL,
+                        resource_type VARCHAR,
+                        name VARCHAR,
+                        count INTEGER,
+                        time BIGINT NOT NULL,
+                        UNIQUE (player_id, gacha_name, resource_id, time)
+                    );
+                    """;
+
             String createLocalCachePlayerData= """
                     CREATE TABLE IF NOT EXISTS local_cache_player_data (
                         id INTEGER PRIMARY KEY,
@@ -159,7 +175,8 @@ public class JdbcUtils {
             st.execute(createGameRecord);
             st.execute(createGameSlash);
             st.execute(createConfig);
-            st.execute(createLocalCachePlayerData);
+            st.execute(createGameGacha);
+            //st.execute(createLocalCachePlayerData);
             try { st.execute("ALTER TABLE local_cache_player_data ADD COLUMN cuid VARCHAR"); } catch (SQLException ignored) {}
             st.close();
             con.close();

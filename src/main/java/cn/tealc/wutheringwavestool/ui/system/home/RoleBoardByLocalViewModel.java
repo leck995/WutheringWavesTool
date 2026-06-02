@@ -154,6 +154,8 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
                 localCachePlayerDataService.saveOrUpdate(playerData);
                 configService.set(LOCAL_CACHE_SELECTED_ROLE,data.getRoleId());
                 freshRoleData(data.getRoleId(), user.getOauthCode());
+            }else {
+                NotificationManager.message(MessageInfo.error(body.getMsg()));
             }
         });
         Thread.startVirtualThread(queryPlayerInfoTask);

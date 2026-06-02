@@ -1,5 +1,7 @@
 package cn.tealc.wutheringwavestool.model;
 
+import cn.tealc.wutheringwavestool.model.game.pool.CardInfo;
+
 import java.util.List;
 
 /**

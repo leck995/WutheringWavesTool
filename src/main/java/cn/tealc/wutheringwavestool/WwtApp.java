@@ -12,6 +12,7 @@ import cn.tealc.wutheringwavestool.ui.MainView;
 import cn.tealc.wutheringwavestool.ui.MainViewModel;
 import cn.tealc.wutheringwavestool.ui.tray.TrayIconManager;
 import cn.tealc.wutheringwavestool.util.AppLocked;
+import cn.tealc.wutheringwavestool.util.GachaDataMigration;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
