@@ -140,6 +140,20 @@
     "showBg": false
   },
   {
+    "id": 1011,
+    "title": "ui.main.button.nav.type16",
+    "icon": "mdsal-class",
+    "visible": true,
+    "order": 12,
+    "kujiequ": false,
+    "viewClass": "cn.tealc.wutheringwavestool.ui.system.redemptionCode.RedemptionCodeView",
+    "viewModelClass": null,
+    "bottom": false,
+    "fxml": true,
+    "diy": true,
+    "showBg": false
+  },
+  {
     "id": 1050,
     "title": "ui.main.button.nav.type10",
     "icon": "mdal-account_box",

@@ -12,4 +12,5 @@ public final class AppConstants {
     public static final String URL_PHANTOM_GUIDE = "https://wave.999758.xyz/pages/advance/phantom.html";
     public static final String URL_APP_UPDATE = "https://wwt.999758.xyz/release.json";
     public static final String URL_APP_UPDATE_DEV = "https://wwt.999758.xyz/release-dev.json";
+    public static final String URL_REDEMPTION_CODES = "http://127.0.0.1:8080/api/redemption-codes/mc";
 }

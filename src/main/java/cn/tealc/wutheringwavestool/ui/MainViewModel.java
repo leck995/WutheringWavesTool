@@ -3,8 +3,12 @@ package cn.tealc.wutheringwavestool.ui;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.*;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.model.RedemptionCodeItem;
+import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.service.AutoSignService;
+import cn.tealc.wutheringwavestool.service.ConfigService;
 import cn.tealc.wutheringwavestool.thread.download.GlobalServerFileDownloadTask;
+import cn.tealc.wutheringwavestool.thread.system.RedemptionCodeGetTask;
 import cn.tealc.wutheringwavestool.thread.system.ResourcesSyncTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
@@ -25,6 +29,7 @@ import com.kuro.kujiequ.thread.rolebox.tower.TowerDataDetailTask;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.MvvmFX;
 import javafx.application.Platform;
+import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,11 +37,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 /**
  * @program: WutheringWavesTool
@@ -56,12 +59,18 @@ public class MainViewModel extends BaseViewModel {
     @Inject
     private DownloadProgressService downloadProgressService;
 
+    @Inject
+    private ConfigService configService;
+
+    private static final String REDEMPTION_CODE = "REDEMPTION_CODE";
+
     private final AtomicBoolean warningTower = new AtomicBoolean(false);
     private final AtomicBoolean warningSlash = new AtomicBoolean(false);
 
     public MainViewModel() {
         checkVersion();
         checkGameLogOpen();
+        checkRedemptionCodes();
         updateKujiequ();
         syncAppResources();
         autoSign();
@@ -142,6 +151,35 @@ public class MainViewModel extends BaseViewModel {
                 Platform.runLater(() -> {
                     NotificationManager.message(MessageInfo.success(LanguageManager.getString("ui.main.sync.message.log.close")));
                 });
+            }
+        });
+        Thread.startVirtualThread(task);
+    }
+
+    private void checkRedemptionCodes() {
+        RedemptionCodeGetTask task = new RedemptionCodeGetTask();
+        task.setOnSucceeded(workerStateEvent -> {
+            ResponseBody<Map<String, List<RedemptionCodeItem>>> value = task.getValue();
+            if (value.getCode() == 200 && value.getData() != null) {
+                boolean isGlobal = Config.setting().getGameRootDirSource() == SourceType.GLOBAL;
+                String targetServer = isGlobal ? "mc1002" : "mc1001";
+                List<RedemptionCodeItem> items = value.getData().get(targetServer);
+                Set<String> currentKeys = items != null
+                        ? items.stream().filter(RedemptionCodeItem::isValid).map(RedemptionCodeItem::getKey).collect(Collectors.toSet())
+                        : Collections.emptySet();
+                Set<String> notifiedKeys = configService.getObject(REDEMPTION_CODE, new TypeReference<Set<String>>() {})
+                        .orElse(new HashSet<>());
+                Set<String> newKeys = new HashSet<>(currentKeys);
+                newKeys.removeAll(notifiedKeys);
+                if (!newKeys.isEmpty()) {
+                    Platform.runLater(() -> {
+                        NotificationManager.publish(NotificationKey.MESSAGE,
+                                new MessageInfo(MessageType.INFO,
+                                        "发现 " + newKeys.size() + " 个新兑换码，请在兑换码页面查看", Duration.seconds(5)));
+                    });
+                    notifiedKeys.addAll(newKeys);
+                    configService.setObject(REDEMPTION_CODE, notifiedKeys);
+                }
             }
         });
         Thread.startVirtualThread(task);

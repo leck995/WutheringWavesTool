@@ -16,6 +16,7 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -41,6 +42,7 @@ public class GameResourceListGetTask extends Task<ResponseBody<GameResourceList>
                 .header("Accept", "*/*")
                 .header("Accept-Encoding", "gzip")
                 .header("accept-language", "zh-CN,zh;q=0.9")
+                .timeout(Duration.ofSeconds(8))
                 .GET()
                 .build();
         try {
