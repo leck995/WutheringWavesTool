@@ -1,0 +1,60 @@
+.redemption-code .list-view {
+    -fx-background-color: transparent;
+    -fx-background-radius: 10;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.redemption-code .list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 4 8 4 8;
+}
+
+.redemption-code .list-view .list-cell:filled .code-item {
+    -fx-background-color: -color-bg-default-90;
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+}
+
+.redemption-code .list-view .list-cell:filled .code-item.invalid {
+    -fx-opacity: 0.55;
+}
+
+.redemption-code .list-view .list-cell:empty .code-item {
+    -fx-background-color: transparent;
+}
+
+.redemption-code .code-label {
+    -fx-font-size: 14;
+    -fx-font-weight: bold;
+}
+
+.redemption-code .reward-label {
+    -fx-font-size: 12;
+}
+
+.redemption-code .time-label {
+    -fx-font-size: 11;
+    -fx-text-fill: -color-fg-subtle;
+}
+
+.redemption-code .valid-label {
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+    -fx-padding: 0 10 0 0;
+}
+
+.redemption-code .description-label {
+    -fx-font-size: 12;
+    -fx-text-fill: -color-fg-subtle;
+}
+
+.redemption-code .contributors-label {
+    -fx-font-size: 11;
+    -fx-text-fill: -color-fg-subtle;
+}
+
+.redemption-code .copy-btn {
+    -fx-padding: 2;
+}
