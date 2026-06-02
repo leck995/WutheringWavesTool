@@ -1,0 +1,82 @@
+package cn.tealc.wutheringwavestool.thread.download;
+
+import cn.tealc.wutheringwavestool.base.AppInjector;
+import cn.tealc.wutheringwavestool.base.DownloadProgressService;
+import cn.tealc.wutheringwavestool.model.DownloadProgressModel;
+import cn.tealc.wutheringwavestool.model.ResponseBody;
+import cn.tealc.wutheringwavestool.util.GameResourcesManager;
+import com.kuro.game.model.game.FileInfo;
+import com.kuro.game.model.game.GameResourceList;
+import com.kuro.game.model.launcher.LauncherResource;
+import com.kuro.game.model.launcher.item.UpdateData;
+import com.kuro.game.thread.GameResourceListGetTask;
+import com.kuro.game.thread.LauncherResourceTask;
+import javafx.concurrent.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+
+/**
+ * 多线程下载任务，传入文件列表、URL前缀和保存目录进行并发下载，进度上报至 DownloadProgressService
+ */
+public class GlobalServerFileDownloadTask extends Task<Void> {
+    private static final Logger LOG = LoggerFactory.getLogger(GlobalServerFileDownloadTask.class);
+    public GlobalServerFileDownloadTask() {
+
+    }
+
+    @Override
+    protected Void call() throws Exception {
+        LauncherResourceTask task = new LauncherResourceTask(LauncherResourceTask.Type.BILIBILI);
+        task.setOnSucceeded(workerStateEvent -> {
+            ResponseBody<LauncherResource> body = task.getValue();
+            if (body.getCode() == 200){
+                LauncherResource resource = body.getData();
+                UpdateData updateData = resource.getUpdateData();
+                String host = updateData.getCdnList().getFirst().getUrl();
+                String indexUrl = host + updateData.getConfig().getIndexFile();
+                GameResourceListGetTask resourceListGetTask = new GameResourceListGetTask(indexUrl);
+                resourceListGetTask.setOnSucceeded(workerStateEvent1 -> {
+                    ResponseBody<GameResourceList> body1 = resourceListGetTask.getValue();
+                    if (body1.getCode() == 200){
+                        GameResourceList resourceList = body1.getData();
+                        String fileHost = host + updateData.getResourcesBasePath()+"/";
+                        filterServerFile(resourceList.getResource(),fileHost);
+                    }
+                });
+                Thread.startVirtualThread(resourceListGetTask);
+            }
+        });
+        Thread.startVirtualThread(task);
+        return null;
+    }
+
+
+    void filterServerFile(List<FileInfo> list,String host){
+        List<FileInfo> fileInfos = list.stream()
+                .filter(f -> f.getDest().startsWith("Client/Binaries/Win64/Client-Win64-Shipping.exe") ||
+                        f.getDest().startsWith("Client/Binaries/Win64/Client-Win64-ShippingBase.dll") ||
+                        f.getDest().startsWith("Client/Binaries/Win64/ThirdParty/KrPcSdk_"))
+                .toList();
+        File gameDir = GameResourcesManager.getGameDir();
+        if (gameDir != null){
+            File savePath = new File(gameDir,"WwtBackup/bilibili");
+            System.out.println(host);
+            ResourceDownloadTask downloadTask = new ResourceDownloadTask(fileInfos,host,savePath);
+            Thread.startVirtualThread(downloadTask);
+        }
+
+    }
+}
