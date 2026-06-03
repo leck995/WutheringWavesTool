@@ -1,27 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.control.TreeTableColumn?>
-<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox fx:id="root" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.gacha.CloudBackupView">
+<VBox fx:id="root" maxHeight="550.0" maxWidth="900.0" prefHeight="550.0" prefWidth="900.0" stylesheets="@../../css/gacha/Cloud.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.gacha.CloudBackupView">
    <children>
-      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
-        <tabs>
-          <Tab text="上传">
-               <content>
-                  <VBox prefHeight="200.0" prefWidth="100.0">
+      <HBox prefHeight="100.0" prefWidth="200.0" spacing="40.0" VBox.vgrow="ALWAYS">
+         <children>
+            <VBox spacing="10.0" styleClass="cloud-card" HBox.hgrow="ALWAYS">
+               <children>
+                  <Label styleClass="title-2" text="下载" />
+                  <TableView fx:id="downloadTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                    <columns>
+                      <TableColumn fx:id="fileNameCol" prefWidth="75.0" text="文件" />
+                      <TableColumn fx:id="dateCol" prefWidth="75.0" text="日期" />
+                      <TableColumn fx:id="downloadActionCol" maxWidth="100.0" prefWidth="75.0" resizable="false" text="操作" />
+                    </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                  </TableView>
+               </children>
+            </VBox>
+            <StackPane HBox.hgrow="ALWAYS">
+               <children>
+                  <VBox disable="true" prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="cloud-card" visible="false">
                      <children>
+                        <Label styleClass="title-2" text="上传" />
                         <TableView fx:id="uploadTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                           <columns>
                             <TableColumn fx:id="playerIdTCol" prefWidth="75.0" text="玩家" />
                               <TableColumn fx:id="jsonFIleTCol" prefWidth="75.0" text="文件" />
-                            <TableColumn fx:id="funcTCol" prefWidth="75.0" text="操作" />
+                            <TableColumn fx:id="funcTCol" maxWidth="100.0" prefWidth="75.0" resizable="false" text="操作" />
                           </columns>
                            <columnResizePolicy>
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -29,26 +43,10 @@
                         </TableView>
                      </children>
                   </VBox>
-               </content>
-            </Tab>
-          <Tab text="下载">
-               <content>
-                  <VBox prefHeight="200.0" prefWidth="100.0">
-                     <children>
-                        <TreeTableView fx:id="downloadTreeTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                          <columns>
-                            <TreeTableColumn fx:id="jsonTTCol" prefWidth="75.0" text="文件" />
-                            <TreeTableColumn fx:id="funcTTCol" prefWidth="75.0" text="操作" />
-                          </columns>
-                           <columnResizePolicy>
-                              <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                           </columnResizePolicy>
-                        </TreeTableView>
-                     </children>
-                  </VBox>
-               </content>
-            </Tab>
-        </tabs>
-      </TabPane>
+                  <Label styleClass="text-muted" text="最多支持5个游戏账号抽卡记录云备份&#10;每个账号最多保存3个抽卡记录&#10;&#10;当获取最新记录时，会自动弹出备份提示框，&#10;供用户选择是否备份&#10;&#10;受限于服务器压力，每个游戏账号在60分钟内&#10;只允许备份一次" />
+               </children>
+            </StackPane>
+         </children>
+      </HBox>
    </children>
 </VBox>

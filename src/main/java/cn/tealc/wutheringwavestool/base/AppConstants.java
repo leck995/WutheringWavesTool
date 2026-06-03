@@ -12,11 +12,12 @@ public final class AppConstants {
     public static final String URL_PHANTOM_GUIDE = "https://wave.999758.xyz/pages/advance/phantom.html";
     public static final String URL_APP_UPDATE = "https://wwt.999758.xyz/release.json";
     public static final String URL_APP_UPDATE_DEV = "https://wwt.999758.xyz/release-dev.json";
-    public static final String URL_HOST_SERVER = "http://gamemaid.999758.xyz";
-    //public static final String URL_HOST_SERVER = "http://127.0.0.1:8080";
+    //public static final String URL_HOST_SERVER = "http://gamemaid.999758.xyz";
+    public static final String URL_HOST_SERVER = "http://127.0.0.1:8080";
     public static final String URL_REDEMPTION_CODES = URL_HOST_SERVER + "/api/redemption-codes/mc";
     public static final String URL_ANNOUNCEMENTS = URL_HOST_SERVER +  "/api/announcements/game";
     public static final String URL_AUTH_LOGIN = URL_HOST_SERVER +  "/api/auth/login";
     public static final String URL_AUTH_VERIFY = URL_HOST_SERVER +  "/api/auth/verify";
     public static final String URL_FILE_UPLOAD = URL_HOST_SERVER +  "/api/mc/gacha/upload";
+    public static final String URL_GACHA_FILE_LIST = URL_HOST_SERVER + "/api/mc/gacha/listByUser";
 }

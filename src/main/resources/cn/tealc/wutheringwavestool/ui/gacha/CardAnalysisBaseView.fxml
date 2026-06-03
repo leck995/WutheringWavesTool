@@ -2,6 +2,7 @@
 
 <?import atlantafx.base.controls.Spacer?>
 <?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -15,7 +16,7 @@
 <?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<StackPane prefHeight="700.0" prefWidth="1200.0" stylesheets="@../../css/cardpool/CardPool.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.gacha.CardAnalysisBaseView">
+<StackPane prefHeight="700.0" prefWidth="1200.0" stylesheets="@../../css/gacha/CardPool.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.gacha.CardAnalysisBaseView">
    <children>
   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
          <children>
@@ -38,15 +39,19 @@
                               <Pane prefHeight="200.0" prefWidth="200.0" />
                            </graphic>
                         </ToggleButton>
+                        <Separator orientation="VERTICAL">
+                           <HBox.margin>
+                              <Insets left="5.0" right="5.0" />
+                           </HBox.margin></Separator>
+                        <ToggleButton contentDisplay="BOTTOM" layoutX="28.0" layoutY="10.0" mnemonicParsing="false" onAction="#toCloudBackupChild" styleClass="child-select" text="云同步" toggleGroup="$childSelectedToggle">
+                           <graphic>
+                              <Pane prefHeight="200.0" prefWidth="200.0" />
+                           </graphic>
+                        </ToggleButton>
                      </children>
                   </HBox>
                   <Spacer layoutX="252.0" layoutY="10.0" />
                   <ComboBox fx:id="playerComboBox" prefWidth="150.0" />
-                  <Button layoutX="394.0" layoutY="10.0" mnemonicParsing="false" onAction="#uploadGachaFile" text="%ui.analysis.upload">
-                     <graphic>
-                        <FontIcon iconLiteral="mdoal-insert_photo" />
-                     </graphic>
-                  </Button>
                   <Button layoutX="826.0" layoutY="10.0" mnemonicParsing="false" onAction="#snapshot" text="%ui.analysis.snapshot">
                      <graphic>
                         <FontIcon iconLiteral="mdoal-insert_photo" />

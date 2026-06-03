@@ -7,6 +7,7 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.plugin.FxPluginManager;
+import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
 import cn.tealc.wutheringwavestool.util.DialogBuilder;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.jfoenixN.controls.JFXDialogLayout;
@@ -23,6 +24,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.Clipboard;
 import javafx.scene.input.ClipboardContent;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import org.slf4j.Logger;
@@ -45,6 +47,7 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
 
     private Parent commonChild;
     private Parent detailChild;
+    private Parent cloudChild;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -144,7 +147,12 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
 
     @FXML
     void uploadGachaFile(ActionEvent event) {
-        viewModel.uploadGachaFile();
+        //viewModel.uploadGachaFile();
+        ViewTuple<CloudBackupView, CloudBackupViewModel> viewTuple = FluentViewLoader.fxmlView(CloudBackupView.class).load();
+
+
+
+        NotificationManager.dialog((Pane) viewTuple.getView(),viewTuple.getCodeBehind());
     }
 
     @FXML
@@ -156,6 +164,21 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
                 if (viewModel.getPoolData() != null) {
                     NotificationManager.publish(NotificationKey.CARD_POOL_USER_UPDATE, viewModel.getPoolData());
                 }
+            } else {
+                toggleButton.setSelected(true);
+            }
+        }
+    }
+    @FXML
+    void toCloudBackupChild(ActionEvent event) {
+        if (event.getSource() instanceof ToggleButton toggleButton){
+            if (toggleButton.isSelected()) {
+                if (cloudChild == null) {
+                    ViewTuple<CloudBackupView, CloudBackupViewModel> viewTuple = FluentViewLoader.fxmlView(CloudBackupView.class).load();
+                    cloudChild = viewTuple.getView();
+                }
+                content.getChildren().setAll(cloudChild);
+                Animations.slideInUp(cloudChild, Duration.millis(300)).play();
             } else {
                 toggleButton.setSelected(true);
             }

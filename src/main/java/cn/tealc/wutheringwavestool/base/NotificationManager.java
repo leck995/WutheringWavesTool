@@ -1,9 +1,11 @@
 package cn.tealc.wutheringwavestool.base;
 
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.utils.notifications.NotificationObserver;
+import javafx.scene.layout.Pane;
 
 /**
  * @program: WutheringWavesTool
@@ -26,5 +28,8 @@ public class NotificationManager {
 
     public static void dialog(JFXDialogLayout layout) {
         MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, layout);
+    }
+    public static void dialog(Pane pane, BaseDialog dialog) {
+        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, pane,dialog);
     }
 }
