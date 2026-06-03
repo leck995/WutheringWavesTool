@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import atlantafx.base.controls.Spacer?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.SVGPath?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<StackPane fx:id="root" prefHeight="720.0" prefWidth="1280.0" styleClass="main" stylesheets="@../../css/Main.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.system.MainView">
+   <children>
+      <Pane fx:id="bgPane" />
+      <Pane fx:id="bgPane02" layoutX="10.0" layoutY="10.0" />
+      <Pane fx:id="bgPane03" layoutX="10.0" layoutY="10.0" style="-fx-background-color: #d6d2d250;" visible="false" />
+      <AnchorPane fx:id="content">
+         <children>
+            <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+               <children>
+                  <StackPane>
+                     <children>
+                        <Region fx:id="navBg" styleClass="nav-bg" />
+                        <VBox fx:id="nav" alignment="CENTER_LEFT" spacing="10.0" styleClass="main-nav">
+                           <children>
+                              <ToggleButton fx:id="navBtn" contentDisplay="GRAPHIC_ONLY" ellipsisString="" layoutX="15.0" layoutY="20.0" mnemonicParsing="false" prefWidth="140.0" selected="true" styleClass="nav-btn">
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdral-format_list_bulleted" />
+                                 </graphic>
+                              </ToggleButton>
+                              <VBox fx:id="navTop" spacing="5.0" />
+                              <Spacer VBox.vgrow="ALWAYS" />
+                              <VBox fx:id="navBottom" spacing="5.0" />
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="5.0" right="5.0" top="10.0" />
+                           </padding>
+                        </VBox>
+                     </children>
+                  </StackPane>
+                  <VBox HBox.hgrow="ALWAYS">
+                     <children>
+                        <HBox fx:id="titlebar" styleClass="title-bar">
+                           <children>
+                              <HBox alignment="CENTER_LEFT" spacing="10.0">
+                                 <children>
+                                    <ImageView fx:id="icon" fitHeight="36.0" fitWidth="36.0" pickOnBounds="true" preserveRatio="true">
+                                       <image>
+                                          <Image url="@../../image/icon.png" />
+                                       </image>
+                                    </ImageView>
+                                    <Label styleClass="title" text="%ui.main.label.title" />
+                                 </children>
+                              </HBox>
+                              <Pane HBox.hgrow="ALWAYS" />
+                              <HBox alignment="CENTER_RIGHT" prefHeight="50.0" prefWidth="200.0" spacing="10.0">
+                                 <children>
+                                    <Button fx:id="minBtn" mnemonicParsing="false" styleClass="hit-btn">
+                                       <graphic>
+                                          <SVGPath content="M1 7L1 8L14 8L14 7Z" styleClass="shape" />
+                                       </graphic>
+                                    </Button>
+                                    <Button fx:id="maxBtn" mnemonicParsing="false" styleClass="hit-btn">
+                                       <graphic>
+                                          <SVGPath content="M2.5 2 A 0.50005 0.50005 0 0 0 2 2.5L2 13.5 A 0.50005 0.50005 0 0 0 2.5 14L13.5 14 A 0.50005 0.50005 0 0 0 14 13.5L14 2.5 A 0.50005 0.50005 0 0 0 13.5 2L2.5 2 z M 3 3L13 3L13 13L3 13L3 3 z" styleClass="shape" />
+                                       </graphic>
+                                    </Button>
+                                    <Button fx:id="closeBtn" mnemonicParsing="false">
+                                       <styleClass>
+                                          <String fx:value="hit-btn" />
+                                          <String fx:value="hit-close" />
+                                       </styleClass>
+                                       <graphic>
+                                          <SVGPath content="M3.726563 3.023438L3.023438 3.726563L7.292969 8L3.023438 12.269531L3.726563 12.980469L8 8.707031L12.269531 12.980469L12.980469 12.269531L8.707031 8L12.980469 3.726563L12.269531 3.023438L8 7.292969Z" styleClass="shape" />
+                                       </graphic>
+                                    </Button>
+                                 </children>
+                                 <HBox.margin>
+                                    <Insets right="2.0" top="2.0" />
+                                 </HBox.margin>
+                              </HBox>
+                           </children>
+                           <padding>
+                              <Insets left="10.0" right="10.0" />
+                           </padding>
+                        </HBox>
+                        <HBox VBox.vgrow="ALWAYS">
+                           <children>
+                              <StackPane fx:id="child" HBox.hgrow="ALWAYS">
+                                 <HBox.margin>
+                                    <Insets left="20.0" />
+                                 </HBox.margin>
+                              </StackPane>
+                           </children>
+                        </HBox>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <VBox fx:id="messagePane" spacing="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0" />
+         </children>
+      </AnchorPane>
+   </children>
+</StackPane>

@@ -1,32 +1,18 @@
 package cn.tealc.wutheringwavestool.ui.game.manage;
 
-import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
-import cn.tealc.wutheringwavestool.model.ui.ServerData;
-import cn.tealc.wutheringwavestool.ui.cardpool.CardDetailAnalysisView;
-import cn.tealc.wutheringwavestool.ui.cardpool.CardDetailAnalysisViewModel;
-import cn.tealc.wutheringwavestool.util.ButtonBuilder;
-import cn.tealc.wutheringwavestool.util.DialogBuilder;
-import cn.tealc.wutheringwavestool.util.LanguageManager;
-import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
 
-import java.io.File;
 import java.net.URL;
 import java.util.ResourceBundle;
 

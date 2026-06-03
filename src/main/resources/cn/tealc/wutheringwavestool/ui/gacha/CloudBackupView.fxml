@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TreeTableColumn?>
+<?import javafx.scene.control.TreeTableView?>
+<?import javafx.scene.layout.VBox?>
+
+
+<VBox fx:id="root" prefHeight="720.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.gacha.CloudBackupView">
+   <children>
+      <TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+        <tabs>
+          <Tab text="上传">
+               <content>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <TableView fx:id="uploadTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                          <columns>
+                            <TableColumn fx:id="playerIdTCol" prefWidth="75.0" text="玩家" />
+                              <TableColumn fx:id="jsonFIleTCol" prefWidth="75.0" text="文件" />
+                            <TableColumn fx:id="funcTCol" prefWidth="75.0" text="操作" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                     </children>
+                  </VBox>
+               </content>
+            </Tab>
+          <Tab text="下载">
+               <content>
+                  <VBox prefHeight="200.0" prefWidth="100.0">
+                     <children>
+                        <TreeTableView fx:id="downloadTreeTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                          <columns>
+                            <TreeTableColumn fx:id="jsonTTCol" prefWidth="75.0" text="文件" />
+                            <TreeTableColumn fx:id="funcTTCol" prefWidth="75.0" text="操作" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TreeTableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TreeTableView>
+                     </children>
+                  </VBox>
+               </content>
+            </Tab>
+        </tabs>
+      </TabPane>
+   </children>
+</VBox>

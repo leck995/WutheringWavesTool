@@ -10,16 +10,15 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 
-
-<AnchorPane prefHeight="800.0" prefWidth="1300.0" styleClass="account-group" stylesheets="@../../../css/kujiequ/tower/TowerGroup.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.tower.TowerGroupView">
+<AnchorPane prefHeight="800.0" prefWidth="1300.0" styleClass="account-group" stylesheets="@../../../css/system/Account.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.system.account.AccountGroupView">
    <children>
       <HBox fx:id="headerPane" layoutX="20.0" layoutY="20.0" prefHeight="35.0" spacing="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label styleClass="title-2" text="%ui.tower.title" />
+            <Label styleClass="title-2" text="%ui.account.title" />
             <Separator orientation="VERTICAL" />
             <HBox>
                <children>
-                  <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toTower" selected="true" styleClass="child-select" text="%ui.tower.title.nav.title01">
+                  <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toAppAccount" selected="true" styleClass="child-select" text="%ui.account.app_account">
                      <graphic>
                         <Pane prefHeight="200.0" prefWidth="200.0" />
                      </graphic>
@@ -27,7 +26,7 @@
                         <ToggleGroup fx:id="childSelectedToggle" />
                      </toggleGroup>
                   </ToggleButton>
-                  <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toSlash" styleClass="child-select" text="%ui.tower.title.nav.title02" toggleGroup="$childSelectedToggle">
+                  <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toKujiequ" styleClass="child-select" text="%ui.account.kujiequ" toggleGroup="$childSelectedToggle">
                      <graphic>
                         <Pane prefHeight="200.0" prefWidth="200.0" />
                      </graphic>

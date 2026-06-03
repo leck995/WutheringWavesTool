@@ -5,7 +5,7 @@ import cn.tealc.wutheringwavestool.service.AutoSignService;
 import cn.tealc.wutheringwavestool.service.ConfigService;
 import cn.tealc.wutheringwavestool.service.GameWindowMonitorService;
 import cn.tealc.wutheringwavestool.service.LocalCachePlayerDataService;
-import cn.tealc.wutheringwavestool.ui.tray.TrayIconManager;
+import cn.tealc.wutheringwavestool.ui.system.tray.TrayIconManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
 

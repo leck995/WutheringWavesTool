@@ -94,6 +94,9 @@ public class Setting {
     private SimpleIntegerProperty lastKujiequSignTime  = new SimpleIntegerProperty(0);
 
 
+    /*=================服务器相关===================*/
+    private SimpleStringProperty serverUsername = new SimpleStringProperty();
+    private SimpleStringProperty serverPassword = new SimpleStringProperty();
 
     // 自定义序列化器
     public static class ObservableListSerializer extends JsonSerializer<ObservableList<String>> {
@@ -581,6 +584,30 @@ public class Setting {
 
     public void setUseLocalCacheUser(boolean useLocalCacheUser) {
         this.useLocalCacheUser.set(useLocalCacheUser);
+    }
+
+    public String getServerUsername() {
+        return serverUsername.get();
+    }
+
+    public SimpleStringProperty serverUsernameProperty() {
+        return serverUsername;
+    }
+
+    public void setServerUsername(String serverUsername) {
+        this.serverUsername.set(serverUsername);
+    }
+
+    public String getServerPassword() {
+        return serverPassword.get();
+    }
+
+    public SimpleStringProperty serverPasswordProperty() {
+        return serverPassword;
+    }
+
+    public void setServerPassword(String serverPassword) {
+        this.serverPassword.set(serverPassword);
     }
 
     /** 将当前设置持久化到 settings.json */

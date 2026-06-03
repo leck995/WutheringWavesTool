@@ -1,0 +1,86 @@
+.account-group .separator {
+    -fx-padding: 6 0 6 0;
+}
+.account-group .separator > .line{
+    -fx-border-color: #00000070;
+    -fx-border-insets: 1px 0 0 0;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+}
+.account-group .child-select{
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-font-muted;
+    -fx-font-weight: bold;
+    -fx-graphic-text-gap: 2;
+    -fx-padding: 3;
+    -fx-cursor: hand;
+}
+.account-group .child-select:hover{
+    -fx-text-fill: -color-accent-fg;
+}
+.account-group .child-select > Pane{
+    -fx-pref-width: 25;
+    -fx-pref-height: 3;
+    -fx-background-radius: 3px;
+    -fx-background-color: transparent;
+}
+.account-group .toggle-button:selected > Pane{
+    -fx-background-color: -color-accent-fg;
+}
+
+
+.app-account{
+
+}
+
+.app-account .input-group > .text-field,
+.app-account .input-group > .label{
+    -fx-background-color: -color-bg-default-60;
+}
+
+.app-account .input-group > .label{
+    -fx-background-color: -color-bg-default-80;
+}
+
+.kujiequ-account{
+
+}
+
+.kujiequ-account .list-view{
+    -fx-background-color: transparent;
+    -fx-background-radius: 10;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+
+}
+
+.kujiequ-account .list-view .list-cell{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 8 10 8 10;
+}
+.kujiequ-account .list-view .list-cell:filled .user{
+    -fx-background-color: -color-bg-default-90;
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+
+}
+
+.kujiequ-account .list-view .list-cell:empty .user{
+    -fx-background-color: transparent;
+
+}
+.kujiequ-account .list-view .list-cell .user-label{
+    -fx-font-size: 12;
+}
+
+.kujiequ-account .list-view .list-cell .role-label{
+    -fx-text-fill: -color-fg-subtle;
+    -fx-font-size: 10;
+}
+.kujiequ-account .list-view .list-cell .delete-btn{
+    -fx-padding: 2;
+}
+
+
+

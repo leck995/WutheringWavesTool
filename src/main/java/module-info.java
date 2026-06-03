@@ -42,7 +42,6 @@ open module cn.tealc.wutheringwavestool {
 
     exports cn.tealc.wutheringwavestool.base;
     exports cn.tealc.wutheringwavestool.jna;
-    exports cn.tealc.wutheringwavestool.ui;
     exports cn.tealc.wutheringwavestool.ui.game;
     exports cn.tealc.wutheringwavestool.dao;
     exports cn.tealc.wutheringwavestool.util;
@@ -50,7 +49,7 @@ open module cn.tealc.wutheringwavestool {
 
 
 
-    exports cn.tealc.wutheringwavestool.ui.cardpool;
+    exports cn.tealc.wutheringwavestool.ui.gacha;
     exports cn.tealc.wutheringwavestool.ui.game.manage;
     exports cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 
@@ -85,5 +84,8 @@ open module cn.tealc.wutheringwavestool {
     exports cn.tealc.wutheringwavestool.ui.kujiequ.other;
     exports com.kuro.kujiequ.thread.sms;
     exports cn.tealc.wutheringwavestool.model.game.pool;
+    exports cn.tealc.wutheringwavestool.thread.system.gachaUpload;
+    exports cn.tealc.wutheringwavestool.thread.system.account;
+    exports cn.tealc.wutheringwavestool.ui.system;
 
 }
