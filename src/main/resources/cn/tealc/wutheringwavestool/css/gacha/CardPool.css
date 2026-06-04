@@ -57,6 +57,9 @@
 .card-pool .child-select:hover{
     -fx-text-fill: -color-accent-fg;
 }
+.card-pool .child-select:selected{
+    -fx-text-fill: -color-accent-fg;
+}
 .card-pool .child-select > Pane{
     -fx-pref-width: 25;
     -fx-pref-height: 3;
@@ -339,4 +342,47 @@
 }
 .common-child .role-cell .progress-bar.unup > .bar {
     -fx-background-color: #269578;
+}
+/*==============================table============================================*/
+.table-view {
+    -fx-background-color: transparent;
+    -fx-table-cell-border-color: transparent;
+    -fx-border-color: transparent;
+}
+.table-view .column-header-background {
+    -fx-background-color: transparent;
+}
+.table-view .column-header-background .filler {
+    -fx-background-color: transparent;
+}
+.table-view .column-header {
+    -fx-background-color: transparent;
+}
+.table-view .table-cell {
+    -fx-background-color: transparent;
+}
+.table-view .table-row-cell {
+    -fx-background-color: transparent;
+}
+.table-view .table-row-cell:odd {
+    -fx-background-color: transparent;
+}
+.table-view .ssr-row .table-cell {
+    -fx-background-color: rgba(212, 160, 23, 0.12);
+    -fx-text-fill: #d4a017;
+    -fx-font-weight: bold;
+}
+.table-view .sr-row .table-cell {
+    -fx-background-color: rgba(147, 63, 177, 0.08);
+    -fx-text-fill: #933fb1;
+}
+.table-view .virtual-flow .scroll-bar {
+    -fx-background-color: transparent;
+}
+.table-view .virtual-flow .scroll-bar:vertical .thumb,
+.table-view .virtual-flow .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+}
+.table-view:hover .virtual-flow .scroll-bar:vertical .thumb {
+    -fx-background-color: -color-hover-emphasis;
 }

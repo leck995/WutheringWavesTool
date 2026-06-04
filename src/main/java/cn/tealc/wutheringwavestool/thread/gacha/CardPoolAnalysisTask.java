@@ -29,9 +29,11 @@ public class CardPoolAnalysisTask extends Task<ResponseBody<List<AnalysisData>>>
     private final List<String> baseSSRList;
     private final String playerId;
     private Map<String, List<CardInfo>> poolData;
+    private boolean skipFirstSSR = false;
 
-    public CardPoolAnalysisTask(String playerId) {
+    public CardPoolAnalysisTask(String playerId,boolean skipFirstSSR) {
         this.playerId = playerId;
+        this.skipFirstSSR = skipFirstSSR;
         baseSSRList = List.of(LanguageManager.getStringArray("ui.analysis.base_role"));
     }
 
@@ -63,6 +65,16 @@ public class CardPoolAnalysisTask extends Task<ResponseBody<List<AnalysisData>>>
 
 
     private AnalysisData analysis(String name, List<CardInfo> cardInfoList) {
+        if (skipFirstSSR){ //忽视第一个五星的影响
+            for (int i = cardInfoList.size() - 1; i >= 0; i--) {
+                CardInfo cardInfo = cardInfoList.get(i);
+                if (cardInfo.getQualityLevel() == 5){
+                    cardInfoList = new ArrayList<>(cardInfoList.subList(0, i));
+                    break;
+                }
+            }
+        }
+
         AnalysisData analysisData = new AnalysisData();
         analysisData.setTotalCount(cardInfoList.size());
         analysisData.setPoolName(name);

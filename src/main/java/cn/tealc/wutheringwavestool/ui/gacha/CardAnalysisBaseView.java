@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.gacha;
 
+import atlantafx.base.controls.ToggleSwitch;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
 import cn.tealc.fxplugin.FxPlugin;
@@ -44,13 +45,17 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
     private StackPane content;
     @FXML
     private ComboBox<String> playerComboBox;
+    @FXML
+    private ToggleSwitch skipFirstSSRSwitch;
 
     private Parent commonChild;
     private Parent detailChild;
+    private Parent tableChild;
     private Parent cloudChild;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        skipFirstSSRSwitch.selectedProperty().bindBidirectional(viewModel.skipFirstSSRProperty());
         playerComboBox.setItems(viewModel.getPlayerList());
 //        if (!viewModel.getPlayerList().isEmpty()) {
 //            playerComboBox.getSelectionModel().select(viewModel.getPlayerList().indexOf(viewModel.getPlayer()));
@@ -179,6 +184,23 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
                 }
                 content.getChildren().setAll(cloudChild);
                 Animations.slideInUp(cloudChild, Duration.millis(300)).play();
+            } else {
+                toggleButton.setSelected(true);
+            }
+        }
+    }
+
+    @FXML
+    void toTableChild(ActionEvent event) {
+        if (event.getSource() instanceof ToggleButton toggleButton){
+            if (toggleButton.isSelected()) {
+                if (tableChild == null) {
+                    ViewTuple<CardTableShowView, CardTableShowViewModel> viewTuple = FluentViewLoader.fxmlView(CardTableShowView.class).load();
+                    viewTuple.getViewModel().loadData(viewModel.getPlayer());
+                    tableChild = viewTuple.getView();
+                }
+                content.getChildren().setAll(tableChild);
+                Animations.slideInUp(tableChild, Duration.millis(300)).play();
             } else {
                 toggleButton.setSelected(true);
             }

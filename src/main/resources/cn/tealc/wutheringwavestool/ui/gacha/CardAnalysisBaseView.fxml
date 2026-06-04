@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import atlantafx.base.controls.Spacer?>
+<?import atlantafx.base.controls.ToggleSwitch?>
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
@@ -35,6 +36,11 @@
                            </graphic>
                         </ToggleButton>
                         <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toDetailChild" styleClass="child-select" text="详情" toggleGroup="$childSelectedToggle">
+                           <graphic>
+                              <Pane prefHeight="200.0" prefWidth="200.0" />
+                           </graphic>
+                        </ToggleButton>
+                        <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toTableChild" styleClass="child-select" text="表格" toggleGroup="$childSelectedToggle">
                            <graphic>
                               <Pane prefHeight="200.0" prefWidth="200.0" />
                            </graphic>
@@ -75,10 +81,16 @@
                      </graphic></Button>
                </children>
             </HBox>
-            <Label styleClass="text-subtle" text="%ui.analysis.account.tip" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
-               <font>
-                  <Font size="11.0" />
-               </font></Label>
+            <HBox alignment="CENTER" layoutX="1065.0" layoutY="50.0" spacing="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
+               <children>
+                  <Label styleClass="text-subtle" text="%ui.analysis.account.tip">
+                     <font>
+                        <Font size="11.0" />
+                     </font>
+                  </Label>
+                  <ToggleSwitch fx:id="skipFirstSSRSwitch" labelPosition="RIGHT" text="忽视第一个五星" />
+               </children>
+            </HBox>
             <StackPane fx:id="content" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0" />
          </children>
       </AnchorPane>

@@ -22,7 +22,8 @@ public class NotificationKey {
     public static final String HOME_ROLE_KUJIEQU_CHANGE="HOME_ROLE_KUJIEQU_CHANGE";
     public static final String NOTIFICATION_SHOW_UPDATE= "SHOW_UPDATE"; //显示升级界面
 
-    public static final String CARD_POOL_USER_UPDATE="CARD_POOL_USER_UPDATE"; //当抽卡页面选中用户切换时使用
+    public static final String CARD_POOL_USER_UPDATE="CARD_POOL_USER_UPDATE"; //当抽卡页面选中用户切换时使用，数据分析完成后
+    public static final String CARD_POOL_USER_CHANGE="CARD_POOL_USER_CHANGE"; //当抽卡页面选中用户切换时使用，切换即调用
     public static final String CARD_POOL_USER_EMPTY="CARD_POOL_USER_EMPTY"; //当抽卡页面选中无用户时使用
     public static final String CARD_POOL_USER_LIST_REFRESH="CARD_POOL_USER_LIST_REFRESH"; //重新获取数据列表使用
 

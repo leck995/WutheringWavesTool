@@ -21,6 +21,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import de.saxsys.mvvmfx.MvvmFX;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -50,6 +51,7 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
     private SimpleStringProperty player = new SimpleStringProperty();
     private ObservableList<String> playerList = FXCollections.observableArrayList();
     private List<AnalysisData> poolData;
+    private SimpleBooleanProperty skipFirstSSR = new SimpleBooleanProperty(false);
 
     public void initialize(){
         player.bindBidirectional(Config.setting().gachaCurrentPlayerIdProperty());
@@ -61,6 +63,10 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
 
         NotificationManager.subscribe(NotificationKey.CARD_POOL_USER_LIST_REFRESH,(s, objects) -> {
             loadFile(player.get());
+        });
+
+        skipFirstSSR.addListener((observable, oldValue, newValue) -> {
+            changePlayer(getPlayer());
         });
     }
 
@@ -99,13 +105,14 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
         int index = playerList.indexOf(playerId);
         if (index != -1) {
             player.set(playerId);
+            NotificationManager.publish(NotificationKey.CARD_POOL_USER_CHANGE, playerId);
             analysis(playerId);
         }
     }
 
 
     private void analysis(String playerId) {
-        CardPoolAnalysisTask task = new CardPoolAnalysisTask(playerId);
+        CardPoolAnalysisTask task = new CardPoolAnalysisTask(playerId,isSkipFirstSSR());
         task.setOnSucceeded(e -> {
             ResponseBody<List<AnalysisData>> response = task.getValue();
             if (response.getCode() == 200) {
@@ -244,5 +251,13 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
 
     public List<AnalysisData> getPoolData() {
         return poolData;
+    }
+
+    public boolean isSkipFirstSSR() {
+        return skipFirstSSR.get();
+    }
+
+    public SimpleBooleanProperty skipFirstSSRProperty() {
+        return skipFirstSSR;
     }
 }
