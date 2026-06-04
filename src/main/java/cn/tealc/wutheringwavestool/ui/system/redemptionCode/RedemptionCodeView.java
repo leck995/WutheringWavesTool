@@ -1,6 +1,10 @@
 package cn.tealc.wutheringwavestool.ui.system.redemptionCode;
 
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.RedemptionCodeItem;
+import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+import cn.tealc.wutheringwavestool.util.DialogBuilder;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.animation.PauseTransition;
@@ -69,6 +73,12 @@ public class RedemptionCodeView implements FxmlView<RedemptionCodeViewModel>, In
         refreshRotate.playFromStart();
         viewModel.loadRedemptionCodes();
     }
+
+    @FXML
+    void contributorEvent(ActionEvent event) {
+        NotificationManager.message(MessageInfo.info(LanguageManager.getString("ui.redemption.contributor.description")));
+    }
+
 
     static class RedemptionCodeCell extends ListCell<RedemptionCodeItem> {
         private final Label codeLabel = new Label();
