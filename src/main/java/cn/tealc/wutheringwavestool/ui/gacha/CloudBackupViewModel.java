@@ -1,12 +1,16 @@
 package cn.tealc.wutheringwavestool.ui.gacha;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.*;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.thread.system.gachaUpload.GachaCloudDownloadTask;
-import cn.tealc.wutheringwavestool.thread.system.gachaUpload.GachaCloudFileListGetTask;
-import cn.tealc.wutheringwavestool.thread.system.gachaUpload.GachaCloudUploadTask;
+import cn.tealc.wutheringwavestool.service.TaskManageService;
+import cn.tealc.wutheringwavestool.thread.gacha.cloud.GachaCloudDeleteTask;
+import cn.tealc.wutheringwavestool.thread.gacha.cloud.GachaCloudDownloadTask;
+import cn.tealc.wutheringwavestool.thread.gacha.cloud.GachaCloudFileListGetTask;
+import cn.tealc.wutheringwavestool.thread.gacha.cloud.GachaCloudUploadTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -58,6 +62,7 @@ public class CloudBackupViewModel extends BaseViewModel {
             ResponseBody<FileUploadResult> value = task.getValue();
             if (value.getCode() == 200){
                 NotificationManager.message(MessageInfo.success("云备份成功"));
+                refresh();
             }else {
                 NotificationManager.message(MessageInfo.warning(value.getMsg()));
             }
@@ -66,9 +71,7 @@ public class CloudBackupViewModel extends BaseViewModel {
         task.setOnFailed(event -> {
             NotificationManager.message(MessageInfo.warning(event.getSource().getException().getMessage()));
         });
-        Thread.startVirtualThread(task);
-
-
+        AppInjector.getInstance(TaskManageService.class).execute(task);
     }
 
     public void refresh() {
@@ -120,16 +123,36 @@ public class CloudBackupViewModel extends BaseViewModel {
             ResponseBody<Void> value = task.getValue();
             if (value.getCode() == 200){
                 NotificationManager.message(MessageInfo.success("从云端取回记录成功"));
+                //刷新页面中的抽卡用户列表，显示最新的
+                NotificationManager.publish(NotificationKey.CARD_POOL_USER_LIST_REFRESH);
             }else {
                 NotificationManager.message(MessageInfo.warning("从云端取回记录失败，原因："+value.getMsg()));
             }
         });
         task.setOnFailed(ev ->
                 NotificationManager.message(MessageInfo.error("下载失败: " + name)));
-        Thread.startVirtualThread(task);
+        AppInjector.getInstance(TaskManageService.class).execute(task);
     }
 
 
+
+    public void deleteJson(CloudFileItem item) {
+        GachaCloudDeleteTask task = new GachaCloudDeleteTask(item.getId(),
+                Config.setting().getServerUsername(), Config.setting().getServerPassword());
+
+        task.setOnSucceeded(event -> {
+            ResponseBody<Void> value = task.getValue();
+            if (value.getCode() == 200) {
+                fileList.remove(item);
+                NotificationManager.message(MessageInfo.success("删除成功"));
+            } else {
+                NotificationManager.message(MessageInfo.warning(value.getMsg()));
+            }
+        });
+        task.setOnFailed(ev ->
+                NotificationManager.message(MessageInfo.error("删除失败: " + item.getOriginalName())));
+        Thread.startVirtualThread(task);
+    }
 
     public ObservableList<CloudFileItem> getFileList() {
         return fileList;

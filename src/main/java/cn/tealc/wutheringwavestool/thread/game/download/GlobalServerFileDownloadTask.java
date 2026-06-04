@@ -1,8 +1,5 @@
-package cn.tealc.wutheringwavestool.thread.download;
+package cn.tealc.wutheringwavestool.thread.game.download;
 
-import cn.tealc.wutheringwavestool.base.AppInjector;
-import cn.tealc.wutheringwavestool.base.DownloadProgressService;
-import cn.tealc.wutheringwavestool.model.DownloadProgressModel;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import com.kuro.game.model.game.FileInfo;
@@ -15,18 +12,8 @@ import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.nio.file.Files;
-import java.util.ArrayList;
+import java.io.File;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 多线程下载任务，传入文件列表、URL前缀和保存目录进行并发下载，进度上报至 DownloadProgressService

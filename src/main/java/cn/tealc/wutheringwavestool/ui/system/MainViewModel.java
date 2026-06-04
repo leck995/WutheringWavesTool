@@ -7,6 +7,8 @@ import cn.tealc.wutheringwavestool.model.AnnouncementItem;
 import cn.tealc.wutheringwavestool.model.RedemptionCodeItem;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.service.AutoSignService;
+import cn.tealc.wutheringwavestool.service.TaskManageService;
+
 import cn.tealc.wutheringwavestool.service.ConfigService;
 import cn.tealc.wutheringwavestool.thread.system.AnnouncementGetTask;
 import cn.tealc.wutheringwavestool.thread.system.RedemptionCodeGetTask;
@@ -56,7 +58,7 @@ public class MainViewModel extends BaseViewModel {
     private ObjectMapper objectMapper;
 
     @Inject
-    private DownloadProgressService downloadProgressService;
+    private TaskManageService taskManageService;
 
     @Inject
     private ConfigService configService;
@@ -101,11 +103,11 @@ public class MainViewModel extends BaseViewModel {
                 }
             }
         });
-        Thread.startVirtualThread(task);
+        AppInjector.getInstance(TaskManageService.class).execute(task);
     }
 
-    public DownloadProgressService getDownloadProgressService() {
-        return downloadProgressService;
+    public TaskManageService getDownloadProgressService() {
+        return taskManageService;
     }
 
     public List<NavData> getNavList(){

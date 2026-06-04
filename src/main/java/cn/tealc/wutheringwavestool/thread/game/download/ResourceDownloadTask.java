@@ -1,8 +1,6 @@
-package cn.tealc.wutheringwavestool.thread.download;
+package cn.tealc.wutheringwavestool.thread.game.download;
 
 import cn.tealc.wutheringwavestool.base.AppInjector;
-import cn.tealc.wutheringwavestool.base.DownloadProgressService;
-import cn.tealc.wutheringwavestool.model.DownloadProgressModel;
 import com.kuro.game.model.game.FileInfo;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
@@ -21,7 +19,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * 多线程下载任务，传入文件列表、URL前缀和保存目录进行并发下载，进度上报至 DownloadProgressService
+ * 多线程下载任务，传入文件列表、URL前缀和保存目录进行并发下载，进度上报至 TaskManageService
  */
 public class ResourceDownloadTask extends Task<Void> {
     private static final Logger LOG = LoggerFactory.getLogger(ResourceDownloadTask.class);
@@ -35,8 +33,6 @@ public class ResourceDownloadTask extends Task<Void> {
 
     private volatile boolean paused = false;
 
-    private final DownloadProgressService progressService;
-    private final String progressTaskId;
     private final AtomicLong totalDownloadedBytes = new AtomicLong(0);
     private final AtomicInteger completedCount = new AtomicInteger(0);
     private final long totalBytes;
@@ -46,7 +42,6 @@ public class ResourceDownloadTask extends Task<Void> {
         this.host = host;
         this.gameDir = gameDir;
         this.httpClient = AppInjector.getInstance(HttpClient.class);
-        this.progressService = AppInjector.getInstance(DownloadProgressService.class);
 
         long tb = 0;
         for (FileInfo fi : fileInfoList) {
@@ -54,14 +49,13 @@ public class ResourceDownloadTask extends Task<Void> {
         }
         this.totalBytes = tb;
 
-        DownloadProgressModel progress = progressService.createTask("游戏资源下载");
-        this.progressTaskId = progress.getTaskId();
+        updateTitle("游戏资源下载");
     }
 
     @Override
     protected Void call() throws Exception {
         if (fileInfoList.isEmpty()) {
-            progressService.completeTask(progressTaskId, "无文件需要下载");
+            updateMessage("无文件需要下载");
             return null;
         }
 
@@ -85,9 +79,10 @@ public class ResourceDownloadTask extends Task<Void> {
         latch.await();
 
         if (isCancelled()) {
-            progressService.failTask(progressTaskId, "下载已取消");
+            updateMessage("下载已取消");
         } else {
-            progressService.completeTask(progressTaskId, "下载完成");
+            updateProgress(1.0, 1.0);
+            updateMessage("下载完成");
         }
         return null;
     }
@@ -188,8 +183,8 @@ public class ResourceDownloadTask extends Task<Void> {
             double progress = Math.min((double) totalDownloadedBytes.get() / totalBytes, 1.0);
             int done = completedCount.get();
             int total = fileInfoList.size();
-            progressService.updateProgress(progressTaskId, progress,
-                    String.format("已下载 %d/%d 个文件", done, total));
+            updateProgress(progress, 1.0);
+            updateMessage(String.format("已下载 %d/%d 个文件", done, total));
         }
     }
 
@@ -210,7 +205,7 @@ public class ResourceDownloadTask extends Task<Void> {
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
         boolean result = super.cancel(mayInterruptIfRunning);
-        progressService.failTask(progressTaskId, "下载已取消");
+        updateMessage("下载已取消");
         return result;
     }
 }

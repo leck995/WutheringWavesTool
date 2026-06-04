@@ -24,6 +24,7 @@ public class NotificationKey {
 
     public static final String CARD_POOL_USER_UPDATE="CARD_POOL_USER_UPDATE"; //当抽卡页面选中用户切换时使用
     public static final String CARD_POOL_USER_EMPTY="CARD_POOL_USER_EMPTY"; //当抽卡页面选中无用户时使用
+    public static final String CARD_POOL_USER_LIST_REFRESH="CARD_POOL_USER_LIST_REFRESH"; //重新获取数据列表使用
 
 
     public static final String GAME_MANAGER_TO_BASE="GAME_MANAGE_TO_BASE"; // 通知GameManagerView显示GameBaseSettingView
@@ -32,6 +33,7 @@ public class NotificationKey {
 
 
     public static final String ACCOUNT_UPDATE="ACCOUNT_UPDATE"; // 更新库街区账号
+
 
 
 

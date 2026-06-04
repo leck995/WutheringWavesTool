@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import atlantafx.base.controls.Spacer?>
+<?import java.lang.String?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
@@ -7,6 +9,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <VBox fx:id="root" maxHeight="550.0" maxWidth="900.0" prefHeight="550.0" prefWidth="900.0" stylesheets="@../../css/gacha/Cloud.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.gacha.CloudBackupView">
    <children>
@@ -16,8 +19,16 @@
                <children>
                   <HBox alignment="CENTER_LEFT">
                      <children>
-                        <Label styleClass="title-2" text="下载" HBox.hgrow="ALWAYS" />
-                        <Button fx:id="refreshBtn" styleClass="refresh-btn" text="刷新" />
+                        <Label styleClass="title-2" text="云备份恢复" HBox.hgrow="ALWAYS" />
+                        <Spacer />
+                        <Button fx:id="refreshBtn">
+                           <graphic>
+                              <FontIcon iconLiteral="mdmz-refresh" />
+                           </graphic>
+                           <styleClass>
+                              <String fx:value="button-icon" />
+                              <String fx:value="flat" />
+                           </styleClass></Button>
                      </children>
                   </HBox>
                   <StackPane VBox.vgrow="ALWAYS">
@@ -26,14 +37,18 @@
                         <VBox fx:id="errorBox" alignment="CENTER" spacing="10.0">
                            <children>
                               <Label styleClass="text-muted" text="加载失败" />
-                              <Button fx:id="errorRetryBtn" styleClass="retry-btn" text="重试" />
+                              <Button fx:id="errorRetryBtn" text="重试">
+                                 <styleClass>
+                                    <String fx:value="flat" />
+                                    <String fx:value="accent" />
+                                 </styleClass></Button>
                            </children>
                         </VBox>
                         <TableView fx:id="downloadTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                           <columns>
-                            <TableColumn fx:id="fileNameCol" prefWidth="75.0" text="文件" />
+                            <TableColumn fx:id="fileNameCol" prefWidth="75.0" text="游戏账号" />
                             <TableColumn fx:id="dateCol" prefWidth="75.0" text="日期" />
-                            <TableColumn fx:id="downloadActionCol" maxWidth="100.0" prefWidth="75.0" resizable="false" text="操作" />
+                            <TableColumn fx:id="downloadActionCol" maxWidth="120.0" resizable="false" text="操作" />
                           </columns>
                            <columnResizePolicy>
                               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -47,10 +62,10 @@
                <children>
                   <VBox spacing="10.0" styleClass="cloud-card" VBox.vgrow="ALWAYS">
                      <children>
-                        <Label styleClass="title-2" text="上传" />
+                        <Label styleClass="title-2" text="上传到云" />
                         <TableView fx:id="uploadTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                           <columns>
-                            <TableColumn fx:id="playerIdTCol" prefWidth="75.0" text="玩家" />
+                            <TableColumn fx:id="playerIdTCol" prefWidth="75.0" text="游戏账号" />
                             <TableColumn fx:id="funcTCol" maxWidth="100.0" prefWidth="75.0" resizable="false" text="操作" />
                           </columns>
                            <columnResizePolicy>
@@ -61,7 +76,7 @@
                   </VBox>
                   <VBox styleClass="cloud-card">
                      <children>
-                        <Label styleClass="text-muted" text="最多支持5个游戏账号抽卡记录云备份&#10;每个账号最多保存3个抽卡记录&#10;当获取最新记录时，会自动弹出备份提示框，&#10;供用户选择是否备份&#10;&#10;受限于服务器压力，每个游戏账号在60分钟内&#10;只允许备份一次" wrapText="true" />
+                        <Label styleClass="text-muted" text="最多支持5个游戏账号抽卡记录云备份&#10;每个游戏账号最多保存3条抽卡记录&#10;&#10;无需手动备份，当获取最新记录时，会自动弹出备份提示框，供用户选择是否备份&#10;&#10;受限于服务器压力，每个游戏账号在60分钟内只允许备份一次" wrapText="true" />
                      </children>
                   </VBox>
                </children>

@@ -1,4 +1,4 @@
-package cn.tealc.wutheringwavestool.thread.system.gachaUpload;
+package cn.tealc.wutheringwavestool.thread.gacha.cloud;
 
 import cn.tealc.wutheringwavestool.base.AppConstants;
 import cn.tealc.wutheringwavestool.base.AppInjector;
@@ -29,6 +29,7 @@ public class GachaCloudUploadTask extends Task<ResponseBody<FileUploadResult>> {
         this.password = password;
         this.filename = filename;
         this.file = file;
+        updateTitle("云上传: " + filename);
     }
 
     @Override
@@ -36,8 +37,12 @@ public class GachaCloudUploadTask extends Task<ResponseBody<FileUploadResult>> {
         HttpClient client = AppInjector.getInstance(HttpClient.class);
         ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
 
+        updateProgress(0.1, 1.0);
+        updateMessage("正在压缩JSON...");
         byte[] minified = mapper.writeValueAsBytes(mapper.readTree(file));
 
+        updateProgress(0.3, 1.0);
+        updateMessage("正在构建上传数据...");
         MultipartFormBody body = new MultipartFormBody.Builder()
                 .addPart("username", username)
                 .addPart("password", password)
@@ -45,6 +50,8 @@ public class GachaCloudUploadTask extends Task<ResponseBody<FileUploadResult>> {
                 .addPart("file", minified, "application/json", file.getName())
                 .build();
 
+        updateProgress(0.5, 1.0);
+        updateMessage("正在上传...");
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(AppConstants.URL_FILE_UPLOAD))
                 .header("Content-Type", body.getContentType())
@@ -57,6 +64,8 @@ public class GachaCloudUploadTask extends Task<ResponseBody<FileUploadResult>> {
             LOG.error("上传响应为空, 状态码: {}", response.statusCode());
             return new ResponseBody<>(-1, "上传失败，服务器无响应");
         }
+        updateProgress(1.0, 1.0);
+        updateMessage("上传完成");
         return mapper.readValue(responseBody,
                 new TypeReference<ResponseBody<FileUploadResult>>() {});
     }

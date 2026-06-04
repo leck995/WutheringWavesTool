@@ -1,20 +1,22 @@
 package cn.tealc.wutheringwavestool.ui.gacha;
 
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.model.game.pool.CardInfo;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.analysis.AnalysisData;
+import cn.tealc.wutheringwavestool.model.game.pool.CardInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
-import cn.tealc.wutheringwavestool.thread.system.CardPoolAnalysisTask;
-import cn.tealc.wutheringwavestool.thread.system.CardPoolRequestTask;
-import cn.tealc.wutheringwavestool.thread.system.gachaUpload.GachaCloudUploadTask;
+import cn.tealc.wutheringwavestool.service.TaskManageService;
+import cn.tealc.wutheringwavestool.thread.gacha.CardPoolAnalysisTask;
+import cn.tealc.wutheringwavestool.thread.gacha.CardPoolRequestTask;
+import cn.tealc.wutheringwavestool.thread.gacha.cloud.GachaCloudUploadTask;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.util.FileIO;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.fasterxml.jackson.core.type.TypeReference;
-import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -49,21 +51,22 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
     private ObservableList<String> playerList = FXCollections.observableArrayList();
     private List<AnalysisData> poolData;
 
-    public CardAnalysisBaseViewModel() {
+    public void initialize(){
         player.bindBidirectional(Config.setting().gachaCurrentPlayerIdProperty());
-        CompletableFuture.delayedExecutor(300, TimeUnit.MILLISECONDS).execute(()->{
-            Platform.runLater(()->{
+        CompletableFuture.delayedExecutor(300, TimeUnit.MILLISECONDS).execute(() -> {
+            Platform.runLater(() -> {
                 loadFile(player.get());
             });
+        });
 
+        NotificationManager.subscribe(NotificationKey.CARD_POOL_USER_LIST_REFRESH,(s, objects) -> {
+            loadFile(player.get());
         });
     }
 
 
-
-
     public void loadFile(String playerId) {
-        Thread.startVirtualThread(()->{
+        Thread.startVirtualThread(() -> {
             //查看本地是否存有数据，有则加载
             File dataDir = new File("data");
             if (dataDir.exists()) {
@@ -81,21 +84,20 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
                     if (!playerList.isEmpty()) {
                         player.set(playerList.getLast());
                         publish(EVENT_SELECTED_PLAYER);
-                    }else{
+                    } else {
                         NotificationManager.publish(NotificationKey.CARD_POOL_USER_EMPTY);
                     }
                 }
-            }else {
+            } else {
                 NotificationManager.publish(NotificationKey.CARD_POOL_USER_EMPTY);
             }
         });
     }
 
 
-
     public void changePlayer(String playerId) {
         int index = playerList.indexOf(playerId);
-        if (index != -1){
+        if (index != -1) {
             player.set(playerId);
             analysis(playerId);
         }
@@ -108,7 +110,7 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
             ResponseBody<List<AnalysisData>> response = task.getValue();
             if (response.getCode() == 200) {
                 poolData = response.getData();
-                NotificationManager.publish(NotificationKey.CARD_POOL_USER_UPDATE,response.getData());
+                NotificationManager.publish(NotificationKey.CARD_POOL_USER_UPDATE, response.getData());
             }
         });
         Thread.startVirtualThread(task);
@@ -147,7 +149,6 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
         }
 
 
-
     }
 
     public boolean delete() {
@@ -173,34 +174,34 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
     }
 
 
-    public void uploadGachaFile(){
+    public void uploadGachaFile() {
         String username = Config.setting().getServerUsername();
         String password = Config.setting().getServerPassword();
         String playerId = getPlayer();
-        File dateJson=new File(String.format("data/%s/pool.json",playerId));
+        File dateJson = new File(String.format("data/%s/pool.json", playerId));
         System.out.println(dateJson.getAbsolutePath());
-        if (!dateJson.exists()){
+        if (!dateJson.exists()) {
             NotificationManager.message(MessageInfo.warning("选中用户的抽卡数据不存在"));
             return;
         }
-        if (dateJson.length() > TEN_MB){
+        if (dateJson.length() > TEN_MB) {
             NotificationManager.message(MessageInfo.warning("选中用户的抽卡数据文件过大，无法备份，请联系开发者"));
             return;
         }
 
-        GachaCloudUploadTask task = new GachaCloudUploadTask(username,password,playerId,dateJson);
+        GachaCloudUploadTask task = new GachaCloudUploadTask(username, password, playerId, dateJson);
         task.setOnSucceeded(event -> {
-            if (task.getValue().getCode() == 200){
+            if (task.getValue().getCode() == 200) {
                 NotificationManager.message(MessageInfo.success("选中用户的抽卡数据备份成功"));
-            }else {
+            } else {
                 NotificationManager.message(MessageInfo.warning(task.getValue().getMsg()));
             }
         });
 
-        task.setOnFailed(event ->  {
+        task.setOnFailed(event -> {
             NotificationManager.message(MessageInfo.warning(task.getException().getMessage()));
-        }  );
-        Thread.startVirtualThread(task);
+        });
+        AppInjector.getInstance(TaskManageService.class).execute(task);
         NotificationManager.message(MessageInfo.info("开始进行云备份"));
     }
 

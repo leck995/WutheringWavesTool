@@ -1,4 +1,4 @@
-package cn.tealc.wutheringwavestool.thread.system.gachaUpload;
+package cn.tealc.wutheringwavestool.thread.gacha.cloud;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

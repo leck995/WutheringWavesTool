@@ -2,8 +2,6 @@ package cn.tealc.wutheringwavestool.thread.system;
 
 import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.Config;
-import cn.tealc.wutheringwavestool.base.DownloadProgressService;
-import cn.tealc.wutheringwavestool.model.DownloadProgressModel;
 import cn.tealc.wutheringwavestool.model.netResource.Resource;
 import cn.tealc.wutheringwavestool.model.netResource.RootResource;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -47,8 +45,6 @@ public class ResourcesSyncTask extends Task<String> {
     private final ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
 
     private int filesSize = 0;
-    private DownloadProgressService progressService;
-    private String progressTaskId;
     private AtomicInteger downloadedCount = new AtomicInteger(0);
 
     public ResourcesSyncTask() {
@@ -96,24 +92,18 @@ public class ResourcesSyncTask extends Task<String> {
                         remoteResource.getVersion(),
                         localResources != null ? localResources.getVersion() : "无");
                 updateMessage("start");
-
-                progressService = AppInjector.getInstance(DownloadProgressService.class);
-                DownloadProgressModel progress = progressService.createTask("资源同步");
-                progressTaskId = progress.getTaskId();
+                updateTitle("资源同步");
                 downloadedCount.set(0);
 
                 updateDataFile(remoteResource);
                 downloadFile(url, localFile.getPath());
                 updateMessage("success");
-                progressService.completeTask(progressTaskId, "资源同步完成");
             } else {
                 LOG.warn("资源更新：获取资源文件更新失败");
             }
         } catch (IOException e) {
             LOG.error("资源更新：错误", e);
-            if (progressService != null && progressTaskId != null) {
-                progressService.failTask(progressTaskId, "资源同步失败: " + e.getMessage());
-            }
+            updateMessage("资源同步失败: " + e.getMessage());
         }
         LOG.debug("资源更新：同步结束");
         return "资源同步完成";
@@ -217,10 +207,8 @@ public class ResourcesSyncTask extends Task<String> {
             String md5Hex = DigestUtils.md5Hex(new FileInputStream(outputFile));
             LOG.debug("资源更新：文件已下载并保存到:{},当前MD5：{}", savePath, md5Hex);
             int count = downloadedCount.incrementAndGet();
-            if (progressService != null && progressTaskId != null) {
-                progressService.updateProgress(progressTaskId, -1,
-                        "已下载 " + count + " 个文件: " + outputFile.getName());
-            }
+            updateProgress(-1, 1.0);
+            updateMessage("已下载 " + count + " 个文件: " + outputFile.getName());
         } catch (IOException | InterruptedException e) {
             LOG.error("资源更新：", e);
         }

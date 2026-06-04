@@ -20,4 +20,5 @@ public final class AppConstants {
     public static final String URL_AUTH_VERIFY = URL_HOST_SERVER +  "/api/auth/verify";
     public static final String URL_FILE_UPLOAD = URL_HOST_SERVER +  "/api/mc/gacha/uploadByUser";
     public static final String URL_GACHA_FILE_LIST = URL_HOST_SERVER + "/api/mc/gacha/listByUser";
+    public static final String URL_GACHA_FILE_DELETE = URL_HOST_SERVER + "/api/mc/gacha/deleteByUser/";
 }

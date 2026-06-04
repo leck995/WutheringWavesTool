@@ -79,6 +79,9 @@ public class DialogBuilder {
     public DialogBuilder cancel(String name) {
         return button(name, null, true, null);
     }
+    public DialogBuilder cancel() {
+        return button("取消", null, true, null);
+    }
     public DialogBuilder cancel(String name, Node graphic) {
         return button(name, graphic, true, null);
     }

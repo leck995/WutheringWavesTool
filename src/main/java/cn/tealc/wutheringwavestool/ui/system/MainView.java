@@ -8,9 +8,9 @@ import cn.tealc.wutheringwavestool.WwtApp;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.AppConstants;
 import cn.tealc.wutheringwavestool.base.Config;
-import cn.tealc.wutheringwavestool.base.DownloadProgressService;
+import cn.tealc.wutheringwavestool.service.TaskManageService;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.model.DownloadProgressModel;
+import javafx.concurrent.Task;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.model.release.Release;
@@ -115,7 +115,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
     private ToggleGroup navToggleGroup;
     private ToggleButton supportBtn;
 
-    private DownloadProgressService downloadProgressService;
+    private TaskManageService taskManageService;
     private Button downloadBtn;
     private Popup progressPopup;
     private RotateTransition rotateTransition;
@@ -259,7 +259,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
 
 
     private void createDownloadProgressButton() {
-        downloadProgressService = viewModel.getDownloadProgressService();
+        taskManageService = viewModel.getDownloadProgressService();
 
         downloadBtn = new Button(null, new FontIcon(Material2MZ.SYNC));
         downloadBtn.getStyleClass().add("download-progress-btn");
@@ -272,11 +272,11 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         rotateTransition.setInterpolator(javafx.animation.Interpolator.LINEAR);
 
         // 列表非空时显示按钮
-        downloadProgressService.getTasks().addListener((javafx.collections.ListChangeListener<DownloadProgressModel>) change -> {
-            Platform.runLater(() -> downloadBtn.setVisible(!downloadProgressService.getTasks().isEmpty()));
+        taskManageService.getTasks().addListener((javafx.collections.ListChangeListener<Task<?>>) change -> {
+            Platform.runLater(() -> downloadBtn.setVisible(!taskManageService.getTasks().isEmpty()));
         });
         // 有活跃下载时旋转
-        downloadProgressService.hasActiveTasksProperty().addListener((obs, old, active) -> {
+        taskManageService.hasActiveTasksProperty().addListener((obs, old, active) -> {
             if (active) {
                 rotateTransition.play();
             } else {
@@ -301,7 +301,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         popupTaskListBox.getStyleClass().add("task-list");
         popupContent.getChildren().add(popupTaskListBox);
 
-        downloadProgressService.getTasks().addListener((javafx.collections.ListChangeListener<DownloadProgressModel>) change -> {
+        taskManageService.getTasks().addListener((javafx.collections.ListChangeListener<Task<?>>) change -> {
             Platform.runLater(this::rebuildPopupTasks);
         });
 
@@ -321,31 +321,25 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
 
     private void rebuildPopupTasks() {
         popupTaskListBox.getChildren().clear();
-        ObservableList<DownloadProgressModel> tasks = downloadProgressService.getTasks();
+        ObservableList<Task<?>> tasks = taskManageService.getTasks();
         if (tasks.isEmpty()) {
             Label emptyLabel = new Label(LanguageManager.getString("ui.download.progress.empty"));
             emptyLabel.getStyleClass().add("empty-label");
             popupTaskListBox.getChildren().add(emptyLabel);
         } else {
-            for (DownloadProgressModel task : tasks) {
+            for (Task<?> task : tasks) {
                 popupTaskListBox.getChildren().add(createTaskRow(task));
             }
         }
     }
 
-    private Node createTaskRow(DownloadProgressModel task) {
+    private Node createTaskRow(Task<?> task) {
         VBox row = new VBox();
         row.getStyleClass().add("task-row");
-        row.getStyleClass().add(
-                switch (task.getStatus()) {
-                    case RUNNING -> "task-running";
-                    case COMPLETED -> "task-completed";
-                    case FAILED -> "task-failed";
-                }
-        );
 
-        Label nameLabel = new Label(task.getTaskName());
+        Label nameLabel = new Label();
         nameLabel.getStyleClass().add("task-name");
+        nameLabel.textProperty().bind(task.titleProperty());
 
         ProgressBar progressBar = new ProgressBar();
         progressBar.getStyleClass().add("task-progress");
@@ -364,16 +358,21 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
 
         row.getChildren().addAll(nameLabel, progressBar, messageLabel);
 
-        task.statusProperty().addListener((obs, old, status) -> {
+        task.stateProperty().addListener((obs, old, state) -> {
             row.getStyleClass().removeAll("task-running", "task-completed", "task-failed");
-            row.getStyleClass().add(
-                    switch (status) {
-                        case RUNNING -> "task-running";
-                        case COMPLETED -> "task-completed";
-                        case FAILED -> "task-failed";
-                    }
-            );
+                switch (state) {
+                    case RUNNING -> row.getStyleClass().add("task-running");
+                    case SUCCEEDED -> row.getStyleClass().add("task-completed");
+                    case FAILED, CANCELLED -> row.getStyleClass().add("task-failed");
+                }
         });
+
+        // 初始样式
+        switch (task.getState()) {
+            case RUNNING -> row.getStyleClass().add("task-running");
+            case SUCCEEDED -> row.getStyleClass().add("task-completed");
+            case FAILED, CANCELLED -> row.getStyleClass().add("task-failed");
+        }
 
         return row;
     }
@@ -509,8 +508,13 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         for (Node action : container.getActions()) {
             if (action instanceof Button button) {
                 if (button.isCancelButton()) {
+                    EventHandler<ActionEvent> onAction = button.getOnAction();
+
                     button.setOnAction(event -> {
                         dialog.close();
+                        if (onAction != null){
+                            onAction.handle(event);
+                        }
                     });
                 }
             }

@@ -1,10 +1,7 @@
 package cn.tealc.wutheringwavestool.base;
 
 import cn.tealc.wutheringwavestool.dao.*;
-import cn.tealc.wutheringwavestool.service.AutoSignService;
-import cn.tealc.wutheringwavestool.service.ConfigService;
-import cn.tealc.wutheringwavestool.service.GameWindowMonitorService;
-import cn.tealc.wutheringwavestool.service.LocalCachePlayerDataService;
+import cn.tealc.wutheringwavestool.service.*;
 import cn.tealc.wutheringwavestool.ui.system.tray.TrayIconManager;
 import com.google.inject.AbstractModule;
 import com.google.inject.Singleton;
@@ -25,7 +22,7 @@ public class AppModule extends AbstractModule {
         bind(LocalCachePlayerDataDao.class).in(Singleton.class);
         bind(LocalCachePlayerDataService.class).in(Singleton.class);
         bind(ConfigService.class).in(Singleton.class);
-        bind(DownloadProgressService.class).in(Singleton.class);
+        bind(TaskManageService.class).in(Singleton.class);
         bind(AutoSignService.class).in(Singleton.class);
         bind(GameWindowMonitorService.class).in(Singleton.class);
         bind(TrayIconManager.class).in(Singleton.class);

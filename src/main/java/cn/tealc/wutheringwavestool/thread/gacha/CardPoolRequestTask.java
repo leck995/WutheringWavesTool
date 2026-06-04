@@ -1,4 +1,4 @@
-package cn.tealc.wutheringwavestool.thread.system;
+package cn.tealc.wutheringwavestool.thread.gacha;
 
 import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.Config;

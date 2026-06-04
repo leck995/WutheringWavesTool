@@ -1,9 +1,12 @@
 package cn.tealc.wutheringwavestool.ui.gacha;
 
 import atlantafx.base.theme.Styles;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.CloudFileItem;
 import cn.tealc.wutheringwavestool.model.CloudUploadItem;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
+import cn.tealc.wutheringwavestool.util.DialogBuilder;
+import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.beans.property.SimpleStringProperty;
@@ -14,6 +17,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
@@ -84,7 +88,7 @@ public class CloudBackupView extends BaseDialog implements FxmlView<CloudBackupV
                 uploadBtn.setOnAction(e -> {
                     CloudUploadItem item = getTableRow().getItem();
                     if (item != null) {
-                        viewModel.uploadJson(item);
+                        showUploadDialog(item);
                     }
                 });
             }
@@ -118,14 +122,24 @@ public class CloudBackupView extends BaseDialog implements FxmlView<CloudBackupV
         });
 
         downloadActionCol.setCellFactory(param -> new TableCell<>() {
-            private final Button downloadBtn = new Button(null,new FontIcon(Material2AL.CLOUD_DOWNLOAD));
+            private final Button downloadBtn = new Button(null, new FontIcon(Material2AL.CLOUD_DOWNLOAD));
+            private final Button deleteBtn = new Button(null, new FontIcon(Material2AL.DELETE));
+            private final HBox box = new HBox(4, downloadBtn, deleteBtn);
 
             {
-                downloadBtn.getStyleClass().addAll(Styles.BUTTON_ICON,Styles.FLAT,Styles.ACCENT);
+                downloadBtn.getStyleClass().addAll(Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT);
                 downloadBtn.setOnAction(e -> {
                     CloudFileItem item = getTableRow().getItem();
                     if (item != null) {
-                        viewModel.downloadJson(item);
+                        showDownloadDialog(item);
+                    }
+                });
+
+                deleteBtn.getStyleClass().addAll(Styles.BUTTON_ICON, Styles.FLAT, Styles.DANGER);
+                deleteBtn.setOnAction(e -> {
+                    CloudFileItem item = getTableRow().getItem();
+                    if (item != null) {
+                        showDeleteDialog(item);
                     }
                 });
             }
@@ -133,13 +147,68 @@ public class CloudBackupView extends BaseDialog implements FxmlView<CloudBackupV
             @Override
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty) {
-                    setGraphic(null);
-                } else {
-                    setGraphic(downloadBtn);
-                }
+                setGraphic(empty ? null : box);
                 setText(null);
             }
         });
+    }
+
+
+    public void showDownloadDialog(CloudFileItem item){
+        String name = item.getOriginalName();
+        int idx = name.indexOf('-');
+        String player = idx > 0 ? name.substring(0, idx) : name;
+        Button button = new Button("下载");
+        button.setCancelButton(true);
+        button.getStyleClass().add(Styles.ACCENT);
+        button.setOnAction(event -> {
+            viewModel.downloadJson(item);
+        });
+        JFXDialogLayout dialogLayout = DialogBuilder.create()
+                .title(String.format("确认下载 %s 的备份吗？", player))
+                .message("该操作会下载并覆盖本地记录")
+                .buttons(button)
+                .cancel()
+                .build();
+        NotificationManager.dialog(dialogLayout);
+    }
+
+    public void showUploadDialog(CloudUploadItem item){
+        String player = item.getPlayerId();
+        Button button = new Button("上传");
+        button.setCancelButton(true);
+        button.getStyleClass().add(Styles.ACCENT);
+        button.setOnAction(event -> {
+            viewModel.uploadJson(item);
+        });
+
+        JFXDialogLayout dialogLayout = DialogBuilder.create()
+                .title(String.format("确认上传 %s 的抽卡数据吗？", player))
+                .message("同一个游戏账号的数据，每60分钟只允许上传一次")
+                .buttons(button)
+                .cancel()
+                .build();
+        NotificationManager.dialog(dialogLayout);
+    }
+
+
+    public void showDeleteDialog(CloudFileItem item){
+        String name = item.getOriginalName();
+        int idx = name.indexOf('-');
+        String player = idx > 0 ? name.substring(0, idx) : name;
+
+        Button button = new Button("删除");
+        button.setCancelButton(true);
+        button.getStyleClass().add(Styles.DANGER);
+        button.setOnAction(event -> {
+            viewModel.deleteJson(item);
+        });
+        JFXDialogLayout dialogLayout = DialogBuilder.create()
+                .title(String.format("确认删除 %s 的备份吗？", player))
+                .message("注意该操作不可逆")
+                .buttons(button)
+                .cancel()
+                .build();
+        NotificationManager.dialog(dialogLayout);
     }
 }

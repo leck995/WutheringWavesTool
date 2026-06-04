@@ -43,7 +43,7 @@
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" />
                            </HBox.margin></Separator>
-                        <ToggleButton contentDisplay="BOTTOM" layoutX="28.0" layoutY="10.0" mnemonicParsing="false" onAction="#toCloudBackupChild" styleClass="child-select" text="云同步" toggleGroup="$childSelectedToggle">
+                        <ToggleButton contentDisplay="BOTTOM" layoutX="28.0" layoutY="10.0" mnemonicParsing="false" onAction="#toCloudBackupChild" styleClass="child-select" text="云备份" toggleGroup="$childSelectedToggle">
                            <graphic>
                               <Pane prefHeight="200.0" prefWidth="200.0" />
                            </graphic>
