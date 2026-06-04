@@ -40,7 +40,7 @@ public class OwnRoleViewModel extends BaseViewModel {
     private UserInfoDao userInfoDao;
 
     private UserInfo userInfo;
-    public OwnRoleViewModel() {
+    public void initialize() {
         userInfo= userInfoDao.getMain();
         if (userInfo != null) {
             GameRoleDataTask task=new GameRoleDataTask(userInfo);

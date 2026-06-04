@@ -32,7 +32,7 @@ public class SelectedPlayerByLocalViewModel extends BaseViewModel {
 
     private final ObservableList<LocalCacheUser> localCacheUserList = FXCollections.observableArrayList();
 
-    public SelectedPlayerByLocalViewModel() {
+    public void initialize() {
         readLocalCacheUser();
     }
 

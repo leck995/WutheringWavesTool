@@ -141,12 +141,13 @@ public class OwnRoleDetailViewModel implements ViewModel {
         this.userInfo = userInfo;
         this.rolePairList.setAll(rolePairList);
         this.selectIndex.set(selectIndex);
-
-        CompletableFuture.delayedExecutor(300, TimeUnit.MILLISECONDS)
-                .execute(() -> {
-                    load();;
-                });
     }
+
+    public void initialize(){
+        CompletableFuture.delayedExecutor(300, TimeUnit.MILLISECONDS)
+                .execute(this::load);
+    }
+
 
     public void select(int index) {
         selectIndex.set(index);

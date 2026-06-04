@@ -27,7 +27,7 @@ public class SelectedPlayerByKujiequViewModel extends BaseViewModel {
 
     private final ObservableList<UserInfo> userInfoList = FXCollections.observableArrayList();
 
-    public SelectedPlayerByKujiequViewModel() {
+    public void initialize() {
         getUserInfo();
     }
 

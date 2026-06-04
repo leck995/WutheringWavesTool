@@ -24,7 +24,7 @@ public class RedemptionCodeViewModel extends BaseViewModel {
     private final ObservableList<RedemptionCodeItem> globalCodeList = FXCollections.observableArrayList();
     private final SimpleBooleanProperty loading = new SimpleBooleanProperty(false);
 
-    public RedemptionCodeViewModel() {
+    public void initialize() {
         loadRedemptionCodes();
     }
 

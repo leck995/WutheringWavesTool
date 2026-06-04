@@ -70,14 +70,10 @@ public class CardCommonAnalysisViewModel implements ViewModel {
     private SimpleBooleanProperty empty = new SimpleBooleanProperty(false);
     private SimpleBooleanProperty loading = new SimpleBooleanProperty(true);
     public CardCommonAnalysisViewModel(boolean isEmpty) {
-        gameRootDir.bindBidirectional(Config.setting().gameRootDirProperty());
-        player.bindBidirectional(Config.setting().gachaCurrentPlayerIdProperty());
-        //loadFile();
-
         empty.set(isEmpty);
         loading.set(!isEmpty);
-
-
+        gameRootDir.bindBidirectional(Config.setting().gameRootDirProperty());
+        player.bindBidirectional(Config.setting().gachaCurrentPlayerIdProperty());
         NotificationManager.subscribe(NotificationKey.CARD_POOL_USER_UPDATE,(s, objects) -> {
             @SuppressWarnings("unchecked")
             List<AnalysisData> list = (List<AnalysisData>) objects[0];
@@ -91,7 +87,6 @@ public class CardCommonAnalysisViewModel implements ViewModel {
             loading.set(false);
             reset();
         });
-
     }
 
 

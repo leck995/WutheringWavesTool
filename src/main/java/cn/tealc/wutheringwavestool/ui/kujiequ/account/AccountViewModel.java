@@ -25,7 +25,7 @@ public class AccountViewModel extends BaseViewModel {
 
     private final ObservableList<UserInfo> accountList = FXCollections.observableArrayList();
 
-    public AccountViewModel() {
+    public void initialize() {
         refreshUserList();
         NotificationManager.subscribe(NotificationKey.ACCOUNT_UPDATE, (s, objects) -> refreshUserList());
     }

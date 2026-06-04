@@ -64,7 +64,7 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
     private SimpleBooleanProperty hasSign = new SimpleBooleanProperty(true);
     private SimpleStringProperty signText = new SimpleStringProperty();
 
-    public RoleBoardByKujiequViewModel() {
+    public void initialize() {
         updateKujiequRoleData();
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_ROLE_DATA_REFRESH, (s, objects) -> {
             updateKujiequRoleData();

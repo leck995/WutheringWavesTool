@@ -17,11 +17,13 @@ import java.util.Map;
 public class PluginViewModel implements ViewModel {
     private ObservableList<FxPluginConfig> plugins = FXCollections.observableArrayList();
     public PluginViewModel() {
+
+    }
+    public void initialize(){
         FxPluginManager pluginManager = FxPluginManager.getInstance();
         Map<Integer, FxPluginConfig> pluginMap = pluginManager.getPlugins();
         plugins.addAll(pluginMap.values());
     }
-
     public ObservableList<FxPluginConfig> getPlugins() {
         return plugins;
     }

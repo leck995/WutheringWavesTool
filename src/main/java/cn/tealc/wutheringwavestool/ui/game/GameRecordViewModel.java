@@ -57,7 +57,7 @@ public class GameRecordViewModel extends BaseViewModel {
     @Inject
     private GameRecordService gameRecordService;
 
-    public GameRecordViewModel() {
+    public void initialize() {
         List<String> roleIds = gameRecordDao.getAllRoleId();
         roleIdList.addAll(roleIds);
         if (!Config.setting().isNoKuJieQu()){

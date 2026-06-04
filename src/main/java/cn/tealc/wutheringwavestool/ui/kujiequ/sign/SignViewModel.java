@@ -43,7 +43,7 @@ public class SignViewModel extends BaseViewModel {
     private final SimpleBooleanProperty isSign=new SimpleBooleanProperty(true);
     private final ObservableList<SignRecord> signHistoryList= FXCollections.observableArrayList();
 
-    public SignViewModel() {
+    public void initialize() {
         List<UserInfo> userInfos = userInfoDao.getAll();
         userInfoList.setAll(userInfos);
         UserInfo main = userInfoDao.getMain();

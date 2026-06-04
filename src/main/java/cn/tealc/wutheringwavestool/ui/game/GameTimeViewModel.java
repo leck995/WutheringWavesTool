@@ -44,7 +44,7 @@ public class GameTimeViewModel extends BaseViewModel {
     @Inject
     private UserInfoDao userInfoDao;
 
-    public GameTimeViewModel() {
+    public void initialize() {
         List<String> allRoleId = gameTimeDao.getAllRoleId();
         if (allRoleId == null || allRoleId.isEmpty()) {
             NotificationManager.message(MessageInfo.warning("当前无记录"));

@@ -50,7 +50,7 @@ public class HomeViewModel extends BaseViewModel {
     private SimpleStringProperty gameTimeTipText = new SimpleStringProperty();
     private SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
 
-    public HomeViewModel() {
+    public void initialize() {
         updateGameTime(GameAppListener.getInstance().getDuration());
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_GAME_TIME_UPDATE, (s, objects) -> {
             if (objects.length > 0) {

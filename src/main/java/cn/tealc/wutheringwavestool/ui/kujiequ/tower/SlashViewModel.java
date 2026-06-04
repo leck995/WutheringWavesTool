@@ -55,7 +55,6 @@ public class SlashViewModel extends BaseViewModel {
 
     public SlashViewModel() {
         userInfo = userInfoDao.getMain();
-        initialize();
     }
 
     /**
@@ -66,7 +65,7 @@ public class SlashViewModel extends BaseViewModel {
      * @param:
      * @date: 2025/5/29
      */
-    private void initialize() {
+    public void initialize() {
         if (userInfo != null) {
             SlashDataDetailTask slashDataDetailTask = new SlashDataDetailTask(userInfo);
             GameRoleDataTask roleDataTask = new GameRoleDataTask(userInfo);

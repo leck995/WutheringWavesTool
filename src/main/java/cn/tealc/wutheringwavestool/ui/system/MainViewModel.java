@@ -70,6 +70,10 @@ public class MainViewModel extends BaseViewModel {
     private final AtomicBoolean warningSlash = new AtomicBoolean(false);
 
     public MainViewModel() {
+
+    }
+
+    public void initialize(){
         checkVersion();
         checkGameLogOpen();
         checkRedemptionCodes();
@@ -78,6 +82,8 @@ public class MainViewModel extends BaseViewModel {
         syncAppResources();
         autoSign();
     }
+
+
 
     private void autoSign() {
         AppInjector.getInstance(AutoSignService.class).start();

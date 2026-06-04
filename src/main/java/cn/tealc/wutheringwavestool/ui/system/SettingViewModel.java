@@ -59,7 +59,7 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
 
     private ObservableList<Pair<String, Locale>> languages = FXCollections.observableArrayList();
 
-    public SettingViewModel() {
+    public void initialize(){
         startWithAnalysis.bindBidirectional(Config.setting().firstViewWithPoolAnalysisProperty());
         exitWhenGameOver.bindBidirectional(Config.setting().exitWhenGameOverProperty());
         hideWhenGameStart.bindBidirectional(Config.setting().hideWhenGameStartProperty());
@@ -100,6 +100,7 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
                         new Pair<>("English", Locale.ENGLISH)
                 ));
     }
+
 
     public void changeBackground() {
         MvvmFX.getNotificationCenter().publish(NotificationKey.CHANGE_BG);

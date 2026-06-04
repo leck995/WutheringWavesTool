@@ -33,7 +33,7 @@ public class ResourceBriefingViewModel extends BaseViewModel {
     private Briefing briefing;
     private UserInfo userInfo;
     private BriefingDetailGetTask.Type currentType = BriefingDetailGetTask.Type.MONTH;
-    public ResourceBriefingViewModel() {
+    public void initialize() {
         userInfo = userInfoDao.getMain();
         initList();
     }

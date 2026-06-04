@@ -35,7 +35,7 @@ import java.util.concurrent.Future;
  * @create: 2024-10-15 23:40
  */
 public class TowerViewModel extends BaseViewModel {
-    private final UserInfo userInfo;
+    private UserInfo userInfo;
     private final ObservableList<Difficulty> difficultyList = FXCollections.observableArrayList();
     private final ObservableList<TowerArea> towerAreaList = FXCollections.observableArrayList();
     private final ObservableList<Pair<Long,Pair<String,String>>> towerHistoryList = FXCollections.observableArrayList();
@@ -50,15 +50,15 @@ public class TowerViewModel extends BaseViewModel {
     private GameTowerDataDao gameTowerDataDao;
 
     public TowerViewModel() {
-        userInfo = userInfoDao.getMain();
-        if (userInfo != null) {
-           initialize();
-        }
+
     }
 
-    private void initialize(){
-        initData();
-        initHistory();
+    public void initialize(){
+        userInfo = userInfoDao.getMain();
+        if (userInfo != null) {
+            initData();
+            initHistory();
+        }
     }
 
     private void initData(){

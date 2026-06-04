@@ -71,7 +71,7 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
     private SimpleObjectProperty<Image> headIcon = new SimpleObjectProperty<>();
 
 
-    public RoleBoardByLocalViewModel() {
+    public void initialize() {
         updateRoleData();
         NotificationManager.subscribe(NotificationKey.HOME_ROLE_DATA_REFRESH, (s, objects) -> {
             updateRoleData();
