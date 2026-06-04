@@ -1,10 +1,8 @@
 package cn.tealc.wutheringwavestool.ui.gacha;
 
 import atlantafx.base.theme.Styles;
-import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.CloudFileItem;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.thread.system.gachaUpload.CloudFileDownloadTask;
+import cn.tealc.wutheringwavestool.model.CloudUploadItem;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -12,9 +10,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.layout.VBox;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
 
@@ -40,9 +40,62 @@ public class CloudBackupView extends BaseDialog implements FxmlView<CloudBackupV
     @FXML
     private TableColumn<CloudFileItem, String> downloadActionCol;
 
+    @FXML
+    private Button refreshBtn;
+
+    @FXML
+    private Label loadingLabel;
+
+    @FXML
+    private VBox errorBox;
+
+    @FXML
+    private Button errorRetryBtn;
+
+    @FXML
+    private TableView<CloudUploadItem> uploadTable;
+
+    @FXML
+    private TableColumn<CloudUploadItem, String> playerIdTCol;
+
+    @FXML
+    private TableColumn<CloudUploadItem, String> funcTCol;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         downloadTable.setItems(viewModel.getFileList());
+        uploadTable.setItems(viewModel.getUploadList());
+
+        loadingLabel.visibleProperty().bind(viewModel.loadingProperty());
+        errorBox.visibleProperty().bind(viewModel.failedProperty());
+        downloadTable.visibleProperty().bind(viewModel.loadedProperty());
+
+        refreshBtn.setOnAction(e -> viewModel.refresh());
+        errorRetryBtn.setOnAction(e -> viewModel.refresh());
+
+        playerIdTCol.setCellValueFactory(param ->
+                new SimpleStringProperty(param.getValue().getPlayerId()));
+
+        funcTCol.setCellFactory(param -> new TableCell<>() {
+            private final Button uploadBtn = new Button(null, new FontIcon(Material2AL.CLOUD_UPLOAD));
+
+            {
+                uploadBtn.getStyleClass().addAll(Styles.BUTTON_ICON, Styles.FLAT, Styles.ACCENT);
+                uploadBtn.setOnAction(e -> {
+                    CloudUploadItem item = getTableRow().getItem();
+                    if (item != null) {
+                        viewModel.uploadJson(item);
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : uploadBtn);
+                setText(null);
+            }
+        });
 
         fileNameCol.setCellValueFactory(param -> {
             String name = param.getValue().getOriginalName();

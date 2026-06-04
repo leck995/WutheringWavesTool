@@ -85,7 +85,7 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
                 .create()
                 .title(title)
                 .message(message)
-                .button("上传", event -> {
+                .button("上传", null,true,event -> {
                     viewModel.uploadGachaFile();
                 })
                 .cancel("取消").build();

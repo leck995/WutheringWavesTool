@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
@@ -13,28 +14,43 @@
          <children>
             <VBox spacing="10.0" styleClass="cloud-card" HBox.hgrow="ALWAYS">
                <children>
-                  <Label styleClass="title-2" text="下载" />
-                  <TableView fx:id="downloadTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                    <columns>
-                      <TableColumn fx:id="fileNameCol" prefWidth="75.0" text="文件" />
-                      <TableColumn fx:id="dateCol" prefWidth="75.0" text="日期" />
-                      <TableColumn fx:id="downloadActionCol" maxWidth="100.0" prefWidth="75.0" resizable="false" text="操作" />
-                    </columns>
-                     <columnResizePolicy>
-                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                     </columnResizePolicy>
-                  </TableView>
+                  <HBox alignment="CENTER_LEFT">
+                     <children>
+                        <Label styleClass="title-2" text="下载" HBox.hgrow="ALWAYS" />
+                        <Button fx:id="refreshBtn" styleClass="refresh-btn" text="刷新" />
+                     </children>
+                  </HBox>
+                  <StackPane VBox.vgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="loadingLabel" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="text-muted" text="加载中..." StackPane.alignment="CENTER" />
+                        <VBox fx:id="errorBox" alignment="CENTER" spacing="10.0">
+                           <children>
+                              <Label styleClass="text-muted" text="加载失败" />
+                              <Button fx:id="errorRetryBtn" styleClass="retry-btn" text="重试" />
+                           </children>
+                        </VBox>
+                        <TableView fx:id="downloadTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                          <columns>
+                            <TableColumn fx:id="fileNameCol" prefWidth="75.0" text="文件" />
+                            <TableColumn fx:id="dateCol" prefWidth="75.0" text="日期" />
+                            <TableColumn fx:id="downloadActionCol" maxWidth="100.0" prefWidth="75.0" resizable="false" text="操作" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                        </TableView>
+                     </children>
+                  </StackPane>
                </children>
             </VBox>
-            <StackPane HBox.hgrow="ALWAYS">
+            <VBox prefHeight="300.0" prefWidth="100.0" spacing="10.0" HBox.hgrow="ALWAYS">
                <children>
-                  <VBox disable="true" prefHeight="200.0" prefWidth="100.0" spacing="10.0" styleClass="cloud-card" visible="false">
+                  <VBox spacing="10.0" styleClass="cloud-card" VBox.vgrow="ALWAYS">
                      <children>
                         <Label styleClass="title-2" text="上传" />
                         <TableView fx:id="uploadTable" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                           <columns>
                             <TableColumn fx:id="playerIdTCol" prefWidth="75.0" text="玩家" />
-                              <TableColumn fx:id="jsonFIleTCol" prefWidth="75.0" text="文件" />
                             <TableColumn fx:id="funcTCol" maxWidth="100.0" prefWidth="75.0" resizable="false" text="操作" />
                           </columns>
                            <columnResizePolicy>
@@ -43,9 +59,13 @@
                         </TableView>
                      </children>
                   </VBox>
-                  <Label styleClass="text-muted" text="最多支持5个游戏账号抽卡记录云备份&#10;每个账号最多保存3个抽卡记录&#10;&#10;当获取最新记录时，会自动弹出备份提示框，&#10;供用户选择是否备份&#10;&#10;受限于服务器压力，每个游戏账号在60分钟内&#10;只允许备份一次" />
+                  <VBox styleClass="cloud-card">
+                     <children>
+                        <Label styleClass="text-muted" text="最多支持5个游戏账号抽卡记录云备份&#10;每个账号最多保存3个抽卡记录&#10;当获取最新记录时，会自动弹出备份提示框，&#10;供用户选择是否备份&#10;&#10;受限于服务器压力，每个游戏账号在60分钟内&#10;只允许备份一次" wrapText="true" />
+                     </children>
+                  </VBox>
                </children>
-            </StackPane>
+            </VBox>
          </children>
       </HBox>
    </children>

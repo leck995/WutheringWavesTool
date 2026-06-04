@@ -16,15 +16,15 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
-public class GachaUploadTask extends Task<ResponseBody<FileUploadResult>> {
-    private static final Logger LOG = LoggerFactory.getLogger(GachaUploadTask.class);
+public class GachaCloudUploadTask extends Task<ResponseBody<FileUploadResult>> {
+    private static final Logger LOG = LoggerFactory.getLogger(GachaCloudUploadTask.class);
 
     private final String username;
     private final String password;
     private final String filename;
     private final File file;
 
-    public GachaUploadTask(String username, String password, String filename, File file) {
+    public GachaCloudUploadTask(String username, String password, String filename, File file) {
         this.username = username;
         this.password = password;
         this.filename = filename;

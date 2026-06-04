@@ -10,7 +10,7 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.system.CardPoolAnalysisTask;
 import cn.tealc.wutheringwavestool.thread.system.CardPoolRequestTask;
-import cn.tealc.wutheringwavestool.thread.system.gachaUpload.GachaUploadTask;
+import cn.tealc.wutheringwavestool.thread.system.gachaUpload.GachaCloudUploadTask;
 import cn.tealc.wutheringwavestool.util.FileIO;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -188,7 +188,7 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
             return;
         }
 
-        GachaUploadTask task = new GachaUploadTask(username,password,playerId,dateJson);
+        GachaCloudUploadTask task = new GachaCloudUploadTask(username,password,playerId,dateJson);
         task.setOnSucceeded(event -> {
             if (task.getValue().getCode() == 200){
                 NotificationManager.message(MessageInfo.success("选中用户的抽卡数据备份成功"));
