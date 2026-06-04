@@ -1,9 +1,11 @@
 package cn.tealc.wutheringwavestool.ui.gacha;
 
 import atlantafx.base.theme.Styles;
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.CloudFileItem;
 import cn.tealc.wutheringwavestool.model.CloudUploadItem;
+import cn.tealc.wutheringwavestool.service.ConfigService;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
 import cn.tealc.wutheringwavestool.util.DialogBuilder;
 import com.jfoenixN.controls.JFXDialogLayout;
@@ -25,6 +27,7 @@ import org.kordamp.ikonli.material2.Material2AL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class CloudBackupView extends BaseDialog implements FxmlView<CloudBackupViewModel>, Initializable {
@@ -151,6 +154,42 @@ public class CloudBackupView extends BaseDialog implements FxmlView<CloudBackupV
                 setText(null);
             }
         });
+
+        ConfigService configService = AppInjector.getInstance(ConfigService.class);
+        Optional<Boolean> tip = configService.getBoolean("CLOUD_BUCKUP_TIP");
+        if (tip.isPresent()){
+            if (!tip.get()){
+                showUseTip();
+            }
+        }else {
+            showUseTip();
+        }
+    }
+
+
+    private void showUseTip(){
+        Button button = new Button("我已知晓");
+        button.setCancelButton(true);
+        button.getStyleClass().add(Styles.ACCENT);
+        button.setOnAction(event -> {
+            ConfigService configService = AppInjector.getInstance(ConfigService.class);
+            configService.set("CLOUD_BUCKUP_TIP",true);
+        });
+
+        JFXDialogLayout dialogLayout = DialogBuilder.create()
+                .title("关于云备份")
+                .message("""
+                        这是一个测试功能，加上服务器性能令人捉急，目前仅对赞助过助手的用户使用，
+                        
+                        若您曾赞助过助手的开发，可以通过微信或支付宝查询订单号，前往 账号 验证，验证完成后即可使用；
+                        若您无法找回订单号，可与开发者联系获取帮助；
+                        
+                        由于处于测试阶段，且受服务器网络影响，可能会存在响应慢，错误等情况，敬请谅解。
+                        """)
+                .buttons(button)
+                .cancel()
+                .build();
+        NotificationManager.dialog(dialogLayout);
     }
 
 

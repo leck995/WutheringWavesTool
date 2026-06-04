@@ -10,7 +10,9 @@ import cn.tealc.wutheringwavestool.util.FileIO;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LogFileUtil;
+import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
@@ -251,6 +253,25 @@ public class CardPoolRequestTask extends Task<ResponseBody<Map<String, List<Card
 
 
     /**
+     * 计算抽卡次数
+     * @param data
+     * @return int
+     * @author leck
+     * @date 2026/06/04
+     */
+    private int calculateMap(Map<String, List<CardInfo>> data){
+        int count = 0;
+
+        for (String key : data.keySet()) {
+            List<CardInfo> cardInfos = data.get(key);
+            if (cardInfos != null){
+                count += cardInfos.size();
+            }
+        }
+        return count;
+    }
+
+    /**
      * @description: 保存角色及卡池信息至本地
      * @param:	params
      * @return  void
@@ -263,7 +284,24 @@ public class CardPoolRequestTask extends Task<ResponseBody<Map<String, List<Card
         File dateJson=new File(String.format("data/%s/data.json",playerId));
 
 
-        if (poolJson.exists()){ //存在则备份
+        if (poolJson.exists()){
+/*            try {
+                Map<String, List<CardInfo>> oldListMap = mapper.readValue(poolJson, new TypeReference<Map<String, List<CardInfo>>>() {
+                });
+                int size1 = calculateMap(oldListMap);
+                int size2 = calculateMap(data);
+                if (size1 == size2){
+                    //旧数据与新数据大概率一样
+                    //return true;
+                }
+            } catch (StreamReadException e) {
+                throw new RuntimeException(e);
+            } catch (DatabindException e) {
+                throw new RuntimeException(e);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }*/
+            //存在则备份
             long time = poolJson.lastModified();
             Calendar calendar = Calendar.getInstance();
             calendar.set(Calendar.HOUR_OF_DAY, 0);

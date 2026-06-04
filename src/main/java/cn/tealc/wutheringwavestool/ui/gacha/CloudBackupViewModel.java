@@ -16,12 +16,16 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.List;
 import java.util.Map;
 
 public class CloudBackupViewModel extends BaseViewModel {
+
+    private static final Logger LOG = LoggerFactory.getLogger(CloudBackupViewModel.class);
     private final ObservableList<CloudFileItem> fileList = FXCollections.observableArrayList();
     private final ObservableList<CloudUploadItem> uploadList = FXCollections.observableArrayList();
     private final SimpleBooleanProperty loading = new SimpleBooleanProperty(false);
@@ -129,8 +133,11 @@ public class CloudBackupViewModel extends BaseViewModel {
                 NotificationManager.message(MessageInfo.warning("从云端取回记录失败，原因："+value.getMsg()));
             }
         });
-        task.setOnFailed(ev ->
-                NotificationManager.message(MessageInfo.error("下载失败: " + name)));
+        task.setOnFailed(ev ->{
+            LOG.error("上传抽卡记录错误:{}",ev.getSource().getException().getMessage());
+            NotificationManager.message(MessageInfo.error("下载失败: " + name));
+                });
+
         AppInjector.getInstance(TaskManageService.class).execute(task);
     }
 
