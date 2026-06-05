@@ -86,7 +86,7 @@ public class NewTowerView implements FxmlView<NewTowerViewModel>, Initializable 
         });
 
         towerHistoryListview.setItems(viewModel.getHistoryList());
-        towerHistoryListview.setCellFactory(difficultyListView -> new SlashView.HistoryCell());
+        towerHistoryListview.setCellFactory(difficultyListView -> new HistoryCell());
         towerHistoryListview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 viewModel.changHistory(newValue.getKey());
@@ -151,7 +151,7 @@ public class NewTowerView implements FxmlView<NewTowerViewModel>, Initializable 
             super.updateItem(pair, b);
             if (!b) {
                 setDisable(false);
-                title.setText(pair.getValue().getKey() + "--" + pair.getValue().getValue());
+                title.setText(pair.getValue().getKey() + " " + pair.getValue().getValue());
                 setGraphic(child);
             } else {
                 title.setText(null);

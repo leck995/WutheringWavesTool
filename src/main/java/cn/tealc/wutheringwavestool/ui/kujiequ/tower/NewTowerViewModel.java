@@ -1,21 +1,20 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 
+import cn.tealc.wutheringwavestool.dao.GameNewTowerDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
+import cn.tealc.wutheringwavestool.model.tower.SlashDataForDB;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.kuro.kujiequ.model.newTowerData.NewTowerData;
 import com.kuro.kujiequ.model.newTowerData.NewTowerModeDetail;
-import com.kuro.kujiequ.model.newTowerData.NewTowerRole;
 import com.kuro.kujiequ.model.newTowerData.NewTowerTeam;
 import com.kuro.kujiequ.model.roleData.Role;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.model.slash.Challenge;
-import com.kuro.kujiequ.model.slash.SlashData;
-import com.kuro.kujiequ.model.slash.SlashDifficulty;
 import com.kuro.kujiequ.thread.rolebox.role.GameRoleDataTask;
-import com.kuro.kujiequ.thread.rolebox.slash.SlashDataDetailTask;
 import com.kuro.kujiequ.thread.rolebox.tower.NewTowerDataDetailTask;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -25,14 +24,7 @@ import javafx.event.EventHandler;
 import javafx.util.Pair;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.Future;
 
 public class NewTowerViewModel extends BaseViewModel {
@@ -40,6 +32,9 @@ public class NewTowerViewModel extends BaseViewModel {
     private ObjectMapper objectMapper;
     @Inject
     private UserInfoDao userInfoDao;
+    @Inject
+    private GameNewTowerDao gameNewTowerDao;
+
     private final ObservableList<NewTowerModeDetail> difficulties = FXCollections.observableArrayList();
     private final ObservableList<NewTowerTeam> teams = FXCollections.observableArrayList();
     private final ObservableList<Pair<Long, Pair<String, String>>> historyList = FXCollections.observableArrayList();
@@ -49,16 +44,18 @@ public class NewTowerViewModel extends BaseViewModel {
     private final SimpleStringProperty progressInfo = new SimpleStringProperty();
     private final SimpleStringProperty rankText = new SimpleStringProperty();
     private final SimpleDateFormat endFormat = new SimpleDateFormat("yyyy.MM.dd");
-    private final DateTimeFormatter startFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd");
     private final Map<Integer, Role> roleMap = new HashMap<>();
     private UserInfo userInfo;
+    private List<NewTowerModeDetail> sourceModeDetails;
+    private long sourceEndTimeMillis;
 
-    public void initialize(){
+    public void initialize() {
         userInfo = userInfoDao.getMain();
         loadData();
+        initHistory();
     }
 
-    public void loadData(){
+    public void loadData() {
         if (userInfo != null) {
             NewTowerDataDetailTask towerDataDetailTask = new NewTowerDataDetailTask(userInfo);
             GameRoleDataTask roleDataTask = new GameRoleDataTask(userInfo);
@@ -66,7 +63,7 @@ public class NewTowerViewModel extends BaseViewModel {
                 if (towerDataDetailTask.state() == Future.State.SUCCESS && roleDataTask.state() == Future.State.SUCCESS) {
                     updateRoleMap(roleDataTask.getValue());
                     ResponseBody<NewTowerData> value = towerDataDetailTask.getValue();
-                    if (value.getCode() == 200){
+                    if (value.getCode() == 200) {
                         NewTowerData newTowerData = value.getData();
                         updateData(newTowerData);
                     }
@@ -79,20 +76,26 @@ public class NewTowerViewModel extends BaseViewModel {
         }
     }
 
-
     private void updateData(NewTowerData newTowerData) {
-        difficulties.setAll(newTowerData.getModeDetails());
+        sourceEndTimeMillis = newTowerData.getEndTime();
+        sourceModeDetails = newTowerData.getModeDetails();
+        difficulties.setAll(sourceModeDetails);
         NewTowerModeDetail first = difficulties.getFirst();
         title.set(modeName(first));
         teams.setAll(first.getTeams());
         updateSummary(first);
-        long milliseconds = newTowerData.getEndTime();
-        long millisecondsInADay = 24 * 60 * 60 * 1000;
-        long millisecondsInAnHour = 60 * 60 * 1000;
-        long days = milliseconds / millisecondsInADay;
-        milliseconds %= millisecondsInADay; // 剩余毫秒数
-        long hours = milliseconds / millisecondsInAnHour;
-        endTime.set(String.format("%d天%d小时后刷新", days, hours));
+        refreshEndTime();
+    }
+
+    private void initHistory() {
+        if (userInfo != null) {
+            List<Long> endTimeList = gameNewTowerDao.getEndTimesByRoleId(userInfo.getRoleId());
+            endTimeList.forEach(endTime -> {
+                Date date = new Date(endTime);
+                String endDay = endFormat.format(date);
+                historyList.add(new Pair<>(endTime, new Pair<>(endDay, "前的记录")));
+            });
+        }
     }
 
     private void updateRoleMap(ResponseBody<List<Role>> roles) {
@@ -107,6 +110,40 @@ public class NewTowerViewModel extends BaseViewModel {
         title.set(modeName(detail));
         teams.setAll(detail.getTeams());
         updateSummary(detail);
+        refreshEndTime();
+    }
+
+    private void refreshEndTime() {
+        long milliseconds = sourceEndTimeMillis;
+        long millisecondsInADay = 24 * 60 * 60 * 1000;
+        long millisecondsInAnHour = 60 * 60 * 1000;
+        long days = milliseconds / millisecondsInADay;
+        milliseconds %= millisecondsInADay;
+        long hours = milliseconds / millisecondsInAnHour;
+        endTime.set(String.format("%d天%d小时后刷新", days, hours));
+    }
+
+    public void changHistory(long timestamp) {
+        Optional<SlashDataForDB> data = gameNewTowerDao.getByRoleIdAndEndTime(userInfo.getRoleId(), timestamp);
+        data.ifPresent(d -> {
+            try {
+                List<NewTowerModeDetail> list = objectMapper.readValue(d.getData(),
+                        new TypeReference<List<NewTowerModeDetail>>() {});
+                updateHistoryData(list);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    private void updateHistoryData(List<NewTowerModeDetail> list) {
+        title.set("历史-终焉矩阵");
+        if (!list.isEmpty()) {
+            NewTowerModeDetail detail = list.getFirst();
+            teams.setAll(detail.getTeams());
+            updateSummary(detail);
+        }
+        endTime.set("");
     }
 
     private static String modeName(NewTowerModeDetail detail) {
@@ -118,7 +155,7 @@ public class NewTowerViewModel extends BaseViewModel {
     private void updateSummary(NewTowerModeDetail detail) {
         totalScore.set(String.format("%d", detail.getScore()));
         if (detail.getModeId() == 0) {
-            progressInfo.set(String.format("第1轮  %d/%d", detail.getPassBoss(), detail.getBossCount()));
+            progressInfo.set(String.format("%d/%d", detail.getPassBoss(), detail.getBossCount()));
         } else {
             progressInfo.set(String.format("第%d轮  %d/%d", detail.getRound(), detail.getPassBoss(), detail.getBossCount()));
         }
@@ -126,9 +163,6 @@ public class NewTowerViewModel extends BaseViewModel {
         if (rank >= 0 && rank < RANK_MAP.length) {
             rankText.set(RANK_MAP[rank]);
         }
-    }
-
-    public void changHistory(Long key) {
     }
 
     public ObservableList<NewTowerModeDetail> getDifficulties() {
@@ -174,6 +208,4 @@ public class NewTowerViewModel extends BaseViewModel {
     public Map<Integer, Role> getRoleMap() {
         return roleMap;
     }
-
-
 }

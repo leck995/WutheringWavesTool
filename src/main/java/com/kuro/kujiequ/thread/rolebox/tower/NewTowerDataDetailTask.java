@@ -1,20 +1,18 @@
 package com.kuro.kujiequ.thread.rolebox.tower;
 
 import cn.tealc.wutheringwavestool.base.AppInjector;
-import cn.tealc.wutheringwavestool.dao.GameTowerDataDao;
+import cn.tealc.wutheringwavestool.dao.GameNewTowerDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.ResponseBodyForApi;
-import cn.tealc.wutheringwavestool.model.tower.TowerData;
+import cn.tealc.wutheringwavestool.model.tower.SlashDataForDB;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuro.kujiequ.AccessTokenException;
 import com.kuro.kujiequ.ApiConfig;
 import com.kuro.kujiequ.model.newTowerData.NewTowerData;
+import com.kuro.kujiequ.model.newTowerData.NewTowerModeDetail;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.model.towerData.Difficulty;
-import com.kuro.kujiequ.model.towerData.DifficultyTotal;
-import com.kuro.kujiequ.model.towerData.Floor;
-import com.kuro.kujiequ.model.towerData.TowerArea;
 import com.kuro.kujiequ.thread.BaseTask;
 import com.kuro.util.HTTPRequestMultipartBody;
 import org.slf4j.Logger;
@@ -24,7 +22,7 @@ import java.io.IOException;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.util.Calendar;
-import java.util.stream.Collectors;
+import java.util.List;
 
 /**
  * @program: WutheringWavesTool
@@ -67,7 +65,7 @@ public class NewTowerDataDetailTask extends BaseTask<ResponseBody<NewTowerData>>
                     LOG.debug(row);
                     NewTowerData newTowerData = mapper.readValue(row, NewTowerData.class);
                     responseBody.setData(newTowerData);
-                    SaveDataToDB();
+                    saveToDB(newTowerData, mapper);
                     return responseBody;
                 } else {
                     return new ResponseBody<>(1, responseBodyForApi.getMsg(), false);
@@ -86,23 +84,33 @@ public class NewTowerDataDetailTask extends BaseTask<ResponseBody<NewTowerData>>
         }
     }
 
-    private void SaveDataToDB() {
-        /*把深渊数据保存到数据库中*/
+    private void saveToDB(NewTowerData newTowerData, ObjectMapper mapper) throws JsonProcessingException {
+        List<NewTowerModeDetail> list = newTowerData.getModeDetails().stream()
+                .filter(d -> d.isHasRecord() && d.getScore() > 0)
+                .toList();
+        if (list.isEmpty())
+            return;
 
+        String json = mapper.writeValueAsString(list);
+        long seasonEndTime = newTowerData.getEndTime();
+        long date = convertToHourlyTimestamp(System.currentTimeMillis() + seasonEndTime);
 
+        SlashDataForDB data = new SlashDataForDB();
+        data.setRoleId(userInfo.getRoleId());
+        data.setData(json);
+        data.setEndTime(date);
+
+        GameNewTowerDao dataDao = AppInjector.getInstance(GameNewTowerDao.class);
+        dataDao.add(data);
     }
 
-
     /**
-     * @return long
-     * @description: 将给定的时间戳转换成当天4点
-     * @param: timestamp
-     * @date: 2024/10/16
+     * 将给定的时间戳转换成当天4点
      */
-    public long convertToHourlyTimestamp(long timestamp) {
+    private long convertToHourlyTimestamp(long timestamp) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(timestamp);
-        calendar.set(Calendar.HOUR_OF_DAY, 4); // 这里设置为4表示早上4点
+        calendar.set(Calendar.HOUR_OF_DAY, 4);
         calendar.set(Calendar.MINUTE, 0);
         calendar.set(Calendar.SECOND, 0);
         calendar.set(Calendar.MILLISECOND, 0);
