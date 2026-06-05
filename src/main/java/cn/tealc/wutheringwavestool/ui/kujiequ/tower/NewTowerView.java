@@ -70,6 +70,10 @@ public class NewTowerView implements FxmlView<NewTowerViewModel>, Initializable 
 
         difficuityListview.setItems(viewModel.getDifficulties());
         difficuityListview.setCellFactory(c -> new DifficultyCell());
+        viewModel.getDifficulties().addListener((ListChangeListener<NewTowerModeDetail>) change -> {
+            if (!change.getList().isEmpty())
+                difficuityListview.getSelectionModel().selectFirst();
+        });
         difficuityListview.getSelectionModel().selectedItemProperty().addListener((observableValue, number, t1) ->
         {
             if (t1 != null) {

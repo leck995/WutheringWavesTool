@@ -53,8 +53,10 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
         title.textProperty().bind(viewModel.titleProperty());
         difficuityListview.setItems(viewModel.getDifficultyList());
         difficuityListview.setCellFactory(difficultyListView -> new DifficultyCell());
-
-
+        viewModel.getDifficultyList().addListener((ListChangeListener<Difficulty>) change -> {
+            if (!change.getList().isEmpty())
+                difficuityListview.getSelectionModel().selectFirst();
+        });
 
         difficuityListview.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {

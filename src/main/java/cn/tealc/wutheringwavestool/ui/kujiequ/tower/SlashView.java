@@ -63,6 +63,10 @@ public class SlashView implements FxmlView<SlashViewModel> {
 
         difficuityListview.setItems(viewModel.getDifficulties());
         difficuityListview.setCellFactory(c -> new DifficultyCell());
+        viewModel.getDifficulties().addListener((ListChangeListener<SlashDifficulty>) change -> {
+            if (!change.getList().isEmpty())
+                difficuityListview.getSelectionModel().selectFirst();
+        });
         difficuityListview.getSelectionModel().selectedItemProperty().addListener((observableValue, number, t1) ->
         {
             if (t1 != null) {
