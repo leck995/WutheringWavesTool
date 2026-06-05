@@ -239,6 +239,7 @@ public class OwnRoleDetailView implements FxmlView<OwnRoleDetailViewModel>, Init
         });*/
 
         viewModel.subscribe(OwnRoleDetailViewModel.EVENT_CHANGE_ROLE,(s, objects) -> contentScrollPane.setVvalue(0));
+        viewModel.initialize();
     }
 
 

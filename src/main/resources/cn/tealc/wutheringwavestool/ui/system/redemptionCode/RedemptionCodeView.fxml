@@ -15,7 +15,7 @@
       <Label styleClass="title-2" text="%ui.redemption.title" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
       <HBox layoutX="805.0" layoutY="10.0" spacing="10.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Button mnemonicParsing="false" onAction="#contributorEvent" text="%ui.redemption.contributor">
+            <Button disable="true" mnemonicParsing="false" onAction="#contributorEvent" text="%ui.redemption.contributor" visible="false">
                <styleClass>
                   <String fx:value="flat" />
                   <String fx:value="text-muted" />

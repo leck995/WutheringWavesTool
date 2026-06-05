@@ -19,10 +19,12 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.time.Duration;
 import java.util.Locale;
+import org.apache.commons.codec.binary.Base64;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -35,10 +37,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class ResourcesSyncTask extends Task<String> {
     private static final Logger LOG = LoggerFactory.getLogger(ResourcesSyncTask.class);
-    private static final String ROOT_RESOURCE_URL_1 = "https://raw.githubusercontent.com/leck995/WutheringWavesToolResources/main-24.10.22/data/Root_%s.json";
-    private static final String ROOT_RESOURCE_URL_2 = "https://gitee.com/tealc/WutheringWavesToolResources/raw/main-24.10.22/data/Root_%s.json";
-    private static final String RESOURCE_TEMPLATE_1 = "https://raw.githubusercontent.com/leck995/WutheringWavesToolResources/main-24.10.22/%s";
-    private static final String RESOURCE_TEMPLATE_2 = "https://gitee.com/tealc/WutheringWavesToolResources/raw/main-24.10.22/%s";
+    private static final String ROOT_RESOURCE_URL_1 = "https://raw.githubusercontent.com/leck995/WutheringWavesToolResources/main/data/Root_%s.json";
+    private static final String ROOT_RESOURCE_URL_2 = "https://gitee.com/tealc/WutheringWavesToolResources/raw/main/data/Root_%s.json";
+    private static final String RESOURCE_TEMPLATE_1 = "https://raw.githubusercontent.com/leck995/WutheringWavesToolResources/main/%s";
+    private static final String RESOURCE_TEMPLATE_2 = "https://gitee.com/tealc/WutheringWavesToolResources/raw/main/%s";
     private static final String LOCAL_ROOT_JSON = "assets/data/Root_%s.json";
     private final String url;
     private final String resource_template;
@@ -203,8 +205,24 @@ public class ResourcesSyncTask extends Task<String> {
             if (!dir.exists()) {
                 dir.mkdirs();
             }
-            Files.copy(response.body(), outputFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            String md5Hex = DigestUtils.md5Hex(new FileInputStream(outputFile));
+            byte[] body;
+            try (InputStream is = response.body()) {
+                body = is.readAllBytes();
+            }
+            byte[] data = body;
+            String text = new String(body, StandardCharsets.UTF_8).trim();
+            for (int i = 0; i < 3; i++) {
+                byte[] decoded = Base64.decodeBase64(text);
+                if (decoded == null) break;
+                text = new String(decoded, StandardCharsets.UTF_8).trim();
+                data = decoded;
+                if (text.startsWith("{") || text.startsWith("[")) break;
+            }
+            Files.write(outputFile.toPath(), data, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+            String md5Hex;
+            try (FileInputStream fis = new FileInputStream(outputFile)) {
+                md5Hex = DigestUtils.md5Hex(fis);
+            }
             LOG.debug("资源更新：文件已下载并保存到:{},当前MD5：{}", savePath, md5Hex);
             int count = downloadedCount.incrementAndGet();
             updateProgress(-1, 1.0);
@@ -244,7 +262,15 @@ public class ResourcesSyncTask extends Task<String> {
         try {
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                return response.body();
+                String body = response.body().trim();
+                // 循环解码直到得到有效 JSON（防止双重 Base64 编码）
+                for (int i = 0; i < 3; i++) {
+                    byte[] decoded = Base64.decodeBase64(body);
+                    if (decoded == null) break;
+                    body = new String(decoded, StandardCharsets.UTF_8).trim();
+                    if (body.startsWith("{") || body.startsWith("[")) break;
+                }
+                return body;
             } else {
                 return null;
             }

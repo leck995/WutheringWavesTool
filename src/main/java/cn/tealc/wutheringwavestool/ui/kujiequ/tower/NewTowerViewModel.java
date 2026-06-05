@@ -77,13 +77,18 @@ public class NewTowerViewModel extends BaseViewModel {
     }
 
     private void updateData(NewTowerData newTowerData) {
+        if (newTowerData == null)
+            return;
         sourceEndTimeMillis = newTowerData.getEndTime();
         sourceModeDetails = newTowerData.getModeDetails();
         difficulties.setAll(sourceModeDetails);
-        NewTowerModeDetail first = difficulties.getFirst();
-        title.set(modeName(first));
-        teams.setAll(first.getTeams());
-        updateSummary(first);
+
+        if (!difficulties.isEmpty()){
+            NewTowerModeDetail first = difficulties.getFirst();
+            title.set(modeName(first));
+            teams.setAll(first.getTeams());
+            updateSummary(first);
+        }
         refreshEndTime();
     }
 

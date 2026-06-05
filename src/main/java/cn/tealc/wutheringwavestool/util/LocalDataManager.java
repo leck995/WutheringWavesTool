@@ -38,14 +38,14 @@ public class LocalDataManager {
         }
     }
 
-    public static PhantomWeight getWeight(String roleName){
+    public static PhantomWeight getWeight(String roleId){
         ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
-        File file=new File(String.format(WEIGHT_CUSTOM_DIR_TEMPLATE, Config.setting().getLanguage(),roleName));
+        File file=new File(String.format(WEIGHT_CUSTOM_DIR_TEMPLATE, Config.setting().getLanguage(),roleId));
         try {
             if (file.exists()){
                 return mapper.readValue(file, PhantomWeight.class);
             }else {
-                file=new File(String.format(WEIGHT_DEFAULT_DIR_TEMPLATE, Config.setting().getLanguage(),roleName));
+                file=new File(String.format(WEIGHT_DEFAULT_DIR_TEMPLATE, Config.setting().getLanguage(),roleId));
                 if (file.exists()){
                     return mapper.readValue(file, PhantomWeight.class);
                 }

@@ -283,6 +283,13 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
                 rotateTransition.stop();
             }
         });
+        // 初始状态同步（防止 Task 已在 ViewModel 端注册完成后 View 才监听）
+        if (!taskManageService.getTasks().isEmpty()) {
+            downloadBtn.setVisible(true);
+        }
+        if (taskManageService.isHasActiveTasks()) {
+            rotateTransition.play();
+        }
 
         progressPopup = new Popup();
         progressPopup.setAutoHide(true);

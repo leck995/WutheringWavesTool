@@ -21,6 +21,7 @@ import cn.tealc.wutheringwavestool.model.system.NavData;
 import cn.tealc.wutheringwavestool.thread.system.CheckGameConfigTask;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kuro.kujiequ.model.newTowerData.NewTowerData;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.model.slash.SlashData;
 import com.kuro.kujiequ.model.towerData.DifficultyTotal;
@@ -28,6 +29,7 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.system.CheckVersionTask;
 import com.kuro.kujiequ.thread.rolebox.slash.SlashDataDetailTask;
+import com.kuro.kujiequ.thread.rolebox.tower.NewTowerDataDetailTask;
 import com.kuro.kujiequ.thread.rolebox.tower.TowerDataDetailTask;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -228,6 +230,7 @@ public class MainViewModel extends BaseViewModel {
                 for (int i = 0; i < users.size(); i++) {
                     syncSlash(users.get(i));
                     syncTower(users.get(i));
+                    syncNewTower(users.get(i));
                     if (users.size() > 2){
                         try {
                             Thread.sleep(200); //用户数超过两个，等待200ms
@@ -264,6 +267,24 @@ public class MainViewModel extends BaseViewModel {
             Thread.startVirtualThread(task);
         });
     }
+    private void syncNewTower(UserInfo userInfo) {
+        Thread.startVirtualThread(()->{
+            NewTowerDataDetailTask task = new NewTowerDataDetailTask(userInfo);
+            task.setOnSucceeded(workerStateEvent -> {
+                ResponseBody<NewTowerData> value = task.getValue();
+                if (value.getCode() == 200) {
+                    long milliseconds = value.getData().getEndTime();
+                    long millisecondsInADay = 24 * 60 * 60 * 1000;
+                    double days = (double) milliseconds / (double) millisecondsInADay;
+                    if (days > 0 && days < 1 && warningTower.compareAndSet(false, true)) {//不足一天时,提醒
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.sync.message.tower2")));
+                    }
+                }
+            });
+            Thread.startVirtualThread(task);
+        });
+    }
+
 
     /**
      * 查询用户的海虚记录并保存，当距离结束只剩1天提醒

@@ -84,6 +84,7 @@ public class OwnRoleDetailViewModel implements ViewModel {
 
     private SimpleObjectProperty<Image> roleAttrImage = new SimpleObjectProperty<>();
     private SimpleStringProperty roleName = new SimpleStringProperty();
+    private SimpleIntegerProperty roleId = new SimpleIntegerProperty();
     private SimpleStringProperty roleLevel = new SimpleStringProperty();
     private SimpleObjectProperty<Image> roleImage = new SimpleObjectProperty<>();
     private SimpleStringProperty weaponName = new SimpleStringProperty();
@@ -189,174 +190,169 @@ public class OwnRoleDetailViewModel implements ViewModel {
     }
 
     private void updatePhantomInfo(RoleDetail data) {
-        phantomCost.set(String.format(String.format("COST: %d", data.getPhantomData().getCost())));
+        phantomCost.set(String.format("COST: %d", data.getPhantomData().getCost()));
         fetterDetails.clear();
         totalPhantomValueList.clear();
         phantomStatus.set(null);
         phantomList.clear();
 
-        Thread.startVirtualThread(()->{
+        Thread.startVirtualThread(() -> {
             List<Phantom> equipPhantomList = data.getPhantomData().getEquipPhantomList();
-            Map<String, PhoantomMainProps> totalPhantomValueMap = new HashMap<>();
-            if (equipPhantomList != null) {
-                PhantomWeight weight;
-                if (getRoleName().equals("漂泊者")) {
-                    weight = LocalDataManager.getWeight(getRoleName() + "·" + data.getRole().getAttributeName());
-                } else {
-                    weight = LocalDataManager.getWeight(getRoleName());
-                }
-                int count = 0;
-                if (weight != null) {
-                    Map<String, Integer> subPropWeights = weight.getSubPropWeights();
-                    for (Phantom phantom : equipPhantomList) {
-                        if (phantom == null || phantom.getSubProps() == null) {
-                            continue;
-                        }
-                        int level3 = 0;
-                        int level2 = 0;
-                        int level1 = 0;
-                        int level0 = 0;
-                        LOG.debug("=================" + phantom.getPhantomProp().getName() + "==================");
-                        double subCount = 0.0;
-                        for (PhoantomMainProps subProp : phantom.getSubProps()) {
-
-                            String attributeName = subProp.getAttributeName();
-                            String currentValueString = subProp.getAttributeValue();
-                            if (attributeName.equals("攻击") || attributeName.equals("生命") || attributeName.equals("防御")) {
-                                if (currentValueString.contains("%")) {
-                                    attributeName = attributeName + "百分比";
-                                    subProp.setAttributeName(attributeName);
-                                }
-                            }
-
-
-                            double currentValue = Double.parseDouble(currentValueString.replace("%", ""));
-                            double maxValue = propMaxValueMap.get(attributeName);
-                            Integer level = subPropWeights.get(attributeName);
-
-                            //统计声骸词条总值
-                            PhoantomMainProps totalProps = totalPhantomValueMap.get(attributeName);
-                            if (totalProps != null) {
-                                double v = Double.parseDouble(totalProps.getAttributeValue()) + currentValue;
-                                totalProps.setAttributeValue(String.format("%.1f", v));
-                            } else {
-                                totalProps = new PhoantomMainProps();
-                                totalProps.setAttributeValue(String.format("%.1f", currentValue));
-                                totalProps.setAttributeName(attributeName);
-                                totalProps.setLevel(level);
-                                totalProps.setIconUrl(subProp.getIconUrl());
-                                totalPhantomValueMap.put(attributeName, totalProps);
-                            }
-
-
-                            if (level != null) {
-                                subProp.setLevel(level);
-                                double percent = currentValue / maxValue;
-                                subProp.setPercent(percent);
-                                subProp.setAttributeMaxValue(maxValue);
-                                if (level == 3) {
-                                    level3 += 1;
-                                    subCount += percent;
-                                } else if (level == 2) {
-                                    level2 += 1;
-                                    subCount += percent;
-                                } else if (level == 1) {
-                                    level1 += 1;
-                                    subCount += percent;
-                                } else {
-                                    level0 += 1;
-                                }
-                            }
-
-                        }
-
-                        if (level3 == 2 && level2 + level1 == 3) { //完美
-                            LOG.debug("声骸 {} 已完美", phantom.getPhantomProp().getName());
-                            phantom.setStatus(Phantom.Status.ACE);
-                            count += 5;
-                        } else if (level3 == 2 && level2 + level1 == 2) { //大毕业
-                            LOG.debug("声骸 {} 已大毕业", phantom.getPhantomProp().getName());
-                            phantom.setStatus(Phantom.Status.SSS);
-                            count += 4;
-                        } else if (level3 == 2 && level2 + level1 == 1 || level3 == 1 && level2 + level1 == 3) { //大毕业
-                            LOG.debug("声骸 {} 已毕业", phantom.getPhantomProp().getName());
-                            phantom.setStatus(Phantom.Status.SS);
-                            count += 3;
-                        } else if (level3 == 2 || level3 == 1 && level2 + level1 >= 2) { //小毕业
-                            LOG.debug("声骸 {} 已小毕业", phantom.getPhantomProp().getName());
-                            phantom.setStatus(Phantom.Status.S);
-                            count += 2;
-                        } else {//普通
-                            LOG.debug("声骸 {} 已不太行", phantom.getPhantomProp().getName());
-                            phantom.setStatus(Phantom.Status.N);
-                            count += 1;
-                        }
-
-                        if (level3 == 2 && subCount > 3.5) {
-                            LOG.debug("声骸词条 {} 已完美，分数：{}", phantom.getPhantomProp().getName(), subCount);
-                            phantom.setPropStatus(Phantom.Status.ACE);
-                            count += 5;
-                        } else if (level3 == 2 && subCount > 2.8) {
-                            LOG.debug("声骸词条 {} 已大毕业，分数：{}", phantom.getPhantomProp().getName(), subCount);
-                            phantom.setPropStatus(Phantom.Status.SSS);
-                            count += 4;
-                        } else if (level3 == 2 && subCount > 2.1 || level3 == 1 && subCount > 2.4) {
-                            LOG.debug("声骸词条 {} 已毕业，分数：{}", phantom.getPhantomProp().getName(), subCount);
-                            phantom.setPropStatus(Phantom.Status.SS);
-                            count += 3;
-                        } else if (level3 == 1 && subCount > 1.6 || level3 == 2 && subCount > 1.2) {
-                            LOG.debug("声骸词条 {} 已小毕业，分数：{}", phantom.getPhantomProp().getName(), subCount);
-                            phantom.setPropStatus(Phantom.Status.S);
-                            count += 2;
-                        } else {
-                            LOG.debug("声骸词条 {} 已不太行，分数：{}", phantom.getPhantomProp().getName(), subCount);
-                            phantom.setPropStatus(Phantom.Status.N);
-                            count += 1;
-                        }
-                    }
-                }
-
-                List<PhoantomMainProps> list = totalPhantomValueMap.values().stream().sorted((o1, o2) -> {
-                    if (o1.getLevel() > o2.getLevel()) {
-                        return -1;
-                    } else if (o1.getLevel() < o2.getLevel()) {
-                        return 1;
-                    }
-                    return 0;
-                }).toList();
-
-                int finalCount = count;
-                Platform.runLater(()->{
-                    if (finalCount == 45) {
-                        phantomStatus.set(Phantom.Status.ACE);
-                    } else if (finalCount >= 35) {
-                        phantomStatus.set(Phantom.Status.SSS);
-                    } else if (finalCount >= 25) {
-                        phantomStatus.set(Phantom.Status.SS);
-                    } else if (finalCount >= 18) {
-                        phantomStatus.set(Phantom.Status.S);
-                    } else if(finalCount > 0) {
-                        phantomStatus.set(Phantom.Status.N);
-                    }
-                    totalPhantomValueList.setAll(totalPhantomValueMap.values());
-
-
-                    for (Phantom phantom : equipPhantomList) {
-                        if (phantom != null) {
-                            fetterDetails.add(phantom.getFetterDetail());
-                            phantomList.add(new Pair<>(phantom, LocalResourcesManager.imageBuffer(phantom.getPhantomProp().getIconUrl(), 65, 65, true, true)));
-                        }
-                    }
+            if (equipPhantomList == null) {
+                Platform.runLater(() -> {
                     loading.set(false);
                     publish(EVENT_UPDATE_PHANTOM);
                 });
+                return;
             }
 
-            loading.set(false);
-            publish(EVENT_UPDATE_PHANTOM);
+            PhantomWeight weight = LocalDataManager.getWeight(String.valueOf(roleId.get()));
+            Map<String, Double> totalAccumulator = new HashMap<>();
+            Map<String, PhoantomMainProps> totalPropTemplates = new HashMap<>();
+            int totalScore = 0;
+
+            if (weight != null) {
+                Map<String, Integer> subPropWeights = weight.getSubPropWeights();
+                for (Phantom phantom : equipPhantomList) {
+                    if (phantom == null || phantom.getSubProps() == null) {
+                        continue;
+                    }
+                    int level3 = 0, level2 = 0, level1 = 0;
+                    double subCount = 0.0;
+                    LOG.debug("================={}==================", phantom.getPhantomProp().getName());
+
+                    for (PhoantomMainProps subProp : phantom.getSubProps()) {
+                        String attributeName = subProp.getAttributeName();
+                        String currentValueString = subProp.getAttributeValue();
+                        if (attributeName.equals("攻击") || attributeName.equals("生命") || attributeName.equals("防御")) {
+                            if (currentValueString.contains("%")) {
+                                attributeName = attributeName + "百分比";
+                                subProp.setAttributeName(attributeName);
+                            }
+                        }
+
+                        double currentValue = Double.parseDouble(currentValueString.replace("%", ""));
+                        double maxValue = propMaxValueMap.get(attributeName);
+                        Integer level = subPropWeights.get(attributeName);
+
+                        totalAccumulator.merge(attributeName, currentValue, Double::sum);
+                        if (!totalPropTemplates.containsKey(attributeName)) {
+                            PhoantomMainProps template = new PhoantomMainProps();
+                            template.setAttributeName(attributeName);
+                            template.setLevel(level);
+                            template.setIconUrl(subProp.getIconUrl());
+                            totalPropTemplates.put(attributeName, template);
+                        }
+
+                        if (level != null) {
+                            subProp.setLevel(level);
+                            double percent = currentValue / maxValue;
+                            subProp.setPercent(percent);
+                            subProp.setAttributeMaxValue(maxValue);
+                            if (level == 3) {
+                                level3++;
+                                subCount += percent;
+                            } else if (level == 2) {
+                                level2++;
+                                subCount += percent;
+                            } else if (level == 1) {
+                                level1++;
+                                subCount += percent;
+                            }
+                        }
+                    }
+
+                    totalScore += scorePhantomStatus(level3, level2, level1, phantom);
+                    totalScore += scorePropStatus(level3, level1, subCount, phantom);
+                }
+            }
+
+            List<PhoantomMainProps> totalList = totalAccumulator.entrySet().stream()
+                    .map(e -> {
+                        PhoantomMainProps props = totalPropTemplates.get(e.getKey());
+                        props.setAttributeValue(String.format("%.1f", e.getValue()));
+                        return props;
+                    })
+                    .sorted((o1, o2) -> Integer.compare(o2.getLevel(), o1.getLevel()))
+                    .toList();
+
+            int finalScore = totalScore;
+            Platform.runLater(() -> {
+                phantomStatus.set(scoreToStatus(finalScore));
+                totalPhantomValueList.setAll(totalList);
+                for (Phantom phantom : equipPhantomList) {
+                    if (phantom != null) {
+                        fetterDetails.add(phantom.getFetterDetail());
+                        phantomList.add(new Pair<>(phantom,
+                                LocalResourcesManager.imageBuffer(phantom.getPhantomProp().getIconUrl(), 65, 65, true, true)));
+                    }
+                }
+                loading.set(false);
+                publish(EVENT_UPDATE_PHANTOM);
+            });
         });
+    }
 
+    private static int scorePhantomStatus(int level3, int level2, int level1, Phantom phantom) {
+        int sum = level2 + level1;
+        if (level3 == 2 && sum == 3) {
+            LOG.debug("声骸 {} 已完美", phantom.getPhantomProp().getName());
+            phantom.setStatus(Phantom.Status.ACE);
+            return 5;
+        }
+        if (level3 == 2 && sum == 2) {
+            LOG.debug("声骸 {} 已大毕业", phantom.getPhantomProp().getName());
+            phantom.setStatus(Phantom.Status.SSS);
+            return 4;
+        }
+        if (level3 == 2 && sum == 1 || level3 == 1 && sum == 3) {
+            LOG.debug("声骸 {} 已毕业", phantom.getPhantomProp().getName());
+            phantom.setStatus(Phantom.Status.SS);
+            return 3;
+        }
+        if (level3 == 2 || level3 == 1 && sum >= 2) {
+            LOG.debug("声骸 {} 已小毕业", phantom.getPhantomProp().getName());
+            phantom.setStatus(Phantom.Status.S);
+            return 2;
+        }
+        LOG.debug("声骸 {} 已不太行", phantom.getPhantomProp().getName());
+        phantom.setStatus(Phantom.Status.N);
+        return 1;
+    }
 
+    private static int scorePropStatus(int level3, int level1, double subCount, Phantom phantom) {
+        if (level3 == 2 && subCount > 3.5) {
+            LOG.debug("声骸词条 {} 已完美，分数：{}", phantom.getPhantomProp().getName(), subCount);
+            phantom.setPropStatus(Phantom.Status.ACE);
+            return 5;
+        }
+        if (level3 == 2 && subCount > 2.8) {
+            LOG.debug("声骸词条 {} 已大毕业，分数：{}", phantom.getPhantomProp().getName(), subCount);
+            phantom.setPropStatus(Phantom.Status.SSS);
+            return 4;
+        }
+        if (level3 == 2 && subCount > 2.1 || level3 == 1 && subCount > 2.4) {
+            LOG.debug("声骸词条 {} 已毕业，分数：{}", phantom.getPhantomProp().getName(), subCount);
+            phantom.setPropStatus(Phantom.Status.SS);
+            return 3;
+        }
+        if (level3 == 1 && subCount > 1.6 || level3 == 2 && subCount > 1.2) {
+            LOG.debug("声骸词条 {} 已小毕业，分数：{}", phantom.getPhantomProp().getName(), subCount);
+            phantom.setPropStatus(Phantom.Status.S);
+            return 2;
+        }
+        LOG.debug("声骸词条 {} 已不太行，分数：{}", phantom.getPhantomProp().getName(), subCount);
+        phantom.setPropStatus(Phantom.Status.N);
+        return 1;
+    }
+
+    private static Phantom.Status scoreToStatus(int score) {
+        if (score == 45) return Phantom.Status.ACE;
+        if (score >= 35) return Phantom.Status.SSS;
+        if (score >= 25) return Phantom.Status.SS;
+        if (score >= 18) return Phantom.Status.S;
+        if (score > 0) return Phantom.Status.N;
+        return null;
     }
 
     private void updateChainInfo(RoleDetail data) {
@@ -405,6 +401,7 @@ public class OwnRoleDetailViewModel implements ViewModel {
 
     private void updateRoleInfo(RoleDetail data) {
         roleName.set(data.getRole().getRoleName());
+        roleId.set(data.getRole().getRoleId());
         roleLevel.set(String.format("LV.%d -- %d", data.getRole().getLevel(), data.getRole().getChainUnlockNum()));
         roleImage.set(LocalResourcesManager.imageBuffer(data.getRole().getRolePicUrl(), 500, 380, true, true));
 
