@@ -25,19 +25,24 @@
                         </VBox>
                     </children>
                 </VBox>
-                <HBox alignment="CENTER_LEFT" layoutX="220.0" layoutY="10.0" spacing="20.0" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                <HBox alignment="CENTER_LEFT" layoutX="220.0" layoutY="10.0" spacing="12.0" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                     <children>
                         <Label fx:id="title" styleClass="title-2" text="终焉矩阵" />
                         <Spacer />
-                        <HBox fx:id="infoPane" alignment="CENTER" spacing="20.0">
-                            <children>
-                                <HBox alignment="CENTER_LEFT" />
-                                <Label fx:id="seasonEndTimeLabel" styleClass="end-time" text="刷新" />
-                            </children>
-                        </HBox>
+                        <Label fx:id="seasonEndTimeLabel" styleClass="end-time" text="刷新" />
                     </children>
                 </HBox>
-                <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="right" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
+                <HBox fx:id="summaryBox" alignment="CENTER_LEFT" layoutX="220.0" layoutY="42.0" spacing="25.0" styleClass="summary-bar" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0">
+                    <children>
+                        <Label fx:id="totalScoreLabel" styleClass="summary-score" text="0">
+                     <graphic>
+                        <Label text="累计积分：" />
+                     </graphic></Label>
+                        <Label fx:id="progressLabel" styleClass="summary-progress" text="第1轮 5/5" />
+                        <Label fx:id="rankLabel" styleClass="summary-rank" text="S" />
+                    </children>
+                </HBox>
+                <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="right" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="120.0">
                     <content>
                         <FlowPane fx:id="areaFlowPane" columnHalignment="CENTER" hgap="50.0" vgap="40.0" />
                     </content>

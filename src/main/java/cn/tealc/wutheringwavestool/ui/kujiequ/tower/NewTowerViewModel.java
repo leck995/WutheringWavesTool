@@ -45,6 +45,9 @@ public class NewTowerViewModel extends BaseViewModel {
     private final ObservableList<Pair<Long, Pair<String, String>>> historyList = FXCollections.observableArrayList();
     private final SimpleStringProperty title = new SimpleStringProperty();
     private final SimpleStringProperty endTime = new SimpleStringProperty();
+    private final SimpleStringProperty totalScore = new SimpleStringProperty();
+    private final SimpleStringProperty progressInfo = new SimpleStringProperty();
+    private final SimpleStringProperty rankText = new SimpleStringProperty();
     private final SimpleDateFormat endFormat = new SimpleDateFormat("yyyy.MM.dd");
     private final DateTimeFormatter startFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd");
     private final Map<Integer, Role> roleMap = new HashMap<>();
@@ -79,8 +82,10 @@ public class NewTowerViewModel extends BaseViewModel {
 
     private void updateData(NewTowerData newTowerData) {
         difficulties.setAll(newTowerData.getModeDetails());
-        teams.setAll(difficulties.getFirst().getTeams());
-        //title.set(difficulties.getFirst().ge);
+        NewTowerModeDetail first = difficulties.getFirst();
+        title.set(modeName(first));
+        teams.setAll(first.getTeams());
+        updateSummary(first);
         long milliseconds = newTowerData.getEndTime();
         long millisecondsInADay = 24 * 60 * 60 * 1000;
         long millisecondsInAnHour = 60 * 60 * 1000;
@@ -98,7 +103,29 @@ public class NewTowerViewModel extends BaseViewModel {
         }
     }
 
-    public void changeDifficulty(NewTowerModeDetail t1) {
+    public void changeDifficulty(NewTowerModeDetail detail) {
+        title.set(modeName(detail));
+        teams.setAll(detail.getTeams());
+        updateSummary(detail);
+    }
+
+    private static String modeName(NewTowerModeDetail detail) {
+        return detail.getModeId() == 0 ? "稳态协议" : "奇点扩张";
+    }
+
+    private static final String[] RANK_MAP = {"C", "B", "A", "S"};
+
+    private void updateSummary(NewTowerModeDetail detail) {
+        totalScore.set(String.format("%d", detail.getScore()));
+        if (detail.getModeId() == 0) {
+            progressInfo.set(String.format("第1轮  %d/%d", detail.getPassBoss(), detail.getBossCount()));
+        } else {
+            progressInfo.set(String.format("第%d轮  %d/%d", detail.getRound(), detail.getPassBoss(), detail.getBossCount()));
+        }
+        int rank = detail.getRank();
+        if (rank >= 0 && rank < RANK_MAP.length) {
+            rankText.set(RANK_MAP[rank]);
+        }
     }
 
     public void changHistory(Long key) {
@@ -132,6 +159,17 @@ public class NewTowerViewModel extends BaseViewModel {
         return endTime;
     }
 
+    public SimpleStringProperty totalScoreProperty() {
+        return totalScore;
+    }
+
+    public SimpleStringProperty progressInfoProperty() {
+        return progressInfo;
+    }
+
+    public SimpleStringProperty rankTextProperty() {
+        return rankText;
+    }
 
     public Map<Integer, Role> getRoleMap() {
         return roleMap;

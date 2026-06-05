@@ -150,6 +150,16 @@ public class JdbcUtils {
                         UNIQUE (player_id, gacha_name, resource_id, time)
                     );
                     """;
+            String createNewGameTower= """
+                    CREATE TABLE IF NOT EXISTS game_new_tower (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        data TEXT NOT NULL,
+                        end_time BIGINT NOT NULL,
+                        role_id VARCHAR,
+                        UNIQUE (role_id, end_time)
+                    );
+                    """;
+
 
             String createLocalCachePlayerData= """
                     CREATE TABLE IF NOT EXISTS local_cache_player_data (
@@ -174,6 +184,7 @@ public class JdbcUtils {
             st.execute(createGameTower);
             st.execute(createGameRecord);
             st.execute(createGameSlash);
+            st.execute(createNewGameTower);
             st.execute(createConfig);
             st.execute(createGameGacha);
             //st.execute(createLocalCachePlayerData);

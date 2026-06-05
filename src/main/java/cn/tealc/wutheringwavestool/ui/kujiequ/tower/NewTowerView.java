@@ -45,17 +45,27 @@ public class NewTowerView implements FxmlView<NewTowerViewModel>, Initializable 
     @FXML
     private Label title;
     @FXML
-    private HBox infoPane;
-    @FXML
     private ListView<Pair<Long, Pair<String, String>>> towerHistoryListview;
+    @FXML
+    private Label totalScoreLabel;
+    @FXML
+    private Label progressLabel;
+    @FXML
+    private Label rankLabel;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         title.textProperty().bind(viewModel.titleProperty());
-        //infoPane.visibleProperty().bind(viewModel.endTimeVisibleProperty());
         seasonEndTimeLabel.textProperty().bind(viewModel.endTimeProperty());
-        //scoreLabel01.textProperty().bind(viewModel.score01Property());
-        //scoreLabel02.textProperty().bind(viewModel.score02Property());
+        totalScoreLabel.textProperty().bind(viewModel.totalScoreProperty());
+        progressLabel.textProperty().bind(viewModel.progressInfoProperty());
+        rankLabel.textProperty().bind(viewModel.rankTextProperty());
+        viewModel.rankTextProperty().addListener((obs, old, rank) -> {
+            rankLabel.getStyleClass().removeAll("s", "a", "b", "c");
+            if (rank != null && !rank.isEmpty()) {
+                rankLabel.getStyleClass().add(rank.toLowerCase());
+            }
+        });
 
 
         difficuityListview.setItems(viewModel.getDifficulties());

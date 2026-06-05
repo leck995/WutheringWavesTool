@@ -168,6 +168,54 @@
     -fx-cursor: hand;
 }
 
+/* ========== NewTowerView 摘要栏 ========== */
+
+.tower .summary-bar {
+    -fx-padding: 6 14 6 14;
+    -fx-background-color: -color-bg-default-60;
+    -fx-background-radius: 6;
+}
+
+.tower .summary-bar .summary-score {
+    -fx-font-size: 15;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-accent-fg;
+}
+
+.tower .summary-bar .summary-progress {
+    -fx-font-size: 14;
+    -fx-text-fill: -color-fg-default;
+}
+
+.tower .summary-bar .summary-rank {
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+    -fx-font-style: italic;
+    -fx-padding: 1 8 1 8;
+    -fx-background-radius: 3;
+}
+
+.tower .summary-bar .summary-rank.s {
+    -fx-text-fill: #fff624;
+    -fx-background-color: #fff62420;
+    -fx-effect: dropshadow(gaussian, #2e2e2e, 4, 0, 0, 0);
+}
+
+.tower .summary-bar .summary-rank.a {
+    -fx-text-fill: #ff6b9d;
+    -fx-background-color: #ff6b9d20;
+}
+
+.tower .summary-bar .summary-rank.b {
+    -fx-text-fill: #56b8ff;
+    -fx-background-color: #56b8ff20;
+}
+
+.tower .summary-bar .summary-rank.c {
+    -fx-text-fill: -color-font-muted;
+    -fx-background-color: -color-bg-default-40;
+}
+
 /* ========== NewTowerView AreaCell 美化 ========== */
 
 .tower .right .area .team-row {
