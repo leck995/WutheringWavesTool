@@ -37,8 +37,11 @@
 
 .tower .end-time{
     -fx-font-size: 18;
-    -fx-text-fill: -color-font-muted;
+    -fx-text-fill: -color-accent-fg;
     -fx-font-weight: bold;
+    -fx-background-color: -color-accent-muted;
+    -fx-padding: 4 14 4 14;
+    -fx-background-radius: 20;
 }
 
 
@@ -99,10 +102,10 @@
 
 
 .tower .right .area{
-    -fx-spacing: 8;
+    -fx-spacing: 10;
     -fx-background-color: -color-bg-default-30;
-    -fx-background-radius: 5;
-    -fx-padding: 15 10 5 10;
+    -fx-background-radius: 8;
+    -fx-padding: 15 15 15 15;
 }
 
 .tower .right .area .area-title{
@@ -137,13 +140,18 @@
     -fx-text-fill: #00f6fd;
 }
 .tower .right .area .chain-unlock-num{
-    -fx-background-color: -color-bg-default-90;
-    -fx-pref-width: 15;
-    -fx-pref-height: 15;
+    -fx-background-color: -color-bg-default;
+    -fx-text-fill: -color-fg-default;
+    -fx-pref-width: 16;
+    -fx-pref-height: 16;
     -fx-background-radius: 20;
-    -fx-font-size: 0.9em;
+    -fx-font-size: 0.8em;
     -fx-font-weight: bold;
     -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 3, 0, 0, 1);
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1;
+    -fx-border-radius: 20;
 }
 
 
@@ -158,4 +166,58 @@
 
 .tower .right .area .floor-buff{
     -fx-cursor: hand;
+}
+
+/* ========== NewTowerView AreaCell 美化 ========== */
+
+.tower .right .area .team-row {
+    -fx-spacing: 15;
+    -fx-alignment: center-left;
+}
+
+.tower .right .area .team-desc {
+    -fx-spacing: 6;
+    -fx-alignment: center-left;
+    -fx-min-width: 70;
+}
+
+.tower .right .area .team-desc .round-info {
+    -fx-font-size: 13;
+    -fx-text-fill: -color-font-muted;
+}
+
+.tower .right .area .team-desc .pass-info {
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+}
+
+.tower .right .area .role-row {
+    -fx-spacing: 6;
+    -fx-alignment: center-left;
+}
+
+.tower .right .area .role-item {
+    -fx-padding: 2;
+}
+
+.tower .right .area .role-item > .chain-unlock-num {
+    -fx-translate-x: 5;
+    -fx-translate-y: -5;
+}
+
+.tower .right .area .buff-section {
+    -fx-cursor: hand;
+    -fx-padding: 6;
+    -fx-background-radius: 8;
+    -fx-background-color: -color-bg-default-60;
+    -fx-alignment: center;
+}
+
+.tower .right .area .buff-section:hover {
+    -fx-background-color: -color-bg-default-90;
+}
+
+.tower .right .area .buff-section .image-view {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 4, 0, 0, 2);
 }

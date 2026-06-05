@@ -28,6 +28,7 @@ public class TowerGroupView implements FxmlView<TowerGroupViewModel> {
 
     private Node towerView;
     private Node slashView;
+    private Node newTowerView;
 
     public void initialize() {
         createTowerView();
@@ -49,6 +50,22 @@ public class TowerGroupView implements FxmlView<TowerGroupViewModel> {
             toggleButton.setSelected(true);
         }
     }
+
+    @FXML
+    void toNewTower(ActionEvent event) {
+        ToggleButton toggleButton= (ToggleButton) event.getSource();
+        if (toggleButton.isSelected()){
+            if (newTowerView == null) {
+                ViewTuple<NewTowerView, NewTowerViewModel> viewTuple = FluentViewLoader.fxmlView(NewTowerView.class).load();
+                newTowerView = viewTuple.getView();
+            }
+            content.getChildren().setAll(newTowerView);
+            Animations.slideInUp(newTowerView, Duration.millis(300)).play();
+        }else {
+            toggleButton.setSelected(true);
+        }
+    }
+
 
     @FXML
     void toTower(ActionEvent event) {
