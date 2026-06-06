@@ -9,7 +9,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-
 <VBox alignment="CENTER" prefHeight="700.0" prefWidth="1280.0" spacing="20.0" styleClass="app-account" stylesheets="@../../../css/system/Account.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.system.account.AppAccountView">
    <children>
       <Label styleClass="title-3" text="助手账号" />
@@ -34,6 +33,6 @@
             </Button>
          </children>
       </HBox>
-      <Label styleClass="text-muted" text="请赞助者将订单号按要求填写，完成验证即可使用&#10;如果订单号有问题或遗失，请联系开发者&#10;新订单号最迟在第二天更新，请耐心等待&#10;" textAlignment="CENTER" translateY="100.0" />
+      <Label prefWidth="520.0" styleClass="text-muted" text="助手账号目前仅对赞助过助手开发的用户开放，请赞助者将赞助订单号按要求填写，完成验证即可使用；&#10;请通过微信或支付宝查询订单号，若您无法找回订单号，或者订单验证失败。请与开发者联系获取帮助（设置中有联系方式）；&#10;&#10;若您曾经为助手提交过代码（无论是否合并），帮助过助手的功能实现，您都可以联系开发者获取账号（设置中有联系方式）；&#10;&#10;新订单号最迟在第二天更新，请耐心等待。&#10;" translateY="50.0" wrapText="true" />
    </children>
 </VBox>

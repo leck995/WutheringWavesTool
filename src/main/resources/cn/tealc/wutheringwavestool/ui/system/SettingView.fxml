@@ -190,7 +190,22 @@
                            </graphic>
                         </Button>
                         <Label layoutX="10.0" layoutY="293.0" styleClass="title-3" text="%ui.setting.communication.title" />
-                        <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="138.0" mnemonicParsing="false" onAction="#toQQGroup" prefWidth="200.0" styleClass="func-btn" text="%ui.setting.communication.QQ">
+                        <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="138.0" mnemonicParsing="false" onAction="#toQQGroup" prefWidth="200.0" styleClass="func-btn" text="%ui.setting.communication.QQ1">
+                           <graphic>
+                              <FontIcon iconLiteral="anto-qq" />
+                           </graphic>
+                        </Button>
+                        <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="359.0" mnemonicParsing="false" onAction="#toQQGroup" prefWidth="200.0" styleClass="func-btn" text="%ui.setting.communication.QQ2">
+                           <graphic>
+                              <FontIcon iconLiteral="anto-qq" />
+                           </graphic>
+                        </Button>
+                        <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="359.0" mnemonicParsing="false" onAction="#toQQGroup" prefWidth="200.0" styleClass="func-btn" text="%ui.setting.communication.QQ3">
+                           <graphic>
+                              <FontIcon iconLiteral="anto-qq" />
+                           </graphic>
+                        </Button>
+                        <Button alignment="TOP_LEFT" layoutX="10.0" layoutY="404.0" mnemonicParsing="false" onAction="#toQQGroup" prefWidth="200.0" styleClass="func-btn" text="%ui.setting.communication.QQ4">
                            <graphic>
                               <FontIcon iconLiteral="anto-qq" />
                            </graphic>

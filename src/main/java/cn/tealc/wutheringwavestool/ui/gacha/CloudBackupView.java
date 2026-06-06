@@ -179,10 +179,12 @@ public class CloudBackupView extends BaseDialog implements FxmlView<CloudBackupV
         JFXDialogLayout dialogLayout = DialogBuilder.create()
                 .title("关于云备份")
                 .message("""
-                        这是一个测试功能，加上服务器性能令人捉急，目前仅对赞助过助手的用户使用；
+                        这是一个测试功能，加上服务器性能令人捉急，目前仅对赞助过助手的用户开放使用，后续将视服务器稳定性判断是否对所有人开放。
                         
                         若您曾赞助过助手的开发，可以通过微信或支付宝查询订单号，前往 账号 验证，验证完成后即可使用；
                         若您无法找回订单号，可与开发者联系获取帮助；
+                        
+                        若您曾经为助手提交过代码（无论是否合并），帮助过助手的功能实现，您都可以联系开发者获取测试资格
                         
                         由于处于测试阶段，且受服务器网络影响，可能会存在响应慢，错误等情况，敬请谅解。
                         """)

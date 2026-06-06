@@ -10,6 +10,7 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.wutheringwavestool.util.DialogBuilder;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
@@ -257,9 +258,10 @@ public class SettingView implements FxmlView<SettingViewModel>, Initializable {
 
     @FXML
     void toQQGroup(ActionEvent event) {
+        Button button = (Button) event.getSource();
         Clipboard clipboard = Clipboard.getSystemClipboard();
         ClipboardContent content = new ClipboardContent();
-        content.putString(LanguageManager.getString("ui.setting.communication.QQ"));
+        content.putString(button.getText());
         clipboard.setContent(content);
         MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.SUCCESS, LanguageManager.getString("ui.setting.communication.QQ.tip")));
     }
