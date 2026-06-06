@@ -9,10 +9,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteDataSource;
 
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import javax.sql.DataSource;
 import java.io.File;
 import java.io.IOException;
 import java.net.http.HttpClient;
+import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 
 public class DataSourceModule extends AbstractModule {
     private static final Logger LOG = LoggerFactory.getLogger(DataSourceModule.class);
@@ -35,9 +40,26 @@ public class DataSourceModule extends AbstractModule {
     @Provides
     @Singleton
     HttpClient provideHttpClient() {
-        return HttpClient.newBuilder()
-                .followRedirects(HttpClient.Redirect.NORMAL)
-                .build();
+        try {
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, new TrustManager[]{
+                new X509TrustManager() {
+                    public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+                    public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+                    public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+                }
+            }, new SecureRandom());
+            System.setProperty("jdk.internal.httpclient.disableHostnameVerification", "true");
+            return HttpClient.newBuilder()
+                    .followRedirects(HttpClient.Redirect.NORMAL)
+                    .sslContext(sslContext)
+                    .build();
+        } catch (Exception e) {
+            LOG.error("创建 SSL 上下文失败，回退到默认配置", e);
+            return HttpClient.newBuilder()
+                    .followRedirects(HttpClient.Redirect.NORMAL)
+                    .build();
+        }
     }
 
     @Provides

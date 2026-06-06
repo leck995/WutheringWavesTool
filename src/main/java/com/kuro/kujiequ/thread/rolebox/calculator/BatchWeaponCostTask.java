@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -46,7 +47,7 @@ public class BatchWeaponCostTask extends BaseTask<ResponseBody<CalculatorResult>
                     ApiConfig.PARAM_SERVER_ID,
                     userInfo.getRoleId(),
                     content);
-            HttpRequest.Builder builder = getBuilder(ApiConfig.CALCULATOR_BATCH_ROLE_COST, body, userInfo);
+            HttpRequest.Builder builder = getBuilder(ApiConfig.CALCULATOR_BATCH_WEAPON_COST, body, userInfo);
             HttpRequest request = builder.build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
@@ -61,5 +62,4 @@ public class BatchWeaponCostTask extends BaseTask<ResponseBody<CalculatorResult>
             return new ResponseBody<>(1, e.getMessage());
         }
     }
-
 }

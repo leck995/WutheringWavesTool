@@ -12,7 +12,7 @@ public final class AppConstants {
     public static final String URL_PHANTOM_GUIDE = "https://wave.999758.xyz/pages/advance/phantom.html";
     public static final String URL_APP_UPDATE = "https://wwt.999758.xyz/release.json";
     public static final String URL_APP_UPDATE_DEV = "https://wwt.999758.xyz/release-dev.json";
-    public static final String URL_HOST_SERVER = "http://gamemaid.999758.xyz";
+    public static final String URL_HOST_SERVER = "https://api.999758.xyz:20141";
     //public static final String URL_HOST_SERVER = "http://127.0.0.1:8080";
     public static final String URL_REDEMPTION_CODES = URL_HOST_SERVER + "/api/redemption-codes/mc";
     public static final String URL_ANNOUNCEMENTS = URL_HOST_SERVER +  "/api/announcements/game";

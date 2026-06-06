@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.model.netResource;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -10,7 +11,7 @@ import java.util.Map;
  */
 public class RootResource {
     private String version;
-    private Map<String,Resource> resources;
+    private Map<String, List<Resource>> resources;
 
 
     public String getVersion() {
@@ -21,11 +22,11 @@ public class RootResource {
         this.version = version;
     }
 
-    public Map<String, Resource> getResources() {
+    public Map<String, List<Resource>> getResources() {
         return resources;
     }
 
-    public void setResources(Map<String, Resource> resources) {
+    public void setResources(Map<String, List<Resource>> resources) {
         this.resources = resources;
     }
 }

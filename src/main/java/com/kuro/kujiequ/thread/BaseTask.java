@@ -242,7 +242,7 @@ public abstract class BaseTask<V> extends Task<V> {
         HttpRequest.Builder builder = getBaseBuilder();
         builder.uri(URI.create(url))
                 .header("Content-Type", "application/x-www-form-urlencoded")
-                .header("Source", userInfo.getIsWeb() ? "h5" : "android")
+                .header("Source", "android")
                 .header("Devcode", getDevCode())
                 .headers("B-At", getAccessToken(userInfo))
                 .header("Did", userInfo.getDevCode());

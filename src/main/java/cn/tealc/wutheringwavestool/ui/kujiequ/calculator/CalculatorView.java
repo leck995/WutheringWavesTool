@@ -102,6 +102,7 @@ public class CalculatorView implements FxmlView<CalculatorViewModel>, Initializa
             if (image != null) {
                 iv = new ImageView(image);
             } else {
+                System.out.println(iconUrl);
                 iv = new ImageView(new Image(iconUrl, 60, 60, true, true, true));
             }
             nameLabel = new Label(name);
