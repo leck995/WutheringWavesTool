@@ -56,7 +56,7 @@ public class WwtApp extends Application {
         setupStage(stage);
         stage.initStyle(StageStyle.EXTENDED);
         initFont();
-        if (autoStarted && Config.setting().isSilentStart()) {
+        if (Config.setting().isSilentStart()) {
             stage.hide();
             LOG.info("静默启动，窗口已隐藏");
         }else {
