@@ -65,7 +65,9 @@ public class NewTowerDataDetailTask extends BaseTask<ResponseBody<NewTowerData>>
                     LOG.debug(row);
                     NewTowerData newTowerData = mapper.readValue(row, NewTowerData.class);
                     responseBody.setData(newTowerData);
-                    saveToDB(newTowerData, mapper);
+                    if (newTowerData.isUnlock()){ //解锁才保存
+                        saveToDB(newTowerData, mapper);
+                    }
                     return responseBody;
                 } else {
                     return new ResponseBody<>(1, responseBodyForApi.getMsg(), false);

@@ -248,12 +248,13 @@ public class SlashView implements FxmlView<SlashViewModel> {
                 HBox.setHgrow(starHBox, Priority.ALWAYS);
 
                 roleHbox.setSpacing(10.0);
-                roleHbox.setAlignment(Pos.CENTER_LEFT);
+                roleHbox.setAlignment(Pos.CENTER);
+                HBox.setHgrow(roleHbox,Priority.ALWAYS);
 
                 Label scoreLabel = new Label();
                 scoreLabel.getStyleClass().add("floor-score");
-                floorHBox.getChildren().addAll(floorName, scoreLabel, new Spacer(), roleHbox, starHBox);
-                floorHBox.setSpacing(20.0);
+                floorHBox.getChildren().addAll(floorName, scoreLabel, roleHbox, starHBox);
+                floorHBox.setSpacing(10.0);
                 //floorHBox.setMinHeight(40.0);
                 floorHBox.setAlignment(Pos.CENTER_LEFT);
                 floorName.setText(String.format("第%d队", i + 1));

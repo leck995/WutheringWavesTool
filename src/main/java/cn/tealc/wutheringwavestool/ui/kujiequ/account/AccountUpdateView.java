@@ -145,15 +145,16 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
 
     @FXML
     void sendLoginCode(ActionEvent event) {
-        viewModel.sendSMS(this::showSmsFailDialog);
+       // viewModel.sendSMS(this::showSmsFailDialog);
+        showSmsFailDialog();
     }
 
     private void showSmsFailDialog() {
-        Label titleLabel = new Label("自动获取验证码失败");
+        Label titleLabel = new Label("获取验证码");
         titleLabel.getStyleClass().add("title-2");
 
         Label contentLabel = new Label("""
-                助手发送验证码失败，请采用以下方法获取验证码。
+                助手无法发送验证码，请采用以下方法获取验证码。
                 
                 第一种方法：
                     点击下方按钮前往网页版库街区，输入手机号登录，获取到验证码(收到验证码即停止)；

@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuro.kujiequ.model.newTowerData.NewTowerData;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.model.slash.SlashData;
+import com.kuro.kujiequ.model.slash.SlashDifficulty;
 import com.kuro.kujiequ.model.towerData.DifficultyTotal;
 import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
@@ -70,6 +71,7 @@ public class MainViewModel extends BaseViewModel {
 
     private final AtomicBoolean warningTower = new AtomicBoolean(false);
     private final AtomicBoolean warningSlash = new AtomicBoolean(false);
+    private final AtomicBoolean warningNewTower = new AtomicBoolean(false);
 
     public MainViewModel() {
 
@@ -272,12 +274,17 @@ public class MainViewModel extends BaseViewModel {
             NewTowerDataDetailTask task = new NewTowerDataDetailTask(userInfo);
             task.setOnSucceeded(workerStateEvent -> {
                 ResponseBody<NewTowerData> value = task.getValue();
-                if (value.getCode() == 200) {
+                if (value.getCode() == 200 && value.getData().isUnlock()) {
                     long milliseconds = value.getData().getEndTime();
                     long millisecondsInADay = 24 * 60 * 60 * 1000;
                     double days = (double) milliseconds / (double) millisecondsInADay;
-                    if (days > 0 && days < 1 && warningTower.compareAndSet(false, true)) {//不足一天时,提醒
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.sync.message.tower2")));
+                    if (days > 0 && days < 1) {//不足一天时,提醒
+                        long sum = value.getData().getModeDetails().stream()
+                                .mapToInt(d -> d.getRank())
+                                .sum();
+                        if (sum < 6 && warningNewTower.compareAndSet(false, true)){
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.sync.message.tower2")));
+                        }
                     }
                 }
             });
@@ -298,8 +305,20 @@ public class MainViewModel extends BaseViewModel {
                 long milliseconds = value.getData().getSeasonEndTime();
                 long millisecondsInADay = 24 * 60 * 60 * 1000;
                 double days = (double) milliseconds / (double) millisecondsInADay;
-                if (days > 0 && days < 1 &&  warningSlash.compareAndSet(false, true)) {//不足一天时,提醒
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.sync.message.slash")));
+                if (days > 0 && days < 1) {//不足一天时,提醒
+                    if (value.getData() == null || value.getData().getDifficultyList() == null || value.getData().getDifficultyList().isEmpty())
+                        return;
+                    boolean warning = false;
+                    for (SlashDifficulty slashDifficulty : value.getData().getDifficultyList()) {
+                        if (slashDifficulty.getAllScore() >= slashDifficulty.getMaxScore())
+                            continue;
+                        else {
+                            warning = true;
+                            break;
+                        }
+                    }
+                    if (warning && warningSlash.compareAndSet(false, true))
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.sync.message.slash")));
                 }
             }
         });

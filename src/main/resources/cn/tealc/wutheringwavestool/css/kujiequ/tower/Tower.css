@@ -102,7 +102,7 @@
 
 
 .tower .right .area{
-    -fx-spacing: 10;
+    -fx-spacing: 5;
     -fx-background-color: -color-bg-default-30;
     -fx-background-radius: 8;
     -fx-padding: 15 15 15 15;
