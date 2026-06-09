@@ -84,8 +84,14 @@ public class CheckVersionTask extends Task<ResponseBody<Release>> {
     private ResponseBody<Release> getNetReleaseData() {
         HttpClient client = AppInjector.getInstance(HttpClient.class);
         try {
+            URI uri = null;
+            if (!Config.setting().isDevModel()){
+                uri = URI.create(AppConstants.URL_APP_UPDATE);
+            }else {
+                uri = URI.create(AppConstants.URL_APP_UPDATE_DEV);
+            }
             HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(AppConstants.URL_APP_UPDATE)).GET().build();
+                        .uri(uri).GET().build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
