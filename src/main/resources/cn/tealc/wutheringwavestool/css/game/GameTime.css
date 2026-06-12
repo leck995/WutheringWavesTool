@@ -137,3 +137,81 @@
 .gametime .chart-card .axis > .axis-label {
     -fx-text-fill: -color-font-muted;
 }
+
+/* ── Table toggle button ─────────────────── */
+.gametime .table-toggle-btn {
+    -fx-background-radius: 20;
+    -fx-background-color: -color-bg-default-80;
+    -fx-text-fill: -color-font-muted;
+    -fx-padding: 6 16 6 16;
+    -fx-font-size: 0.9em;
+    -fx-cursor: hand;
+}
+.gametime .table-toggle-btn:selected {
+    -fx-background-color: -color-accent-fg;
+    -fx-text-fill: -color-font-emphasis;
+}
+
+/* ── Table toolbar ───────────────────────── */
+.gametime .table-toolbar {
+    -fx-background-color: -color-bg-default-60;
+    -fx-background-radius: 10;
+    -fx-padding: 10 14 10 14;
+}
+.gametime .table-btn {
+    -fx-background-radius: 16;
+    -fx-background-color: -color-accent-fg;
+    -fx-text-fill: -color-font-emphasis;
+    -fx-padding: 6 16 6 16;
+    -fx-font-size: 0.9em;
+    -fx-cursor: hand;
+}
+.gametime .table-btn:hover {
+    -fx-opacity: 0.85;
+}
+.gametime .table-btn-danger {
+    -fx-background-color: -color-danger-emphasis;
+}
+
+/* ── TableView ───────────────────────────── */
+.gametime .record-table{
+    -fx-background-color: -color-bg-default-60;
+    -fx-border-color: transparent;
+    -fx-background-radius: 10;
+    -fx-padding: 10 14 10 14;
+}
+
+.gametime .record-table .column-header-background{
+    -fx-background-color: transparent;
+}
+
+.gametime .record-table .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-alignment: CENTER;
+}
+.gametime .record-table .column-header .label {
+    -fx-alignment: CENTER;
+    -fx-text-fill: -color-font-muted;
+    -fx-font-weight: bold;
+    -fx-font-size: 0.9em;
+}
+
+.gametime .record-table .table-row-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-font-default;
+}
+.gametime .record-table .table-row-cell:odd {
+    -fx-background-color: rgba(128,128,128,0.04);
+}
+.gametime .record-table .table-row-cell:selected {
+    -fx-background-color: -color-bg-default-80;
+}
+.gametime .record-table .table-cell {
+    -fx-padding: 10 14 10 14;
+    -fx-text-fill: -color-font-default;
+    -fx-font-size: 1em;
+    -fx-alignment: CENTER;
+}
+
+

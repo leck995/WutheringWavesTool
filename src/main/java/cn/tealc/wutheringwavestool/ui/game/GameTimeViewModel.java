@@ -29,6 +29,7 @@ import java.util.*;
  */
 public class GameTimeViewModel extends BaseViewModel {
     private final ObservableList<XYChart.Series<String,Double>> chartData= FXCollections.observableArrayList();
+    private final ObservableList<GameTime> tableData = FXCollections.observableArrayList();
     private final ObservableList<String> userInfoList= FXCollections.observableArrayList();
     private final SimpleIntegerProperty userIndex = new SimpleIntegerProperty(-1);
     private final SimpleStringProperty allTotalTimeText=new SimpleStringProperty();
@@ -92,7 +93,7 @@ public class GameTimeViewModel extends BaseViewModel {
      * @return  void
      * @date:   2024/10/8
      */
-    private void freshWithAccount() {
+    public void freshWithAccount() {
         chartData.clear();
         //统计所有账号全部时长
         List<GameTime> gameTimeList = gameTimeDao.getAllTime();
@@ -127,6 +128,42 @@ public class GameTimeViewModel extends BaseViewModel {
         updateCurrentGameTime(roleId);
     }
 
+
+    public void refreshTableData() {
+        String roleId = userInfoList.get(userIndex.get());
+        List<GameTime> list = gameTimeDao.getTimeListByRoleId(roleId);
+        list.sort((a, b) -> {
+            long t1 = a.getStartTime() != null ? a.getStartTime() : 0;
+            long t2 = b.getStartTime() != null ? b.getStartTime() : 0;
+            return Long.compare(t2, t1);
+        });
+        tableData.setAll(list);
+    }
+
+    public void addRecord(GameTime record) {
+        record.setRoleId(userInfoList.get(userIndex.get()));
+        gameTimeDao.addTime(record);
+        refreshTableData();
+        freshWithAccount();
+    }
+
+    public void updateRecord(GameTime record) {
+        gameTimeDao.updateTime(record);
+        refreshTableData();
+        freshWithAccount();
+    }
+
+    public void deleteRecord(GameTime record) {
+        if (record.getId() != null) {
+            gameTimeDao.deleteTimeById(record.getId());
+            refreshTableData();
+            freshWithAccount();
+        }
+    }
+
+    public ObservableList<GameTime> getTableData() {
+        return tableData;
+    }
 
     /**
      * @description: 对数据库的记录按照日期分类

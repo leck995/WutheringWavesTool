@@ -6,6 +6,7 @@ import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.ui.item.HeaderImageSelectView;
 import cn.tealc.wutheringwavestool.ui.item.PlayTimeAlertItemView;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
@@ -115,8 +116,9 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
     @FXML
     void showGameTimerAlert(ActionEvent event) {
-        PlayTimeAlertItemView view = new PlayTimeAlertItemView();
-        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, view);
+      /*  PlayTimeAlertItemView view = new PlayTimeAlertItemView();
+        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, view);*/
+        NotificationManager.message(MessageInfo.info("请前往游玩统计修改时长"));
     }
 
 

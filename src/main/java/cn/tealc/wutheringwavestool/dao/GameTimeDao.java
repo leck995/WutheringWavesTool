@@ -121,6 +121,31 @@ public class GameTimeDao {
         }
     }
 
+    public int updateTime(GameTime gameTime) {
+        String sql = "UPDATE game_time SET role_id=?, game_date=?, start_time=?, end_time=?, duration=? WHERE id=?";
+        QueryRunner qr = new QueryRunner(dataSource);
+        try {
+            return qr.update(sql,
+                    gameTime.getRoleId(), gameTime.getGameDate(),
+                    gameTime.getStartTime(), gameTime.getEndTime(),
+                    gameTime.getDuration(), gameTime.getId());
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(), e);
+            return 0;
+        }
+    }
+
+    public int deleteTimeById(Integer id) {
+        String sql = "DELETE FROM game_time WHERE id=?";
+        QueryRunner qr = new QueryRunner(dataSource);
+        try {
+            return qr.update(sql, id);
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(), e);
+            return 0;
+        }
+    }
+
     public int addTime(GameTime gameTime) {
         String sql = "INSERT OR IGNORE INTO game_time (role_id,game_date,start_time,end_time,duration) VALUES (?,?,?,?,?)";
         QueryRunner qr = new QueryRunner(dataSource);
