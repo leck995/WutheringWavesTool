@@ -47,6 +47,7 @@ public class Setting {
     private SimpleStringProperty gameRootDir = new SimpleStringProperty();//游戏根目录
     private SimpleStringProperty gameStarAppPath = new SimpleStringProperty("Wuthering Waves.exe");//游戏启动文件
     private SimpleBooleanProperty gameStartAppCustom = new SimpleBooleanProperty(false); //自定义启动程序
+    private SimpleStringProperty gameOfficialLauncherDir = new SimpleStringProperty();//游戏更新器目录
 
     /*=================设置-基础设置===================*/
     private SimpleBooleanProperty changeTitlebar = new SimpleBooleanProperty(true); //新标题栏
@@ -396,6 +397,18 @@ public class Setting {
 
     public void setGameStartAppCustom(boolean gameStartAppCustom) {
         this.gameStartAppCustom.set(gameStartAppCustom);
+    }
+
+    public String getGameOfficialLauncherDir() {
+        return gameOfficialLauncherDir.get();
+    }
+
+    public SimpleStringProperty gameOfficialLauncherDirProperty() {
+        return gameOfficialLauncherDir;
+    }
+
+    public void setGameOfficialLauncherDir(String gameOfficialLauncherDir) {
+        this.gameOfficialLauncherDir.set(gameOfficialLauncherDir);
     }
 
     public boolean isNoKuJieQu() {

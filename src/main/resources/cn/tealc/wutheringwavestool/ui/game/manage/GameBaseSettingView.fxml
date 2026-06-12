@@ -69,6 +69,17 @@
                                     </Button>
                                  </children>
                               </StackPane>
+                              <Label layoutX="10.0" layoutY="10.0" styleClass="title-4" text="%ui.setting.default.app_updater" />
+                              <StackPane maxWidth="350.0" styleClass="input-group">
+                                 <children>
+                                    <TextField fx:id="gameOfficialLauncherDirField" prefWidth="250.0" promptText="%ui.setting.default.app_updater.tip" />
+                                    <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setGameUpdaterApp" StackPane.alignment="CENTER_RIGHT">
+                                       <graphic>
+                                          <FontIcon iconLiteral="mdoal-folder" />
+                                       </graphic>
+                                    </Button>
+                                 </children>
+                              </StackPane>
                            </children>
                         </VBox>
                         <Label styleClass="title-3" text="%ui.game_manager.base.params" />

@@ -114,80 +114,62 @@ public class HomeViewModel extends BaseViewModel {
     }
 
 
-
-
-
-    public void checkIsWeekEnd() {
-        if (Config.setting().getGameRootDirSource() == SourceType.GLOBAL) {
-            Platform.runLater(() -> {
-                onWeekEnd(true, null);
-            });
-        }
-    }
-
-    /**
-     * 检查每周最后一天，并进行提醒完成周活动
-     *
-     * @param isGlobal
-     * @param roleInfo
-     */
-    private void onWeekEnd(boolean isGlobal, RoleInfo roleInfo) {
-//        LocalDate today = LocalDate.now();
-//        if (today.getDayOfWeek() == DayOfWeek.SUNDAY) {
-//            if (isGlobal) {
-//                NotificationManager.publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.label.weekly.message01"), MessageInfo.LONG));
-//            } else {
-//                if (roleInfo == null) {
-//                    return;
-//                }
-//                if (roleInfo.getWeeklyInstCount() != 0) {
-//                    weeklyInstCountTipText.set(LanguageManager.getString("ui.home.label.weekly.tip"));
-//                } else {
-//                    weeklyInstCountTipText.set(LanguageManager.getString("ui.home.label.weekly"));
-//                }
-//                if (roleInfo.getRougeScore() < 6000) {
-//                    weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.weekly.tip"));
-//                    NotificationManager.publish(NotificationKey.MESSAGE,
-//                            new MessageInfo(MessageType.WARNING,
-//                                    LanguageManager.getString("ui.home.label.weekly.message03"), MessageInfo.LONG));
-//                } else {
-//                    weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.rouge"));
-//                }
-//            }
-//        }
-    }
-
-
     public void startUpdate() {
         if (Config.setting().getGameRootDirSource() == SourceType.WE_GAME) {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                     MessageInfo.warning(LanguageManager.getString("ui.home.message.type02")), false);
-        } else {
-            String dir = Config.setting().getGameRootDir();
-            if (dir != null) {
-                File gameDir = GameResourcesManager.getGameDir();
-                if (gameDir != null) {
-                    File parent = gameDir.getParentFile();
-                    File exe = new File(parent, "launcher.exe");
-                    if (exe.exists()) {
-                        try {
-                            Desktop.getDesktop().open(exe);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                    } else {
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                                MessageInfo.warning(String.format(LanguageManager.getString("ui.home.message.type08"), exe.getPath()), false));
-                    }
-                } else {
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            MessageInfo.warning(LanguageManager.getString("ui.home.message.type08")), false);
+            return;
+        }
+        String dir = Config.setting().getGameRootDir();
+        if (dir == null) {
+            warnLauncherNotFound(null);
+            return;
+        }
+
+        // 优先使用自定义更新器
+        String updaterPath = Config.setting().getGameOfficialLauncherDir();
+        if (updaterPath != null && !updaterPath.isEmpty()) {
+            File updater = new File(updaterPath);
+            if (updater.exists()) {
+                try {
+                    launchExe(updater);
+                    return;
+                } catch (IOException e) {
+                    LOG.warn("启动自定义更新器失败: {}", e.getMessage());
                 }
-            } else {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        MessageInfo.warning(LanguageManager.getString("ui.home.message.type08")), false);
             }
         }
+
+        // 回退到安装目录下的 launcher.exe
+        File gameDir = GameResourcesManager.getGameDir();
+        if (gameDir != null) {
+            File exe = new File(gameDir.getParentFile(), "launcher.exe");
+            if (exe.exists()) {
+                try {
+                    launchExe(exe);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                warnLauncherNotFound(exe.getPath());
+            }
+        } else {
+            warnLauncherNotFound(null);
+        }
+    }
+
+    private void warnLauncherNotFound(String path) {
+        String msg = path != null
+                ? String.format(LanguageManager.getString("ui.home.message.type08"), path)
+                : LanguageManager.getString("ui.home.message.type08");
+        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(msg), false);
+    }
+
+    private void launchExe(File exe) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder(exe.getAbsolutePath());
+        pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+        pb.redirectError(ProcessBuilder.Redirect.DISCARD);
+        pb.start();
     }
 
 
@@ -321,7 +303,7 @@ public class HomeViewModel extends BaseViewModel {
     private void runExe(File exe) {
         try {
             GameAppListener.getInstance().setStartFromApp(true);
-            Desktop.getDesktop().open(exe);
+            launchExe(exe);
             if (Config.setting().isHideWhenGameStart()) {
                 WwtApp.getWindow().hide();
             }

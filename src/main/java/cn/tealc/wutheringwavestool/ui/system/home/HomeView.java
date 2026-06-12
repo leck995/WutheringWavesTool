@@ -86,7 +86,6 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         }
 
         setChangeBgEnable();
-        viewModel.checkIsWeekEnd();
     }
 
 
@@ -116,8 +115,6 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
     @FXML
     void showGameTimerAlert(ActionEvent event) {
-      /*  PlayTimeAlertItemView view = new PlayTimeAlertItemView();
-        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, view);*/
         NotificationManager.message(MessageInfo.info("请前往游玩统计修改时长"));
     }
 

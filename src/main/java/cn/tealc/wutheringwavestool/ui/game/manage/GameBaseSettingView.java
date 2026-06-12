@@ -14,6 +14,7 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
+import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
@@ -45,6 +46,8 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
     private RadioButton sourceTypeBtn03;
     @FXML
     private RadioButton sourceTypeBtn04;
+    @FXML
+    private TextField gameOfficialLauncherDirField;
     @FXML
     private ListView<String> paramListView;
     @FXML
@@ -99,6 +102,9 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
         }else {
             gameStartAppType.selectToggle(gameStartAppType.getToggles().get(1));
         }
+
+        gameOfficialLauncherDirField.textProperty().bindBidirectional(
+                Config.setting().gameOfficialLauncherDirProperty());
     }
 
     private void initStartParam(){
@@ -137,6 +143,16 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
         }
     }
 
+
+    @FXML
+    void setGameUpdaterApp(ActionEvent event) {
+        FileChooser chooser = new FileChooser();
+        chooser.setTitle(LanguageManager.getString("ui.setting.default.app_updater"));
+        File file = chooser.showOpenDialog(gameOfficialLauncherDirField.getScene().getWindow());
+        if (file != null) {
+            gameOfficialLauncherDirField.setText(file.getAbsolutePath());
+        }
+    }
 
     @FXML
     void setDX(ActionEvent event) {
