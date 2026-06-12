@@ -129,11 +129,12 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
         if (!playerComboBox.getItems().isEmpty()) {
             JFXDialogLayout layout = new JFXDialogLayout();
             Label title = new Label(LanguageManager.getString("ui.common.warning"));
-            title.setStyle(Styles.TITLE_2);
+            title.getStyleClass().add(Styles.TITLE_2);
             layout.setHeading(title);
             Label tip = new Label(String.format(LanguageManager.getString("ui.analysis.delete.tip.content"), viewModel.getPlayer()));
             layout.setBody(tip);
             Button okBtn = new Button(LanguageManager.getString("ui.common.ok"));
+            okBtn.getStyleClass().add(Styles.DANGER);
             Button cancelBtn = new Button(LanguageManager.getString("ui.common.cancel"));
             okBtn.setOnAction(event1 -> {
                 viewModel.delete();
@@ -147,20 +148,27 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
 
     @FXML
     void uploadGachaFile(ActionEvent event) {
-        //viewModel.uploadGachaFile();
         ViewTuple<CloudBackupView, CloudBackupViewModel> viewTuple = FluentViewLoader.fxmlView(CloudBackupView.class).load();
-
-
-
         NotificationManager.dialog((Pane) viewTuple.getView(),viewTuple.getCodeBehind());
     }
+
+    @FXML
+    void copyUrl(ActionEvent event) {
+        viewModel.copyUrl();
+    }
+
+
 
     @FXML
     void toCommonChild(ActionEvent event) {
         if (event.getSource() instanceof ToggleButton toggleButton){
             if (toggleButton.isSelected()) {
                 createCommonChild();
-                Animations.slideInUp(commonChild, Duration.millis(300)).play();
+                commonChild.setOpacity(0);
+                Platform.runLater(() -> {
+                    commonChild.setOpacity(1);
+                    Animations.slideInUp(commonChild, Duration.millis(300)).play();
+                });
                 if (viewModel.getPoolData() != null) {
                     NotificationManager.publish(NotificationKey.CARD_POOL_USER_UPDATE, viewModel.getPoolData());
                 }
@@ -177,8 +185,12 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
                     ViewTuple<CloudBackupView, CloudBackupViewModel> viewTuple = FluentViewLoader.fxmlView(CloudBackupView.class).load();
                     cloudChild = viewTuple.getView();
                 }
+                cloudChild.setOpacity(0);
                 content.getChildren().setAll(cloudChild);
-                Animations.slideInUp(cloudChild, Duration.millis(300)).play();
+                Platform.runLater(() -> {
+                    cloudChild.setOpacity(1);
+                    Animations.slideInUp(cloudChild, Duration.millis(300)).play();
+                });
             } else {
                 toggleButton.setSelected(true);
             }
@@ -194,8 +206,12 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
                     viewTuple.getViewModel().loadData(viewModel.getPlayer());
                     tableChild = viewTuple.getView();
                 }
+                tableChild.setOpacity(0);
                 content.getChildren().setAll(tableChild);
-                Animations.slideInUp(tableChild, Duration.millis(300)).play();
+                Platform.runLater(() -> {
+                    tableChild.setOpacity(1);
+                    Animations.slideInUp(tableChild, Duration.millis(300)).play();
+                });
             } else {
                 toggleButton.setSelected(true);
             }
@@ -216,15 +232,9 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
                     content.getChildren().setAll(commonChild);
                 });
             });
-
-
-//            ViewTuple<CardCommonAnalysisView, CardCommonAnalysisViewModel> viewTuple = FluentViewLoader.fxmlView(CardCommonAnalysisView.class).load();
-//            commonChild = viewTuple.getView();
         }else {
             content.getChildren().setAll(commonChild);
         }
-
-
     }
 
     @FXML
@@ -239,6 +249,8 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
                                     .load();
                     detailChild = viewTuple.getView();
                 }
+
+                detailChild.setOpacity(0);
                 content.getChildren().setAll(detailChild);
 
                 if (viewModel.getPoolData() != null) {
@@ -246,7 +258,10 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
                 }else{
                     NotificationManager.publish(NotificationKey.CARD_POOL_USER_EMPTY);
                 }
-                Animations.slideInUp(detailChild, Duration.millis(300)).play();
+                Platform.runLater(() -> {
+                    detailChild.setOpacity(1);
+                    Animations.slideInUp(detailChild, Duration.millis(300)).play();
+                });
             } else {
                 toggleButton.setSelected(true);
             }

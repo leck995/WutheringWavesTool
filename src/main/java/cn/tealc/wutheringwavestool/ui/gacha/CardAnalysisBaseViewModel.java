@@ -11,6 +11,7 @@ import cn.tealc.wutheringwavestool.model.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.message.MessageType;
 import cn.tealc.wutheringwavestool.service.TaskManageService;
 import cn.tealc.wutheringwavestool.thread.gacha.CardPoolAnalysisTask;
+import cn.tealc.wutheringwavestool.thread.gacha.CardPoolGetUrlTask;
 import cn.tealc.wutheringwavestool.thread.gacha.CardPoolRequestTask;
 import cn.tealc.wutheringwavestool.thread.gacha.cloud.GachaCloudUploadTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
@@ -25,6 +26,8 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.input.Clipboard;
+import javafx.scene.input.ClipboardContent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -118,6 +121,25 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
             if (response.getCode() == 200) {
                 poolData = response.getData();
                 NotificationManager.publish(NotificationKey.CARD_POOL_USER_UPDATE, response.getData());
+            }
+        });
+        Thread.startVirtualThread(task);
+    }
+    /*
+    *  获取抽卡链接
+    * */
+    public void copyUrl(){
+        CardPoolGetUrlTask task = new CardPoolGetUrlTask();
+        task.setOnSucceeded(event -> {
+            ResponseBody<String> value = task.getValue();
+            if (value.getCode() == 200){
+                Clipboard clipboard = Clipboard.getSystemClipboard();
+                ClipboardContent content = new ClipboardContent();
+                content.putString(value.getData());
+                clipboard.setContent(content);
+                NotificationManager.message(MessageInfo.success("成功复制抽卡链接到剪切板"));
+            }else {
+                NotificationManager.message(MessageInfo.error(value.getMsg()));
             }
         });
         Thread.startVirtualThread(task);

@@ -7,6 +7,7 @@ import cn.tealc.wutheringwavestool.model.game.pool.CardInfo;
 import cn.tealc.wutheringwavestool.model.analysis.AnalysisData;
 import cn.tealc.wutheringwavestool.model.analysis.SsrData;
 import de.saxsys.mvvmfx.ViewModel;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -84,10 +85,12 @@ public class CardDetailAnalysisViewModel implements ViewModel {
     }
 
     private void updatePlayer(List<AnalysisData> list) {
-        analysisDataList.setAll(list);
-        poolNameList.setAll(list.stream().map(AnalysisData::getPoolName).collect(Collectors.toList()));
-        changePool(0);
-        publish("update");
+        Platform.runLater(()->{
+            analysisDataList.setAll(list);
+            poolNameList.setAll(list.stream().map(AnalysisData::getPoolName).collect(Collectors.toList()));
+            changePool(0);
+            publish("update");
+        });
     }
 
     /**

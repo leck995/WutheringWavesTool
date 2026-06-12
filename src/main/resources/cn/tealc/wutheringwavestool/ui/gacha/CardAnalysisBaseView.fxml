@@ -59,6 +59,15 @@
                   <HBox spacing="10.0">
                      <children>
                         <ComboBox fx:id="playerComboBox" prefWidth="150.0" />
+                        <Button layoutX="170.0" layoutY="10.0" mnemonicParsing="false" onAction="#copyUrl" text="%ui.analysis.copy_url">
+                           <graphic>
+                              <FontIcon iconLiteral="mdral-content_copy" />
+                           </graphic>
+                           <styleClass>
+                              <String fx:value="flat" />
+                              <String fx:value="button-icon" />
+                           </styleClass>
+                        </Button>
                         <Button mnemonicParsing="false" onAction="#export" text="%ui.analysis.export">
                            <graphic>
                               <FontIcon iconLiteral="mdomz-save" />
