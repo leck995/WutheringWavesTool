@@ -91,7 +91,7 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
     public void updateRoleData() {
         if (Config.setting().getGameRootDir() == null) {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    MessageInfo.warning(LanguageManager.getString("ui.home.message.type09")));
+                    MessageInfo.warning(LanguageManager.getString("ui.home.message.type04")));
             return;
         }
 
