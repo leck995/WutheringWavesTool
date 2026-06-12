@@ -4,6 +4,7 @@ import atlantafx.base.util.Animations;
 import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.ViewTuple;
+import javafx.application.Platform;
 import javafx.fxml.Initializable;
 
 import java.net.URL;
@@ -57,7 +58,11 @@ public class GameStatisticsView implements FxmlView<GameStatisticsViewModel>, In
                 recordView = viewTuple.getView();
             }
             content.getChildren().setAll(recordView);
-            Animations.slideInUp(recordView, Duration.millis(300)).play();
+            recordView.setOpacity(0);
+            Platform.runLater(()->{
+                recordView.setOpacity(1);
+                Animations.slideInUp(recordView, Duration.millis(300)).play();
+            });
         }else {
             toggleButton.setSelected(true);
         }
@@ -68,7 +73,12 @@ public class GameStatisticsView implements FxmlView<GameStatisticsViewModel>, In
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
             createTime();
-            Animations.slideInUp(timeView, Duration.millis(300)).play();
+            timeView.setOpacity(0);
+            Platform.runLater(()->{
+                timeView.setOpacity(1);
+                Animations.slideInUp(timeView, Duration.millis(300)).play();
+            });
+
         }else {
             toggleButton.setSelected(true);
         }

@@ -51,8 +51,6 @@ public class GameTimeViewModel extends BaseViewModel {
             NotificationManager.message(MessageInfo.warning("当前无记录"));
             return;
         }
-
-
         userInfoList.addAll(allRoleId);
         if (!Config.setting().isNoKuJieQu()){
             UserInfo main = userInfoDao.getMain();
@@ -65,9 +63,9 @@ public class GameTimeViewModel extends BaseViewModel {
                         break;
                     }
                 }
-               if (!hasUser) {
-                   updateIndex(0);
-               }
+                if (!hasUser) {
+                    updateIndex(0);
+                }
             }
         }else {
             if (!userInfoList.isEmpty()) {
