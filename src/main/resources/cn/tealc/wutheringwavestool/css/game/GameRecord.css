@@ -1,26 +1,93 @@
-.game-record{
-     -color-bg-default-90: #ffffff40;
- }
-.game-record .update-tip{
-    -fx-text-fill: -color-font-subtle;
-}
-.game-record .item{
-    -fx-background-color: -color-bg-default-90;
-    -fx-background-radius: 5;
-    -fx-padding: 10;
+/* ── Root ────────────────────────────────── */
+.game-record {
+    -fx-background-color: transparent;
 }
 
-.game-record .item .title{
-    -fx-font-size: 16;
+/* ── Header ──────────────────────────────── */
+.game-record .header {
+    -fx-background-color: -color-bg-default-60;
+    -fx-background-radius: 12;
+    -fx-padding: 14 20 14 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);
+    -fx-border-color: rgba(255,255,255,0.12);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+.game-record .header .header-tip {
+    -fx-font-size: 0.8em;
+    -fx-text-fill: -color-font-subtle;
+}
+
+.game-record .header .account-combo {
+    -fx-background-radius: 20;
+    -fx-background-color: -color-bg-default-80;
+}
+
+/* ── Cell card ───────────────────────────── */
+.game-record .stat-cell {
+    -fx-background-color: -color-bg-default-60;
+    -fx-background-radius: 12;
+    -fx-padding: 16 18 16 18;
+    -fx-spacing: 14;
+    -fx-alignment: CENTER_LEFT;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);
+    -fx-border-color: rgba(255,255,255,0.10);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+.game-record .stat-cell:hover {
+    -fx-background-color: -color-bg-default-80;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 14, 0, 0, 4);
+    -fx-border-color: rgba(255,255,255,0.18);
+}
+
+/* ── Avatar ──────────────────────────────── */
+.game-record .avatar {
+    -fx-fit-width: 60;
+    -fx-fit-height: 60;
+    -fx-preserve-ratio: true;
+    -fx-smooth: true;
+}
+
+/* Clip avatar to rounded shape via parent */
+.game-record .avatar-container {
+    -fx-min-width: 60;
+    -fx-min-height: 60;
+    -fx-max-width: 60;
+    -fx-max-height: 60;
+    -fx-background-radius: 50%;
+    -fx-border-radius: 50%;
+    -fx-border-color: rgba(255,255,255,0.25);
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+/* ── Body ────────────────────────────────── */
+.game-record .stat-body {
+    -fx-spacing: 3;
+    -fx-alignment: CENTER_LEFT;
+}
+
+/* ── Title ───────────────────────────────── */
+.game-record .stat-title {
+    -fx-font-size: 1.5em;
+    -fx-font-weight: bold;
     -fx-text-fill: -color-font-muted;
+    -fx-padding: 0 0 2 0;
 }
-.game-record .item .child{
-    -fx-spacing: 10;
+
+/* ── Today value ─────────────────────────── */
+.game-record .stat-today {
+    -fx-font-size: 1.15em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-accent-fg;
 }
-.game-record .item .child .tip{
-    -fx-pref-width: 180;
-    -fx-font-size: 16;
-}
-.game-record .item .child .num{
-    -fx-font-size: 16;
+
+/* ── Total value ─────────────────────────── */
+.game-record .stat-total {
+    -fx-font-size: 1em;
+    -fx-text-fill: -color-font-subtle;
+    -fx-font-weight: bold;
 }

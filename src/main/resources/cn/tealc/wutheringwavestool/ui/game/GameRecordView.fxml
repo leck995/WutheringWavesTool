@@ -1,152 +1,137 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
+<?import atlantafx.base.controls.Spacer?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="700.0" prefWidth="1000.0" styleClass="game-record" stylesheets="@../../css/game/GameRecord.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.game.GameRecordView">
+<AnchorPane fx:id="root" prefHeight="700.0" prefWidth="1000.0" styleClass="game-record" stylesheets="@../../css/game/GameRecord.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.game.GameRecordView">
    <children>
-      <HBox alignment="CENTER_LEFT" layoutX="10.0" layoutY="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-         <children>
-            <ComboBox fx:id="accountComboBox" prefWidth="150.0" />
-         </children>
-      </HBox>
-      <Label styleClass="update-tip" text="%ui.game_record.total.tip" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0" />
-      <HBox alignment="CENTER" layoutX="10.0" layoutY="10.0" spacing="40.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0">
-         <children>
-            <AnchorPane styleClass="item">
-               <children>
-                  <Label styleClass="title" text="%ui.game_record.today.title" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  <VBox styleClass="child" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
-                     <children>
-                        <HBox prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label01" />
-                              <Label fx:id="roleChange" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                        <HBox layoutX="10.0" layoutY="10.0" prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label02" />
-                              <Label fx:id="roleDeath" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                        <HBox layoutX="10.0" layoutY="110.0" prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label03" />
-                              <Label fx:id="battle" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                        <HBox layoutX="10.0" layoutY="210.0" prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label04" />
-                              <Label fx:id="transfer" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                        <HBox layoutX="10.0" layoutY="310.0" prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label05" />
-                              <Label fx:id="phantomGet" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                        <HBox prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label06" />
-                              <Label fx:id="phantomSkill" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                        <HBox prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label07" />
-                              <Label fx:id="paralysis" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                        <HBox prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label08" />
-                              <Label fx:id="parry" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                        <HBox prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label09" />
-                              <Label fx:id="parryAttack" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                     </children>
-                  </VBox>
-               </children>
-            </AnchorPane>
-            <AnchorPane layoutX="10.0" layoutY="10.0" styleClass="item">
-               <children>
-                  <Label styleClass="title" text="%ui.game_record.total.title" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
-                  <VBox styleClass="child" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="40.0">
-                     <children>
-                        <HBox prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label01" />
-                              <Label fx:id="totalRoleChange" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                        <HBox layoutX="10.0" layoutY="10.0" prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label02" />
-                              <Label fx:id="totalRoleDeath" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                        <HBox layoutX="10.0" layoutY="110.0" prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label03" />
-                              <Label fx:id="totalBattle" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                        <HBox layoutX="10.0" layoutY="210.0" prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label04" />
-                              <Label fx:id="totalTransfer" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                        <HBox layoutX="10.0" layoutY="310.0" prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label05" />
-                              <Label fx:id="totalPhantomGet" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                        <HBox prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label06" />
-                              <Label fx:id="totalPhantomSkill" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                        <HBox prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label07" />
-                              <Label fx:id="totalParalysis" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                        <HBox prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label08" />
-                              <Label fx:id="totalParry" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                        <HBox prefWidth="300.0" spacing="15.0">
-                           <children>
-                              <Label styleClass="tip" text="%ui.game_record.data.label09" />
-                              <Label fx:id="totalParryAttack" styleClass="num" text="15" />
-                           </children>
-                        </HBox>
-                     </children>
-                  </VBox>
-               </children>
-            </AnchorPane>
-         </children>
-      </HBox>
+
+      <!-- Header + Grid — unified width, centered -->
+      <StackPane alignment="TOP_CENTER" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="10.0">
+         <VBox maxWidth="900" spacing="16.0" VBox.vgrow="ALWAYS">
+            <children>
+               <HBox alignment="CENTER_LEFT" styleClass="header">
+                  <children>
+                     <ComboBox fx:id="accountComboBox" prefWidth="160.0" styleClass="account-combo" />
+                     <Spacer />
+                     <Label styleClass="header-tip" text="%ui.game_record.total.tip" />
+                  </children>
+               </HBox>
+               <GridPane hgap="16.0" maxHeight="540" styleClass="stat-grid" vgap="16.0" VBox.vgrow="ALWAYS">
+         <columnConstraints>
+            <ColumnConstraints percentWidth="33.33" />
+            <ColumnConstraints percentWidth="33.33" />
+            <ColumnConstraints percentWidth="33.33" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints percentHeight="33.33" />
+            <RowConstraints percentHeight="33.33" />
+            <RowConstraints percentHeight="33.33" />
+         </rowConstraints>
+
+         <!-- Cell 0,0: 角色切换 -->
+         <HBox styleClass="stat-cell" GridPane.columnIndex="0" GridPane.rowIndex="0">
+            <StackPane styleClass="avatar-container"><ImageView styleClass="avatar" /></StackPane>
+            <VBox styleClass="stat-body">
+               <Label styleClass="stat-title" text="%ui.game_record.data.label01" />
+               <Label fx:id="roleChange" styleClass="stat-today" />
+               <Label fx:id="totalRoleChange" styleClass="stat-total" />
+            </VBox>
+         </HBox>
+
+         <!-- Cell 1,0: 角色死亡 -->
+         <HBox styleClass="stat-cell" GridPane.columnIndex="1" GridPane.rowIndex="0">
+            <StackPane styleClass="avatar-container"><ImageView styleClass="avatar" /></StackPane>
+            <VBox styleClass="stat-body">
+               <Label styleClass="stat-title" text="%ui.game_record.data.label02" />
+               <Label fx:id="roleDeath" styleClass="stat-today" />
+               <Label fx:id="totalRoleDeath" styleClass="stat-total" />
+            </VBox>
+         </HBox>
+
+         <!-- Cell 2,0: 战斗 -->
+         <HBox styleClass="stat-cell" GridPane.columnIndex="2" GridPane.rowIndex="0">
+            <StackPane styleClass="avatar-container"><ImageView styleClass="avatar" /></StackPane>
+            <VBox styleClass="stat-body">
+               <Label styleClass="stat-title" text="%ui.game_record.data.label03" />
+               <Label fx:id="battle" styleClass="stat-today" />
+               <Label fx:id="totalBattle" styleClass="stat-total" />
+            </VBox>
+         </HBox>
+
+         <!-- Cell 0,1: 传送 -->
+         <HBox styleClass="stat-cell" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <StackPane styleClass="avatar-container"><ImageView styleClass="avatar" /></StackPane>
+            <VBox styleClass="stat-body">
+               <Label styleClass="stat-title" text="%ui.game_record.data.label04" />
+               <Label fx:id="transfer" styleClass="stat-today" />
+               <Label fx:id="totalTransfer" styleClass="stat-total" />
+            </VBox>
+         </HBox>
+
+         <!-- Cell 1,1: 声骸获取 -->
+         <HBox styleClass="stat-cell" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <StackPane styleClass="avatar-container"><ImageView styleClass="avatar" /></StackPane>
+            <VBox styleClass="stat-body">
+               <Label styleClass="stat-title" text="%ui.game_record.data.label05" />
+               <Label fx:id="phantomGet" styleClass="stat-today" />
+               <Label fx:id="totalPhantomGet" styleClass="stat-total" />
+            </VBox>
+         </HBox>
+
+         <!-- Cell 2,1: 声骸技能 -->
+         <HBox styleClass="stat-cell" GridPane.columnIndex="2" GridPane.rowIndex="1">
+            <StackPane styleClass="avatar-container"><ImageView styleClass="avatar" /></StackPane>
+            <VBox styleClass="stat-body">
+               <Label styleClass="stat-title" text="%ui.game_record.data.label06" />
+               <Label fx:id="phantomSkill" styleClass="stat-today" />
+               <Label fx:id="totalPhantomSkill" styleClass="stat-total" />
+            </VBox>
+         </HBox>
+
+         <!-- Cell 0,2: 麻痹 -->
+         <HBox styleClass="stat-cell" GridPane.columnIndex="0" GridPane.rowIndex="2">
+            <StackPane styleClass="avatar-container"><ImageView styleClass="avatar" /></StackPane>
+            <VBox styleClass="stat-body">
+               <Label styleClass="stat-title" text="%ui.game_record.data.label07" />
+               <Label fx:id="paralysis" styleClass="stat-today" />
+               <Label fx:id="totalParalysis" styleClass="stat-total" />
+            </VBox>
+         </HBox>
+
+         <!-- Cell 1,2: 格挡 -->
+         <HBox styleClass="stat-cell" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <StackPane styleClass="avatar-container"><ImageView styleClass="avatar" /></StackPane>
+            <VBox styleClass="stat-body">
+               <Label styleClass="stat-title" text="%ui.game_record.data.label08" />
+               <Label fx:id="parry" styleClass="stat-today" />
+               <Label fx:id="totalParry" styleClass="stat-total" />
+            </VBox>
+         </HBox>
+
+         <!-- Cell 2,2: 格挡反击 -->
+         <HBox styleClass="stat-cell" GridPane.columnIndex="2" GridPane.rowIndex="2">
+            <StackPane styleClass="avatar-container"><ImageView styleClass="avatar" /></StackPane>
+            <VBox styleClass="stat-body">
+               <Label styleClass="stat-title" text="%ui.game_record.data.label09" />
+               <Label fx:id="parryAttack" styleClass="stat-today" />
+               <Label fx:id="totalParryAttack" styleClass="stat-total" />
+            </VBox>
+         </HBox>
+
+               </GridPane>
+            </children>
+         </VBox>
+      </StackPane>
+
    </children>
-   <padding>
-      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-   </padding>
 </AnchorPane>
