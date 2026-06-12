@@ -124,7 +124,7 @@ public class GameTimeViewModel extends BaseViewModel {
 
         totalProgressValue.set(currentTotalTime/totalTime);
 
-        updateCurrentGameTime();
+        updateCurrentGameTime(roleId);
     }
 
 
@@ -212,11 +212,11 @@ public class GameTimeViewModel extends BaseViewModel {
      * @return  void
      * @date:   2024/8/4
      */
-    private void updateCurrentGameTime(){
+    private void updateCurrentGameTime(String roleId){
         LocalDate localDate = LocalDate.now();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String date = dateTimeFormatter.format(localDate);
-        List<GameTime> list = gameTimeDao.getTimeListByData(date);
+        List<GameTime> list = gameTimeDao.getTimeListByDataAndRoleId(date, roleId);
         if (list !=null){
             long sum = list.stream().mapToLong(GameTime::getDuration).sum();
             int hour = (int) (sum / (1000 * 60 * 60));

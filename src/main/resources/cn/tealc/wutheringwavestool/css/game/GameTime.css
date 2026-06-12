@@ -1,34 +1,139 @@
-.gametime{
-    -color-bg-default-90: #ffffff40;
-}
-
-.gametime .item{
-    -fx-background-color: -color-bg-default-90;
-    -fx-background-radius: 5;
-    -fx-padding: 10;
-}
-
-.gametime .item .header{
-    -fx-font-size: 16;
-    -fx-text-fill: -color-font-muted;
-}
-
-.gametime .item .content .label{
-    -fx-font-size: 16;
-    -fx-text-fill: -color-font-muted;
-}
-
-.gametime .chart{
-    -fx-background-color: -color-bg-default-90;
-    -fx-background-radius: 5;
-    -fx-padding: 10;
-}
-.gametime .chart > .chart-content > .chart-plot-background {
+/* ── Root ────────────────────────────────── */
+.gametime {
     -fx-background-color: transparent;
 }
-.gametime  .progress-bar > .bar{
-    -fx-padding: 4px;
+
+/* ── Header ──────────────────────────────── */
+.gametime .header {
+    -fx-background-color: -color-bg-default-60;
+    -fx-background-radius: 12;
+    -fx-padding: 14 20 14 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);
+    -fx-border-color: rgba(255,255,255,0.12);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
 }
-.gametime  .progress-bar > .track{
-    -fx-background-color: #dfdede;
+
+.gametime .header .header-title {
+    -fx-font-size: 1.25em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-font-default;
+}
+
+.gametime .header .account-combo {
+    -fx-background-radius: 20;
+    -fx-background-color: -color-bg-default-80;
+}
+
+/* ── Cards ───────────────────────────────── */
+.gametime .card {
+    -fx-background-color: -color-bg-default-60;
+    -fx-background-radius: 12;
+    -fx-padding: 16 20 16 20;
+    -fx-spacing: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);
+    -fx-border-color: rgba(255,255,255,0.10);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+.gametime .card:hover {
+    -fx-background-color: -color-bg-default-80;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 14, 0, 0, 4);
+}
+
+.gametime .card-label {
+    -fx-font-size: 0.9em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-font-subtle;
+    -fx-padding: 0 0 4 0;
+}
+
+.gametime .card-body {
+    -fx-alignment: CENTER_LEFT;
+}
+
+.gametime .card-tip {
+    -fx-font-size: 0.8em;
+    -fx-text-fill: -color-font-subtle;
+}
+
+/* ── Avatar ──────────────────────────────── */
+.gametime .avatar-container {
+    -fx-min-width: 80;
+    -fx-min-height: 80;
+    -fx-max-width: 80;
+    -fx-max-height: 80;
+}
+
+.gametime .avatar {
+    -fx-smooth: true;
+}
+
+/* ── User name ───────────────────────────── */
+.gametime .user-name {
+    -fx-font-size: 1.1em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-font-default;
+}
+
+/* ── Stat text ───────────────────────────── */
+.gametime .stat-text {
+    -fx-font-size: 0.9em;
+    -fx-text-fill: -color-font-muted;
+}
+
+/* ── Stat label / value ──────────────────── */
+.gametime .stat-label {
+    -fx-font-size: 0.9em;
+    -fx-text-fill: -color-font-muted;
+}
+
+.gametime .stat-value {
+    -fx-font-size: 1.3em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-accent-fg;
+}
+
+.gametime .stat-unit {
+    -fx-font-size: 0.85em;
+    -fx-text-fill: -color-font-subtle;
+}
+
+/* ── Progress bar ────────────────────────── */
+.gametime .progress-bar > .bar {
+    -fx-padding: 4px;
+    -fx-background-radius: 4;
+}
+
+.gametime .progress-bar > .track {
+    -fx-background-color: rgba(128,128,128,0.15);
+    -fx-background-radius: 4;
+}
+
+/* ── Chart card ──────────────────────────── */
+.gametime .chart-card {
+    -fx-background-color: -color-bg-default-60;
+    -fx-background-radius: 12;
+    -fx-padding: 16 20 16 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);
+    -fx-border-color: rgba(255,255,255,0.10);
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+}
+
+/* Chart internals */
+.gametime .chart-card .chart > .chart-content > .chart-plot-background {
+    -fx-background-color: transparent;
+}
+.gametime .chart-card .chart > .chart-title {
+    -fx-font-size: 1em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-font-muted;
+}
+.gametime .chart-card .axis {
+    -fx-tick-label-fill: -color-font-subtle;
+}
+.gametime .chart-card .axis > .axis-label {
+    -fx-text-fill: -color-font-muted;
 }

@@ -51,6 +51,17 @@ public class GameTimeDao {
         }
     }
 
+    public List<GameTime> getTimeListByDataAndRoleId(String date, String roleId) {
+        QueryRunner qr = new QueryRunner(dataSource);
+        String sql = "SELECT * FROM game_time WHERE game_date=? AND role_id=?";
+        try {
+            return qr.query(sql, new BeanListHandler<>(GameTime.class, getRowProcessor()), date, roleId);
+        } catch (SQLException e) {
+            LOG.error(e.getMessage(), e);
+            return null;
+        }
+    }
+
     public List<GameTime> getTimeListByRoleId(String roleId) {
         QueryRunner qr = new QueryRunner(dataSource);
         String sql = "SELECT * FROM game_time WHERE role_id=?";
