@@ -142,8 +142,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         initHeaderBar();
         initBackground();
         initNav();
-        initContent();
-        initGlobalEvent();
+        Platform.runLater(this::initContent);
     }
 
     private void initGlobalEvent() {

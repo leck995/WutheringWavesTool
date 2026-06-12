@@ -51,16 +51,16 @@ public class WwtApp extends Application {
         autoStarted = getParameters().getRaw().contains("--auto-start");
         JdbcUtils.init();
         AppInjector.getInjector();
-        VersionUpdateUtil.update();
+        //VersionUpdateUtil.update();
         window = stage;
-        setupStage(stage);
         stage.initStyle(StageStyle.EXTENDED);
+        setupStage(stage);
         initFont();
         if (Config.setting().isSilentStart()) {
             stage.hide();
             LOG.info("静默启动，窗口已隐藏");
         }else {
-            stage.show();
+            Platform.runLater(stage::show);
         }
 
         AppInjector.getInstance(GameWindowMonitorService.class).start();
