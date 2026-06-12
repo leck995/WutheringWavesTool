@@ -186,8 +186,8 @@ public class JdbcUtils {
             st.execute(createGameSlash);
             st.execute(createNewGameTower);
             st.execute(createConfig);
-            st.execute(createGameGacha);
-            //st.execute(createLocalCachePlayerData);
+            //st.execute(createGameGacha);1.4.0版本因为错误的没有注释，被执行了，以后如果使用，必须先删除原有的表
+            st.execute(createLocalCachePlayerData);
             try { st.execute("ALTER TABLE local_cache_player_data ADD COLUMN cuid VARCHAR"); } catch (SQLException ignored) {}
             st.close();
             con.close();
