@@ -16,7 +16,7 @@
 <?import javafx.scene.shape.SVGPath?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<StackPane fx:id="root" prefHeight="600.0" prefWidth="1000.0" styleClass="update" stylesheets="@../../css/Update.css" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.system.UpdateView">
+<StackPane fx:id="root" prefHeight="600.0" prefWidth="1000.0" styleClass="update" stylesheets="@../../css/Update.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.system.UpdateView">
    <children>
       <AnchorPane prefHeight="400.0" prefWidth="600.0">
          <children>
@@ -111,6 +111,12 @@
                         </MenuButton>
                      </children>
                   </HBox>
+               </children>
+            </VBox>
+            <VBox prefWidth="250.0" spacing="8.0" AnchorPane.bottomAnchor="160.0" AnchorPane.leftAnchor="20.0">
+               <children>
+                  <Label text="%ui.update.left.grid.source" />
+                  <HBox fx:id="urlChoiceGroup" prefWidth="250.0" spacing="4.0" />
                </children>
             </VBox>
             <VBox layoutX="300.0" spacing="40.0" styleClass="right" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="300.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="70.0">

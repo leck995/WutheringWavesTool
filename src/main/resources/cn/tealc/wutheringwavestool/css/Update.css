@@ -9,3 +9,6 @@
 .update .right .text-area{
     -fx-background-color: transparent;
 }
+.update .radio-button{
+    -fx-background-color: transparent;
+}

@@ -25,24 +25,17 @@ import java.util.zip.ZipInputStream;
  * @author: Leck
  * @create: 2024-12-22 20:27
  */
-public class DownloadUpdateTask extends Task<ResponseBody<Boolean>> {
-    private static final Logger LOG = LoggerFactory.getLogger(DownloadUpdateTask.class);
+public class AppUpdateDownloadTask extends Task<ResponseBody<Boolean>> {
+    private static final Logger LOG = LoggerFactory.getLogger(AppUpdateDownloadTask.class);
 
     private final File saveFile;
     private final Release release;
-    private String url;
-    public DownloadUpdateTask(Release release) {
+    private final String url;
+    public AppUpdateDownloadTask(Release release,int urlIndex) {
         this.release = release;
         saveFile = new File("update.zip");
-        if (release.getUrls().length == 1){
-            url = release.getUrls()[0];
-        }else if (release.getUrls().length > 1){
-            if (Config.setting().getResourceSource() == 0){
-                url = release.getUrls()[0];
-            }else {
-                url = release.getUrls()[1];
-            }
-        }
+        url = release.getUrls()[urlIndex];
+        LOG.info("更新网站: {}", url);
     }
 
     @Override
@@ -51,6 +44,7 @@ public class DownloadUpdateTask extends Task<ResponseBody<Boolean>> {
         if (saveFile.exists()) {
             String md5 = DigestUtils.md5Hex(new FileInputStream(saveFile));
             if (md5.equals(release.getMd5())){
+                if (isCancelled()) return ResponseBody.create(-1, "下载已取消", false);
                 unzip();
                 return ResponseBody.create(200,"准备安装",true);
             }else {
@@ -59,7 +53,7 @@ public class DownloadUpdateTask extends Task<ResponseBody<Boolean>> {
         }
         HttpClient client = AppInjector.getInstance(HttpClient.class);
         try {
-            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).timeout(Duration.ofSeconds(5)).build();
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).timeout(Duration.ofSeconds(10)).build();
             HttpResponse<InputStream> response = client.send(request, HttpResponse.BodyHandlers.ofInputStream());
             if (response.statusCode() == 200) {
                 long contentLength = response.headers().firstValueAsLong("Content-Length")
@@ -72,9 +66,13 @@ public class DownloadUpdateTask extends Task<ResponseBody<Boolean>> {
                         int bytesRead;
                         long totalBytesRead = 0;
                         while ((bytesRead = inputStream.read(buffer)) != -1) {
+                            if (isCancelled()) {
+                                outputStream.close();
+                                deleteZip();
+                                return ResponseBody.create(-1, "下载已取消", false);
+                            }
                             outputStream.write(buffer, 0, bytesRead);
                             totalBytesRead += bytesRead;
-                            // 更新进度
                             updateProgress(totalBytesRead, contentLength);
                         }
                     }
@@ -82,6 +80,7 @@ public class DownloadUpdateTask extends Task<ResponseBody<Boolean>> {
                 }
                 boolean checked = checkMd5();
                 if (checked){
+                    if (isCancelled()) return ResponseBody.create(-1, "下载已取消", false);
                     unzip();
                     return ResponseBody.create(200,"准备安装",true);
                 }else {
@@ -125,19 +124,18 @@ public class DownloadUpdateTask extends Task<ResponseBody<Boolean>> {
         try (ZipInputStream zipInputStream = new ZipInputStream(new FileInputStream(zipFilePath))) {
             ZipEntry entry;
             while ((entry = zipInputStream.getNextEntry()) != null) {
+                if (isCancelled()) return;
                 File newFile = new File(destDir, entry.getName());
-                // 创建目录结构
                 if (entry.isDirectory()) {
                     newFile.mkdirs();
                 } else {
-                    // 确保父目录存在
                     new File(newFile.getParent()).mkdirs();
 
-                    // 写入文件
                     try (FileOutputStream outputStream = new FileOutputStream(newFile)) {
                         byte[] buffer = new byte[4096];
                         int bytesRead;
                         while ((bytesRead = zipInputStream.read(buffer)) != -1) {
+                            if (isCancelled()) return;
                             outputStream.write(buffer, 0, bytesRead);
                         }
                     }

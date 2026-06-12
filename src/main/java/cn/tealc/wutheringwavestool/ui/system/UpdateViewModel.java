@@ -6,12 +6,15 @@ import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.model.release.Release;
-import cn.tealc.wutheringwavestool.thread.system.DownloadUpdateTask;
+import cn.tealc.wutheringwavestool.thread.system.AppUpdateDownloadTask;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,9 +40,15 @@ public class UpdateViewModel implements ViewModel {
     private final SimpleStringProperty forceLabel = new SimpleStringProperty();
     private final SimpleBooleanProperty downloading = new SimpleBooleanProperty(false);
     private final Release release;
-
+    private final ObservableList<String> urls =  FXCollections.observableArrayList();
+    private final SimpleIntegerProperty urlIndex = new SimpleIntegerProperty(0);
+    private AppUpdateDownloadTask currentTask;
     public UpdateViewModel(Release release) {
         this.release = release;
+    }
+    public void initialize(){
+        System.out.println("初始化");
+        urls.setAll(release.getUrls());
         version.set(String.format("V%s -> V%s", AppConstants.VERSION, release.getVersion()));
         name.set(release.getName());
         description.set(release.getDescription());
@@ -53,25 +62,31 @@ public class UpdateViewModel implements ViewModel {
         progressValue.unbind();
         progressLabel.unbind();
         packageSize.unbind();
-        DownloadUpdateTask task = new DownloadUpdateTask(release);
-        progressValue.bind(task.progressProperty());
-        progressLabel.bind(task.progressProperty().multiply(100).asString("%.2f%%"));
-        packageSize.bind(task.titleProperty());
+        currentTask = new AppUpdateDownloadTask(release, urlIndex.get());
+        progressValue.bind(currentTask.progressProperty());
+        progressLabel.bind(currentTask.progressProperty().multiply(100).asString("%.2f%%"));
+        packageSize.bind(currentTask.titleProperty());
         downloading.set(true);
-        task.setOnSucceeded(event -> {
+        currentTask.setOnSucceeded(event -> {
             downloading.set(false);
-            ResponseBody<Boolean> value = task.getValue();
+            ResponseBody<Boolean> value = currentTask.getValue();
             if (value.getCode() == 200){
                 startUpdate();
             }else if (value.getCode() == 201){ //校验失败
-                NotificationManager.message(MessageInfo.warning(value.getMsg()));
-                downloadZip();
+                NotificationManager.message(MessageInfo.warning(value.getMsg(),false));
             }else {
-                NotificationManager.message(MessageInfo.warning(value.getMsg()));
+                NotificationManager.message(MessageInfo.warning(value.getMsg(),false));
             }
-
         });
-        Thread.startVirtualThread(task);
+        currentTask.setOnCancelled(event -> {
+            downloading.set(false);
+            currentTask = null;
+        });
+        currentTask.setOnFailed(event -> {
+            downloading.set(false);
+            currentTask = null;
+        });
+        Thread.startVirtualThread(currentTask);
     }
 
 
@@ -97,42 +112,28 @@ public class UpdateViewModel implements ViewModel {
         });
         thread.start();
     }
+    public void cancelDownload() {
+        if (currentTask != null) {
+            currentTask.cancel();
+            progressValue.unbind();
+            progressLabel.unbind();
+            packageSize.unbind();
+            progressValue.set(0);
+            progressLabel.set(null);
+            packageSize.set(null);
 
-/*
-    private void startUpdate(){
-        Thread thread = new Thread(() -> {
-            LOG.debug("复制update.bat至项目目录");
-            InputStream batInputStream = this.getClass().getResourceAsStream("/update.bat");
-            assert batInputStream != null;
-            File batFile = new File("update.bat");
-            try (FileOutputStream outputStream = new FileOutputStream(batFile)) {
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = batInputStream.read(buffer)) != -1) {
-                    outputStream.write(buffer, 0, bytesRead);
-                }
-                batInputStream.close();
-            } catch (IOException e) {
-                LOG.error(e.getMessage(),e);
-            }
-
-            LOG.debug("启动update.bat");
-            ProcessBuilder processBuilder = new ProcessBuilder("cmd.exe", "/c","start", "/b", "\"\"" ,batFile.getAbsolutePath());
-            try {
-                processBuilder.start();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        });
-        thread.start();
+        }
     }
-*/
+
+    public void setUrlIndex(int index){
+        urlIndex.set(index);
+    }
+
+
 
     public void setSkipVersion(){
         Config.setting().setSkipVersion(release.getVersion());
     }
-
-
 
 
     public String getVersion() {
@@ -221,5 +222,17 @@ public class UpdateViewModel implements ViewModel {
 
     public SimpleStringProperty forceLabelProperty() {
         return forceLabel;
+    }
+
+    public ObservableList<String> getUrls() {
+        return urls;
+    }
+
+    public int getUrlIndex() {
+        return urlIndex.get();
+    }
+
+    public SimpleIntegerProperty urlIndexProperty() {
+        return urlIndex;
     }
 }

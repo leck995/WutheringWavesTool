@@ -27,15 +27,13 @@ import com.kuro.kujiequ.model.slash.SlashData;
 import com.kuro.kujiequ.model.slash.SlashDifficulty;
 import com.kuro.kujiequ.model.towerData.DifficultyTotal;
 import cn.tealc.teafx.utils.message.MessageInfo;
-import cn.tealc.teafx.utils.message.MessageType;
-import cn.tealc.wutheringwavestool.thread.system.CheckVersionTask;
+import cn.tealc.wutheringwavestool.thread.system.AppCheckVersionTask;
 import com.kuro.kujiequ.thread.rolebox.slash.SlashDataDetailTask;
 import com.kuro.kujiequ.thread.rolebox.tower.NewTowerDataDetailTask;
 import com.kuro.kujiequ.thread.rolebox.tower.TowerDataDetailTask;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.MvvmFX;
 import javafx.application.Platform;
-import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -135,7 +133,7 @@ public class MainViewModel extends BaseViewModel {
     public void checkVersion() {
         if (Config.setting().isCheckNewVersion()) {
             Platform.runLater(() -> {
-                CheckVersionTask task = new CheckVersionTask(true);
+                AppCheckVersionTask task = new AppCheckVersionTask(true);
                 task.setOnSucceeded(workerStateEvent -> {
                     ResponseBody<Release> value = task.getValue();
                     if (value.getCode() == 200) {

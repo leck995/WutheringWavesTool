@@ -7,11 +7,10 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.teafx.utils.message.MessageInfo;
-import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.model.release.Release;
 import cn.tealc.wutheringwavestool.service.AutoStartService;
 import cn.tealc.wutheringwavestool.thread.system.CheckGameConfigTask;
-import cn.tealc.wutheringwavestool.thread.system.CheckVersionTask;
+import cn.tealc.wutheringwavestool.thread.system.AppCheckVersionTask;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -161,7 +160,7 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
     }
 
     public void checkVersion() {
-        CheckVersionTask task = new CheckVersionTask(false);
+        AppCheckVersionTask task = new AppCheckVersionTask(false);
         task.setOnSucceeded(workerStateEvent -> {
             ResponseBody<Release> value = task.getValue();
             if (value.getCode() == 200) {
@@ -172,6 +171,8 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.main.message.type01")));
             }
         });
+        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.info(LanguageManager.getString("ui.main.message.type03")));
+
         Thread.startVirtualThread(task);
     }
 
