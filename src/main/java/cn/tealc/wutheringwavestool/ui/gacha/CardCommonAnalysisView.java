@@ -102,7 +102,7 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
         titleLabel.getStyleClass().add("title-3");
         StackPane.setAlignment(titleLabel, Pos.CENTER_LEFT);
         Label totalLabel = new Label(String.valueOf(data.getTotalCount()));
-        totalLabel.getStyleClass().add("title-3");
+        totalLabel.getStyleClass().addAll("title-3","total-count");
         StackPane.setAlignment(totalLabel, Pos.CENTER_RIGHT);
         titleRow.getChildren().addAll(titleLabel, totalLabel);
 
@@ -135,8 +135,13 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
                 data.isEmpty() ? "0" : String.format(AVG_TEMPLATE, data.getSsrAvg()));
         ssrAvgRow.getStyleClass().add("ssr-avg");
 
-        Separator sep2 = new Separator();
+        // UP SSR avg
+        StackPane upSsrAvgRow = createConclusionRow(
+                Config.language.getString("ui.analysis.common.ssr.up.avg"),
+                data.isEmpty() ? "0" : String.format(AVG_TEMPLATE, data.getUpSsrAvg()));
+        upSsrAvgRow.getStyleClass().add("up-ssr-avg");
 
+        Separator sep2 = new Separator();
         // SSR count
         StackPane ssrCountRow = createConclusionRow(
                 Config.language.getString("ui.analysis.common.ssr.count"),
@@ -151,6 +156,29 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
                         (double) data.getSrCount() / data.getTotalCount() * 100.0));
         srCountRow.getStyleClass().add("sr-count");
 
+
+        // UP SSR count
+        StackPane upSsrCountRow = createConclusionRow(
+                Config.language.getString("ui.analysis.common.ssr.up.count"),
+                data.isEmpty() ? "0" : String.format(PERCENT_TEMPLATE, data.getUpSsrCount(),
+                        (double) data.getUpSsrCount() / data.getTotalCount() * 100.0));
+        upSsrCountRow.getStyleClass().add("up-ssr-count");
+        if ( data.getUpSsrCount() == 0){
+            upSsrCountRow.setVisible(false);
+        }
+
+
+        // Non-banner rate
+        StackPane nonBannerRateRow = createConclusionRow(
+                Config.language.getString("ui.analysis.common.ssr.non.banner.rate"),
+                data.isEmpty() ? "0" : String.format("%.2f%%", data.getNonBannerRate() * 100));
+        nonBannerRateRow.getStyleClass().add("non-banner-rate");
+
+        if (data.getNonBannerRate() == 0){
+            nonBannerRateRow.setVisible(false);
+        }
+
+
         // SSR list view
         ListView<SsrData> listView = new ListView<>();
         listView.setCellFactory(lv -> new SsrCell());
@@ -162,8 +190,8 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
             listView.getItems().setAll(data.getSsrDataList());
         }
 
-        card.getChildren().addAll(titleRow, dateLabel, sep1, srNoUpRow, ssrNoUpRow, ssrAvgRow,
-                sep2, ssrCountRow, srCountRow, listView);
+        card.getChildren().addAll(titleRow, dateLabel, sep1, srNoUpRow, ssrNoUpRow, ssrAvgRow, upSsrAvgRow,
+                sep2, srCountRow, ssrCountRow, upSsrCountRow, nonBannerRateRow, listView);
 
         return card;
     }
@@ -185,6 +213,7 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
         private Label name;
         private Label date;
         private Label count;
+        private Label upLabel;
         private ProgressBar progressBar;
 
         public SsrCell() {
@@ -203,11 +232,14 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
             center.setPadding(new Insets(0, 0, 0, 5));
             center.setAlignment(Pos.CENTER_LEFT);
 
+            upLabel = new Label("UP!");
+            upLabel.getStyleClass().add("up-tag");
+            upLabel.setVisible(false);
             Label desc = new Label();
             desc.getStyleClass().add("role-desc");
             count = new Label();
             count.getStyleClass().add("role-name");
-            HBox left = new HBox(5.0, count);
+            HBox left = new HBox(8.0, upLabel, count);
             left.setAlignment(Pos.CENTER_RIGHT);
 
             progressBar = new ProgressBar();
@@ -238,11 +270,13 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
                 progressBar.setProgress(ssrData.getCount() / 80.0);
 
                 if (ssrData.isEvent()) {
+                    upLabel.setVisible(true);
                     count.getStyleClass().remove("unup");
                     count.getStyleClass().add("up");
                     progressBar.getStyleClass().remove("unup");
                     progressBar.getStyleClass().add("up");
                 } else {
+                    upLabel.setVisible(false);
                     count.getStyleClass().remove("up");
                     count.getStyleClass().add("unup");
                     progressBar.getStyleClass().remove("up");

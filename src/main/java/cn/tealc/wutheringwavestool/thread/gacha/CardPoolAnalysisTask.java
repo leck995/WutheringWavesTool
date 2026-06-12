@@ -64,8 +64,12 @@ public class CardPoolAnalysisTask extends Task<ResponseBody<List<AnalysisData>>>
     }
 
 
+    /**
+     * 分析单个卡池的抽卡数据。cardInfoList 按时间倒序排列（索引0 = 最新抽卡）。
+     */
     private AnalysisData analysis(String name, List<CardInfo> cardInfoList) {
-        if (skipFirstSSR){ //忽视第一个五星的影响
+        // 跳过末尾未完成的五星保底窗口，避免数据失真
+        if (skipFirstSSR){
             for (int i = cardInfoList.size() - 1; i >= 0; i--) {
                 CardInfo cardInfo = cardInfoList.get(i);
                 if (cardInfo.getQualityLevel() == 5){
@@ -88,7 +92,7 @@ public class CardPoolAnalysisTask extends Task<ResponseBody<List<AnalysisData>>>
         analysisData.setEndDate(getEndDate(cardInfoList));
 
 
-        //先获取五星在列表中的索引
+        // cardInfoList 按时间倒序：索引0=最新，获取各稀有度在列表中的位置
         List<Integer> ssrIndexList = new ArrayList<>();
         List<Integer> srIndexList = new ArrayList<>();
         List<Integer> rIndexList = new ArrayList<>();
@@ -117,6 +121,7 @@ public class CardPoolAnalysisTask extends Task<ResponseBody<List<AnalysisData>>>
 
 
 
+    // 列表倒序排列，getLast()=最旧的记录=开始日期
     private String getStartDate(List<CardInfo> cardInfoList){
         CardInfo last = cardInfoList.getLast();
         String time = last.getTime();
@@ -126,6 +131,7 @@ public class CardPoolAnalysisTask extends Task<ResponseBody<List<AnalysisData>>>
         return time;
     }
 
+    // 列表倒序排列，getFirst()=最新的记录=结束日期
     private String getEndDate(List<CardInfo> cardInfoList){
         CardInfo last = cardInfoList.getFirst();
         String time = last.getTime();
@@ -136,10 +142,13 @@ public class CardPoolAnalysisTask extends Task<ResponseBody<List<AnalysisData>>>
     }
 
 
+    /**
+     * 计算当前保底进度（已垫抽数）。列表倒序排列，首个SSR/SR的索引即距最新一抽的距离。
+     */
     private void analysisNoUp(AnalysisData analysisData,List<CardInfo> cardInfoList, List<Integer> ssrIndexList, List<Integer> srIndexList){
         if (!ssrIndexList.isEmpty()) {
             Integer ssrIndex = ssrIndexList.getFirst();
-            analysisData.setNoUpSsrCount(ssrIndex); //设置已垫次数，实际上等于最后一次出现SSR的索引
+            analysisData.setNoUpSsrCount(ssrIndex);
             if (!srIndexList.isEmpty()){
                 Integer srIndex = srIndexList.getFirst();
                 if (srIndex < ssrIndex){
@@ -166,6 +175,10 @@ public class CardPoolAnalysisTask extends Task<ResponseBody<List<AnalysisData>>>
         }
     }
 
+    /**
+     * 分析五星数据。按SSR索引将列表分段，每段从当前SSR到下一个SSR（不含），
+     * 段长度即为"抽到该五星所需的抽数"。
+     */
     private void analysisSSR(AnalysisData analysisData,List<CardInfo> cardInfoList ,List<Integer> ssrIndexList){
         if (!ssrIndexList.isEmpty()) {
             List<SsrData> ssrDataList = new ArrayList<>();
@@ -173,7 +186,6 @@ public class CardPoolAnalysisTask extends Task<ResponseBody<List<AnalysisData>>>
             int ssrMin = 80;
             int ssrMax = 0;
             double totalCount = 0;
-            //按照五星索引进行列表分段
             for (int i = 0; i < ssrIndexList.size(); i++) {
                 Integer index = ssrIndexList.get(i);
                 CardInfo cardInfo = cardInfoList.get(ssrIndexList.get(i));
@@ -204,13 +216,44 @@ public class CardPoolAnalysisTask extends Task<ResponseBody<List<AnalysisData>>>
             analysisData.setSsrMax(ssrMax);
             analysisData.setSsrMin(ssrMin);
             analysisData.setSsrDataList(ssrDataList);
+
+            // UP五星统计：按时间正序遍历（最早→最新），计算连续UP之间的间隔抽数
+            // 间隔包含了两个UP之间的所有常驻五星，即"抽到UP前所需的总抽数"
+            int upSsrCount = 0;
+            int totalUpPulls = 0;
+            Integer lastChronoUpIdx = null;
+            for (int i = ssrIndexList.size() - 1; i >= 0; i--) {
+                int idx = ssrIndexList.get(i);
+                CardInfo cardInfo = cardInfoList.get(idx);
+                boolean isUp = !baseSSRList.contains(String.valueOf(cardInfo.getResourceId()));
+                if (isUp) {
+                    upSsrCount++;
+                    if (lastChronoUpIdx == null) {
+                        // 最早一次UP：从卡池最旧端到该UP的距离
+                        totalUpPulls += cardInfoList.size() - idx;
+                    } else {
+                        // 后续UP：从上一个UP（时间上更早）到当前UP的距离
+                        totalUpPulls += lastChronoUpIdx - idx;
+                    }
+                    lastChronoUpIdx = idx;
+                }
+            }
+            analysisData.setUpSsrCount(upSsrCount);
+            analysisData.setUpSsrAvg(upSsrCount > 0 ? (double) totalUpPulls / upSsrCount : 0);
+            analysisData.setNonBannerRate(ssrIndexList.size() > 0 ? (double) upSsrCount / ssrIndexList.size() : 0);
         } else {
             analysisData.setSsrAvg(0.0);
             analysisData.setSsrMax(0);
             analysisData.setSsrMin(0);
             analysisData.setSsrDataList(new ArrayList<>());
+            analysisData.setUpSsrCount(0);
+            analysisData.setUpSsrAvg(0.0);
+            analysisData.setNonBannerRate(0.0);
         }
     }
+    /**
+     * 分析四星数据，分段逻辑与五星相同。
+     */
     private void analysisSR(AnalysisData analysisData,List<CardInfo> cardInfoList ,List<Integer> srIndexList){
         if (!srIndexList.isEmpty()) {
             List<SsrData> srDataList = new ArrayList<>();
@@ -218,7 +261,6 @@ public class CardPoolAnalysisTask extends Task<ResponseBody<List<AnalysisData>>>
             int ssrMin = 10;
             int ssrMax = 0;
             double totalCount = 0;
-            //按照五星索引进行列表分段
             for (int i = 0; i < srIndexList.size(); i++) {
                 Integer index = srIndexList.get(i);
                 CardInfo cardInfo = cardInfoList.get(srIndexList.get(i));

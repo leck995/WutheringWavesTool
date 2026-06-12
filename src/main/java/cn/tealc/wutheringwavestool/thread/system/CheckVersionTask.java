@@ -17,6 +17,7 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.time.Duration;
 
 public class CheckVersionTask extends Task<ResponseBody<Release>> {
     private static final Logger LOG= LoggerFactory.getLogger(CheckVersionTask.class);
@@ -91,7 +92,7 @@ public class CheckVersionTask extends Task<ResponseBody<Release>> {
                 uri = URI.create(AppConstants.URL_APP_UPDATE_DEV);
             }
             HttpRequest request = HttpRequest.newBuilder()
-                        .uri(uri).GET().build();
+                        .uri(uri).GET().timeout(Duration.ofSeconds(5)).build();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
@@ -125,10 +126,10 @@ public class CheckVersionTask extends Task<ResponseBody<Release>> {
                     }
                 }
             }else if (response.statusCode() == 404){
-                return new ResponseBody<>(404, "找不到更新信息");
+                return new ResponseBody<>(404, "找不到更新信息：404");
             }else {
                 LOG.error("检测更新出现异常");
-                return new ResponseBody<>(-1, "无法检测更新");
+                return new ResponseBody<>(-1, "无法检测更新，错误代码：" + response.statusCode());
             }
         } catch (IOException | InterruptedException e) {
             LOG.error("检测更新出现异常",e);
