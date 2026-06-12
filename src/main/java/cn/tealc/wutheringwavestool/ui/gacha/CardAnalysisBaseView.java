@@ -106,11 +106,6 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
     }
 
     @FXML
-    void fresh(ActionEvent event) {
-        viewModel.refreshFromNet();
-    }
-
-    @FXML
     void export(ActionEvent event) {
         FxPluginManager instance = FxPluginManager.getInstance();
         Optional<FxPlugin> plugin = instance.loadPlugins(1001);
@@ -258,13 +253,4 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
         }
     }
 
-    @FXML
-    void snapshot(ActionEvent event) {
-        WritableImage image = content.getScene().snapshot(null);
-        Clipboard clipboard = Clipboard.getSystemClipboard();
-        ClipboardContent clipboardContent = new ClipboardContent();
-        clipboardContent.putImage(image);
-        clipboard.setContent(clipboardContent);
-        NotificationManager.message(MessageInfo.success(LanguageManager.getString("ui.analysis.message.snapshot.success")));
     }
-}

@@ -283,6 +283,22 @@
     -fx-font-size: 1.1em;
 }
 
+.common-child .pool-pane > StackPane.conclusion.sr-no-up > .label {
+    -fx-text-fill: #4caf50;
+}
+.common-child .pool-pane > StackPane.conclusion.ssr-no-up > .label {
+    -fx-text-fill: #e57373;
+}
+.common-child .pool-pane > StackPane.conclusion.ssr-avg > .label {
+    -fx-text-fill: #e57373;
+}
+.common-child .pool-pane > StackPane.conclusion.ssr-count > .label {
+    -fx-text-fill: #fba918;
+}
+.common-child .pool-pane > StackPane.conclusion.sr-count > .label {
+    -fx-text-fill: #a679ef;
+}
+
 .common-child .list-view{
     -fx-padding: 5 0 0 0;
 }
@@ -338,11 +354,28 @@
     -fx-padding: 1px;
 }
 .common-child .role-cell .progress-bar.up > .bar {
-    -fx-background-color: #ca3e3e;
+    -fx-background-color: linear-gradient(to right, #ffcdd2, #ef5350, #b71c1c);
 }
 .common-child .role-cell .progress-bar.unup > .bar {
-    -fx-background-color: #269578;
+    -fx-background-color: linear-gradient(to right, #c8e6c9, #66bb6a, #1b5e20);
 }
+.common-child .arrow-left,
+.common-child .arrow-right {
+	-fx-font-size: 1.6em;
+	-fx-text-fill: -color-fg-muted;
+	-fx-padding: 2 6 2 6;
+	-fx-cursor: hand;
+}
+.common-child .arrow-left:hover,
+.common-child .arrow-right:hover {
+	-fx-text-fill: -color-accent-fg;
+}
+.common-child .arrow-left:disabled,
+.common-child .arrow-right:disabled {
+	-fx-opacity: 0.35;
+	-fx-cursor: default;
+}
+
 /*==============================table============================================*/
 .table-view {
     -fx-background-color: transparent;

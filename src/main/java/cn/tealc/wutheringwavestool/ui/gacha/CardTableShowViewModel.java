@@ -8,6 +8,7 @@ import cn.tealc.wutheringwavestool.model.game.pool.CardInfo;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import javafx.application.Platform;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -41,6 +42,7 @@ public class CardTableShowViewModel extends BaseViewModel {
     private final BooleanProperty loaded = new SimpleBooleanProperty(false);
 
     public void initialize() {
+        System.out.println("FFFFFFFFFFFFFFFFFFFF");
         currentPage.addListener((obs, old, val) -> refreshPage());
         pageSize.addListener((obs, old, val) -> {
             currentPage.set(1);
@@ -72,28 +74,30 @@ public class CardTableShowViewModel extends BaseViewModel {
         pageSize.set(20);
         currentPage.set(1);
         selectedPoolType.set(null);
-
     }
 
 
     public void loadData(String playerId) {
-        File poolJson = new File(String.format("data/%s/pool.json", playerId));
-        if (!poolJson.exists()) return;
+        Thread.startVirtualThread(()->{
+            File poolJson = new File(String.format("data/%s/pool.json", playerId));
+            if (!poolJson.exists()) return;
+            ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
+            try {
+                poolDataMap = mapper.readValue(poolJson,
+                        new TypeReference<Map<String, List<CardInfo>>>() {});
+            } catch (IOException e) {
+                LOG.error("加载抽卡数据失败", e);
+                poolDataMap = Collections.emptyMap();
+            }
 
-        ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
-        try {
-            poolDataMap = mapper.readValue(poolJson,
-                    new TypeReference<Map<String, List<CardInfo>>>() {});
-        } catch (IOException e) {
-            LOG.error("加载抽卡数据失败", e);
-            poolDataMap = Collections.emptyMap();
-        }
-
-        poolTypes.setAll(poolDataMap.keySet());
-        loaded.set(true);
-        if (!poolTypes.isEmpty()) {
-            selectedPoolType.set(poolTypes.get(0));
-        }
+            Platform.runLater(()->{
+                poolTypes.setAll(poolDataMap.keySet());
+                loaded.set(true);
+                if (!poolTypes.isEmpty()) {
+                    selectedPoolType.set(poolTypes.getFirst());
+                }
+            });
+        });
     }
 
     private void switchPool(String poolType) {

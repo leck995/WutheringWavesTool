@@ -1,6 +1,8 @@
 package cn.tealc.wutheringwavestool.ui.gacha;
 
 import cn.tealc.teafx.utils.AnchorPaneUtil;
+import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.model.analysis.AnalysisData;
 import cn.tealc.wutheringwavestool.model.analysis.SsrData;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.FxmlView;
@@ -8,209 +10,182 @@ import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.BooleanBinding;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ProgressBar;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewModel>, Initializable {
-    private static final Logger LOG = LoggerFactory.getLogger(CardCommonAnalysisView.class);
+    private static final String AVG_TEMPLATE = "%.0f";
+    private static final String PERCENT_TEMPLATE = "%d  [%05.2f%%]";
+    private static final int PAGE_SIZE = 4;
+
     @InjectViewModel
     private CardCommonAnalysisViewModel viewModel;
 
     @FXML
-    private Label roleBaseSrCountLabel;
-
-    @FXML
-    private Label roleBaseSrNoUpLabel;
-
-    @FXML
-    private Label roleBaseSsrAvgLabel;
-
-    @FXML
-    private Label roleBaseSsrCountLabel;
-
-    @FXML
-    private ListView<SsrData> roleBaseSsrListView;
-
-    @FXML
-    private Label roleBaseSsrNoUpLabel;
-
-    @FXML
-    private Label roleBaseTimeLabel;
-
-    @FXML
-    private Label roleBaseTitleLabel;
-
-    @FXML
-    private Label roleBaseTotalTimeLabel;
-
-    @FXML
-    private Label roleEventSrCountLabel;
-
-    @FXML
-    private Label roleEventSrNoUpLabel;
-
-    @FXML
-    private Label roleEventSsrAvgLabel;
-
-    @FXML
-    private Label roleEventSsrCountLabel;
-
-    @FXML
-    private ListView<SsrData> roleEventSsrListView;
-
-    @FXML
-    private Label roleEventSsrNoUpLabel;
-
-    @FXML
-    private Label roleEventTimeLabel;
-
-    @FXML
-    private Label roleEventTitleLabel;
-
-    @FXML
-    private Label roleEventTotalTimeLabel;
-
-    @FXML
-    private ListView<SsrData> weaponBaseSsrListView;
-
-    @FXML
-    private Label weaponBaseSrCountLabel;
-
-    @FXML
-    private Label weaponBaseSrNoUpLabel;
-
-    @FXML
-    private Label weaponBaseSsrAvgLabel;
-
-    @FXML
-    private Label weaponBaseSsrCountLabel;
-
-    @FXML
-    private Label weaponBaseSsrNoUpLabel;
-
-    @FXML
-    private Label weaponBaseTimeLabel;
-
-    @FXML
-    private Label weaponBaseTitleLabel;
-
-    @FXML
-    private Label weaponBaseTotalTimeLabel;
-
-    @FXML
-    private Label weaponEventSrCountLabel;
-
-    @FXML
-    private Label weaponEventSrNoUpLabel;
-
-    @FXML
-    private Label weaponEventSsrAvgLabel;
-
-    @FXML
-    private Label weaponEventSsrCountLabel;
-
-    @FXML
-    private ListView<SsrData> weaponEventSsrListView;
-
-    @FXML
-    private Label weaponEventSsrNoUpLabel;
-
-    @FXML
-    private Label weaponEventTimeLabel;
-
-    @FXML
-    private Label weaponEventTitleLabel;
-
-    @FXML
-    private Label weaponEventTotalTimeLabel;
+    private AnchorPane cardArea;
 
     @FXML
     private HBox contentPane;
 
     @FXML
-    private StackPane emptyPane,loadingPane;
+    private StackPane emptyPane, loadingPane;
 
+    @FXML
+    private Label leftArrow, rightArrow;
+
+    private int currentPage = 0;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         emptyPane.visibleProperty().bind(viewModel.emptyProperty());
         loadingPane.visibleProperty().bind(viewModel.loadingProperty());
         BooleanBinding contentVisibleBinding = Bindings.and(viewModel.emptyProperty().not(), viewModel.loadingProperty().not());
-        contentPane.visibleProperty().bind(contentVisibleBinding);
+        cardArea.visibleProperty().bind(contentVisibleBinding);
 
+        // HBox fills available height
+        VBox.setVgrow(contentPane, Priority.ALWAYS);
 
-        roleEventTitleLabel.textProperty().bind(viewModel.roleEventTitleLabelProperty());
-        roleEventTimeLabel.textProperty().bind(viewModel.roleEventTimeLabelProperty());
-        roleEventTotalTimeLabel.textProperty().bind(viewModel.roleEventTotalTimeLabelProperty());
-        roleEventSrNoUpLabel.textProperty().bind(viewModel.roleEventSrNoUpLabelProperty());
-        roleEventSsrNoUpLabel.textProperty().bind(viewModel.roleEventSsrNoUpLabelProperty());
-        roleEventSsrAvgLabel.textProperty().bind(viewModel.roleEventSsrAvgLabelProperty());
-        roleEventSsrCountLabel.textProperty().bind(viewModel.roleEventSsrCountLabelProperty());
-        roleEventSrCountLabel.textProperty().bind(viewModel.roleEventSrCountLabelProperty());
-        roleEventSsrListView.setItems(viewModel.getRoleEventSsrList());
-        roleEventSsrListView.setCellFactory(ssrDataListView -> new SsrCell());
+        leftArrow.setOnMouseClicked(e -> {
+            if (currentPage > 0) {
+                currentPage--;
+                rebuildCards();
+            }
+        });
+        rightArrow.setOnMouseClicked(e -> {
+            int totalPages = (int) Math.ceil((double) viewModel.getAnalysisDataList().size() / PAGE_SIZE);
+            if (currentPage < totalPages - 1) {
+                currentPage++;
+                rebuildCards();
+            }
+        });
 
-
-        roleBaseTitleLabel.textProperty().bind(viewModel.roleBaseTitleLabelProperty());
-        roleBaseTotalTimeLabel.textProperty().bind(viewModel.roleBaseTotalTimeLabelProperty());
-        roleBaseTimeLabel.textProperty().bind(viewModel.roleBaseTimeLabelProperty());
-        roleBaseSrNoUpLabel.textProperty().bind(viewModel.roleBaseSrNoUpLabelProperty());
-        roleBaseSsrNoUpLabel.textProperty().bind(viewModel.roleBaseSsrNoUpLabelProperty());
-        roleBaseSsrAvgLabel.textProperty().bind(viewModel.roleBaseSsrAvgLabelProperty());
-        roleBaseSsrCountLabel.textProperty().bind(viewModel.roleBaseSsrCountLabelProperty());
-        roleBaseSrCountLabel.textProperty().bind(viewModel.roleBaseSrCountLabelProperty());
-        roleBaseSsrListView.setItems(viewModel.getRoleBaseSsrList());
-        roleBaseSsrListView.setCellFactory(ssrDataListView -> new SsrCell());
-
-
-        weaponEventTitleLabel.textProperty().bind(viewModel.weaponEventTitleLabelProperty());
-        weaponEventTotalTimeLabel.textProperty().bind(viewModel.weaponEventTotalTimeLabelProperty());
-        weaponEventTimeLabel.textProperty().bind(viewModel.weaponEventTimeLabelProperty());
-        weaponEventSrNoUpLabel.textProperty().bind(viewModel.weaponEventSrNoUpLabelProperty());
-        weaponEventSsrNoUpLabel.textProperty().bind(viewModel.weaponEventSsrNoUpLabelProperty());
-        weaponEventSsrAvgLabel.textProperty().bind(viewModel.weaponEventSsrAvgLabelProperty());
-        weaponEventSsrCountLabel.textProperty().bind(viewModel.weaponEventSsrCountLabelProperty());
-        weaponEventSrCountLabel.textProperty().bind(viewModel.weaponEventSrCountLabelProperty());
-        weaponEventSsrListView.setItems(viewModel.getWeaponEventSsrList());
-        weaponEventSsrListView.setCellFactory(ssrDataListView -> new SsrCell());
-
-
-        weaponBaseTitleLabel.textProperty().bind(viewModel.weaponBaseTitleLabelProperty());
-        weaponBaseTotalTimeLabel.textProperty().bind(viewModel.weaponBaseTotalTimeLabelProperty());
-        weaponBaseTimeLabel.textProperty().bind(viewModel.weaponBaseTimeLabelProperty());
-        weaponBaseSrNoUpLabel.textProperty().bind(viewModel.weaponBaseSrNoUpLabelProperty());
-        weaponBaseSsrNoUpLabel.textProperty().bind(viewModel.weaponBaseSsrNoUpLabelProperty());
-        weaponBaseSsrAvgLabel.textProperty().bind(viewModel.weaponBaseSsrAvgLabelProperty());
-        weaponBaseSsrCountLabel.textProperty().bind(viewModel.weaponBaseSsrCountLabelProperty());
-        weaponBaseSrCountLabel.textProperty().bind(viewModel.weaponBaseSrCountLabelProperty());
-        weaponBaseSsrListView.setItems(viewModel.getWeaponBaseSsrList());
-        weaponBaseSsrListView.setCellFactory(ssrDataListView -> new SsrCell());
+        viewModel.getAnalysisDataList().addListener((ListChangeListener<AnalysisData>) change -> {
+            currentPage = 0;
+            rebuildCards();
+        });
     }
 
+    private void rebuildCards() {
+        List<AnalysisData> allData = viewModel.getAnalysisDataList();
+        int totalPages = (int) Math.ceil((double) allData.size() / PAGE_SIZE);
+        int start = currentPage * PAGE_SIZE;
+        int end = Math.min(start + PAGE_SIZE, allData.size());
+
+        contentPane.getChildren().clear();
+        for (int i = start; i < end; i++) {
+            contentPane.getChildren().add(createPoolCard(allData.get(i)));
+        }
+
+        leftArrow.setDisable(currentPage <= 0);
+        rightArrow.setDisable(currentPage >= totalPages - 1 || totalPages <= 1);
+    }
+
+    private VBox createPoolCard(AnalysisData data) {
+        VBox card = new VBox();
+        card.getStyleClass().add("pool-pane");
+        HBox.setHgrow(card, Priority.ALWAYS);
+
+        // Title row: pool name + total count
+        StackPane titleRow = new StackPane();
+        Label titleLabel = new Label(data.getPoolName());
+        titleLabel.getStyleClass().add("title-3");
+        StackPane.setAlignment(titleLabel, Pos.CENTER_LEFT);
+        Label totalLabel = new Label(String.valueOf(data.getTotalCount()));
+        totalLabel.getStyleClass().add("title-3");
+        StackPane.setAlignment(totalLabel, Pos.CENTER_RIGHT);
+        titleRow.getChildren().addAll(titleLabel, totalLabel);
+
+        // Date
+        Label dateLabel = new Label();
+        dateLabel.getStyleClass().add("text-subtle");
+        if (data.isEmpty()) {
+            dateLabel.setText("No Data");
+        } else {
+            dateLabel.setText(data.getStartDate() + " - " + data.getEndDate());
+        }
+
+        Separator sep1 = new Separator();
+
+        // SR no-up
+        StackPane srNoUpRow = createConclusionRow(
+                Config.language.getString("ui.analysis.common.sr.noup"),
+                data.isEmpty() ? "0" : String.valueOf(data.getNoUpSrCount()));
+        srNoUpRow.getStyleClass().add("sr-no-up");
+
+        // SSR no-up
+        StackPane ssrNoUpRow = createConclusionRow(
+                Config.language.getString("ui.analysis.common.ssr.noup"),
+                data.isEmpty() ? "0" : String.valueOf(data.getNoUpSsrCount()));
+        ssrNoUpRow.getStyleClass().add("ssr-no-up");
+
+        // SSR avg
+        StackPane ssrAvgRow = createConclusionRow(
+                Config.language.getString("ui.analysis.common.ssr.avg"),
+                data.isEmpty() ? "0" : String.format(AVG_TEMPLATE, data.getSsrAvg()));
+        ssrAvgRow.getStyleClass().add("ssr-avg");
+
+        Separator sep2 = new Separator();
+
+        // SSR count
+        StackPane ssrCountRow = createConclusionRow(
+                Config.language.getString("ui.analysis.common.ssr.count"),
+                data.isEmpty() ? "0" : String.format(PERCENT_TEMPLATE, data.getSsrCount(),
+                        (double) data.getSsrCount() / data.getTotalCount() * 100.0));
+        ssrCountRow.getStyleClass().add("ssr-count");
+
+        // SR count
+        StackPane srCountRow = createConclusionRow(
+                Config.language.getString("ui.analysis.common.sr.count"),
+                data.isEmpty() ? "0" : String.format(PERCENT_TEMPLATE, data.getSrCount(),
+                        (double) data.getSrCount() / data.getTotalCount() * 100.0));
+        srCountRow.getStyleClass().add("sr-count");
+
+        // SSR list view
+        ListView<SsrData> listView = new ListView<>();
+        listView.setCellFactory(lv -> new SsrCell());
+        Label placeholder = new Label(Config.language.getString("ui.analysis.pool.tip.empty02"));
+        placeholder.setStyle("-fx-font-weight: bold;");
+        listView.setPlaceholder(placeholder);
+        VBox.setVgrow(listView, Priority.ALWAYS);
+        if (!data.isEmpty() && data.getSsrDataList() != null) {
+            listView.getItems().setAll(data.getSsrDataList());
+        }
+
+        card.getChildren().addAll(titleRow, dateLabel, sep1, srNoUpRow, ssrNoUpRow, ssrAvgRow,
+                sep2, ssrCountRow, srCountRow, listView);
+
+        return card;
+    }
+
+    private StackPane createConclusionRow(String leftText, String rightText) {
+        StackPane row = new StackPane();
+        row.getStyleClass().add("conclusion");
+        Label left = new Label(leftText);
+        StackPane.setAlignment(left, Pos.CENTER_LEFT);
+        Label right = new Label(rightText);
+        StackPane.setAlignment(right, Pos.CENTER_RIGHT);
+        row.getChildren().addAll(left, right);
+        return row;
+    }
 
     class SsrCell extends ListCell<SsrData> {
-        public static final String[] COLORS = {"#66cccc", "#ff99cc", "#1a7f37", "#66cc99", "#99cc00", "#cccccc"};
         private final BorderPane root;
         private ImageView iv;
         private Label name;
         private Label date;
         private Label count;
         private ProgressBar progressBar;
-        private Label desc;
 
         public SsrCell() {
             root = new BorderPane();
@@ -220,7 +195,6 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
             iv.setFitWidth(36);
             iv.setSmooth(true);
 
-
             name = new Label();
             name.getStyleClass().add("role-name");
             date = new Label();
@@ -229,7 +203,7 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
             center.setPadding(new Insets(0, 0, 0, 5));
             center.setAlignment(Pos.CENTER_LEFT);
 
-            desc = new Label();
+            Label desc = new Label();
             desc.getStyleClass().add("role-desc");
             count = new Label();
             count.getStyleClass().add("role-name");
@@ -241,29 +215,22 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
             AnchorPane bottom = new AnchorPane(progressBar);
             AnchorPaneUtil.setPosition(progressBar, 0);
 
-
             root.setLeft(iv);
             root.setCenter(center);
             root.setRight(left);
             root.setBottom(bottom);
 
             root.getStyleClass().addAll("role-cell");
-
-            //setDisable(true);
-
         }
 
         @Override
         protected void updateItem(SsrData ssrData, boolean b) {
             super.updateItem(ssrData, b);
             if (!b) {
-                Thread.startVirtualThread(()->{
+                Thread.startVirtualThread(() -> {
                     Image image = LocalResourcesManager.header(ssrData.getId(), 60, 60);
-                    Platform.runLater(()->{
-                        iv.setImage(image);
-                    });
+                    Platform.runLater(() -> iv.setImage(image));
                 });
-
 
                 name.setText(ssrData.getName());
                 date.setText(ssrData.getDate());
@@ -280,14 +247,11 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
                     count.getStyleClass().add("unup");
                     progressBar.getStyleClass().remove("up");
                     progressBar.getStyleClass().add("unup");
-
                 }
                 setGraphic(root);
             } else {
                 setGraphic(null);
             }
         }
-
     }
-
 }

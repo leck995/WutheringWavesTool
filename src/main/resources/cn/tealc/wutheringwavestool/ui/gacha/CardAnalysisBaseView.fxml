@@ -14,7 +14,6 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
-<?import javafx.scene.text.Font?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <StackPane prefHeight="700.0" prefWidth="1200.0" stylesheets="@../../css/gacha/CardPool.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.gacha.CardAnalysisBaseView">
@@ -57,41 +56,43 @@
                      </children>
                   </HBox>
                   <Spacer layoutX="252.0" layoutY="10.0" />
-                  <ComboBox fx:id="playerComboBox" prefWidth="150.0" />
-                  <Button layoutX="826.0" layoutY="10.0" mnemonicParsing="false" onAction="#snapshot" text="%ui.analysis.snapshot">
-                     <graphic>
-                        <FontIcon iconLiteral="mdoal-insert_photo" />
-                     </graphic>
-                  </Button>
-                  <Button layoutX="180.0" layoutY="10.0" mnemonicParsing="false" onAction="#export" text="%ui.analysis.export">
-                     <graphic>
-                        <FontIcon iconLiteral="mdomz-save" />
-                     </graphic></Button>
-                  <Button layoutX="252.0" layoutY="10.0" mnemonicParsing="false" onAction="#delete" styleClass="danger" text="%ui.analysis.delete">
-                     <graphic>
-                        <FontIcon iconLiteral="mdral-delete_outline" />
-                     </graphic></Button>
-                  <Button layoutX="180.0" layoutY="10.0" mnemonicParsing="false" onAction="#fresh" styleClass="accent" text="%ui.analysis.account.refresh">
-                     <graphic>
-                        <FontIcon iconLiteral="mdmz-refresh" />
-                     </graphic></Button>
-                  <Button mnemonicParsing="false" onAction="#load" styleClass="success" text="%ui.analysis.account.get">
-                     <graphic>
-                        <FontIcon iconLiteral="mdoal-cloud" />
-                     </graphic></Button>
-               </children>
-            </HBox>
-            <HBox alignment="CENTER" layoutX="1065.0" layoutY="50.0" spacing="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
-               <children>
-                  <Label styleClass="text-subtle" text="%ui.analysis.account.tip">
-                     <font>
-                        <Font size="11.0" />
-                     </font>
-                  </Label>
-                  <ToggleSwitch fx:id="skipFirstSSRSwitch" labelPosition="RIGHT" text="忽视第一个五星" />
+                  <HBox spacing="10.0">
+                     <children>
+                        <ComboBox fx:id="playerComboBox" prefWidth="150.0" />
+                        <Button mnemonicParsing="false" onAction="#export" text="%ui.analysis.export">
+                           <graphic>
+                              <FontIcon iconLiteral="mdomz-save" />
+                           </graphic>
+                           <styleClass>
+                              <String fx:value="flat" />
+                              <String fx:value="button-icon" />
+                           </styleClass>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#delete" text="%ui.analysis.delete">
+                           <graphic>
+                              <FontIcon iconLiteral="mdral-delete_outline" />
+                           </graphic>
+                           <styleClass>
+                              <String fx:value="danger" />
+                              <String fx:value="flat" />
+                              <String fx:value="button-icon" />
+                           </styleClass>
+                        </Button>
+                        <Button mnemonicParsing="false" onAction="#load" styleClass="success" text="%ui.analysis.account.get">
+                           <graphic>
+                              <FontIcon iconLiteral="mdoal-cloud" />
+                           </graphic>
+                        </Button>
+                     </children>
+                  </HBox>
                </children>
             </HBox>
             <StackPane fx:id="content" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="80.0" />
+            <HBox alignment="CENTER" layoutX="1065.0" layoutY="50.0" spacing="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="50.0">
+               <children>
+                  <ToggleSwitch fx:id="skipFirstSSRSwitch" labelPosition="RIGHT" text="忽视第一个五星" />
+               </children>
+            </HBox>
          </children>
       </AnchorPane>
    </children>
