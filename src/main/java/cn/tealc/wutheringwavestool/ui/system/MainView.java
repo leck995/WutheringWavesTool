@@ -405,7 +405,9 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
                 if (source.isSelected()) {
                     ViewTuple<?, ?> load = NavLoader.load(navData);
                     bgPane.setVisible(navData.isShowBg());
+                    child.setOpacity(0);
                     child.getChildren().setAll(load.getView());
+
                     startNavAnim();
                 } else {
                     source.setSelected(true);
@@ -728,25 +730,29 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         return message;
     }
     public void startNavAnim() {
-        var t = new Timeline(
-                new KeyFrame(Duration.ZERO,
-                        new KeyValue(child.scaleXProperty(), 0.9, Animations.EASE),
-                        new KeyValue(child.scaleYProperty(), 0.9, Animations.EASE)
-                ),
-                new KeyFrame(Duration.millis(300),
-                        new KeyValue(child.scaleXProperty(), 1, Animations.EASE),
-                        new KeyValue(child.scaleYProperty(), 1, Animations.EASE)
-                )
-        );
+        Platform.runLater(()->{
+            child.setOpacity(1);
+            var t = new Timeline(
+                    new KeyFrame(Duration.ZERO,
+                            new KeyValue(child.scaleXProperty(), 0.9, Animations.EASE),
+                            new KeyValue(child.scaleYProperty(), 0.9, Animations.EASE)
+                    ),
+                    new KeyFrame(Duration.millis(300),
+                            new KeyValue(child.scaleXProperty(), 1, Animations.EASE),
+                            new KeyValue(child.scaleYProperty(), 1, Animations.EASE)
+                    )
+            );
 
-        t.statusProperty().addListener((obs, old, val) -> {
-            if (val == Animation.Status.STOPPED) {
-                child.setScaleX(1);
-                child.setScaleY(1);
-            }
+            t.statusProperty().addListener((obs, old, val) -> {
+                if (val == Animation.Status.STOPPED) {
+                    child.setScaleX(1);
+                    child.setScaleY(1);
+                }
+            });
+
+            t.play();
         });
 
-        t.play();
     }
 
     //    public void startNavAnim() {
