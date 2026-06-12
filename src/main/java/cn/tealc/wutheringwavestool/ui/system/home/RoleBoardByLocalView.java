@@ -168,6 +168,7 @@ public class RoleBoardByLocalView implements FxmlView<RoleBoardByLocalViewModel>
 
     @FXML
     void changeRole(ActionEvent event) {
+        System.out.println("DDDDDDDDD");
         ViewTuple<SelectedPlayerByLocalView, SelectedPlayerByLocalViewModel> viewTuple = FluentViewLoader.javaView(SelectedPlayerByLocalView.class).load();
         NotificationManager.dialog((JFXDialogLayout) viewTuple.getView());
     }
