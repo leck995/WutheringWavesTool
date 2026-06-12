@@ -4,7 +4,6 @@ import atlantafx.base.controls.Spacer;
 import atlantafx.base.controls.ToggleSwitch;
 import cn.tealc.wutheringwavestool.model.analysis.SsrData;
 import cn.tealc.wutheringwavestool.ui.component.PoolNameCell;
-import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -63,7 +62,17 @@ public class CardDetailAnalysisView implements Initializable, FxmlView<CardDetai
     @FXML
     private Label ssrMinLabel;
     @FXML
-    private Label ssrEventAvgLabel;
+    private Label upCountLabel1;
+    @FXML
+    private Label upCountLabel2;
+    @FXML
+    private Label topDateLabel;
+    @FXML
+    private Label srNoUpLabel;
+    @FXML
+    private Label upSsrAvgLabel;
+    @FXML
+    private Label nonBannerRateLabel;
     @FXML
     private ToggleSwitch ssrModelSwitch;
 
@@ -100,7 +109,12 @@ public class CardDetailAnalysisView implements Initializable, FxmlView<CardDetai
         ssrAvgLabel.textProperty().bind(viewModel.ssrAvgTextProperty());
         ssrMaxLabel.textProperty().bind(viewModel.ssrMaxTextProperty());
         ssrMinLabel.textProperty().bind(viewModel.ssrMinTextProperty());
-        ssrEventAvgLabel.textProperty().bind(viewModel.ssrEventAvgTextProperty());
+        upSsrAvgLabel.textProperty().bind(viewModel.upSsrAvgTextProperty());
+        nonBannerRateLabel.textProperty().bind(viewModel.nonBannerRateTextProperty());
+        topDateLabel.textProperty().bind(viewModel.poolDateTextProperty());
+        srNoUpLabel.textProperty().bind(viewModel.srNoUpTextProperty());
+        upCountLabel1.textProperty().bind(viewModel.upCountText1Property());
+        upCountLabel2.textProperty().bind(viewModel.upCountText2Property());
 
         poolListview.setItems(viewModel.getPoolNameList());
         poolListview.setCellFactory(stringListView -> new PoolNameCell());
@@ -161,18 +175,32 @@ public class CardDetailAnalysisView implements Initializable, FxmlView<CardDetai
 
 
     class SsrChildView extends StackPane {
-        private ImageView iv=new ImageView();
-        private Label count=new Label();
+        private ImageView iv = new ImageView();
+        private Label count = new Label();
+        private Label name = new Label();
+        private Label upBadge = new Label("UP");
+
         public SsrChildView(SsrData ssrData) {
-            VBox vBox=new VBox(iv,count);
+            VBox vBox = new VBox(iv, name, count);
             vBox.setAlignment(Pos.TOP_CENTER);
-            getChildren().add(vBox);
+            vBox.setSpacing(2);
+            vBox.setFillWidth(true);
+            name.setMaxWidth(Double.MAX_VALUE);
+
+            upBadge.setVisible(ssrData.isEvent());
+            upBadge.getStyleClass().add("thumb-up-badge");
+            StackPane.setAlignment(upBadge, Pos.TOP_RIGHT);
+
+            getChildren().addAll(vBox, upBadge);
             getStyleClass().add("child");
             iv.setFitWidth(70.0);
             iv.setFitHeight(70.0);
-            iv.setImage(LocalResourcesManager.header(ssrData.getId() ,70,70));
-            count.setText(String.format("%02d",ssrData.getCount()));
+            iv.setImage(LocalResourcesManager.header(ssrData.getId(), 70, 70));
+            name.setText(ssrData.getName());
+            name.getStyleClass().add("thumb-name");
+            count.setText(String.format("%02d", ssrData.getCount()));
             count.getStyleClass().add("count");
+            count.getStyleClass().add(ssrData.isEvent() ? "thumb-count-up" : "thumb-count-unup");
         }
     }
 
@@ -184,7 +212,6 @@ public class CardDetailAnalysisView implements Initializable, FxmlView<CardDetai
         private Label count;
         private Label upLabel;
         private ProgressBar progressBar;
-        private Label desc;
 
         public SsrCell() {
             iv = new ImageView();
@@ -206,19 +233,19 @@ public class CardDetailAnalysisView implements Initializable, FxmlView<CardDetai
             upLabel.getStyleClass().add("up-tag");
             upLabel.setVisible(false);
 
-            count = new Label();
-            count.getStyleClass().add("role-date");
             progressBar = new ProgressBar();
             progressBar.setProgress(0);
             progressBar.setPrefWidth(200);
-            HBox progressHBox = new HBox(5.0, progressBar, upLabel, count);
+            HBox progressHBox = new HBox(5.0, progressBar);
             progressHBox.setAlignment(Pos.CENTER);
             VBox parent = new VBox(5.0, top, progressHBox);
             parent.setAlignment(Pos.CENTER_LEFT);
+            HBox.setHgrow(parent,Priority.ALWAYS);
 
-            desc = new Label();
-            desc.getStyleClass().add("role-desc");
-            root = new HBox(15.0, iv, parent, desc);
+
+            count = new Label();
+            count.getStyleClass().add("role-desc");
+            root = new HBox(15.0, iv, parent, count,upLabel);
             root.setAlignment(Pos.CENTER_LEFT);
             root.getStyleClass().add("role-pane");
         }
@@ -238,15 +265,13 @@ public class CardDetailAnalysisView implements Initializable, FxmlView<CardDetai
                 progressBar.setProgress(ssrData.getCount() / 80.0);
 
                 upLabel.setVisible(ssrData.isEvent());
-                desc.getStyleClass().removeAll("up", "unup");
+                count.getStyleClass().removeAll("up", "unup");
                 progressBar.getStyleClass().removeAll("up", "unup");
                 if (ssrData.isEvent()) {
-                    desc.setText(LanguageManager.getString("ui.analysis.role.list.tip01"));
-                    desc.getStyleClass().add("up");
+                    count.getStyleClass().add("up");
                     progressBar.getStyleClass().add("up");
                 } else {
-                    desc.setText(LanguageManager.getString("ui.analysis.role.list.tip02"));
-                    desc.getStyleClass().add("unup");
+                    count.getStyleClass().add("unup");
                     progressBar.getStyleClass().add("unup");
                 }
                 setGraphic(root);

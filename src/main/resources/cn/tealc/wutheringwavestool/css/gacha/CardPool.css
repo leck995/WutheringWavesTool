@@ -17,6 +17,7 @@
 
 .list-view  > .virtual-flow > .scroll-bar{
     -fx-background-color: transparent;
+    -fx-translate-x: 5px;
 }
 
 .list-view  > .virtual-flow > .scroll-bar:vertical .thumb,
@@ -88,6 +89,7 @@
     -fx-border-width: 1px;
     -fx-padding: 1em;
     -fx-spacing: 0.857em;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 4);
 }
     /*卡池名称列表*/
 .detail-child .select-listview .list-cell{
@@ -111,18 +113,22 @@
 
 
 
-.detail-child .default-color0.chart-pie { -fx-pie-color: #f1d358; }
-.detail-child .default-color1.chart-pie { -fx-pie-color: #C48FD8; }
-.detail-child .default-color2.chart-pie { -fx-pie-color: #22bad9; }
+.detail-child .default-color0.chart-pie { -fx-pie-color: #ffd700; }
+.detail-child .default-color1.chart-pie { -fx-pie-color: #a855f7; }
+.detail-child .default-color2.chart-pie { -fx-pie-color: #22d3ee; }
 .detail-child .default-color3.chart-pie { -fx-pie-color: #0181e2; }
 .detail-child .default-color4.chart-pie { -fx-pie-color: #2f357f; }
 .detail-child .default-color5.chart-pie { -fx-pie-color: #860061; }
 .detail-child .default-color6.chart-pie { -fx-pie-color: #c62b00; }
-.detail-child .default-color7.chart-pie { -fx-pie-color: #ff5700; }
+.detail-child .default-color7.chart-pie { -fx-pie-color: #ff8000; }
 
+.detail-child .chart-title{
+    -fx-font-weight: bold;
+    -fx-font-size: 1.8em;
+}
 
 .detail-child .ssr-label{
-    -fx-text-fill: #f1d358;
+    -fx-text-fill: #ff8000;
     -fx-font-size: 1em;
     -fx-font-weight: bold;
 }
@@ -143,10 +149,9 @@
     -fx-padding: 0 5 0 5;
 }
 .detail-child .current-label{
-    -fx-text-fill: #ff6666;
+    -fx-text-fill: #4caf50;
     -fx-font-size: 1em;
     -fx-font-weight: bold;
-    -fx-padding: 0 5 0 5;
 }
 
 
@@ -164,6 +169,25 @@
     -fx-border-width: 1px;
     -fx-padding: 1em;
     -fx-spacing: 0.857em;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 4);
+}
+.detail-child .left > .date{
+    -fx-text-fill: -color-font-subtle;
+    -fx-font-size: 0.857em;
+}
+.detail-child .left .sr-no-up{
+    -fx-text-fill: #4caf50;
+}
+.detail-child .left .non-banner-rate{
+    -fx-text-fill: #64b5f6;
+}
+.detail-child .left .up-ssr-avg{
+    -fx-text-fill: #e57373;
+}
+.detail-child .left .up-ssr-count{
+    -fx-text-fill: #ff8000;
+    -fx-font-size: 1em;
+    -fx-font-weight: bold;
 }
 
 .detail-child .ssr-list-view{
@@ -183,7 +207,7 @@
 }
 
 .detail-child .role-pane{
-    -fx-padding: 0.714em;            /* 10px */
+    -fx-padding: 0.3em 0.714em 0.3em 0.714em;            /* 10px */
     -fx-background-radius: 0.571em;  /* 8px */
     -fx-background-color: -color-bg-default-50;
 }
@@ -195,12 +219,22 @@
 }
 .detail-child .role-pane .role-desc{
     -fx-font-weight: bold;
-    -fx-wrap-text: true;
-    -fx-font-size: 1.429em;
-    -fx-pref-width: 1.786em;
+    -fx-font-size: 1.286em;
+    -fx-min-width: 2.143em;
+    -fx-alignment: CENTER;
+    -fx-background-radius: 0.286em;
+    -fx-padding: 0.143em 0.357em;
 }
 .detail-child .role-pane .role-desc.up{
-    -fx-text-fill: #ffd000;
+    -fx-text-fill: #ff8000;
+    -fx-background-color: rgba(255, 208, 0, 0.12);
+}
+.detail-child .role-pane .role-desc.unup{
+    -fx-text-fill: #787878;
+    -fx-background-color: rgba(120, 120, 120, 0.1);
+}
+.detail-child .role-pane .role-desc.up{
+    -fx-text-fill: #ff8000;
 }
 .detail-child .role-pane .role-desc.unup{
     -fx-text-fill: #787878;
@@ -208,7 +242,7 @@
 .detail-child .role-pane .up-tag{
     -fx-text-fill: #f8a62b;
     -fx-font-weight: bold;
-    -fx-font-size: 1em;
+    -fx-font-size: 1.286em;
 }
 
 .detail-child .role-pane .progress-bar > .bar{
@@ -245,15 +279,23 @@
 }
 .detail-child .left .stat-row{
     -fx-alignment: CENTER;
-    -fx-spacing: 0.3em;
+    -fx-spacing: 1em;
 }
-.detail-child .left .stat-row .stat-value{
+.detail-child .left .stat-row2{
+
+}
+
+.detail-child .left .stat-row .stat-value,
+.detail-child .left .stat-row2 .stat-value{
     -fx-font-weight: bold;
     -fx-font-size: 1em;
 }
 
 .detail-child .scroll-pane .scroll-bar{
     -fx-background-color: transparent;
+}
+.detail-child .scroll-pane .scroll-bar:vertical{
+    -fx-translate-x: 5px;
 }
 .detail-child .scroll-pane .scroll-bar:vertical .thumb,
 .detail-child .scroll-pane .scroll-bar:vertical .track{
@@ -299,10 +341,38 @@
 /*网格视图子项样式*/
 .detail-child .ssr-thumb .child{
     -fx-background-radius: 8;
-    -fx-background-color: -color-bg-default-40;
+    -fx-background-color: -color-bg-default-70;
+    -fx-border-radius: 8;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 4);
 }
 .detail-child .ssr-thumb .child .count{
     -fx-font-size: 14;
+    -fx-font-weight: bold;
+}
+.detail-child .ssr-thumb .child .thumb-count-up{
+    -fx-text-fill: #ff6666;
+}
+.detail-child .ssr-thumb .child .thumb-count-unup{
+    -fx-text-fill: #4caf50;
+}
+
+.detail-child .ssr-thumb .child .thumb-name{
+    -fx-font-size: 12;
+    -fx-text-fill: -color-fg-default;
+    -fx-max-width: 80;
+    -fx-alignment: CENTER;
+    -fx-wrap-text: true;
+    -fx-text-alignment: CENTER;
+}
+.detail-child .ssr-thumb .child .thumb-up-badge{
+    -fx-text-fill: #ff8000;
+    -fx-font-weight: bold;
+    -fx-font-size: 14;
+    -fx-background-color: rgba(255, 136, 0, 0.15);
+    -fx-background-radius: 3;
+    -fx-padding: 1 4 1 4;
 }
 
 
@@ -317,6 +387,11 @@
     -fx-padding: 8px;
     -fx-background-radius: 10px;
     -fx-background-color: -color-bg-default-50;
+    -fx-border-radius: 16;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 4);
+    -fx-min-width: 260;
 }
 .common-child .pool-pane .total-count{
     -fx-text-fill: #64b5f6;

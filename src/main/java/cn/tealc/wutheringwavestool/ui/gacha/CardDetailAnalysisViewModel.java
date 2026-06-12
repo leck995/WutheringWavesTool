@@ -49,7 +49,13 @@ public class CardDetailAnalysisViewModel implements ViewModel {
     private SimpleStringProperty ssrAvgText=new SimpleStringProperty();
     private SimpleStringProperty ssrMinText=new SimpleStringProperty();
     private SimpleStringProperty ssrMaxText=new SimpleStringProperty();
-    private SimpleStringProperty ssrEventAvgText=new SimpleStringProperty(); //限定平均抽数
+    private SimpleStringProperty upSsrAvgText=new SimpleStringProperty();
+    private SimpleStringProperty upCountText1=new SimpleStringProperty();
+    private SimpleStringProperty upCountText2=new SimpleStringProperty();
+    private SimpleStringProperty upSsrCountText=new SimpleStringProperty();
+    private SimpleStringProperty nonBannerRateText=new SimpleStringProperty();
+    private SimpleStringProperty poolDateText=new SimpleStringProperty();
+    private SimpleStringProperty srNoUpText=new SimpleStringProperty();
 
     private SimpleBooleanProperty ssrModel=new SimpleBooleanProperty();
     private SimpleBooleanProperty empty = new SimpleBooleanProperty(false);
@@ -120,16 +126,16 @@ public class CardDetailAnalysisViewModel implements ViewModel {
         rText1.set(String.format("R: %d",analysis.getrCount()));
         rText2.set(String.format("[ %.3f ]",((double)analysis.getrCount()/(double)analysis.getTotalCount())));
         chartTitle.set(analysis.getPoolName());
-        ssrAvgText.set(String.format("%.3f", analysis.getSsrAvg()));
+        ssrAvgText.set(String.format("%.0f", analysis.getSsrAvg()));
         ssrMaxText.set(String.valueOf(analysis.getSsrMax()));
         ssrMinText.set(String.valueOf(analysis.getSsrMin()));
-        int sum = analysis.getSsrDataList().stream().mapToInt(ssrData -> ssrData.getCount()).sum();
-        long count = analysis.getSsrDataList().stream().filter(SsrData::isEvent).count();
-        if (count != 0){
-            ssrEventAvgText.set(String.format("%.3f", (double)sum / (double) count));
-        }else {
-            ssrEventAvgText.set(null);
-        }
+        upSsrAvgText.set(analysis.getUpSsrAvg() > 0 ? String.format("%.0f", analysis.getUpSsrAvg()) : "0");
+        upSsrCountText.set(String.valueOf(analysis.getUpSsrCount()));
+        nonBannerRateText.set(String.format("%.2f%%", analysis.getNonBannerRate() * 100));
+        poolDateText.set(analysis.getStartDate() + " ~ " + analysis.getEndDate());
+        srNoUpText.set(String.valueOf(analysis.getNoUpSrCount()));
+        upCountText1.set(String.format("UP: %d", analysis.getUpSsrCount()));
+        upCountText2.set(String.format("[ %.3f ]", (double) analysis.getUpSsrCount() / analysis.getTotalCount()));
 
 
         ssrList.setAll(analysis.getSsrDataList());
@@ -159,7 +165,13 @@ public class CardDetailAnalysisViewModel implements ViewModel {
         ssrAvgText.set(null);
         ssrMaxText.set(null);
         ssrMinText.set(null);
-        ssrEventAvgText.set(null);
+        upSsrAvgText.set(null);
+        upSsrCountText.set(null);
+        nonBannerRateText.set(null);
+        poolDateText.set(null);
+        srNoUpText.set(null);
+        upCountText1.set(null);
+        upCountText2.set(null);
         ssrList.clear();
         pieChartData.clear();
     }
@@ -332,12 +344,60 @@ public class CardDetailAnalysisViewModel implements ViewModel {
         return ssrModel;
     }
 
-    public String getSsrEventAvgText() {
-        return ssrEventAvgText.get();
+    public String getUpSsrAvgText() {
+        return upSsrAvgText.get();
     }
 
-    public SimpleStringProperty ssrEventAvgTextProperty() {
-        return ssrEventAvgText;
+    public SimpleStringProperty upSsrAvgTextProperty() {
+        return upSsrAvgText;
+    }
+
+    public String getUpSsrCountText() {
+        return upSsrCountText.get();
+    }
+
+    public SimpleStringProperty upSsrCountTextProperty() {
+        return upSsrCountText;
+    }
+
+    public String getNonBannerRateText() {
+        return nonBannerRateText.get();
+    }
+
+    public SimpleStringProperty nonBannerRateTextProperty() {
+        return nonBannerRateText;
+    }
+
+    public String getPoolDateText() {
+        return poolDateText.get();
+    }
+
+    public SimpleStringProperty poolDateTextProperty() {
+        return poolDateText;
+    }
+
+    public String getSrNoUpText() {
+        return srNoUpText.get();
+    }
+
+    public SimpleStringProperty srNoUpTextProperty() {
+        return srNoUpText;
+    }
+
+    public String getUpCountText1() {
+        return upCountText1.get();
+    }
+
+    public SimpleStringProperty upCountText1Property() {
+        return upCountText1;
+    }
+
+    public String getUpCountText2() {
+        return upCountText2.get();
+    }
+
+    public SimpleStringProperty upCountText2Property() {
+        return upCountText2;
     }
 
     public boolean isEmpty() {
