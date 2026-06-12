@@ -83,7 +83,7 @@ public class Setting {
 
     /*=================抽卡分析相关===================*/
     private SimpleStringProperty gachaCurrentPlayerId = new SimpleStringProperty(); //当前玩家
-    private SimpleBooleanProperty gachaListModel = new SimpleBooleanProperty(true); //抽卡界面显示模式
+    private SimpleBooleanProperty gachaListModel = new SimpleBooleanProperty(false); //抽卡界面显示模式
 
     @JsonSerialize(using = ObservableListSerializer.class)
     @JsonDeserialize(using = ObservableListDeserializer.class)

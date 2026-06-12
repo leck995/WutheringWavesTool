@@ -19,107 +19,123 @@
    <children>
   <AnchorPane fx:id="contentPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
          <children>
-            <StackPane layoutX="146.0" layoutY="96.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <ToggleSwitch fx:id="ssrModelSwitch" labelPosition="RIGHT" selected="true" text="%ui.analysis.role.switch" translateY="-30.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0" />
+            <HBox fx:id="children" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <ListView fx:id="poolListview" maxHeight="400.0" maxWidth="250.0" prefHeight="50.0" prefWidth="150.0" styleClass="select-listview" />
-               </children>
-            </StackPane>
-            <StackPane layoutY="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="40.0">
-               <children>
-                  <HBox fx:id="children" alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
+                  <ListView fx:id="poolListview" maxHeight="550.0" maxWidth="250.0" prefHeight="50.0" prefWidth="150.0" styleClass="select-listview" />
+                  <StackPane HBox.hgrow="ALWAYS">
                      <children>
-                        <VBox alignment="CENTER" maxHeight="600.0" maxWidth="400.0" spacing="10.0" styleClass="left">
+                        <HBox fx:id="poolAnalysisPane" prefHeight="100.0" prefWidth="200.0" spacing="20.0">
                            <children>
-                              <StackPane>
+                              <VBox alignment="TOP_CENTER" maxWidth="450.0" spacing="8" styleClass="left">
                                  <children>
-                                    <PieChart fx:id="pieChart" maxHeight="300.0" maxWidth="300.0" prefHeight="300.0" prefWidth="300.0" />
-                                    <Label text="欧" visible="false" StackPane.alignment="BOTTOM_RIGHT" />
-                                 </children>
-                              </StackPane>
-                              <VBox alignment="CENTER">
-                                 <children>
-                                    <HBox alignment="CENTER">
+                                    <StackPane>
                                        <children>
-                                          <Label text="%ui.analysis.charts.tip01.item01" />
-                                          <Label fx:id="currentCountLabel" layoutX="10.0" layoutY="10.0" styleClass="current-label" text="12" />
-                                          <Label layoutX="119.0" layoutY="10.0" text="%ui.analysis.charts.tip01.item02" />
+                                          <PieChart fx:id="pieChart" maxHeight="260.0" maxWidth="260.0" prefHeight="260.0" prefWidth="260.0" />
                                        </children>
-                                    </HBox>
-                                    <HBox alignment="CENTER">
+                                    </StackPane>
+                                    <!-- 保底进度 -->
+                                    <VBox styleClass="stat-group">
                                        <children>
-                                          <Label text="%ui.analysis.charts.tip02.item01" />
-                                          <Label fx:id="totalCountLabel" styleClass="total-label" text="12" />
-                                          <Label layoutX="119.0" layoutY="10.0" text="%ui.analysis.charts.tip02.item02" />
-                                          <Label fx:id="totalCostLabel" layoutX="139.0" layoutY="10.0" styleClass="total-label" text="16500" />
-                                          <Label layoutX="197.0" layoutY="10.0" text="%ui.analysis.charts.tip02.item03" />
+                                          <Label styleClass="stat-header" text="%ui.analysis.charts.section.overview" />
+                                          <HBox styleClass="stat-row">
+                                             <children>
+                                                <Label text="%ui.analysis.charts.tip01.item01" />
+                                                <Label fx:id="currentCountLabel" styleClass="current-label,stat-value" text="12" />
+                                                <Label text="%ui.analysis.charts.tip01.item02" />
+                                             </children>
+                                          </HBox>
+                                          <HBox styleClass="stat-row">
+                                             <children>
+                                                <Label text="%ui.analysis.charts.tip02.item01" />
+                                                <Label fx:id="totalCountLabel" styleClass="total-label,stat-value" text="12" />
+                                                <Label text="%ui.analysis.charts.tip02.item02" />
+                                                <Label fx:id="totalCostLabel" styleClass="total-label,stat-value" text="16500" />
+                                                <Label text="%ui.analysis.charts.tip02.item03" />
+                                             </children>
+                                          </HBox>
                                        </children>
-                                    </HBox>
+                                    </VBox>
+                                    <!-- 稀有度分布 -->
+                                    <VBox styleClass="stat-group">
+                                       <children>
+                                          <Label styleClass="stat-header" text="%ui.analysis.charts.section.rarity" />
+                                          <GridPane alignment="CENTER">
+                                            <columnConstraints>
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                              <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                                            </columnConstraints>
+                                            <rowConstraints>
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                              <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                                            </rowConstraints>
+                                             <children>
+                                                <Label fx:id="ssrLabel1" styleClass="ssr-label" text="%ui.analysis.charts.tip03.ssr" GridPane.halignment="CENTER" />
+                                                <Label fx:id="ssrLabel2" styleClass="ssr-label" text="[15%]" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
+                                                <Label fx:id="srLabel1" styleClass="sr-label" text="%ui.analysis.charts.tip03.sr" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                <Label fx:id="srLabel2" styleClass="sr-label" text="[15%]" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
+                                                <Label fx:id="rLabel1" styleClass="r-label" text="%ui.analysis.charts.tip03.r" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                                                <Label fx:id="rLabel2" styleClass="r-label" text="[15%]" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                                             </children>
+                                          </GridPane>
+                                       </children>
+                                    </VBox>
+                                    <!-- 详细统计 -->
+                                    <VBox styleClass="stat-group">
+                                       <children>
+                                          <Label styleClass="stat-header" text="%ui.analysis.charts.section.detail" />
+                                          <HBox styleClass="stat-row">
+                                             <children>
+                                                <Label text="%ui.analysis.charts.tip04" />
+                                                <Label fx:id="ssrAvgLabel" styleClass="ssr-label,stat-value" text="10" />
+                                             </children>
+                                          </HBox>
+                                          <HBox styleClass="stat-row">
+                                             <children>
+                                                <Label text="%ui.analysis.charts.tip05" />
+                                                <Label fx:id="ssrEventAvgLabel" styleClass="ssr-label,stat-value" text="10" />
+                                             </children>
+                                          </HBox>
+                                          <HBox styleClass="stat-row">
+                                             <children>
+                                                <Label text="%ui.analysis.charts.tip06" />
+                                                <Label fx:id="ssrMinLabel" styleClass="ssr-label,stat-value" text="10" />
+                                                <Label prefWidth="60.0" text="%ui.analysis.charts.tip07" />
+                                                <Label fx:id="ssrMaxLabel" styleClass="current-label,stat-value" text="10" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
                                  </children>
                               </VBox>
-                              <GridPane alignment="CENTER">
-                                <columnConstraints>
-                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                </columnConstraints>
-                                <rowConstraints>
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                </rowConstraints>
+                              <StackPane prefHeight="150.0" prefWidth="200.0" styleClass="right" HBox.hgrow="ALWAYS">
                                  <children>
-                                    <Label fx:id="ssrLabel1" styleClass="ssr-label" text="%ui.analysis.charts.tip03.ssr" GridPane.halignment="CENTER" />
-                                    <Label fx:id="ssrLabel2" layoutX="10.0" layoutY="18.0" styleClass="ssr-label" text="[15%]" GridPane.columnIndex="1" GridPane.halignment="CENTER" />
-                                    <Label fx:id="srLabel1" layoutX="10.0" layoutY="18.0" styleClass="sr-label" text="%ui.analysis.charts.tip03.sr" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                                    <Label fx:id="srLabel2" layoutX="330.0" layoutY="18.0" styleClass="sr-label" text="[15%]" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" />
-                                    <Label fx:id="rLabel1" layoutX="10.0" layoutY="18.0" styleClass="r-label" text="%ui.analysis.charts.tip03.r" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
-                                    <Label fx:id="rLabel2" layoutX="10.0" layoutY="18.0" styleClass="r-label" text="[15%]" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+                                    <ScrollPane fitToHeight="true" fitToWidth="true">
+                                       <content>
+                                          <FlowPane fx:id="ssrFlowPane" hgap="10.0" prefHeight="200.0" prefWidth="200.0" styleClass="ssr-thumb" vgap="10.0" />
+                                       </content>
+                                    </ScrollPane>
+                                    <ListView fx:id="ssrListView" maxWidth="450.0" minWidth="400.0" prefWidth="400.0" styleClass="ssr-list-view" />
                                  </children>
-                              </GridPane>
-                              <HBox alignment="CENTER" layoutX="20.0" layoutY="481.0">
-                                 <children>
-                                    <Label text="%ui.analysis.charts.tip04" />
-                                    <Label fx:id="ssrAvgLabel" styleClass="ssr-label" text="10" />
-                                 </children>
-                              </HBox>
-                              <HBox alignment="CENTER" layoutX="20.0" layoutY="485.0">
-                                 <children>
-                                    <Label text="%ui.analysis.charts.tip05" />
-                                    <Label fx:id="ssrEventAvgLabel" styleClass="ssr-label" text="10" />
-                                 </children>
-                              </HBox>
-                              <HBox alignment="CENTER">
-                                 <children>
-                                    <Label layoutX="10.0" layoutY="10.0" text="%ui.analysis.charts.tip06" />
-                                    <Label fx:id="ssrMinLabel" layoutX="108.0" layoutY="10.0" styleClass="ssr-label" text="10" />
-                                    <Label alignment="CENTER_RIGHT" layoutX="125.0" layoutY="10.0" prefWidth="80.0" text="%ui.analysis.charts.tip07" />
-                                    <Label fx:id="ssrMaxLabel" layoutX="167.0" layoutY="10.0" styleClass="current-label" text="10" />
-                                 </children>
-                              </HBox>
+                                 <padding>
+                                    <Insets right="40.0" top="30.0" />
+                                 </padding>
+                              </StackPane>
                            </children>
-                        </VBox>
-                        <StackPane prefHeight="150.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                        </HBox>
+                        <StackPane fx:id="poolEmptyPane" prefHeight="150.0" prefWidth="200.0">
                            <children>
-                              <ScrollPane fitToHeight="true" fitToWidth="true">
-                                 <content>
-                                    <FlowPane fx:id="ssrFlowPane" hgap="10.0" prefHeight="200.0" prefWidth="200.0" styleClass="ssr-thumb" vgap="10.0" />
-                                 </content>
-                              </ScrollPane>
-                              <ListView fx:id="ssrListView" maxWidth="400.0" minWidth="400.0" prefWidth="400.0" styleClass="ssr-list-view" />
+                              <Label styleClass="title-3" text="%ui.analysis.pool.tip.empty02" />
                            </children>
-                           <padding>
-                              <Insets right="40.0" top="30.0" />
-                           </padding>
                         </StackPane>
-                     </children>
-                  </HBox>
-                  <StackPane fx:id="poolEmptyPane" prefHeight="150.0" prefWidth="200.0">
-                     <children>
-                        <Label styleClass="title-3" text="%ui.analysis.pool.tip.empty02" />
                      </children>
                   </StackPane>
                </children>
-            </StackPane>
-            <ToggleSwitch fx:id="ssrModelSwitch" selected="true" text="%ui.analysis.role.switch" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="0.0" />
+               <padding>
+                  <Insets bottom="20.0" right="10.0" />
+               </padding>
+            </HBox>
          </children>
       </AnchorPane>
       <StackPane fx:id="loadingPane" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="200.0">

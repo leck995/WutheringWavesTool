@@ -79,7 +79,17 @@
 .detail-child{
 
 }
-/*卡池名称列表*/
+
+.detail-child .select-listview{
+    -fx-background-color: -color-bg-default-50;
+    -fx-background-radius: 0.571em;  /* 8px */
+    -fx-border-color: -color-border-muted;
+    -fx-border-radius: 0.571em;
+    -fx-border-width: 1px;
+    -fx-padding: 1em;
+    -fx-spacing: 0.857em;
+}
+    /*卡池名称列表*/
 .detail-child .select-listview .list-cell{
     -fx-font-size: 1em;              /* 14px */
     -fx-padding: 0.357em;
@@ -145,9 +155,15 @@
     -fx-font-size: 0.857em;  /* 12px */
 }
 
-.detail-child .left{
+.detail-child .left,
+.detail-child .right{
+    -fx-background-color: -color-bg-default-50;
     -fx-background-radius: 0.571em;  /* 8px */
-    -fx-padding: 0.714em;
+    -fx-border-color: -color-border-muted;
+    -fx-border-radius: 0.571em;
+    -fx-border-width: 1px;
+    -fx-padding: 1em;
+    -fx-spacing: 0.857em;
 }
 
 .detail-child .ssr-list-view{
@@ -183,12 +199,29 @@
     -fx-font-size: 1.429em;
     -fx-pref-width: 1.786em;
 }
+.detail-child .role-pane .role-desc.up{
+    -fx-text-fill: #ffd000;
+}
+.detail-child .role-pane .role-desc.unup{
+    -fx-text-fill: #787878;
+}
+.detail-child .role-pane .up-tag{
+    -fx-text-fill: #f8a62b;
+    -fx-font-weight: bold;
+    -fx-font-size: 1em;
+}
 
-.detail-child .role-pane  .progress-bar > .bar{
+.detail-child .role-pane .progress-bar > .bar{
     -fx-padding: 0.286em;
 }
-.detail-child .role-pane  .progress-bar > .track{
-    -fx-background-color: #dfdede;
+.detail-child .role-pane .progress-bar.up > .bar{
+    -fx-background-color: linear-gradient(to right, #ffcdd2, #ef5350, #b71c1c);
+}
+.detail-child .role-pane .progress-bar.unup > .bar{
+    -fx-background-color: linear-gradient(to right, #c8e6c9, #66bb6a, #1b5e20);
+}
+.detail-child .role-pane .progress-bar > .track{
+    -fx-background-color: -color-border-default;
 }
 
 
@@ -196,6 +229,28 @@
 
 
 
+
+/* 左侧统计面板分组样式 */
+.detail-child .left .stat-group{
+    -fx-background-color: -color-bg-default-30;
+    -fx-background-radius: 0.357em;
+    -fx-padding: 0.5em 0.643em;
+    -fx-spacing: 0.286em;
+}
+.detail-child .left .stat-header{
+    -fx-font-size: 0.786em;
+    -fx-text-fill: -color-fg-muted;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 0.143em 0;
+}
+.detail-child .left .stat-row{
+    -fx-alignment: CENTER;
+    -fx-spacing: 0.3em;
+}
+.detail-child .left .stat-row .stat-value{
+    -fx-font-weight: bold;
+    -fx-font-size: 1em;
+}
 
 .detail-child .scroll-pane .scroll-bar{
     -fx-background-color: transparent;

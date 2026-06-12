@@ -20,7 +20,7 @@
    <children>
   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
          <children>
-            <HBox layoutX="1138.0" layoutY="10.0" spacing="20.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+            <HBox layoutX="1138.0" layoutY="10.0" spacing="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                <children>
                   <Label styleClass="title-2" text="%ui.analysis.title" />
                   <Separator orientation="VERTICAL" />

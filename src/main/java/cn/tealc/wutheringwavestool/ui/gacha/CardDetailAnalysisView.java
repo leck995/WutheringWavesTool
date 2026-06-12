@@ -16,9 +16,10 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.chart.PieChart;
 import javafx.scene.control.*;
+import javafx.application.Platform;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
 import java.net.URL;
@@ -74,6 +75,8 @@ public class CardDetailAnalysisView implements Initializable, FxmlView<CardDetai
 
     @FXML
     private StackPane poolEmptyPane;
+    @FXML
+    private HBox poolAnalysisPane;
     private boolean poolChange=false;//代码控制卡池切换标志
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -82,7 +85,7 @@ public class CardDetailAnalysisView implements Initializable, FxmlView<CardDetai
         BooleanBinding contentVisibleBinding = Bindings.and(viewModel.emptyProperty().not(), viewModel.loadingProperty().not());
         contentPane.visibleProperty().bind(contentVisibleBinding);
         poolEmptyPane.visibleProperty().bind(viewModel.poolEmptyProperty());
-        children.visibleProperty().bind(viewModel.poolEmptyProperty().not());
+        poolAnalysisPane.visibleProperty().bind(viewModel.poolEmptyProperty().not());
         ssrModelSwitch.selectedProperty().bindBidirectional(viewModel.ssrModelProperty());
         totalCountLabel.textProperty().bind(viewModel.totalTextProperty());
         totalCostLabel.textProperty().bind(viewModel.totalCostTextProperty());
@@ -174,12 +177,12 @@ public class CardDetailAnalysisView implements Initializable, FxmlView<CardDetai
     }
 
     class SsrCell extends ListCell<SsrData> {
-        public static final String[] COLORS= {"#66cccc","#ff99cc","#1a7f37","#66cc99","#99cc00","#cccccc"};
         private final HBox root;
         private ImageView iv;
         private Label name;
         private Label date;
         private Label count;
+        private Label upLabel;
         private ProgressBar progressBar;
         private Label desc;
 
@@ -188,61 +191,69 @@ public class CardDetailAnalysisView implements Initializable, FxmlView<CardDetai
             iv.setFitHeight(60);
             iv.setFitWidth(60);
             iv.setSmooth(true);
-            Circle circle = new Circle(30,30,30);
+            Circle circle = new Circle(30, 30, 30);
             iv.setClip(circle);
 
             name = new Label();
             name.getStyleClass().add("role-name");
-            date=new Label();
+            date = new Label();
             date.getStyleClass().add("role-date");
-            Spacer spacer=new Spacer();
-            HBox top = new HBox(5.0,name,spacer,date);
+            Spacer spacer = new Spacer();
+            HBox top = new HBox(5.0, name, spacer, date);
             top.setAlignment(Pos.CENTER_LEFT);
 
-            count=new Label();
+            upLabel = new Label("UP!");
+            upLabel.getStyleClass().add("up-tag");
+            upLabel.setVisible(false);
+
+            count = new Label();
             count.getStyleClass().add("role-date");
             progressBar = new ProgressBar();
             progressBar.setProgress(0);
             progressBar.setPrefWidth(200);
-            HBox progressHBox = new HBox(5.0,progressBar,count);
+            HBox progressHBox = new HBox(5.0, progressBar, upLabel, count);
             progressHBox.setAlignment(Pos.CENTER);
-            VBox parent = new VBox(5.0,top,progressHBox);
+            VBox parent = new VBox(5.0, top, progressHBox);
             parent.setAlignment(Pos.CENTER_LEFT);
 
-            desc=new Label();
+            desc = new Label();
             desc.getStyleClass().add("role-desc");
-            root = new HBox(15.0,iv,parent,desc);
+            root = new HBox(15.0, iv, parent, desc);
             root.setAlignment(Pos.CENTER_LEFT);
-            Random random=new Random();
-            int i = random.nextInt(5)+1;
-            root.getStyleClass().addAll("role-pane",String.format("role-pane-%d",i));
-
-
+            root.getStyleClass().add("role-pane");
         }
 
         @Override
         protected void updateItem(SsrData ssrData, boolean b) {
             super.updateItem(ssrData, b);
-            if (!b){
-                iv.setImage(LocalResourcesManager.header(ssrData.getId() ,60,60));
+            if (!b) {
+                Thread.startVirtualThread(() -> {
+                    Image image = LocalResourcesManager.header(ssrData.getId(), 60, 60);
+                    Platform.runLater(() -> iv.setImage(image));
+                });
+
                 name.setText(ssrData.getName());
                 date.setText(ssrData.getDate());
-                count.setText(String.format("%02d",ssrData.getCount()));
-                progressBar.setProgress(ssrData.getCount()/80.0);
+                count.setText(String.format("%02d", ssrData.getCount()));
+                progressBar.setProgress(ssrData.getCount() / 80.0);
 
-                if (ssrData.isEvent()){
+                upLabel.setVisible(ssrData.isEvent());
+                desc.getStyleClass().removeAll("up", "unup");
+                progressBar.getStyleClass().removeAll("up", "unup");
+                if (ssrData.isEvent()) {
                     desc.setText(LanguageManager.getString("ui.analysis.role.list.tip01"));
-                    desc.setTextFill(Color.web("#ffd000"));
-                }else {
+                    desc.getStyleClass().add("up");
+                    progressBar.getStyleClass().add("up");
+                } else {
                     desc.setText(LanguageManager.getString("ui.analysis.role.list.tip02"));
-                    desc.setTextFill(Color.web("#787878"));
+                    desc.getStyleClass().add("unup");
+                    progressBar.getStyleClass().add("unup");
                 }
                 setGraphic(root);
-            }else {
+            } else {
                 setGraphic(null);
             }
         }
-
     }
 
 }
