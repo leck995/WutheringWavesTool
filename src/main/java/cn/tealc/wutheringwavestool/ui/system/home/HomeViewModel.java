@@ -8,8 +8,8 @@ import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
@@ -161,7 +161,7 @@ public class HomeViewModel extends BaseViewModel {
     public void startUpdate() {
         if (Config.setting().getGameRootDirSource() == SourceType.WE_GAME) {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type02")), false);
+                    MessageInfo.warning(LanguageManager.getString("ui.home.message.type02")), false);
         } else {
             String dir = Config.setting().getGameRootDir();
             if (dir != null) {
@@ -177,15 +177,15 @@ public class HomeViewModel extends BaseViewModel {
                         }
                     } else {
                         MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                                new MessageInfo(MessageType.WARNING, String.format(LanguageManager.getString("ui.home.message.type08"), exe.getPath()), false));
+                                MessageInfo.warning(String.format(LanguageManager.getString("ui.home.message.type08"), exe.getPath()), false));
                     }
                 } else {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type08")), false);
+                            MessageInfo.warning(LanguageManager.getString("ui.home.message.type08")), false);
                 }
             } else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type08")), false);
+                        MessageInfo.warning(LanguageManager.getString("ui.home.message.type08")), false);
             }
         }
     }
@@ -225,7 +225,7 @@ public class HomeViewModel extends BaseViewModel {
                 exe = new File(Config.setting().getGameStarAppPath());
                 if (!exe.exists()) {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING,
+                            MessageInfo.warning(
                                     String.format(
                                             LanguageManager.getString("ui.home.message.type05"),
                                             exe.getPath()
@@ -253,11 +253,11 @@ public class HomeViewModel extends BaseViewModel {
                 hideMainWindow();
             } else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING, String.format(LanguageManager.getString("ui.home.message.type03"), exe.getPath())));
+                        MessageInfo.warning(String.format(LanguageManager.getString("ui.home.message.type03"), exe.getPath())));
             }
         } else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type04")));
+                    MessageInfo.warning(LanguageManager.getString("ui.home.message.type04")));
         }
     }
 
@@ -306,7 +306,7 @@ public class HomeViewModel extends BaseViewModel {
                 WwtApp.getWindow().show();
                 GameAppListener.getInstance().setStartFromApp(false);
                 LOG.error("高级启动无法启动鸣潮", e);
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.ERROR, LanguageManager.getString("ui.home.message.type07") + e.getMessage()));
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.error(LanguageManager.getString("ui.home.message.type07") + e.getMessage()));
             }
         });
     }

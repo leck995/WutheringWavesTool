@@ -11,8 +11,8 @@ import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.service.TaskManageService;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import javafx.concurrent.Task;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.model.release.Release;
 import cn.tealc.wutheringwavestool.model.system.NavData;
 import cn.tealc.wutheringwavestool.thread.system.ui.MainBackgroundTask;
@@ -648,7 +648,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
 
 
         okBtn.setOnAction(actionEvent -> {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.SUCCESS, "感谢您的支持，谢谢", Duration.seconds(5)));
+            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.success("感谢您的支持，谢谢"));
             Config.setting().setSupport(true);
             cancelBtn.fireEvent(actionEvent);
         });
@@ -690,36 +690,36 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         switch (messageInfo.getType()) {
             case SUCCESS -> {
                 message = new Message(
-                        null,
+                        messageInfo.getTitle().equals(MessageInfo.SUCCESS) ? null : messageInfo.getTitle(),
                         messageInfo.getMessage(),
-                        new FontIcon(Material2OutlinedAL.CHECK_CIRCLE_OUTLINE)
+                        new FontIcon(Material2AL.CHECK_CIRCLE)
                 );
-                message.getStyleClass().add(Styles.SUCCESS);
+                message.getStyleClass().addAll(Styles.SUCCESS, "glass-message");
             }
             case WARNING -> {
                 message = new Message(
-                        null,
+                        messageInfo.getTitle().equals(MessageInfo.WARNING) ? null : messageInfo.getTitle(),
                         messageInfo.getMessage(),
-                        new FontIcon(Material2OutlinedMZ.OUTLINED_FLAG)
+                        new FontIcon(Material2MZ.WARNING)
                 );
-                message.getStyleClass().add(Styles.WARNING);
+                message.getStyleClass().addAll(Styles.WARNING, "glass-message");
             }
             case INFO -> {
                 message = new Message(
-                        null,
+                        messageInfo.getTitle().equals(MessageInfo.INFO) ? null : messageInfo.getTitle(),
                         messageInfo.getMessage(),
 
-                        new FontIcon(Material2OutlinedMZ.TURNED_IN_NOT)
+                        new FontIcon(Material2AL.INFO)
                 );
-                message.getStyleClass().add(Styles.ACCENT);
+                message.getStyleClass().addAll(Styles.ACCENT, "glass-message");
             }
             case ERROR -> {
                 message = new Message(
-                        null,
+                        messageInfo.getTitle().equals(MessageInfo.ERROR) ? null : messageInfo.getTitle(),
                         messageInfo.getMessage(),
-                        new FontIcon(Material2OutlinedAL.ERROR_OUTLINE)
+                        new FontIcon(Material2AL.HIGHLIGHT_OFF)
                 );
-                message.getStyleClass().add(Styles.DANGER);
+                message.getStyleClass().addAll(Styles.DANGER, "glass-message");
             }
         }
 
@@ -727,7 +727,6 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         message.setMaxSize(300.0, 80.0);
         return message;
     }
-
     public void startNavAnim() {
         var t = new Timeline(
                 new KeyFrame(Duration.ZERO,

@@ -2,7 +2,7 @@ package cn.tealc.wutheringwavestool.ui.system;
 
 import cn.tealc.wutheringwavestool.WwtApp;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;

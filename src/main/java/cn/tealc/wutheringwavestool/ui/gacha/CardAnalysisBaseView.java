@@ -6,7 +6,7 @@ import atlantafx.base.util.Animations;
 import cn.tealc.fxplugin.FxPlugin;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.plugin.FxPluginManager;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
 import cn.tealc.wutheringwavestool.util.DialogBuilder;

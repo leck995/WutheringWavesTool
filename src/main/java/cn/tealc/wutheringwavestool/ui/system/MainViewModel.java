@@ -26,8 +26,8 @@ import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.model.slash.SlashData;
 import com.kuro.kujiequ.model.slash.SlashDifficulty;
 import com.kuro.kujiequ.model.towerData.DifficultyTotal;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.system.CheckVersionTask;
 import com.kuro.kujiequ.thread.rolebox.slash.SlashDataDetailTask;
 import com.kuro.kujiequ.thread.rolebox.tower.NewTowerDataDetailTask;
@@ -100,16 +100,13 @@ public class MainViewModel extends BaseViewModel {
                 switch (t1) {
                     case "success" -> MvvmFX.getNotificationCenter().publish(
                             NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.SUCCESS,
-                                    LanguageManager.getString("ui.main.sync.message.success")));
+                            MessageInfo.success(LanguageManager.getString("ui.main.sync.message.success")));
                     case "error" -> MvvmFX.getNotificationCenter().publish(
                             NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.ERROR,
-                                    LanguageManager.getString("ui.main.sync.message.error")));
+                            MessageInfo.error(LanguageManager.getString("ui.main.sync.message.error")));
                     case "start" -> MvvmFX.getNotificationCenter().publish(
                             NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.INFO,
-                                    LanguageManager.getString("ui.main.sync.message.start")));
+                            MessageInfo.info(LanguageManager.getString("ui.main.sync.message.start")));
                 }
             }
         });
@@ -146,7 +143,7 @@ public class MainViewModel extends BaseViewModel {
                             MvvmFX.getNotificationCenter().publish(NotificationKey.NOTIFICATION_SHOW_UPDATE, value.getData());
                         });
                     } else if (value.getCode() == -1) {
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.message.type01")));
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.main.message.type01")));
                     }
                 });
                 Thread.startVirtualThread(task);
@@ -186,8 +183,7 @@ public class MainViewModel extends BaseViewModel {
                 if (!newKeys.isEmpty()) {
                     Platform.runLater(() -> {
                         NotificationManager.publish(NotificationKey.MESSAGE,
-                                new MessageInfo(MessageType.INFO,
-                                        "发现 " + newKeys.size() + " 个新兑换码，请在兑换码页面查看", Duration.seconds(5)));
+                                MessageInfo.info("发现 " + newKeys.size() + " 个新兑换码，请在兑换码页面查看"));
                     });
                     notifiedKeys.addAll(newKeys);
                     configService.setObject(REDEMPTION_CODE, notifiedKeys);
@@ -208,8 +204,8 @@ public class MainViewModel extends BaseViewModel {
                 for (AnnouncementItem item : value.getData()) {
                     if (!notifiedIds.contains(item.getId())) {
                         Platform.runLater(() -> {
-                            NotificationManager.message(new MessageInfo(MessageType.INFO,
-                                    item.getTitle() + "\n" + item.getContent(), Duration.seconds(8)));
+                            NotificationManager.message(MessageInfo.info(
+                                    item.getTitle() + "\n" + item.getContent()));
                         });
                         notifiedIds.add(item.getId());
                     }
@@ -261,7 +257,7 @@ public class MainViewModel extends BaseViewModel {
                     long millisecondsInADay = 24 * 60 * 60 * 1000;
                     double days = (double) milliseconds / (double) millisecondsInADay;
                     if (days > 0 && days < 1 && warningTower.compareAndSet(false, true)) {//不足一天时,提醒
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.sync.message.tower")));
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.main.sync.message.tower")));
                     }
                 }
             });
@@ -282,7 +278,7 @@ public class MainViewModel extends BaseViewModel {
                                 .mapToInt(d -> d.getRank())
                                 .sum();
                         if (sum < 6 && warningNewTower.compareAndSet(false, true)){
-                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.sync.message.tower2")));
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.main.sync.message.tower2")));
                         }
                     }
                 }
@@ -317,7 +313,7 @@ public class MainViewModel extends BaseViewModel {
                         }
                     }
                     if (warning && warningSlash.compareAndSet(false, true))
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.main.sync.message.slash")));
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.main.sync.message.slash")));
                 }
             }
         });

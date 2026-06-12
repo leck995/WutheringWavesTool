@@ -7,7 +7,7 @@ import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageInfo;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.MvvmFX;
 import javafx.collections.FXCollections;

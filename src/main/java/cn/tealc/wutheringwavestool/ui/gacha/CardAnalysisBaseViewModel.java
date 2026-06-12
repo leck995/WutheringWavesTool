@@ -7,8 +7,8 @@ import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.analysis.AnalysisData;
 import cn.tealc.wutheringwavestool.model.game.pool.CardInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.service.TaskManageService;
 import cn.tealc.wutheringwavestool.thread.gacha.CardPoolAnalysisTask;
 import cn.tealc.wutheringwavestool.thread.gacha.CardPoolGetUrlTask;
@@ -159,18 +159,18 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
                         if (responseBody.getCode() == 200) {
                             analysis(player.get());
                             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                                    new MessageInfo(MessageType.SUCCESS, LanguageManager.getString("ui.analysis.message.type01")));
+                                    MessageInfo.success(LanguageManager.getString("ui.analysis.message.type01")));
                         } else {
                             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                                    new MessageInfo(MessageType.WARNING, responseBody.getMsg()));
+                                    MessageInfo.warning(responseBody.getMsg()));
                         }
                     });
                     Thread.startVirtualThread(task);
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.INFO, LanguageManager.getString("ui.analysis.message.type02")));
+                            MessageInfo.info(LanguageManager.getString("ui.analysis.message.type02")));
                 } else {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.analysis.message.type03")));
+                            MessageInfo.warning(LanguageManager.getString("ui.analysis.message.type03")));
                 }
             }
         } catch (IOException e) {
@@ -247,16 +247,16 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
                 this.player.set(playerId);
                 publish(EVENT_SELECTED_PLAYER);
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.SUCCESS, LanguageManager.getString("ui.analysis.message.type01")));
+                        MessageInfo.success(LanguageManager.getString("ui.analysis.message.type01")));
                 publish("upload");
             } else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING, responseBody.getMsg()));
+                        MessageInfo.warning(responseBody.getMsg()));
             }
         });
         Thread.startVirtualThread(task);
         MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                new MessageInfo(MessageType.INFO, LanguageManager.getString("ui.analysis.message.type02")));
+                MessageInfo.info(LanguageManager.getString("ui.analysis.message.type02")));
     }
 
     public String getPlayer() {

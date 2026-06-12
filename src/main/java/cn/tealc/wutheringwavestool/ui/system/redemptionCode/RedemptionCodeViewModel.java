@@ -3,8 +3,8 @@ package cn.tealc.wutheringwavestool.ui.system.redemptionCode;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.model.RedemptionCodeItem;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.thread.system.RedemptionCodeGetTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -49,14 +49,14 @@ public class RedemptionCodeViewModel extends BaseViewModel {
                 }
             } else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING, value.getMsg()), false);
+                        MessageInfo.warning(value.getMsg()), false);
             }
             loading.set(false);
         });
         task.setOnFailed(workerStateEvent -> {
             loading.set(false);
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.ERROR, "获取兑换码失败"), false);
+                    MessageInfo.error("获取兑换码失败"), false);
         });
         Thread.startVirtualThread(task);
     }

@@ -4,8 +4,8 @@ import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
@@ -90,7 +90,7 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
         UserInfo userInfo = userInfoService.getMainUser();
         if (userInfo == null) {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type01")));
+                    MessageInfo.warning(LanguageManager.getString("ui.home.message.type01")));
             return;
         }
 
@@ -102,7 +102,7 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
                 getRoleData(userInfo);
             } else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING, responseBody.getMsg()));
+                        MessageInfo.warning(responseBody.getMsg()));
                 LOG.error(responseBody.getMsg());
             }
         });
@@ -209,7 +209,7 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
                 } else {
                     rolePaneVisible.set(false);
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING, responseBody.getMsg()), false);
+                            MessageInfo.warning(responseBody.getMsg()), false);
                 }
             }
         });
@@ -235,8 +235,7 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
             if (roleInfo.getRougeScore() < 6000) {
                 weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.weekly.tip"));
                 NotificationManager.publish(NotificationKey.MESSAGE,
-                        new MessageInfo(MessageType.WARNING,
-                                LanguageManager.getString("ui.home.label.weekly.message03"), MessageInfo.LONG));
+                        MessageInfo.warning(LanguageManager.getString("ui.home.label.weekly.message03")));
             } else {
                 weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.rouge"));
             }

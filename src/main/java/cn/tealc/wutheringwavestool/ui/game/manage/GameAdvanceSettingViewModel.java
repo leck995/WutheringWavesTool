@@ -4,8 +4,8 @@ import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.GameSettingDao;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.MvvmFX;
@@ -33,7 +33,7 @@ public class GameAdvanceSettingViewModel implements ViewModel {
                 fps.set(customFrameRate.getValue());
             }
         }else {
-            NotificationManager.message(new MessageInfo(MessageType.WARNING,LanguageManager.getString("ui.game_manager.advance.fps.message02")));
+            NotificationManager.message(MessageInfo.warning(LanguageManager.getString("ui.game_manager.advance.fps.message02")));
         }
     }
 
@@ -49,10 +49,10 @@ public class GameAdvanceSettingViewModel implements ViewModel {
             GameSettingDao gameSettingDao = new GameSettingDao();
             boolean customFrameRate = gameSettingDao.updateSettingValueByKey("CustomFrameRate", value);
             if (!customFrameRate) {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.ERROR, LanguageManager.getString("ui.game_manager.advance.fps.message01")));
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,MessageInfo.error(LanguageManager.getString("ui.game_manager.advance.fps.message01")));
             }
         }else {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.ERROR, LanguageManager.getString("ui.game_manager.advance.fps.message02")));
+            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,MessageInfo.error(LanguageManager.getString("ui.game_manager.advance.fps.message02")));
         }
 
     }

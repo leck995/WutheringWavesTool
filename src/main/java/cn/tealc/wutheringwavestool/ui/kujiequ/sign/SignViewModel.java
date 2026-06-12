@@ -6,8 +6,8 @@ import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import com.kuro.kujiequ.model.sign.SignGood;
 import com.kuro.kujiequ.model.sign.SignRecord;
 import com.kuro.kujiequ.model.sign.UserInfo;
@@ -58,7 +58,7 @@ public class SignViewModel extends BaseViewModel {
             getSignHistory(main);
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING,"当前不存在主用户信息，无法获取，请在账号界面添加用户信息"),false);
+                    MessageInfo.warning("当前不存在主用户信息，无法获取，请在账号界面添加用户信息"),false);
         }
 
         userIndex.addListener((observableValue, number, t1) -> {
@@ -111,7 +111,7 @@ public class SignViewModel extends BaseViewModel {
                     isSign.set(data.getKey());
                 }else {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING, value.getMsg()),false);
+                            MessageInfo.warning(value.getMsg()),false);
                 }
             });
             Thread.startVirtualThread(task);

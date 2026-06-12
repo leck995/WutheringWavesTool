@@ -6,8 +6,8 @@ import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
 import cn.tealc.wutheringwavestool.model.SourceType;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.model.ui.ServerData;
 import cn.tealc.wutheringwavestool.thread.game.DownloadGameTask;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
@@ -105,7 +105,7 @@ public class GameManagerViewModel extends BaseViewModel {
             SourceType sourceType = checkCurrentServer();
             setGameRootDirSource(sourceType);
         }else {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.WARNING,LanguageManager.getString("ui.setting.message.01")));
+            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,MessageInfo.warning(LanguageManager.getString("ui.setting.message.01")));
         }
     }
     /**
@@ -146,7 +146,7 @@ public class GameManagerViewModel extends BaseViewModel {
             }
             case "wegame" -> {
                 setGameRootDirSource(SourceType.WE_GAME);
-                NotificationManager.message(new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.game_manager.tip02"), Duration.seconds(5)));
+                NotificationManager.message(MessageInfo.warning(LanguageManager.getString("ui.game_manager.tip02")));
             }
             case "global" -> {
                 setGameRootDirSource(SourceType.GLOBAL);

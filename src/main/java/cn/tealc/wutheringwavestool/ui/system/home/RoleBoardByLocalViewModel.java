@@ -5,8 +5,8 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.LocalCachePlayerData;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.service.ConfigService;
 import cn.tealc.wutheringwavestool.service.LauncherUserService;
 import cn.tealc.wutheringwavestool.service.LocalCachePlayerDataService;
@@ -91,7 +91,7 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
     public void updateRoleData() {
         if (Config.setting().getGameRootDir() == null) {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type09")));
+                    MessageInfo.warning(LanguageManager.getString("ui.home.message.type09")));
             return;
         }
 

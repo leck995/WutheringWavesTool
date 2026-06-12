@@ -3,8 +3,8 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.calculator;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import com.kuro.kujiequ.model.calculator.exist.ExistedRoleDataForCalculator;
 import com.kuro.kujiequ.model.calculator.exist.RoleAim;
 import com.kuro.kujiequ.model.calculator.list.RoleForCalculator;
@@ -106,13 +106,13 @@ public class CalculatorRoleEditViewModel extends BaseViewModel {
                     }
                 }else {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING,value.getMsg()));
+                            MessageInfo.warning(value.getMsg()));
                 }
             });
             Thread.startVirtualThread(task);
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.WARNING,"当前不存在主用户信息，无法获取，请在账号界面添加用户信息"));
+                    MessageInfo.warning("当前不存在主用户信息，无法获取，请在账号界面添加用户信息"));
         }
     }
 
@@ -153,7 +153,7 @@ public class CalculatorRoleEditViewModel extends BaseViewModel {
                     }
                 }else {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING,responseBody.getMsg()));
+                            MessageInfo.warning(responseBody.getMsg()));
                 }
             });
             Thread.startVirtualThread(task);

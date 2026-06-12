@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.base;
 
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+
+import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.MvvmFX;

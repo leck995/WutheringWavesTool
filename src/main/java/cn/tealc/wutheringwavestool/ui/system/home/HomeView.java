@@ -4,8 +4,8 @@ import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.ui.item.HeaderImageSelectView;
 import cn.tealc.wutheringwavestool.ui.item.PlayTimeAlertItemView;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
@@ -172,7 +172,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
             if (file != null) {
                 Desktop.getDesktop().open(file);
             } else {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type06")));
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.home.message.type06")));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -186,7 +186,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
             if (file != null) {
                 Desktop.getDesktop().open(file);
             } else {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, new MessageInfo(MessageType.WARNING, LanguageManager.getString("ui.home.message.type04")));
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.home.message.type04")));
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

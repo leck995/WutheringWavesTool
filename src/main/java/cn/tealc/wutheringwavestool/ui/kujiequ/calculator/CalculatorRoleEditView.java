@@ -3,8 +3,8 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.calculator;
 import atlantafx.base.controls.ProgressSliderSkin;
 import atlantafx.base.util.Animations;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.kuro.kujiequ.model.calculator.list.RoleForCalculator;
 import com.kuro.kujiequ.model.calculator.list.WeaponForCalculator;
@@ -163,7 +163,7 @@ public class CalculatorRoleEditView implements FxmlView<CalculatorRoleEditViewMo
             viewModel.calculate(skill);
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    new MessageInfo(MessageType.SUCCESS,"当前角色无需任何材料"));
+                    MessageInfo.success("当前角色无需任何材料"));
         }
     }
 

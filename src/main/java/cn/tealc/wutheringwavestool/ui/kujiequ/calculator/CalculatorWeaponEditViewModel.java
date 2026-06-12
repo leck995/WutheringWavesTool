@@ -4,8 +4,8 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import com.kuro.kujiequ.model.calculator.exist.WeaponAim;
 import com.kuro.kujiequ.model.calculator.list.WeaponForCalculator;
 import com.kuro.kujiequ.model.calculator.result.CalculatorResult;
@@ -74,7 +74,7 @@ public class CalculatorWeaponEditViewModel extends BaseViewModel {
                     }
                 }else {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            new MessageInfo(MessageType.WARNING,responseBody.getMsg()));
+                            MessageInfo.warning(responseBody.getMsg()));
                 }
             });
             Thread.startVirtualThread(task);

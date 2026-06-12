@@ -3,8 +3,8 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.role;
 import atlantafx.base.util.Animations;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import com.kuro.kujiequ.model.roleData.Role;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.*;
@@ -152,7 +152,7 @@ public class OwnRoleView implements FxmlView<OwnRoleViewModel>, Initializable {
                     timeline.play();
                 }else {
                     LOG.error("出错了，角色数量与图片不一致,无法进入详情界面");
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.ERROR,"出错了，角色数量与图片不一致"));
+                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,MessageInfo.error("出错了，角色数量与图片不一致"));
                 }
             }
         }

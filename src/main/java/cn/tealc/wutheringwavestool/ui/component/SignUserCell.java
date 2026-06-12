@@ -3,8 +3,8 @@ package cn.tealc.wutheringwavestool.ui.component;
 import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
-import cn.tealc.wutheringwavestool.model.message.MessageType;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import com.kuro.kujiequ.model.sign.SignUserInfo;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.jfoenixN.controls.JFXDialogLayout;
@@ -138,7 +138,7 @@ public class SignUserCell extends ListCell<UserInfo> {
             boolean selected = mainCheckBox.isSelected();
             if (!userId.isEmpty() && !roleId.isEmpty() && !token.isEmpty()) {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.SIGN_USER_UPDATE,getIndex(), new UserInfo(userId,roleId,token,selected,false));
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,new MessageInfo(MessageType.SUCCESS,"修改成功"));
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,MessageInfo.success("修改成功"));
             }
             cancelBtn.fireEvent(event1); //这里是为了触发cancelBtn的事件，从而关闭窗口，属实另辟途径（自夸）
         });

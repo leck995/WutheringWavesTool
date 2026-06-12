@@ -2,7 +2,7 @@ package cn.tealc.wutheringwavestool.ui.system.redemptionCode;
 
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.RedemptionCodeItem;
-import cn.tealc.wutheringwavestool.model.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.util.DialogBuilder;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.FxmlView;

@@ -37,7 +37,6 @@ open module cn.tealc.wutheringwavestool {
     exports cn.tealc.wutheringwavestool;
     exports cn.tealc.wutheringwavestool.model;
     exports cn.tealc.wutheringwavestool.model.analysis to com.fasterxml.jackson.databind;
-    exports cn.tealc.wutheringwavestool.model.message;
     exports cn.tealc.wutheringwavestool.model.system;
 
     exports cn.tealc.wutheringwavestool.base;
