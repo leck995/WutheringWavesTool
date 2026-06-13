@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import atlantafx.base.controls.Spacer?>
+<?import java.lang.String?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
@@ -25,28 +26,47 @@
                         </VBox>
                     </children>
                 </VBox>
-                <HBox alignment="CENTER_LEFT" layoutX="220.0" layoutY="10.0" spacing="12.0" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                    <children>
-                        <Label fx:id="title" styleClass="title-2" text="终焉矩阵" />
-                        <Spacer />
-                        <Label fx:id="seasonEndTimeLabel" styleClass="end-time" text="刷新" />
-                    </children>
-                </HBox>
-                <HBox fx:id="summaryBox" alignment="CENTER_LEFT" layoutX="220.0" layoutY="42.0" spacing="25.0" styleClass="summary-bar" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0">
-                    <children>
-                        <Label fx:id="totalScoreLabel" styleClass="summary-score" text="0">
-                     <graphic>
-                        <Label text="累计积分：" />
-                     </graphic></Label>
-                        <Label fx:id="progressLabel" styleClass="summary-progress" text="第1轮 5/5" />
-                        <Label fx:id="rankLabel" styleClass="summary-rank" text="S" />
-                    </children>
-                </HBox>
-                <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="right" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="120.0">
-                    <content>
-                        <FlowPane fx:id="areaFlowPane" columnHalignment="CENTER" hgap="50.0" vgap="40.0" />
-                    </content>
-                </ScrollPane>
+            <StackPane fx:id="rightPane" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+               <children>
+                  <StackPane fx:id="lockPane" prefHeight="150.0" prefWidth="200.0">
+                     <children>
+                        <Label text="矩阵尚未开启">
+                           <styleClass>
+                              <String fx:value="title-3" />
+                              <String fx:value="text-muted" />
+                           </styleClass>
+                        </Label>
+                     </children>
+                  </StackPane>
+                  <VBox fx:id="contentPane" prefHeight="200.0" prefWidth="100.0" spacing="15.0">
+                     <children>
+                            <HBox alignment="CENTER_LEFT" spacing="12.0">
+                                <children>
+                                    <Label fx:id="title" styleClass="title-2" text="终焉矩阵" />
+                                    <Spacer />
+                                    <Label fx:id="seasonEndTimeLabel" styleClass="end-time" text="刷新" />
+                                </children>
+                            </HBox>
+                            <HBox fx:id="summaryBox" alignment="CENTER_LEFT" spacing="25.0" styleClass="summary-bar">
+                                <children>
+                                    <Label fx:id="totalScoreLabel" styleClass="summary-score" text="0">
+                                 <graphic>
+                                    <Label text="累计积分：" />
+                                 </graphic>
+                              </Label>
+                                    <Label fx:id="progressLabel" styleClass="summary-progress" text="第1轮 5/5" />
+                                    <Label fx:id="rankLabel" styleClass="summary-rank" text="S" />
+                                </children>
+                            </HBox>
+                            <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="right" VBox.vgrow="ALWAYS">
+                                <content>
+                                    <FlowPane fx:id="areaFlowPane" columnHalignment="CENTER" hgap="50.0" vgap="40.0" />
+                                </content>
+                            </ScrollPane>
+                     </children>
+                  </VBox>
+               </children>
+            </StackPane>
             </children>
         </AnchorPane>
     </children>

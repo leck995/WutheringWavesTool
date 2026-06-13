@@ -52,9 +52,15 @@ public class NewTowerView implements FxmlView<NewTowerViewModel>, Initializable 
     private Label progressLabel;
     @FXML
     private Label rankLabel;
+    @FXML
+    private StackPane lockPane;
+    @FXML
+    private VBox contentPane;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        lockPane.visibleProperty().bind(viewModel.isUnLockProperty().not());
+        contentPane.visibleProperty().bind(viewModel.isUnLockProperty());
         title.textProperty().bind(viewModel.titleProperty());
         seasonEndTimeLabel.textProperty().bind(viewModel.endTimeProperty());
         totalScoreLabel.textProperty().bind(viewModel.totalScoreProperty());

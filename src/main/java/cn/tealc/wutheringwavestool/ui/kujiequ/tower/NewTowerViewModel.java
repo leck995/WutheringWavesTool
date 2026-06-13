@@ -16,6 +16,7 @@ import com.kuro.kujiequ.model.roleData.Role;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.thread.rolebox.role.GameRoleDataTask;
 import com.kuro.kujiequ.thread.rolebox.tower.NewTowerDataDetailTask;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -48,6 +49,7 @@ public class NewTowerViewModel extends BaseViewModel {
     private UserInfo userInfo;
     private List<NewTowerModeDetail> sourceModeDetails;
     private long sourceEndTimeMillis;
+    private SimpleBooleanProperty isUnLock = new SimpleBooleanProperty(false);
 
     public void initialize() {
         userInfo = userInfoDao.getMain();
@@ -65,7 +67,10 @@ public class NewTowerViewModel extends BaseViewModel {
                     ResponseBody<NewTowerData> value = towerDataDetailTask.getValue();
                     if (value.getCode() == 200) {
                         NewTowerData newTowerData = value.getData();
-                        updateData(newTowerData);
+                        if (value.getData().isUnlock()){
+                            updateData(newTowerData);
+                        }
+                        isUnLock.set(value.getData().isUnlock());
                     }
                 }
             };
@@ -135,6 +140,7 @@ public class NewTowerViewModel extends BaseViewModel {
                 List<NewTowerModeDetail> list = objectMapper.readValue(d.getData(),
                         new TypeReference<List<NewTowerModeDetail>>() {});
                 updateHistoryData(list);
+                isUnLock.set(true);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
@@ -212,5 +218,13 @@ public class NewTowerViewModel extends BaseViewModel {
 
     public Map<Integer, Role> getRoleMap() {
         return roleMap;
+    }
+
+    public boolean isIsUnLock() {
+        return isUnLock.get();
+    }
+
+    public SimpleBooleanProperty isUnLockProperty() {
+        return isUnLock;
     }
 }
