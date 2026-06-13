@@ -46,7 +46,7 @@ public class AppCheckVersionTask extends Task<ResponseBody<Release>> {
         for (int i = 0; i < urls.length; i++) {
             try {
                 HttpRequest request = HttpRequest.newBuilder()
-                        .uri(URI.create(urls[i])).GET().timeout(Duration.ofSeconds(5)).build();
+                        .uri(URI.create(urls[i])).GET().timeout(Duration.ofSeconds(8)).build();
                 HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                 if (response.statusCode() == 200) {
                     ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
