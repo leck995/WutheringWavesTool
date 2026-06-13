@@ -56,20 +56,26 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
     private List<AnalysisData> poolData;
     private SimpleBooleanProperty skipFirstSSR = new SimpleBooleanProperty(false);
 
-    public void initialize(){
-        player.bindBidirectional(Config.setting().gachaCurrentPlayerIdProperty());
-        CompletableFuture.delayedExecutor(300, TimeUnit.MILLISECONDS).execute(() -> {
-            Platform.runLater(() -> {
-                loadFile(player.get());
-            });
-        });
-
+    public void init(){
         NotificationManager.subscribe(NotificationKey.CARD_POOL_USER_LIST_REFRESH,(s, objects) -> {
             loadFile(player.get());
         });
 
         skipFirstSSR.addListener((observable, oldValue, newValue) -> {
             changePlayer(getPlayer());
+        });
+
+        player.addListener((observable, oldValue, newValue) -> {
+            if (newValue == null)
+                return;
+            changePlayer(newValue);
+        });
+
+        CompletableFuture.delayedExecutor(300, TimeUnit.MILLISECONDS).execute(() -> {
+            Platform.runLater(() -> {
+                player.bindBidirectional(Config.setting().gachaCurrentPlayerIdProperty());
+                loadFile(player.get());
+            });
         });
     }
 
@@ -86,7 +92,7 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
                             .collect(Collectors.toList());
                     playerList.setAll(directoryNames);
                 }
-                if (playerId != null && !playerList.isEmpty() && playerList.contains(playerId)) {
+                if (playerId != null && !playerId.isEmpty() && !playerList.isEmpty() && playerList.contains(playerId)) {
                     player.set(playerId);
                     publish(EVENT_SELECTED_PLAYER);
                 } else {
@@ -105,13 +111,17 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
 
 
     public void changePlayer(String playerId) {
+        NotificationManager.publish(NotificationKey.CARD_POOL_USER_CHANGE, playerId);
+        analysis(playerId);
+    }
+
+    public void updatePlayer(String playerId) {
         int index = playerList.indexOf(playerId);
         if (index != -1) {
             player.set(playerId);
-            NotificationManager.publish(NotificationKey.CARD_POOL_USER_CHANGE, playerId);
-            analysis(playerId);
         }
     }
+
 
 
     private void analysis(String playerId) {
@@ -188,8 +198,9 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
                 playerList.remove(player.get());
                 if (!playerList.isEmpty()) {
                     player.set(playerList.getLast());
-                    changePlayer(player.get());
+                    publish(EVENT_SELECTED_PLAYER);
                 } else {
+                    player.set(null);
                     poolData = null;
                     NotificationManager.publish(NotificationKey.CARD_POOL_USER_EMPTY);
                 }
@@ -239,13 +250,16 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
         task.setOnSucceeded(workerStateEvent -> {
             ResponseBody<Map<String, List<CardInfo>>> responseBody = task.getValue();
             if (responseBody.getCode() == 200) {
-                analysis(player.get());
                 String playerId = responseBody.getMsg();
                 if (!playerList.contains(playerId)) {
                     playerList.add(playerId);
                 }
-                this.player.set(playerId);
-                publish(EVENT_SELECTED_PLAYER);
+                Platform.runLater(()->{
+                    this.player.set(playerId);
+                    publish(EVENT_SELECTED_PLAYER);
+                });
+
+
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                         MessageInfo.success(LanguageManager.getString("ui.analysis.message.type01")));
                 publish("upload");

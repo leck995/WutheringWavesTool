@@ -350,10 +350,11 @@ public class CardPoolRequestTask extends Task<ResponseBody<Map<String, List<Card
         }
         Pattern pattern = Pattern.compile("https.*/aki/gacha/index.html#/record[?=&\\w\\-]+");
         Matcher matcher = pattern.matcher(decrypted);
-        if (matcher.find()) {
-            return matcher.group(0);
+        String lastMatch = null;
+        while (matcher.find()) {
+            lastMatch = matcher.group(0);
         }
-        return null;
+        return lastMatch;
     }
 
     /**

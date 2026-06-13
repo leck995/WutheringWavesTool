@@ -57,29 +57,24 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
     public void initialize(URL url, ResourceBundle resourceBundle) {
         skipFirstSSRSwitch.selectedProperty().bindBidirectional(viewModel.skipFirstSSRProperty());
         playerComboBox.setItems(viewModel.getPlayerList());
-//        if (!viewModel.getPlayerList().isEmpty()) {
-//            playerComboBox.getSelectionModel().select(viewModel.getPlayerList().indexOf(viewModel.getPlayer()));
-//        }
+
         playerComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, s, t1) -> {
             if (t1 != null) {
-                viewModel.changePlayer(t1);
+                viewModel.updatePlayer(t1);
             }
         });
-
 
         viewModel.subscribe(CardAnalysisBaseViewModel.EVENT_SELECTED_PLAYER, (s, objects) -> {
             playerComboBox.getSelectionModel().select(viewModel.getPlayerList().indexOf(viewModel.getPlayer()));
         });
 
-
         createCommonChild();
-
-
         viewModel.subscribe("upload",(s, objects) -> {
             showUploadDialog();
         });
 
 
+        viewModel.init();
     }
 
     private void showUploadDialog() {
