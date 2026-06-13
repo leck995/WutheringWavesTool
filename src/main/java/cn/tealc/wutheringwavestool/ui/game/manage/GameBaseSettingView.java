@@ -148,6 +148,7 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
     void setGameUpdaterApp(ActionEvent event) {
         FileChooser chooser = new FileChooser();
         chooser.setTitle(LanguageManager.getString("ui.setting.default.app_updater"));
+        chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("设置启动程序","*.exe","*.*"));
         File file = chooser.showOpenDialog(gameOfficialLauncherDirField.getScene().getWindow());
         if (file != null) {
             gameOfficialLauncherDirField.setText(file.getAbsolutePath());
@@ -237,7 +238,7 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
     void setGameApp(ActionEvent event) {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle(LanguageManager.getString("ui.setting.file.app.title"));
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("exe","*.exe","*.*"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("设置启动程序","*.exe","*.*"));
         File file = fileChooser.showOpenDialog(gameDirField.getScene().getWindow());
         if (file != null) {
             gameStartAppField.setText(file.getAbsolutePath());

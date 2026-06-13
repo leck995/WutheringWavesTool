@@ -133,11 +133,11 @@ public class HomeViewModel extends BaseViewModel {
             if (updater.exists()) {
                 try {
                     launchExe(updater);
-                    return;
                 } catch (IOException e) {
                     LOG.warn("启动自定义更新器失败: {}", e.getMessage());
                 }
             }
+            return;
         }
 
         // 回退到安装目录下的 launcher.exe
@@ -165,12 +165,6 @@ public class HomeViewModel extends BaseViewModel {
         MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(msg), false);
     }
 
-    private void launchExe(File exe) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder(exe.getAbsolutePath());
-        pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
-        pb.redirectError(ProcessBuilder.Redirect.DISCARD);
-        pb.start();
-    }
 
 
     /**
@@ -303,7 +297,7 @@ public class HomeViewModel extends BaseViewModel {
     private void runExe(File exe) {
         try {
             GameAppListener.getInstance().setStartFromApp(true);
-            launchExe(exe);
+            Desktop.getDesktop().open(exe);
             if (Config.setting().isHideWhenGameStart()) {
                 WwtApp.getWindow().hide();
             }
@@ -314,6 +308,13 @@ public class HomeViewModel extends BaseViewModel {
         }
     }
 
+
+    private void launchExe(File exe) throws IOException {
+        ProcessBuilder pb = new ProcessBuilder(exe.getAbsolutePath());
+        pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
+        pb.redirectError(ProcessBuilder.Redirect.DISCARD);
+        pb.start();
+    }
 
     /**
      * @return void
