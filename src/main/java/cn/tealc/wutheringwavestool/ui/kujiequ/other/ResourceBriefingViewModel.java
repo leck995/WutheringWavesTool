@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.other;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
@@ -33,9 +34,13 @@ public class ResourceBriefingViewModel extends BaseViewModel {
     private Briefing briefing;
     private UserInfo userInfo;
     private BriefingDetailGetTask.Type currentType = BriefingDetailGetTask.Type.MONTH;
-    public void initialize() {
+    public void init() {
         userInfo = userInfoDao.getMain();
-        initList();
+        if (userInfo != null){
+            initList();
+        }else {
+            publish("EMPTY");
+        }
     }
 
     public void toMonth(){
@@ -63,23 +68,17 @@ public class ResourceBriefingViewModel extends BaseViewModel {
     }
 
     private void initList(){
-        if(userInfo != null){
-            BriefingListGetTask task = new BriefingListGetTask(userInfo);
-            task.setOnSucceeded(workerStateEvent -> {
-                ResponseBody<Briefing> value = task.getValue();
-                if (value.getCode() == 200){
-                    briefing = value.getData();
-                    toMonth();
-                }else{
-
-                }
-            });
-            Thread.startVirtualThread(task);
-        }else {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    MessageInfo.warning("当前不存在主用户信息，无法获取，请在账号界面添加用户信息"),false);
-        }
-
+        BriefingListGetTask task = new BriefingListGetTask(userInfo);
+        task.setOnSucceeded(workerStateEvent -> {
+            ResponseBody<Briefing> value = task.getValue();
+            if (value.getCode() == 200){
+                briefing = value.getData();
+                toMonth();
+            }else{
+                NotificationManager.message(MessageInfo.warning(value.getMsg()));
+            }
+        });
+        Thread.startVirtualThread(task);
     }
 
 

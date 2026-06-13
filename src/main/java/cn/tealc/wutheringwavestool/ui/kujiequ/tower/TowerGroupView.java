@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 
 import atlantafx.base.util.Animations;
+import cn.tealc.wutheringwavestool.ui.component.EmptyTipPane;
 import cn.tealc.wutheringwavestool.ui.game.GameRecordView;
 import cn.tealc.wutheringwavestool.ui.game.GameRecordViewModel;
 import de.saxsys.mvvmfx.FluentViewLoader;
@@ -15,6 +16,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
+import org.kordamp.ikonli.material2.Material2MZ;
 
 public class TowerGroupView implements FxmlView<TowerGroupViewModel> {
     @InjectViewModel
@@ -25,6 +27,8 @@ public class TowerGroupView implements FxmlView<TowerGroupViewModel> {
     private StackPane content;
     @FXML
     private HBox headerPane;
+    @FXML
+    private StackPane root;
 
     private Node towerView;
     private Node slashView;
@@ -32,6 +36,11 @@ public class TowerGroupView implements FxmlView<TowerGroupViewModel> {
 
     public void initialize() {
         createTowerView();
+        viewModel.subscribe("EMPTY",(s, objects) -> {
+            EmptyTipPane tipPane = new EmptyTipPane("无主账号","请前往账号-库街区添加设置主账号", Material2MZ.PERSON_ADD_DISABLED);
+            root.getChildren().setAll(tipPane);
+        });
+        viewModel.init();
     }
 
 

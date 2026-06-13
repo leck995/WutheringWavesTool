@@ -43,7 +43,7 @@ public class SignViewModel extends BaseViewModel {
     private final SimpleBooleanProperty isSign=new SimpleBooleanProperty(true);
     private final ObservableList<SignRecord> signHistoryList= FXCollections.observableArrayList();
 
-    public void initialize() {
+    public void init() {
         List<UserInfo> userInfos = userInfoDao.getAll();
         userInfoList.setAll(userInfos);
         UserInfo main = userInfoDao.getMain();
@@ -57,8 +57,7 @@ public class SignViewModel extends BaseViewModel {
             getSignGoods(main);
             getSignHistory(main);
         }else {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    MessageInfo.warning("当前不存在主用户信息，无法获取，请在账号界面添加用户信息"),false);
+           publish("EMPTY");
         }
 
         userIndex.addListener((observableValue, number, t1) -> {

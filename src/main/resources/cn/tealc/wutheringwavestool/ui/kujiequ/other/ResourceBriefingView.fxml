@@ -15,115 +15,120 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="800.0" prefWidth="1300.0" styleClass="resource-briefing" stylesheets="@../../../css/kujiequ/ResourceBriefing.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.other.ResourceBriefingView">
-    <children>
-        <!-- Header -->
-        <HBox fx:id="headerPane" alignment="CENTER_LEFT" spacing="20.0" styleClass="header" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
-            <children>
-                <Label styleClass="title-2" text="%ui.resource_briefing.title" />
-                <Separator orientation="VERTICAL" />
-                <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
-                    <children>
-                        <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toMonth" selected="true" styleClass="child-select" text="%ui.resource_briefing.month">
-                            <graphic>
-                                <Pane />
-                            </graphic>
-                            <toggleGroup>
-                                <ToggleGroup fx:id="childSelectedToggle" />
-                            </toggleGroup>
-                        </ToggleButton>
-                        <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toWeek" styleClass="child-select" text="%ui.resource_briefing.week" toggleGroup="$childSelectedToggle">
-                            <graphic>
-                                <Pane />
-                            </graphic>
-                        </ToggleButton>
-                        <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toVersion" styleClass="child-select" text="%ui.resource_briefing.version" toggleGroup="$childSelectedToggle">
-                            <graphic>
-                                <Pane />
-                            </graphic>
-                        </ToggleButton>
-                        <Spacer />
-                        <ComboBox fx:id="recordTypeBox" prefWidth="180.0" />
-                    </children>
-                </HBox>
-            </children>
-        </HBox>
 
-        <!-- Content -->
-        <StackPane fx:id="content" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="55.0">
-            <children>
-                <!-- Cards -->
-                <HBox alignment="CENTER" spacing="40.0" StackPane.alignment="CENTER">
-                    <children>
-                        <!-- Star Card -->
-                        <VBox maxHeight="500.0" maxWidth="380.0" minHeight="280.0" prefWidth="380.0" styleClass="item-card">
-                            <children>
-                                <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="card-header">
-                                    <children>
-                                        <ImageView fx:id="starIcon" fitHeight="44.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@../../../image/kujiequ/star.png" />
-                                            </image>
-                                        </ImageView>
-                                        <Label styleClass="card-title" text="%ui.resource_briefing.star" />
-                                        <Spacer />
-                                        <Label fx:id="starNumLabel" styleClass="card-total" text="0" />
-                                    </children>
-                                </HBox>
-                                <Separator styleClass="card-separator" />
-                                <Label styleClass="card-subtitle" text="%ui.resource_briefing.detail" />
-                                <VBox fx:id="starGroup" spacing="6.0" styleClass="item-list">
-                                    <children>
-                                        <Label styleClass="empty-hint" text="%ui.resource_briefing.empty" />
-                                    </children>
-                                </VBox>
-                            </children>
-                        </VBox>
-
-                        <!-- Coin Card -->
-                        <VBox maxHeight="500.0" maxWidth="380.0" minHeight="280.0" prefWidth="380.0" styleClass="item-card">
-                            <children>
-                                <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="card-header">
-                                    <children>
-                                        <ImageView fx:id="coinIcon" fitHeight="44.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
-                                            <image>
-                                                <Image url="@../../../image/kujiequ/coin.png" />
-                                            </image>
-                                        </ImageView>
-                                        <Label styleClass="card-title" text="%ui.resource_briefing.coin" />
-                                        <Spacer />
-                                        <Label fx:id="coinNumLabel" styleClass="card-total" text="0" />
-                                    </children>
-                                </HBox>
-                                <Separator styleClass="card-separator" />
-                                <Label styleClass="card-subtitle" text="%ui.resource_briefing.detail" />
-                                <VBox fx:id="coinGroup" spacing="6.0" styleClass="item-list">
-                                    <children>
-                                        <Label styleClass="empty-hint" text="%ui.resource_briefing.empty" />
-                                    </children>
-                                </VBox>
-                            </children>
-                        </VBox>
-                    </children>
-               <padding>
-                  <Insets bottom="65.0" />
-               </padding>
-                </HBox>
-
-                <!-- Footer notes -->
-                <VBox alignment="BOTTOM_RIGHT" maxHeight="60.0" spacing="2.0" styleClass="footer-notes" StackPane.alignment="BOTTOM_RIGHT">
-                    <children>
-                        <Label styleClass="text-muted" text="%ui.resource_briefing.footer1" wrapText="true" />
-                        <Label styleClass="text-muted" text="%ui.resource_briefing.footer2" wrapText="true" />
-                    </children>
-               <padding>
-                  <Insets left="5.0" right="5.0" top="5.0" />
-               </padding>
-                </VBox>
-            </children>
-        </StackPane>
-    </children>
-    <padding>
-        <Insets bottom="15.0" left="15.0" right="15.0" top="10.0" />
-    </padding>
-</AnchorPane>
+<StackPane fx:id="root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.other.ResourceBriefingView">
+   <children>
+      <AnchorPane prefHeight="800.0" prefWidth="1300.0" styleClass="resource-briefing" stylesheets="@../../../css/kujiequ/ResourceBriefing.css">
+          <children>
+              <!-- Header -->
+              <HBox fx:id="headerPane" alignment="CENTER_LEFT" spacing="20.0" styleClass="header" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                  <children>
+                      <Label styleClass="title-2" text="%ui.resource_briefing.title" />
+                      <Separator orientation="VERTICAL" />
+                      <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                          <children>
+                              <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toMonth" selected="true" styleClass="child-select" text="%ui.resource_briefing.month">
+                                  <graphic>
+                                      <Pane />
+                                  </graphic>
+                                  <toggleGroup>
+                                      <ToggleGroup fx:id="childSelectedToggle" />
+                                  </toggleGroup>
+                              </ToggleButton>
+                              <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toWeek" styleClass="child-select" text="%ui.resource_briefing.week" toggleGroup="$childSelectedToggle">
+                                  <graphic>
+                                      <Pane />
+                                  </graphic>
+                              </ToggleButton>
+                              <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toVersion" styleClass="child-select" text="%ui.resource_briefing.version" toggleGroup="$childSelectedToggle">
+                                  <graphic>
+                                      <Pane />
+                                  </graphic>
+                              </ToggleButton>
+                              <Spacer />
+                              <ComboBox fx:id="recordTypeBox" prefWidth="180.0" />
+                          </children>
+                      </HBox>
+                  </children>
+              </HBox>
+      
+              <!-- Content -->
+              <StackPane fx:id="content" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="55.0">
+                  <children>
+                      <!-- Cards -->
+                      <HBox alignment="CENTER" spacing="40.0" StackPane.alignment="CENTER">
+                          <children>
+                              <!-- Star Card -->
+                              <VBox maxHeight="500.0" maxWidth="380.0" minHeight="280.0" prefWidth="380.0" styleClass="item-card">
+                                  <children>
+                                      <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="card-header">
+                                          <children>
+                                              <ImageView fx:id="starIcon" fitHeight="44.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
+                                                  <image>
+                                                      <Image url="@../../../image/kujiequ/star.png" />
+                                                  </image>
+                                              </ImageView>
+                                              <Label styleClass="card-title" text="%ui.resource_briefing.star" />
+                                              <Spacer />
+                                              <Label fx:id="starNumLabel" styleClass="card-total" text="0" />
+                                          </children>
+                                      </HBox>
+                                      <Separator styleClass="card-separator" />
+                                      <Label styleClass="card-subtitle" text="%ui.resource_briefing.detail" />
+                                      <VBox fx:id="starGroup" spacing="6.0" styleClass="item-list">
+                                          <children>
+                                              <Label styleClass="empty-hint" text="%ui.resource_briefing.empty" />
+                                          </children>
+                                      </VBox>
+                                  </children>
+                              </VBox>
+      
+                              <!-- Coin Card -->
+                              <VBox maxHeight="500.0" maxWidth="380.0" minHeight="280.0" prefWidth="380.0" styleClass="item-card">
+                                  <children>
+                                      <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="card-header">
+                                          <children>
+                                              <ImageView fx:id="coinIcon" fitHeight="44.0" fitWidth="44.0" pickOnBounds="true" preserveRatio="true">
+                                                  <image>
+                                                      <Image url="@../../../image/kujiequ/coin.png" />
+                                                  </image>
+                                              </ImageView>
+                                              <Label styleClass="card-title" text="%ui.resource_briefing.coin" />
+                                              <Spacer />
+                                              <Label fx:id="coinNumLabel" styleClass="card-total" text="0" />
+                                          </children>
+                                      </HBox>
+                                      <Separator styleClass="card-separator" />
+                                      <Label styleClass="card-subtitle" text="%ui.resource_briefing.detail" />
+                                      <VBox fx:id="coinGroup" spacing="6.0" styleClass="item-list">
+                                          <children>
+                                              <Label styleClass="empty-hint" text="%ui.resource_briefing.empty" />
+                                          </children>
+                                      </VBox>
+                                  </children>
+                              </VBox>
+                          </children>
+                     <padding>
+                        <Insets bottom="65.0" />
+                     </padding>
+                      </HBox>
+      
+                      <!-- Footer notes -->
+                      <VBox alignment="BOTTOM_RIGHT" maxHeight="60.0" spacing="2.0" styleClass="footer-notes" StackPane.alignment="BOTTOM_RIGHT">
+                          <children>
+                              <Label styleClass="text-muted" text="%ui.resource_briefing.footer1" wrapText="true" />
+                              <Label styleClass="text-muted" text="%ui.resource_briefing.footer2" wrapText="true" />
+                          </children>
+                     <padding>
+                        <Insets left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                      </VBox>
+                  </children>
+              </StackPane>
+          </children>
+          <padding>
+              <Insets bottom="15.0" left="15.0" right="15.0" top="10.0" />
+          </padding>
+      </AnchorPane>
+   </children>
+</StackPane>

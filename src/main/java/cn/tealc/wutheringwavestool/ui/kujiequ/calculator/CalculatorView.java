@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.calculator;
 
 import atlantafx.base.util.Animations;
+import cn.tealc.wutheringwavestool.ui.component.EmptyTipPane;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.kuro.kujiequ.model.calculator.list.RoleForCalculator;
 import com.kuro.kujiequ.model.calculator.list.WeaponForCalculator;
@@ -22,6 +23,7 @@ import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import org.kordamp.ikonli.material2.Material2MZ;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -61,8 +63,11 @@ public class CalculatorView implements FxmlView<CalculatorViewModel>, Initializa
             }
         });
 
-
-        viewModel.ready();
+        viewModel.subscribe("EMPTY",(s, objects) -> {
+            EmptyTipPane tipPane = new EmptyTipPane("无主账号","请前往账号-库街区添加设置主账号", Material2MZ.PERSON_ADD_DISABLED);
+            root.getChildren().setAll(tipPane);
+        });
+        viewModel.init();
     }
 
 

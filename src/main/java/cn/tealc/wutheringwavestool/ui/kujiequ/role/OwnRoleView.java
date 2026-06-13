@@ -5,6 +5,7 @@ import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
+import cn.tealc.wutheringwavestool.ui.component.EmptyTipPane;
 import com.kuro.kujiequ.model.roleData.Role;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.*;
@@ -26,6 +27,7 @@ import javafx.util.Duration;
 import javafx.util.Pair;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
+import org.kordamp.ikonli.material2.Material2MZ;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,6 +66,13 @@ public class OwnRoleView implements FxmlView<OwnRoleViewModel>, Initializable {
                 roleFlowPane.getChildren().add(new RoleCell(role));
             }
         });
+
+
+        viewModel.subscribe("EMPTY",(s, objects) -> {
+            EmptyTipPane tipPane = new EmptyTipPane("无主账号","请前往账号-库街区添加设置主账号", Material2MZ.PERSON_ADD_DISABLED);
+            root.getChildren().setAll(tipPane);
+        });
+        viewModel.init();
     }
 
     private class RoleCell extends StackPane{

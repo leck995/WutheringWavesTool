@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.other;
 
 import atlantafx.base.controls.Spacer;
+import cn.tealc.wutheringwavestool.ui.component.EmptyTipPane;
 import com.kuro.kujiequ.model.resourcebriefing.Item;
 import com.kuro.kujiequ.model.resourcebriefing.Title;
 import de.saxsys.mvvmfx.FxmlView;
@@ -15,6 +16,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import org.kordamp.ikonli.material2.Material2MZ;
 
 public class ResourceBriefingView implements FxmlView<ResourceBriefingViewModel> {
 
@@ -45,6 +47,8 @@ public class ResourceBriefingView implements FxmlView<ResourceBriefingViewModel>
 
     @FXML
     private Label starNumLabel,coinNumLabel;
+    @FXML
+    private StackPane root;
 
     public void initialize() {
         starNumLabel.textProperty().bind(viewModel.starNumProperty().asString());
@@ -74,6 +78,11 @@ public class ResourceBriefingView implements FxmlView<ResourceBriefingViewModel>
             }
         });
 
+        viewModel.subscribe("EMPTY",(s, objects) -> {
+            EmptyTipPane tipPane = new EmptyTipPane("无主账号","请前往账号-库街区添加设置主账号", Material2MZ.PERSON_ADD_DISABLED);
+            root.getChildren().setAll(tipPane);
+        });
+        viewModel.init();
 
     }
 

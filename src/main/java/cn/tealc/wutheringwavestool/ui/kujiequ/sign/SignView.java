@@ -3,6 +3,7 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.sign;
 import atlantafx.base.controls.ToggleSwitch;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.ui.component.EmptyTipPane;
 import com.kuro.kujiequ.model.sign.SignGood;
 import com.kuro.kujiequ.model.sign.SignRecord;
 import com.kuro.kujiequ.model.sign.UserInfo;
@@ -21,6 +22,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import org.kordamp.ikonli.material2.Material2MZ;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -46,17 +48,12 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
     private ListView<SignRecord> signHistoryListView;
     @FXML
     private ToggleSwitch autoSignSwitch;
+    @FXML
+    private StackPane root;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
         accountBox.setItems(viewModel.getUserInfoList());
-        accountBox.getSelectionModel().select(viewModel.getUserIndex());
-
-        viewModel.userIndexProperty().bind(accountBox.getSelectionModel().selectedIndexProperty());
-
-
-
         viewModel.getGoodsList().addListener((ListChangeListener<? super SignGood>) observable -> {
             goodsView.getChildren().clear();
             for (SignGood signGood : observable.getList()) {
@@ -77,6 +74,15 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
 
         autoSignSwitch.selectedProperty().bindBidirectional(Config.setting().autoKujieQuSignProperty());
 
+        viewModel.subscribe("EMPTY",(s, objects) -> {
+            EmptyTipPane tipPane = new EmptyTipPane("无主账号","请前往账号-库街区添加设置主账号", Material2MZ.PERSON_ADD_DISABLED);
+            root.getChildren().setAll(tipPane);
+        });
+        viewModel.init();
+
+        //注意这里位置不可换，需要viewModel.init()后，当前逻辑有瑕疵，找个机会换了
+        accountBox.getSelectionModel().select(viewModel.getUserIndex());
+        viewModel.userIndexProperty().bind(accountBox.getSelectionModel().selectedIndexProperty());
     }
 
     @FXML

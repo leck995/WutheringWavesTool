@@ -32,14 +32,18 @@ public class CalculatorViewModel extends BaseViewModel {
 
     }
 
-    public void ready(){
+    public void init(){
         UserInfo userInfo = userInfoDao.getMain();
-        //刷新缓存数据后再获取
-        CalculatorDataRefreshTask calculatorDataRefreshTask = new CalculatorDataRefreshTask(userInfo);
-        calculatorDataRefreshTask.setOnSucceeded(event -> {
-            syncRoleData(userInfo);
-        });
-        Thread.startVirtualThread(calculatorDataRefreshTask);
+        if (userInfo != null){
+            //刷新缓存数据后再获取
+            CalculatorDataRefreshTask calculatorDataRefreshTask = new CalculatorDataRefreshTask(userInfo);
+            calculatorDataRefreshTask.setOnSucceeded(event -> {
+                syncRoleData(userInfo);
+            });
+            Thread.startVirtualThread(calculatorDataRefreshTask);
+        }else {
+            publish("EMPTY");
+        }
     }
 
     /**

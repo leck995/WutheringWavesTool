@@ -31,7 +31,7 @@ open module cn.tealc.wutheringwavestool {
     requires com.fasterxml.jackson.core;
     requires com.google.guice;
     requires java.sql;
-
+    requires org.jspecify;
 
 
     exports cn.tealc.wutheringwavestool;

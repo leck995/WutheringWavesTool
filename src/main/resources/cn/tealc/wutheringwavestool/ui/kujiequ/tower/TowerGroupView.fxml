@@ -10,39 +10,44 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.StackPane?>
 
-<AnchorPane prefHeight="800.0" prefWidth="1300.0" styleClass="account-group" stylesheets="@../../../css/kujiequ/tower/TowerGroup.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.tower.TowerGroupView">
+
+<StackPane fx:id="root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.tower.TowerGroupView">
    <children>
-      <HBox fx:id="headerPane" layoutX="20.0" layoutY="20.0" prefHeight="35.0" spacing="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane prefHeight="800.0" prefWidth="1300.0" styleClass="account-group" stylesheets="@../../../css/kujiequ/tower/TowerGroup.css">
          <children>
-            <Label styleClass="title-2" text="%ui.tower.title" />
-            <Separator orientation="VERTICAL" />
-            <HBox>
+            <HBox fx:id="headerPane" layoutX="20.0" layoutY="20.0" prefHeight="35.0" spacing="20.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
-                  <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toTower" selected="true" styleClass="child-select" text="%ui.tower.title.nav.title01">
-                     <graphic>
-                        <Pane prefHeight="200.0" prefWidth="200.0" />
-                     </graphic>
-                     <toggleGroup>
-                        <ToggleGroup fx:id="childSelectedToggle" />
-                     </toggleGroup>
-                  </ToggleButton>
-                  <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toSlash" styleClass="child-select" text="%ui.tower.title.nav.title02" toggleGroup="$childSelectedToggle">
-                     <graphic>
-                        <Pane prefHeight="200.0" prefWidth="200.0" />
-                     </graphic>
-                  </ToggleButton>
-                  <ToggleButton contentDisplay="BOTTOM" layoutX="198.0" layoutY="10.0" mnemonicParsing="false" onAction="#toNewTower" styleClass="child-select" text="%ui.tower.title.nav.title03" toggleGroup="$childSelectedToggle">
-                     <graphic>
-                        <Pane prefHeight="200.0" prefWidth="200.0" />
-                     </graphic>
-                  </ToggleButton>
+                  <Label styleClass="title-2" text="%ui.tower.title" />
+                  <Separator orientation="VERTICAL" />
+                  <HBox>
+                     <children>
+                        <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toTower" selected="true" styleClass="child-select" text="%ui.tower.title.nav.title01">
+                           <graphic>
+                              <Pane prefHeight="200.0" prefWidth="200.0" />
+                           </graphic>
+                           <toggleGroup>
+                              <ToggleGroup fx:id="childSelectedToggle" />
+                           </toggleGroup>
+                        </ToggleButton>
+                        <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toSlash" styleClass="child-select" text="%ui.tower.title.nav.title02" toggleGroup="$childSelectedToggle">
+                           <graphic>
+                              <Pane prefHeight="200.0" prefWidth="200.0" />
+                           </graphic>
+                        </ToggleButton>
+                        <ToggleButton contentDisplay="BOTTOM" layoutX="198.0" layoutY="10.0" mnemonicParsing="false" onAction="#toNewTower" styleClass="child-select" text="%ui.tower.title.nav.title03" toggleGroup="$childSelectedToggle">
+                           <graphic>
+                              <Pane prefHeight="200.0" prefWidth="200.0" />
+                           </graphic>
+                        </ToggleButton>
+                     </children>
+                  </HBox>
                </children>
             </HBox>
+            <StackPane fx:id="content" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0" />
          </children>
-      </HBox>
-      <StackPane fx:id="content" layoutX="10.0" layoutY="10.0" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="50.0" />
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </AnchorPane>
    </children>
-   <padding>
-      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
-   </padding>
-</AnchorPane>
+</StackPane>
