@@ -33,11 +33,15 @@ public class AccountGroupView implements FxmlView<AccountGroupViewModel> {
     private Node appAccountView;
 
     public void initialize() {
-        createAppAccountView();
+
         if (Config.setting().isNoKuJieQu()){
             ToggleButton toggle = (ToggleButton) childSelectedToggle.getToggles().get(1);
             toggle.setVisible(false);
+            toggle.setSelected(false);
             toggle.setDisable(true);
+            createAppAccountView();
+        }else {
+            createKujiequAccountView();
         }
     }
 
@@ -57,15 +61,19 @@ public class AccountGroupView implements FxmlView<AccountGroupViewModel> {
     void toKujiequ(ActionEvent event) {
         ToggleButton toggleButton= (ToggleButton) event.getSource();
         if (toggleButton.isSelected()){
-            if (kujiequView == null) {
-                ViewTuple<AccountView, AccountViewModel> viewTuple = FluentViewLoader.fxmlView(AccountView.class).load();
-                kujiequView = viewTuple.getView();
-            }
-            content.getChildren().setAll(kujiequView);
-            Animations.slideInUp(kujiequView, Duration.millis(300)).play();
+            createKujiequAccountView();
         }else {
             toggleButton.setSelected(true);
         }
+    }
+
+    private void createKujiequAccountView(){
+        if (kujiequView == null) {
+            ViewTuple<AccountView, AccountViewModel> viewTuple = FluentViewLoader.fxmlView(AccountView.class).load();
+            kujiequView = viewTuple.getView();
+        }
+        content.getChildren().setAll(kujiequView);
+        Animations.slideInUp(kujiequView, Duration.millis(300)).play();
     }
 
     private void createAppAccountView(){

@@ -39,6 +39,9 @@
 .calculator-view .child-select:hover{
     -fx-text-fill: -color-accent-fg;
 }
+.calculator-view .child-select:selected{
+    -fx-text-fill: -color-accent-fg;
+}
 .calculator-view .child-select > Pane{
     -fx-pref-width: 25;
     -fx-pref-height: 3;

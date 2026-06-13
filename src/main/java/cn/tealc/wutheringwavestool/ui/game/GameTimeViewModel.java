@@ -10,6 +10,7 @@ import com.kuro.kujiequ.model.sign.UserInfo;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -39,6 +40,7 @@ public class GameTimeViewModel extends BaseViewModel {
     private final SimpleStringProperty currentUserName=new SimpleStringProperty();
     private final SimpleDoubleProperty currentProgressValue=new SimpleDoubleProperty();
     private final SimpleDoubleProperty totalProgressValue=new SimpleDoubleProperty();
+    private final SimpleBooleanProperty empty = new SimpleBooleanProperty(false);
 
     @Inject
     private GameTimeDao gameTimeDao;
@@ -48,7 +50,7 @@ public class GameTimeViewModel extends BaseViewModel {
     public void initialize() {
         List<String> allRoleId = gameTimeDao.getAllRoleId();
         if (allRoleId == null || allRoleId.isEmpty()) {
-            NotificationManager.message(MessageInfo.warning("当前无记录"));
+            empty.set(true);
             return;
         }
         userInfoList.addAll(allRoleId);
@@ -331,5 +333,13 @@ public class GameTimeViewModel extends BaseViewModel {
 
     public SimpleStringProperty currentUserNameProperty() {
         return currentUserName;
+    }
+
+    public boolean isEmpty() {
+        return empty.get();
+    }
+
+    public SimpleBooleanProperty emptyProperty() {
+        return empty;
     }
 }

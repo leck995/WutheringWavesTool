@@ -18,7 +18,7 @@
             <Separator orientation="VERTICAL" />
             <HBox>
                <children>
-                  <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toAppAccount" selected="true" styleClass="child-select" text="%ui.account.app_account">
+                  <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toAppAccount" styleClass="child-select" text="%ui.account.app_account">
                      <graphic>
                         <Pane prefHeight="200.0" prefWidth="200.0" />
                      </graphic>
@@ -26,7 +26,7 @@
                         <ToggleGroup fx:id="childSelectedToggle" />
                      </toggleGroup>
                   </ToggleButton>
-                  <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toKujiequ" styleClass="child-select" text="%ui.account.kujiequ" toggleGroup="$childSelectedToggle">
+                  <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toKujiequ" selected="true" styleClass="child-select" text="%ui.account.kujiequ" toggleGroup="$childSelectedToggle">
                      <graphic>
                         <Pane prefHeight="200.0" prefWidth="200.0" />
                      </graphic>

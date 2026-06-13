@@ -19,6 +19,9 @@
 .game-statistics .child-select:hover{
     -fx-text-fill: -color-accent-fg;
 }
+.game-statistics .child-select:selected{
+    -fx-text-fill: -color-accent-fg;
+}
 .game-statistics .child-select > Pane{
     -fx-pref-width: 25;
     -fx-pref-height: 3;

@@ -18,113 +18,117 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="root" prefHeight="700.0" prefWidth="1000.0" styleClass="gametime" stylesheets="@../../css/game/GameTime.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.game.GameTimeView">
+<StackPane fx:id="root" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.game.GameTimeView">
    <children>
-
-      <StackPane alignment="TOP_CENTER" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="10.0">
-         <VBox maxWidth="900" spacing="16.0">
-
-            <!-- Header -->
-            <HBox alignment="CENTER_LEFT" styleClass="header">
-               <children>
-                  <ComboBox fx:id="accountComboBox" prefWidth="160.0" styleClass="account-combo" />
-                  <Region HBox.hgrow="ALWAYS" />
-                  <ToggleButton fx:id="tableToggleBtn" styleClass="accent" text="查看表格" />
-               </children>
-            </HBox>
-
-            <!-- Content switcher -->
-            <StackPane VBox.vgrow="ALWAYS">
-
-               <!-- Chart + cards layout -->
-               <VBox fx:id="chartLayout" spacing="16.0">
-                  <children>
-                     <HBox minHeight="160.0" spacing="20.0">
+      <AnchorPane fx:id="content" prefHeight="700.0" prefWidth="1000.0" styleClass="gametime" stylesheets="@../../css/game/GameTime.css">
+         <children>
+      
+            <StackPane alignment="TOP_CENTER" AnchorPane.bottomAnchor="16.0" AnchorPane.leftAnchor="16.0" AnchorPane.rightAnchor="16.0" AnchorPane.topAnchor="10.0">
+               <VBox maxWidth="900" spacing="16.0">
+      
+                  <!-- Header -->
+                  <HBox alignment="CENTER_LEFT" styleClass="header">
+                     <children>
+                        <ComboBox fx:id="accountComboBox" prefWidth="160.0" styleClass="account-combo" />
+                        <Region HBox.hgrow="ALWAYS" />
+                        <ToggleButton fx:id="tableToggleBtn" styleClass="accent" text="查看表格" />
+                     </children>
+                  </HBox>
+      
+                  <!-- Content switcher -->
+                  <StackPane VBox.vgrow="ALWAYS">
+      
+                     <!-- Chart + cards layout -->
+                     <VBox fx:id="chartLayout" spacing="16.0">
                         <children>
-                           <VBox styleClass="card" HBox.hgrow="ALWAYS">
+                           <HBox minHeight="160.0" spacing="20.0">
                               <children>
-                                 <Label styleClass="card-label" text="%ui.game_time.account.current" />
-                                 <HBox spacing="14.0" styleClass="card-body" VBox.vgrow="ALWAYS">
+                                 <VBox styleClass="card" HBox.hgrow="ALWAYS">
                                     <children>
-                                       <StackPane styleClass="avatar-container">
-                                          <ImageView fx:id="headImageView" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" styleClass="avatar" />
-                                       </StackPane>
-                                       <VBox alignment="CENTER_LEFT" spacing="6.0" VBox.vgrow="ALWAYS">
+                                       <Label styleClass="card-label" text="%ui.game_time.account.current" />
+                                       <HBox spacing="14.0" styleClass="card-body" VBox.vgrow="ALWAYS">
                                           <children>
-                                             <Label fx:id="currentUserName" styleClass="user-name" text="%ui.game_time.account.unknown" />
-                                             <Label fx:id="currentDayLabel" styleClass="stat-text" text="%ui.game_time.account.days" />
-                                             <Label fx:id="currentTimeLabel" styleClass="stat-text" text="%ui.game_time.account.duration" />
-                                             <ProgressBar fx:id="currentProgress" prefWidth="200.0" progress="0.0" />
+                                             <StackPane styleClass="avatar-container">
+                                                <ImageView fx:id="headImageView" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" styleClass="avatar" />
+                                             </StackPane>
+                                             <VBox alignment="CENTER_LEFT" spacing="6.0" VBox.vgrow="ALWAYS">
+                                                <children>
+                                                   <Label fx:id="currentUserName" styleClass="user-name" text="%ui.game_time.account.unknown" />
+                                                   <Label fx:id="currentDayLabel" styleClass="stat-text" text="%ui.game_time.account.days" />
+                                                   <Label fx:id="currentTimeLabel" styleClass="stat-text" text="%ui.game_time.account.duration" />
+                                                   <ProgressBar fx:id="currentProgress" prefWidth="200.0" progress="0.0" />
+                                                </children>
+                                             </VBox>
+                                          </children>
+                                       </HBox>
+                                    </children>
+                                 </VBox>
+                                 <VBox styleClass="card" HBox.hgrow="ALWAYS">
+                                    <children>
+                                       <Label styleClass="card-label" text="%ui.game_time.total" />
+                                       <VBox spacing="10.0" styleClass="card-body" VBox.vgrow="ALWAYS">
+                                          <children>
+                                             <HBox alignment="CENTER_LEFT" spacing="6.0">
+                                                <Label prefWidth="90.0" styleClass="stat-label" text="%ui.game_time.total.current" />
+                                                <Label fx:id="currentTotalTimeLabel" styleClass="stat-value" text="0" />
+                                                <Label styleClass="stat-unit" text="小时" />
+                                             </HBox>
+                                             <HBox alignment="CENTER_LEFT" spacing="6.0">
+                                                <Label prefWidth="90.0" styleClass="stat-label" text="%ui.game_time.total.all" />
+                                                <Label fx:id="allTotalTimeLabel" styleClass="stat-value" text="0" />
+                                                <Label styleClass="stat-unit" text="小时" />
+                                             </HBox>
+                                             <ProgressBar fx:id="totalProgress" prefWidth="260.0" progress="0.0" />
                                           </children>
                                        </VBox>
                                     </children>
-                                 </HBox>
-                              </children>
-                           </VBox>
-                           <VBox styleClass="card" HBox.hgrow="ALWAYS">
-                              <children>
-                                 <Label styleClass="card-label" text="%ui.game_time.total" />
-                                 <VBox spacing="10.0" styleClass="card-body" VBox.vgrow="ALWAYS">
-                                    <children>
-                                       <HBox alignment="CENTER_LEFT" spacing="6.0">
-                                          <Label prefWidth="90.0" styleClass="stat-label" text="%ui.game_time.total.current" />
-                                          <Label fx:id="currentTotalTimeLabel" styleClass="stat-value" text="0" />
-                                          <Label styleClass="stat-unit" text="小时" />
-                                       </HBox>
-                                       <HBox alignment="CENTER_LEFT" spacing="6.0">
-                                          <Label prefWidth="90.0" styleClass="stat-label" text="%ui.game_time.total.all" />
-                                          <Label fx:id="allTotalTimeLabel" styleClass="stat-value" text="0" />
-                                          <Label styleClass="stat-unit" text="小时" />
-                                       </HBox>
-                                       <ProgressBar fx:id="totalProgress" prefWidth="260.0" progress="0.0" />
-                                    </children>
                                  </VBox>
                               </children>
+                           </HBox>
+                           <VBox maxHeight="600.0" styleClass="chart-card" VBox.vgrow="ALWAYS">
+                              <children>
+                                 <LineChart fx:id="lineChart" legendSide="TOP" title="%ui.game_time.total.charts.title" VBox.vgrow="ALWAYS">
+                                    <xAxis>
+                                       <CategoryAxis side="BOTTOM" />
+                                    </xAxis>
+                                    <yAxis>
+                                       <NumberAxis label="%ui.game_time.total.charts.y" side="LEFT" />
+                                    </yAxis>
+                                 </LineChart>
+                              </children>
                            </VBox>
                         </children>
-                     </HBox>
-                     <VBox maxHeight="600.0" styleClass="chart-card" VBox.vgrow="ALWAYS">
+                     </VBox>
+      
+                     <!-- Table layout -->
+                     <VBox fx:id="tableLayout" spacing="12.0" visible="false">
                         <children>
-                           <LineChart fx:id="lineChart" legendSide="TOP" title="%ui.game_time.total.charts.title" VBox.vgrow="ALWAYS">
-                              <xAxis>
-                                 <CategoryAxis side="BOTTOM" />
-                              </xAxis>
-                              <yAxis>
-                                 <NumberAxis label="%ui.game_time.total.charts.y" side="LEFT" />
-                              </yAxis>
-                           </LineChart>
+                           <HBox spacing="10.0" styleClass="table-toolbar">
+                              <children>
+                                 <Button onAction="#addRecord" styleClass="table-btn" text="添加记录" />
+                              </children>
+                           </HBox>
+                           <TableView fx:id="recordTable" editable="true" styleClass="record-table" VBox.vgrow="ALWAYS">
+                              <columns>
+                                 <TableColumn fx:id="colDate" editable="true" prefWidth="140.0" text="日期" />
+                                 <TableColumn fx:id="colStartTime" editable="true" prefWidth="180.0" text="开始时间" />
+                                 <TableColumn fx:id="colEndTime" editable="true" prefWidth="180.0" text="结束时间" />
+                                 <TableColumn fx:id="colDuration" editable="true" prefWidth="140.0" text="持续时长(分钟)" />
+                                 <TableColumn fx:id="colActions" editable="false" minWidth="100.0" prefWidth="100.0" text="操作" />
+                              </columns>
+                           </TableView>
                         </children>
                      </VBox>
-                  </children>
+      
+                  </StackPane>
+      
                </VBox>
-
-               <!-- Table layout -->
-               <VBox fx:id="tableLayout" spacing="12.0" visible="false">
-                  <children>
-                     <HBox spacing="10.0" styleClass="table-toolbar">
-                        <children>
-                           <Button onAction="#addRecord" styleClass="table-btn" text="添加记录" />
-                        </children>
-                     </HBox>
-                     <TableView fx:id="recordTable" editable="true" styleClass="record-table" VBox.vgrow="ALWAYS">
-                        <columns>
-                           <TableColumn fx:id="colDate" editable="true" prefWidth="140.0" text="日期" />
-                           <TableColumn fx:id="colStartTime" editable="true" prefWidth="180.0" text="开始时间" />
-                           <TableColumn fx:id="colEndTime" editable="true" prefWidth="180.0" text="结束时间" />
-                           <TableColumn fx:id="colDuration" editable="true" prefWidth="140.0" text="持续时长(分钟)" />
-                           <TableColumn fx:id="colActions" editable="false" minWidth="100.0" prefWidth="100.0" text="操作" />
-                        </columns>
-                     </TableView>
-                  </children>
-               </VBox>
-
             </StackPane>
-
-         </VBox>
-      </StackPane>
-
+      
+         </children>
+         <padding>
+            <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+         </padding>
+      </AnchorPane>
    </children>
-   <padding>
-      <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-   </padding>
-</AnchorPane>
+</StackPane>

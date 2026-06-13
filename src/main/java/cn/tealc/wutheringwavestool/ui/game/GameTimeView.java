@@ -6,6 +6,7 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
+import cn.tealc.wutheringwavestool.ui.component.EmptyTipPane;
 import cn.tealc.wutheringwavestool.util.DialogBuilder;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialogLayout;
@@ -28,10 +29,13 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
+import org.kordamp.ikonli.material2.Material2MZ;
 
 import java.io.File;
 import java.net.URL;
@@ -83,6 +87,10 @@ public class GameTimeView implements FxmlView<GameTimeViewModel>, Initializable 
     private TableColumn<GameTime, String> colDuration;
     @FXML
     private TableColumn<GameTime, Void> colActions;
+    @FXML
+    private StackPane root;
+    @FXML
+    private AnchorPane content;
 
     private static final DateTimeFormatter TIMESTAMP_FMT =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -132,6 +140,14 @@ public class GameTimeView implements FxmlView<GameTimeViewModel>, Initializable 
                         viewModel.refreshTableData();
                     }
                 });
+
+
+        EmptyTipPane tipPane = new EmptyTipPane("无记录","请使用助手启动游戏游玩一次", Material2MZ.SENTIMENT_DISSATISFIED);
+        tipPane.visibleProperty().bind(viewModel.emptyProperty());
+        content.visibleProperty().bind(viewModel.emptyProperty().not());
+        root.getChildren().addFirst(tipPane);
+
+
     }
 
     private void setupToggle() {
