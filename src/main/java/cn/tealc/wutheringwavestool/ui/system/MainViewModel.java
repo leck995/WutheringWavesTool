@@ -141,7 +141,7 @@ public class MainViewModel extends BaseViewModel {
                             MvvmFX.getNotificationCenter().publish(NotificationKey.NOTIFICATION_SHOW_UPDATE, value.getData());
                         });
                     } else if (value.getCode() == -1) {
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.main.message.type01")));
+                        //MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.main.message.type01")));
                     }
                 });
                 Thread.startVirtualThread(task);
