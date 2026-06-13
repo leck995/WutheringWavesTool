@@ -51,7 +51,7 @@ public class WwtApp extends Application {
         autoStarted = getParameters().getRaw().contains("--auto-start");
         JdbcUtils.init();
         AppInjector.getInjector();
-        //VersionUpdateUtil.update();
+        VersionUpdateUtil.update();
         window = stage;
         stage.initStyle(StageStyle.EXTENDED);
         setupStage(stage);
