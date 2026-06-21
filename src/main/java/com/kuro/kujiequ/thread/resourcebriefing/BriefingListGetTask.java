@@ -48,7 +48,7 @@ public class BriefingListGetTask extends BaseTask<ResponseBody<Briefing>> {
                 ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBody<Briefing> briefingResponseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<Briefing>>() {
                 });
-
+                checkResponseTokenExpired(briefingResponseBody, userInfo);
 
                 briefingResponseBody.getData().getMonths().sort(Comparator.comparingInt(Title::getIndex));
                 briefingResponseBody.getData().getVersions().sort(Comparator.comparingInt(Title::getIndex));

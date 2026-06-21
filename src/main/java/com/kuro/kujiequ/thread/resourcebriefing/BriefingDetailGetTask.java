@@ -52,6 +52,7 @@ public class BriefingDetailGetTask extends BaseTask<ResponseBody<Record>> {
                 ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBody<Record> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<Record>>() {
                 });
+                checkResponseTokenExpired(responseBody, userInfo);
                 return responseBody;
             }else {
                 LOG.error("网络错误，状态码：{}",response.statusCode());
