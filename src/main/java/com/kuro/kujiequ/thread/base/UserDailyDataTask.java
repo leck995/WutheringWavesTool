@@ -70,6 +70,7 @@ public class UserDailyDataTask extends BaseTask<ResponseBody<RoleDailyData>> {
                 }
                 responseBody.setCode(code);
                 responseBody.setMsg(tree.get("msg").asText());
+                checkTokenExpired(responseBody.getMsg(), userInfo);
                 return responseBody;
             }else {
                 return new ResponseBody<>(1,"网络连接失败,异常状态码: " + response.statusCode());

@@ -72,11 +72,8 @@ public class PlayerBaseDataTask extends BaseTask<ResponseBody<RoleInfo>> {
                     responseBody.setData(roleInfo);
                     return responseBody;
                 } else {
-                    if (responseBody.getMsg().equals("登录已过期，请重新登录")) {
-                        return new ResponseBody<>(1, "检测到Token已过期，请前往账号页面更新Token");
-                    } else {
-                        return new ResponseBody<>(1, responseBody.getMsg());
-                    }
+                    checkTokenExpired(responseBody.getMsg(), userInfo);
+                    return new ResponseBody<>(1, responseBody.getMsg());
                 }
             } else {
                 return new ResponseBody<>(1, "连接出错");
