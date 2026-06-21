@@ -109,6 +109,10 @@ public class CalculatorRoleEditViewModel extends BaseViewModel {
                             MessageInfo.warning(value.getMsg()));
                 }
             });
+            task.setOnFailed(workerStateEvent -> {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                        MessageInfo.error("同步角色练度失败，请检查网络后重试"));
+            });
             Thread.startVirtualThread(task);
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
@@ -155,6 +159,10 @@ public class CalculatorRoleEditViewModel extends BaseViewModel {
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                             MessageInfo.warning(responseBody.getMsg()));
                 }
+            });
+            task.setOnFailed(workerStateEvent -> {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                        MessageInfo.error("计算材料失败，请检查网络后重试"));
             });
             Thread.startVirtualThread(task);
         }
