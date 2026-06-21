@@ -8,6 +8,7 @@ import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
 import com.kuro.kujiequ.model.sign.UserInfo;
+import com.kuro.kujiequ.model.sms.SmsCodeResponse;
 import com.kuro.kujiequ.thread.base.user.LoginUserTask;
 import com.kuro.kujiequ.thread.rolebox.role.GameRoleSeekTask;
 import com.kuro.kujiequ.thread.sms.SendSmsTask;
@@ -89,14 +90,34 @@ public class AccountUpdateViewModel extends BaseViewModel {
         Thread.startVirtualThread(task);
     }
 
-    public void sendSMS(Runnable callback) {
-        SendSmsTask task = new SendSmsTask(getPhone());
+    /**
+     * 发送短信验证码（首次尝试，不带极验数据）
+     *
+     * @param onCaptchaRequired 当需要极验人机验证时回调
+     */
+    public void sendSMS(Runnable onCaptchaRequired) {
+        sendSMS(onCaptchaRequired, "");
+    }
+
+
+    /**
+     * 发送短信验证码（带极验数据重试）
+     *
+     * @param onCaptchaRequired 当需要极验人机验证时回调
+     * @param geeTestData       极验验证通过后的 tokens JSON，首次传入空串
+     */
+    public void sendSMS(Runnable onCaptchaRequired, String geeTestData) {
+        SendSmsTask task = new SendSmsTask(getPhone(), geeTestData);
         task.setOnSucceeded(event -> {
-            ResponseBody<Boolean> value = task.getValue();
+            ResponseBody<SmsCodeResponse> value = task.getValue();
             if (value.getCode() == 200) {
                 NotificationManager.message(MessageInfo.success("验证码发送成功"));
             } else if (value.getCode() == 41000) {
-                callback.run();
+                SmsCodeResponse smsData = value.getData();
+                if (smsData != null) {
+                    NotificationManager.message(MessageInfo.warning("需要完成人机验证"));
+                }
+                onCaptchaRequired.run();
             } else {
                 NotificationManager.message(MessageInfo.warning(value.getMsg()));
             }

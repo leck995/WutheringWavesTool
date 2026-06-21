@@ -145,8 +145,7 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
 
     @FXML
     void sendLoginCode(ActionEvent event) {
-       // viewModel.sendSMS(this::showSmsFailDialog);
-        showSmsFailDialog();
+        viewModel.sendSMS(this::showSmsFailDialog);
     }
 
     private void showSmsFailDialog() {
