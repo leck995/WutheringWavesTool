@@ -53,6 +53,7 @@ public class BatchWeaponCostTask extends BaseTask<ResponseBody<CalculatorResult>
             if (response.statusCode() == 200) {
                 ResponseBody<CalculatorResult> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<CalculatorResult>>() {
                 });
+                checkResponseTokenExpired(responseBody, userInfo);
                 return responseBody;
             } else {
                 return new ResponseBody<>(1, "无法计算指定武器的练度");
