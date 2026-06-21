@@ -44,6 +44,7 @@ public class QueryOwnedRoleTask extends BaseTask<ResponseBody<List<Integer>>> {
                 ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBody<List<Integer>> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<List<Integer>>>() {
                 });
+                checkResponseTokenExpired(responseBody, userInfo);
                 return responseBody;
             }else {
                 return new ResponseBody<>(1,"无法获取指定玩家以存在的角色列表");

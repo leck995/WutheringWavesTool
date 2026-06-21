@@ -55,6 +55,7 @@ public class RoleCultivateStatusTask extends BaseTask<ResponseBody<List<ExistedR
                 ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBody<List<ExistedRoleDataForCalculator>> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<List<ExistedRoleDataForCalculator>>>() {
                 });
+                checkResponseTokenExpired(responseBody, userInfo);
                 return responseBody;
             } else {
                 return new ResponseBody<>(1, "无法获取指定玩家指定角色的等级练度");
