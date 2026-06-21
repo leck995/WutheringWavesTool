@@ -158,6 +158,9 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
                 NotificationManager.message(MessageInfo.error(body.getMsg()));
             }
         });
+        queryPlayerInfoTask.setOnFailed(workerStateEvent -> {
+            LOG.error("获取玩家信息失败", workerStateEvent.getSource().getException());
+        });
         Thread.startVirtualThread(queryPlayerInfoTask);
     }
 
@@ -175,6 +178,9 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
                 Image header = LocalResourcesManager.header(headPhoto, 60, 60);
                 headIcon.set(header);
             });
+        });
+        task.setOnFailed(workerStateEvent -> {
+            LOG.error("获取角色数据失败", workerStateEvent.getSource().getException());
         });
         Thread.startVirtualThread(task);
     }
