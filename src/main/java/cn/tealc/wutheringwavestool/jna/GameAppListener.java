@@ -140,6 +140,7 @@ public class GameAppListener implements WinUser.WinEventProc{
                 long startTime = startGameTime;
                 exit(startTime);
             });
+            task.setOnFailed(workerStateEvent -> LOG.error("游戏日志分析失败", workerStateEvent.getSource().getException()));
             Thread.startVirtualThread(task);
             setStartFromApp(false);
         }
@@ -152,6 +153,7 @@ public class GameAppListener implements WinUser.WinEventProc{
             long startTime = startGameTime;
             exit(startTime);
         });
+        task.setOnFailed(workerStateEvent -> LOG.error("游戏日志分析失败", workerStateEvent.getSource().getException()));
         Thread.startVirtualThread(task);
     }
 

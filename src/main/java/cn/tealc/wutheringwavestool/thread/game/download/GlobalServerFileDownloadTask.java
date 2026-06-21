@@ -43,9 +43,11 @@ public class GlobalServerFileDownloadTask extends Task<Void> {
                         filterServerFile(resourceList.getResource(),fileHost);
                     }
                 });
+                resourceListGetTask.setOnFailed(workerStateEvent1 -> LOG.error("获取游戏资源列表失败", workerStateEvent1.getSource().getException()));
                 Thread.startVirtualThread(resourceListGetTask);
             }
         });
+        task.setOnFailed(workerStateEvent -> LOG.error("获取启动器资源失败", workerStateEvent.getSource().getException()));
         Thread.startVirtualThread(task);
         return null;
     }

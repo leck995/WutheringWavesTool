@@ -165,6 +165,9 @@ public class GameBaseSettingViewModel implements ViewModel, SceneLifecycle {
                 });
             }
         });
+        task.setOnFailed(workerStateEvent -> {
+            System.err.println("检测游戏日志状态失败: " + workerStateEvent.getSource().getException());
+        });
         Thread.startVirtualThread(task);
     }
 
