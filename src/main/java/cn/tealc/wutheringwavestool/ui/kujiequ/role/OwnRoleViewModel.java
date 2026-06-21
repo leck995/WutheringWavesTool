@@ -53,6 +53,10 @@ public class OwnRoleViewModel extends BaseViewModel {
                             MessageInfo.warning(responseBody.getMsg()),false);
                 }
             });
+            task.setOnFailed(workerStateEvent -> {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                        MessageInfo.error("获取角色数据失败，请检查网络后重试"), false);
+            });
             Thread.startVirtualThread(task);
         }else {
             publish("EMPTY");

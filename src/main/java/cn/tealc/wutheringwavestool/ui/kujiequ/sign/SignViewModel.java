@@ -113,6 +113,10 @@ public class SignViewModel extends BaseViewModel {
                             MessageInfo.warning(value.getMsg()),false);
                 }
             });
+            task.setOnFailed(workerStateEvent -> {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                        MessageInfo.error("获取签到物品失败，请检查网络后重试"), false);
+            });
             Thread.startVirtualThread(task);
         }
     }
@@ -131,6 +135,10 @@ public class SignViewModel extends BaseViewModel {
             getSignGoods(userInfoList.get(userIndex.get()));
             getSignHistory(userInfoList.get(userIndex.get()));
 
+        });
+        task.setOnFailed(workerStateEvent -> {
+            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                    MessageInfo.error("签到失败，请检查网络后重试"), false);
         });
         Thread.startVirtualThread(task);
     }

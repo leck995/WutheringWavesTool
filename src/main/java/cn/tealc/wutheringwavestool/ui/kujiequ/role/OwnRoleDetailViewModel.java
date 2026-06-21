@@ -167,6 +167,10 @@ public class OwnRoleDetailViewModel implements ViewModel {
                 analysis(data);
             }
         });
+        task.setOnFailed(workerStateEvent -> {
+            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                    MessageInfo.error("获取角色详情失败，请检查网络后重试"), false);
+        });
         Thread.startVirtualThread(task);
     }
 
@@ -185,6 +189,9 @@ public class OwnRoleDetailViewModel implements ViewModel {
         ImgColorBgTask imgColorBgTask = new ImgColorBgTask(data.getRole().getRoleIconUrl());
         imgColorBgTask.setOnSucceeded(workerStateEvent -> {
             roleBg.set(imgColorBgTask.getValue());
+        });
+        imgColorBgTask.setOnFailed(workerStateEvent -> {
+            LOG.error("获取角色背景色失败", workerStateEvent.getSource().getException());
         });
         Thread.startVirtualThread(imgColorBgTask);
     }

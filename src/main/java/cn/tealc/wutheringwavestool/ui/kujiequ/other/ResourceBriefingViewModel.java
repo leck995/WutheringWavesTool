@@ -78,6 +78,9 @@ public class ResourceBriefingViewModel extends BaseViewModel {
                 NotificationManager.message(MessageInfo.warning(value.getMsg()));
             }
         });
+        task.setOnFailed(workerStateEvent -> {
+            NotificationManager.message(MessageInfo.error("获取战报列表失败，请检查网络后重试"));
+        });
         Thread.startVirtualThread(task);
     }
 
@@ -92,6 +95,9 @@ public class ResourceBriefingViewModel extends BaseViewModel {
             }else{
 
             }
+        });
+        detailGetTask.setOnFailed(workerStateEvent -> {
+            NotificationManager.message(MessageInfo.error("获取战报详情失败，请检查网络后重试"));
         });
         Thread.startVirtualThread(detailGetTask);
     }
