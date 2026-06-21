@@ -26,5 +26,6 @@ public class AppModule extends AbstractModule {
         bind(AutoSignService.class).in(Singleton.class);
         bind(GameWindowMonitorService.class).in(Singleton.class);
         bind(TrayIconManager.class).in(Singleton.class);
+        bind(TokenRefreshService.class).in(Singleton.class);
     }
 }

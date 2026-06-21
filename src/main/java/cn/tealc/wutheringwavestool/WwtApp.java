@@ -7,6 +7,7 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import cn.tealc.wutheringwavestool.jna.GlobalKeyListener;
 import cn.tealc.wutheringwavestool.service.GameWindowMonitorService;
+import cn.tealc.wutheringwavestool.service.TokenRefreshService;
 import cn.tealc.wutheringwavestool.thread.system.ClearLogFileTask;
 import cn.tealc.wutheringwavestool.ui.system.MainView;
 import cn.tealc.wutheringwavestool.ui.system.MainViewModel;
@@ -64,6 +65,7 @@ public class WwtApp extends Application {
         }
 
         AppInjector.getInstance(GameWindowMonitorService.class).start();
+        AppInjector.getInstance(TokenRefreshService.class).start();
         AppInjector.getInstance(TrayIconManager.class).install(stage);
         Thread.startVirtualThread(new ClearLogFileTask());
         Thread.setDefaultUncaughtExceptionHandler((t, e) ->
