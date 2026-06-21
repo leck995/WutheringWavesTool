@@ -24,12 +24,13 @@ public class GeetestCaptchaDialog {
 
     private final Stage stage;
     private final Consumer<String> onSolved;
+    private final WebEngine engine;
 
     public GeetestCaptchaDialog(Window owner, String gt, String challenge, Consumer<String> onSolved) {
         this.onSolved = onSolved;
 
         WebView webView = new WebView();
-        WebEngine engine = webView.getEngine();
+        this.engine = webView.getEngine();
 
         // Set up JS bridge after page loads
         engine.getLoadWorker().stateProperty().addListener((obs, old, state) -> {
@@ -78,6 +79,32 @@ public class GeetestCaptchaDialog {
                 onSolved.accept(json);
                 stage.close();
             });
+        }
+
+        /**
+         * Called from JS to detect the slide gap position using Java-side
+         * image processing (Sobel edge detection + template matching).
+         * Runs asynchronously: spawns a background thread so the JavaFX
+         * WebView thread is not blocked. Results are delivered via
+         * {@code window.onGapDetected(gapX)} in JS.
+         *
+         * @param bgBase64    base64 data URL of .geetest_canvas_bg
+         * @param sliceBase64 base64 data URL of .geetest_canvas_slice
+         */
+        public void detectGap(String bgBase64, String sliceBase64) {
+            new Thread(() -> {
+                try {
+                    int gapX = GapDetector.detect(bgBase64, sliceBase64);
+                    int finalGapX = Math.max(gapX, -1);
+                    Platform.runLater(() ->
+                        engine.executeScript("window.onGapDetected(" + finalGapX + ")")
+                    );
+                } catch (Exception e) {
+                    Platform.runLater(() ->
+                        engine.executeScript("window.onGapDetected(-1)")
+                    );
+                }
+            }).start();
         }
     }
 }
