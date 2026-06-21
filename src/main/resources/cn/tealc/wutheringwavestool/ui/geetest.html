@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>极验验证</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f5f5f5; }
+.container { text-align: center; padding: 20px; }
+.hint { color: #666; font-size: 14px; margin-bottom: 20px; }
+#captcha { display: inline-block; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="hint">请完成安全验证</div>
+  <div id="captcha"></div>
+</div>
+<script src="https://static.geetest.com/static/js/gt.js"></script>
+<script>
+var gt = '${gt}';
+var challenge = '${challenge}';
+
+initGeetest({
+    gt: gt,
+    challenge: challenge,
+    offline: false,
+    new_captcha: false,
+    product: 'popup',
+    width: '300px'
+}, function(captchaObj) {
+    captchaObj.appendTo('#captcha');
+    captchaObj.onSuccess(function() {
+        var result = captchaObj.getValidate();
+        window.bridge.onCaptchaSolved(JSON.stringify(result));
+    });
+});
+</script>
+</body>
+</html>

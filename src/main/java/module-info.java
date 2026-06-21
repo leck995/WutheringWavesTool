@@ -5,6 +5,7 @@ open module cn.tealc.wutheringwavestool {
     requires javafx.graphics;
     requires javafx.media;
     requires javafx.swing;
+    requires javafx.web;
     requires org.kordamp.ikonli.core;
     requires org.kordamp.ikonli.material2;
     requires org.kordamp.ikonli.javafx;

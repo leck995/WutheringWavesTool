@@ -25,6 +25,10 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
+
+import javafx.scene.Node;
+import javafx.stage.Window;
 
 public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpdateViewModel> {
     private static final Logger log = LoggerFactory.getLogger(AccountUpdateView.class);
@@ -145,7 +149,20 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
 
     @FXML
     void sendLoginCode(ActionEvent event) {
-        viewModel.sendSMS(this::showSmsFailDialog);
+        Window owner = ((Node) event.getSource()).getScene().getWindow();
+        viewModel.sendSMS(smsData -> {
+            GeetestCaptchaDialog dialog = new GeetestCaptchaDialog(
+                owner,
+                smsData.getGt(),
+                smsData.getChallenge(),
+                geeTestJson -> {
+                    if (geeTestJson != null && !geeTestJson.isEmpty()) {
+                        viewModel.sendSMS(ignored -> {}, geeTestJson);
+                    }
+                }
+            );
+            dialog.show();
+        });
     }
 
     private void showSmsFailDialog() {

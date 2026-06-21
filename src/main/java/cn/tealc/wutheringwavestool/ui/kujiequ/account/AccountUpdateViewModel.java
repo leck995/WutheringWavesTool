@@ -16,6 +16,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 public class AccountUpdateViewModel extends BaseViewModel {
     public static final String EVENT_CLOSE = "EVENT_CLOSE";
@@ -93,9 +94,9 @@ public class AccountUpdateViewModel extends BaseViewModel {
     /**
      * 发送短信验证码（首次尝试，不带极验数据）
      *
-     * @param onCaptchaRequired 当需要极验人机验证时回调
+     * @param onCaptchaRequired 当需要极验人机验证时回调，参数为极验数据
      */
-    public void sendSMS(Runnable onCaptchaRequired) {
+    public void sendSMS(Consumer<SmsCodeResponse> onCaptchaRequired) {
         sendSMS(onCaptchaRequired, "");
     }
 
@@ -103,10 +104,10 @@ public class AccountUpdateViewModel extends BaseViewModel {
     /**
      * 发送短信验证码（带极验数据重试）
      *
-     * @param onCaptchaRequired 当需要极验人机验证时回调
+     * @param onCaptchaRequired 当需要极验人机验证时回调，参数为极验数据
      * @param geeTestData       极验验证通过后的 tokens JSON，首次传入空串
      */
-    public void sendSMS(Runnable onCaptchaRequired, String geeTestData) {
+    public void sendSMS(Consumer<SmsCodeResponse> onCaptchaRequired, String geeTestData) {
         SendSmsTask task = new SendSmsTask(getPhone(), geeTestData);
         task.setOnSucceeded(event -> {
             ResponseBody<SmsCodeResponse> value = task.getValue();
@@ -116,8 +117,10 @@ public class AccountUpdateViewModel extends BaseViewModel {
                 SmsCodeResponse smsData = value.getData();
                 if (smsData != null) {
                     NotificationManager.message(MessageInfo.warning("需要完成人机验证"));
+                    onCaptchaRequired.accept(smsData);
+                } else {
+                    NotificationManager.message(MessageInfo.warning("需要人机验证，但缺少验证参数"));
                 }
-                onCaptchaRequired.run();
             } else {
                 NotificationManager.message(MessageInfo.warning(value.getMsg()));
             }
