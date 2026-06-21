@@ -131,6 +131,9 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
                 });
             }
         });
+        task.setOnFailed(workerStateEvent -> {
+            LOG.error("检测游戏日志状态失败", workerStateEvent.getSource().getException());
+        });
         Thread.startVirtualThread(task);
     }
 
@@ -170,6 +173,9 @@ public class SettingViewModel implements ViewModel, SceneLifecycle {
             } else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.main.message.type01")));
             }
+        });
+        task.setOnFailed(workerStateEvent -> {
+            LOG.error("检查版本更新失败", workerStateEvent.getSource().getException());
         });
         MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.info(LanguageManager.getString("ui.main.message.type03")));
 

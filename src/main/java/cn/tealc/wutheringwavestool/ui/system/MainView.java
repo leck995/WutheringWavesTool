@@ -493,6 +493,9 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
                 bgPane02.setBackground(task.getValue());
 
             });
+            task.setOnFailed(workerStateEvent -> {
+                LOG.error("模糊模糊背景处理失败", workerStateEvent.getSource().getException());
+            });
             Thread.startVirtualThread(task);
         }
     }
