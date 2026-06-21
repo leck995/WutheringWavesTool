@@ -86,6 +86,9 @@ public class AccountUpdateViewModel extends BaseViewModel {
 
             }
         });
+        task.setOnFailed(workerStateEvent -> {
+            NotificationManager.message(MessageInfo.error("登录失败，请检查网络后重试"));
+        });
         Thread.startVirtualThread(task);
     }
 
@@ -100,6 +103,9 @@ public class AccountUpdateViewModel extends BaseViewModel {
             } else {
                 NotificationManager.message(MessageInfo.warning(value.getMsg()));
             }
+        });
+        task.setOnFailed(workerStateEvent -> {
+            NotificationManager.message(MessageInfo.error("验证码发送失败，请检查网络后重试"));
         });
         Thread.startVirtualThread(task);
     }
@@ -127,6 +133,9 @@ public class AccountUpdateViewModel extends BaseViewModel {
                 NotificationManager.message(MessageInfo.error("添加账号失败，原因：" + value.getMsg()));
             }
         });
+        task.setOnFailed(workerStateEvent -> {
+            NotificationManager.message(MessageInfo.error("添加账号失败，请检查网络后重试"));
+        });
         Thread.startVirtualThread(task);
     }
 
@@ -153,6 +162,9 @@ public class AccountUpdateViewModel extends BaseViewModel {
             } else {
                 NotificationManager.message(MessageInfo.error("修改账号失败，原因：" + value.getMsg()));
             }
+        });
+        task.setOnFailed(workerStateEvent -> {
+            NotificationManager.message(MessageInfo.error("修改账号失败，请检查网络后重试"));
         });
         Thread.startVirtualThread(task);
     }
