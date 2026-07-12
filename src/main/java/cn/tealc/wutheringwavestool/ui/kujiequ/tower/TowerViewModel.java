@@ -1,8 +1,10 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 
+import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameTowerDataDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
+import cn.tealc.teafx.utils.message.MessageInfo;
 import com.kuro.kujiequ.model.roleData.Role;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import cn.tealc.wutheringwavestool.model.tower.TowerData;
@@ -11,6 +13,7 @@ import com.kuro.kujiequ.model.towerData.*;
 import com.kuro.kujiequ.thread.rolebox.role.GameRoleDataTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
+import de.saxsys.mvvmfx.MvvmFX;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -71,7 +74,15 @@ public class TowerViewModel extends BaseViewModel {
             }
         };
         towerDataDetailTask.setOnSucceeded(eventHandler);
+        towerDataDetailTask.setOnFailed(workerStateEvent -> {
+            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                    MessageInfo.error("获取深塔数据失败，请检查网络后重试"), false);
+        });
         roleDataTask.setOnSucceeded(eventHandler);
+        roleDataTask.setOnFailed(workerStateEvent -> {
+            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                    MessageInfo.error("获取角色数据失败，请检查网络后重试"), false);
+        });
         Thread.startVirtualThread(towerDataDetailTask);
         Thread.startVirtualThread(roleDataTask);
     }

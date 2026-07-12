@@ -180,6 +180,7 @@ public class GameManagerViewModel extends BaseViewModel {
                     for (FileInfo fileInfo : fileList) {
                         DownloadGameTask task = new DownloadGameTask(httpClient, gameDir.getAbsolutePath(), host, fileInfo);
                         task.setOnSucceeded(workerStateEvent -> System.out.println("Download completed" + fileInfo.getDest()));
+                        task.setOnFailed(workerStateEvent -> System.err.println("Download failed: " + fileInfo.getDest()));
                         pool.submit(task);
                     }
                 }

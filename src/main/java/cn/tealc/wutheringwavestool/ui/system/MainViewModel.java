@@ -144,6 +144,9 @@ public class MainViewModel extends BaseViewModel {
                         //MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.main.message.type01")));
                     }
                 });
+                task.setOnFailed(workerStateEvent -> {
+                    LOG.error("检查版本更新失败", workerStateEvent.getSource().getException());
+                });
                 Thread.startVirtualThread(task);
             });
         }
@@ -159,6 +162,9 @@ public class MainViewModel extends BaseViewModel {
                     NotificationManager.message(MessageInfo.success(LanguageManager.getString("ui.main.sync.message.log.close")));
                 });
             }
+        });
+        task.setOnFailed(workerStateEvent -> {
+            LOG.error("检测游戏日志状态失败", workerStateEvent.getSource().getException());
         });
         Thread.startVirtualThread(task);
     }
@@ -188,6 +194,9 @@ public class MainViewModel extends BaseViewModel {
                 }
             }
         });
+        task.setOnFailed(workerStateEvent -> {
+            LOG.error("检查兑换码失败", workerStateEvent.getSource().getException());
+        });
         Thread.startVirtualThread(task);
     }
 
@@ -210,6 +219,9 @@ public class MainViewModel extends BaseViewModel {
                 }
                 configService.setObject(ANNOUNCEMENTS, notifiedIds);
             }
+        });
+        task.setOnFailed(workerStateEvent -> {
+            LOG.error("检查公告失败", workerStateEvent.getSource().getException());
         });
         Thread.startVirtualThread(task);
     }
@@ -259,6 +271,9 @@ public class MainViewModel extends BaseViewModel {
                     }
                 }
             });
+            task.setOnFailed(workerStateEvent -> {
+                LOG.error("同步深塔数据失败", workerStateEvent.getSource().getException());
+            });
             Thread.startVirtualThread(task);
         });
     }
@@ -280,6 +295,9 @@ public class MainViewModel extends BaseViewModel {
                         }
                     }
                 }
+            });
+            task.setOnFailed(workerStateEvent -> {
+                LOG.error("同步新深塔数据失败", workerStateEvent.getSource().getException());
             });
             Thread.startVirtualThread(task);
         });
@@ -314,6 +332,9 @@ public class MainViewModel extends BaseViewModel {
                         MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.main.sync.message.slash")));
                 }
             }
+        });
+        slashDataDetailTask.setOnFailed(workerStateEvent -> {
+            LOG.error("同步海墟数据失败", workerStateEvent.getSource().getException());
         });
         Thread.startVirtualThread(slashDataDetailTask);
     }

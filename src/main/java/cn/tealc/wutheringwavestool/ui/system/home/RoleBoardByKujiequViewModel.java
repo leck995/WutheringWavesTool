@@ -106,6 +106,9 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
                 LOG.error(responseBody.getMsg());
             }
         });
+        task.setOnFailed(workerStateEvent -> {
+            LOG.error("刷新库街区数据失败", workerStateEvent.getSource().getException());
+        });
         Thread.startVirtualThread(task);
     }
 
@@ -158,6 +161,9 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
             } else {
                 rolePaneVisible.set(false);
             }
+        });
+        playerBaseDataTask.setOnFailed(workerStateEvent -> {
+            LOG.error("获取角色基础数据失败", workerStateEvent.getSource().getException());
         });
         Thread.startVirtualThread(playerBaseDataTask);
     }
@@ -213,6 +219,9 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
                 }
             }
         });
+        userDailyDataTask.setOnFailed(workerStateEvent -> {
+            LOG.error("获取日常数据失败", workerStateEvent.getSource().getException());
+        });
         Thread.startVirtualThread(userDailyDataTask);
     }
 
@@ -250,6 +259,9 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
         task.setOnSucceeded(workerStateEvent -> {
             hasSign.set(true);
             signText.set(LanguageManager.getString("ui.home.label.sign.yes"));
+        });
+        task.setOnFailed(workerStateEvent -> {
+            LOG.error("签到失败", workerStateEvent.getSource().getException());
         });
         Thread.startVirtualThread(task);
         signText.set(LanguageManager.getString("ui.home.label.sign.ing"));

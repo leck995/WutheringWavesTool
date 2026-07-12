@@ -40,6 +40,9 @@ public class CalculatorViewModel extends BaseViewModel {
             calculatorDataRefreshTask.setOnSucceeded(event -> {
                 syncRoleData(userInfo);
             });
+            calculatorDataRefreshTask.setOnFailed(workerStateEvent -> {
+                NotificationManager.message(MessageInfo.error("刷新缓存失败，请检查网络后重试"));
+            });
             Thread.startVirtualThread(calculatorDataRefreshTask);
         }else {
             publish("EMPTY");
@@ -60,6 +63,9 @@ public class CalculatorViewModel extends BaseViewModel {
                 NotificationManager.message(MessageInfo.error(responseBody.getMsg()));
             }
         });
+        weaponTask.setOnFailed(workerStateEvent -> {
+            NotificationManager.message(MessageInfo.error("获取武器列表失败，请检查网络后重试"));
+        });
         Thread.startVirtualThread(weaponTask);
 
         ListRoleTask roleTask = new ListRoleTask(userInfo);
@@ -70,6 +76,9 @@ public class CalculatorViewModel extends BaseViewModel {
             }else {
                 NotificationManager.message(MessageInfo.error(responseBody.getMsg()));
             }
+        });
+        roleTask.setOnFailed(workerStateEvent -> {
+            NotificationManager.message(MessageInfo.error("获取角色列表失败，请检查网络后重试"));
         });
         Thread.startVirtualThread(roleTask);
     }

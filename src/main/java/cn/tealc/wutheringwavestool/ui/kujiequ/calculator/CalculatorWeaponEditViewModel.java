@@ -77,6 +77,10 @@ public class CalculatorWeaponEditViewModel extends BaseViewModel {
                             MessageInfo.warning(responseBody.getMsg()));
                 }
             });
+            task.setOnFailed(workerStateEvent -> {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                        MessageInfo.error("计算材料失败，请检查网络后重试"));
+            });
             Thread.startVirtualThread(task);
         }
 

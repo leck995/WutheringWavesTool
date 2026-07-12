@@ -1,9 +1,11 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 
+import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameSlashDataDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.tower.SlashDataForDB;
+import cn.tealc.teafx.utils.message.MessageInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +18,7 @@ import com.kuro.kujiequ.thread.rolebox.role.GameRoleDataTask;
 import com.kuro.kujiequ.thread.rolebox.slash.SlashDataDetailTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
+import de.saxsys.mvvmfx.MvvmFX;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -79,7 +82,15 @@ public class SlashViewModel extends BaseViewModel {
                 }
             };
             slashDataDetailTask.setOnSucceeded(eventHandler);
+            slashDataDetailTask.setOnFailed(workerStateEvent -> {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                        MessageInfo.error("获取海墟数据失败，请检查网络后重试"), false);
+            });
             roleDataTask.setOnSucceeded(eventHandler);
+            roleDataTask.setOnFailed(workerStateEvent -> {
+                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                        MessageInfo.error("获取角色数据失败，请检查网络后重试"), false);
+            });
             Thread.startVirtualThread(slashDataDetailTask);
             Thread.startVirtualThread(roleDataTask);
         }

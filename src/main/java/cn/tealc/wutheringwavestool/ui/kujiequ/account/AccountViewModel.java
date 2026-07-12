@@ -79,6 +79,9 @@ public class AccountViewModel extends BaseViewModel {
         PlayerBaseDataTask task = new PlayerBaseDataTask(userInfo);
         task.setOnSucceeded(event -> {
         });
+        task.setOnFailed(workerStateEvent -> {
+            NotificationManager.message(MessageInfo.error("获取用户信息失败"));
+        });
     }
 
 
