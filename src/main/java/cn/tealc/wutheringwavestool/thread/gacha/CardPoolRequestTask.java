@@ -76,6 +76,8 @@ public class CardPoolRequestTask extends Task<ResponseBody<Map<String, List<Card
         typePool.put(pools[8],"9");
         typePool.put(pools[9],"10");
         typePool.put(pools[10],"11");
+        typePool.put(pools[11],"12");
+        typePool.put(pools[12],"13");
     }
 
     @Override

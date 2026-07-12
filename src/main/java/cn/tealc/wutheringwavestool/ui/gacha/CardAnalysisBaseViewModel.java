@@ -263,7 +263,7 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                         MessageInfo.success(LanguageManager.getString("ui.analysis.message.type01")));
 
-                if (Config.setting().getServerUsername() != null || !Config.setting().getServerUsername().isBlank() )
+                if (Config.setting().getServerUsername() != null && !Config.setting().getServerUsername().isBlank() )
                     publish("upload");
             } else {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
