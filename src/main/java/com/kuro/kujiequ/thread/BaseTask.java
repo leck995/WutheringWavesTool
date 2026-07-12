@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kuro.kujiequ.AccessTokenException;
 import com.kuro.kujiequ.ApiConfig;
-import com.kuro.kujiequ.TokenExpiredException;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.util.HTTPRequestMultipartBody;
 import javafx.concurrent.Task;
@@ -246,7 +245,7 @@ public abstract class BaseTask<V> extends Task<V> {
     /**
      * 请求，获取B-AT令牌
      */
-    private String requestToken(UserInfo userInfo) throws AccessTokenException, IOException, InterruptedException {
+    protected String requestToken(UserInfo userInfo) throws AccessTokenException, IOException, InterruptedException {
         String url = String.format("%s?serverId=%s&roleId=%s&userId=%s", ApiConfig.ROLE_ACCESS_TOKEN, ApiConfig.PARAM_SERVER_ID, userInfo.getRoleId(), userInfo.getUserId());
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))

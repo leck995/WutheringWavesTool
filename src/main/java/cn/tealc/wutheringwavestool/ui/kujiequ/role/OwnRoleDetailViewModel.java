@@ -1,6 +1,9 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.role;
 
+import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
+import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.kuro.kujiequ.model.roleData.*;
 import com.kuro.kujiequ.model.roleData.weight.PhantomWeight;
@@ -168,7 +171,7 @@ public class OwnRoleDetailViewModel implements ViewModel {
             }
         });
         task.setOnFailed(workerStateEvent -> {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+            NotificationManager.publish(NotificationKey.MESSAGE,
                     MessageInfo.error("获取角色详情失败，请检查网络后重试"), false);
         });
         Thread.startVirtualThread(task);

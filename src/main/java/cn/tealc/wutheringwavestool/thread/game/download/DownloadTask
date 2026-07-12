@@ -1,0 +1,378 @@
+package cn.tealc.wutheringwavestool.thread.download;
+
+import com.kuro.game.model.game.ChunkInfo;
+import com.kuro.game.model.game.FileInfo;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.concurrent.Task;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.security.MessageDigest;
+import java.util.Timer;
+import java.util.TimerTask;
+
+class DownloadTask extends Task<Void> {
+    private static final Logger LOG = LoggerFactory.getLogger(DownloadTask.class);
+    private final FileInfo fileInfo;
+    private volatile boolean paused = false;
+    private volatile boolean cancelled = false;
+    private final File outputFile;
+    private String status = "等待中";
+    private final HttpClient httpClient;
+    private final SimpleStringProperty fileName = new SimpleStringProperty();
+    private final SimpleLongProperty size = new SimpleLongProperty(0);
+    private final SimpleLongProperty bufferSize = new SimpleLongProperty(0);
+    private final SimpleLongProperty speed = new SimpleLongProperty();
+    private final String host;
+    private final String url;
+
+    private Timer speedTimer;
+
+    public DownloadTask(HttpClient httpClient, String host, File gameDir, FileInfo fileInfo) {
+        this.fileInfo = fileInfo;
+        this.httpClient = httpClient;
+        this.host = host;
+        this.outputFile = new File(gameDir, fileInfo.getDest());
+        this.url = host + fileInfo.getDest();
+        File parentDir = outputFile.getParentFile();
+        if (!parentDir.exists()) {
+            boolean mkdirs = parentDir.mkdirs();
+            if (!mkdirs) {
+                System.out.println("创建目录失败：" + parentDir.getAbsolutePath());
+            }
+        }
+        fileName.set(outputFile.getName());
+        size.set(fileInfo.getSize());
+        updateTitle("下载: " + outputFile.getName());
+        updateStatus("准备中");
+    }
+
+    @Override
+    protected Void call() throws Exception {
+        try {
+            if (fileInfo.getChunkInfos() != null && !fileInfo.getChunkInfos().isEmpty()) {
+                downloadFileWithChunks();
+            } else {
+                downloadWholeFile();
+            }
+
+            if (!isCancelled()) {
+                verifyFileMd5();
+            }
+        } catch (Exception e) {
+            updateStatus("失败: " + e.getMessage());
+            // 失败后自动重试
+            if (!isCancelled() && !paused) {
+                Thread.sleep(5000);
+                if (!isCancelled() && !paused) {
+                    updateStatus("重试中...");
+                    resetForRetry();
+                    call();
+                }
+            }
+        }
+        return null;
+    }
+
+    private void downloadWholeFile() throws Exception {
+        updateStatus("准备下载");
+        // 检查是否支持断点续传
+        boolean supportResume = checkResumeSupport();
+        if (supportResume && outputFile.exists()) {
+            long downloadedBytes = outputFile.length();
+            if (downloadedBytes >= fileInfo.getSize()) {
+                updateStatus("文件已存在");
+                updateProgress(1, 1);
+                return;
+            }
+            bufferSize.set(downloadedBytes);
+            updateStatus("恢复下载 (" + formatSize(downloadedBytes) + "/" + formatSize(fileInfo.getSize()) + ")");
+        } else {
+            if (outputFile.exists()) {
+                Files.delete(outputFile.toPath());
+            }
+            bufferSize.set(0);
+            updateStatus("开始下载");
+        }
+
+        HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("User-Agent", "JavaFX Downloader");
+        if (supportResume && bufferSize.get() > 0) {
+            requestBuilder.header("Range", "bytes=" + bufferSize.get() + "-");
+        }
+
+        HttpRequest request = requestBuilder.build();
+        HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+        if (response.statusCode() == 200) {
+            LOG.error("服务器返回错误: {} ", response.statusCode());
+            return;
+        }
+        try (InputStream is = response.body();
+             OutputStream os = new FileOutputStream(outputFile, supportResume && bufferSize.get() > 0)) {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                if (isCancelled() || paused) break;
+                os.write(buffer, 0, bytesRead);
+                bufferSize.set(bufferSize.get() + bytesRead);
+                updateProgress(bufferSize.get(), fileInfo.getSize());
+            }
+        }
+
+        if (isCancelled()) {
+            updateStatus("已取消");
+        } else if (paused) {
+            updateStatus("已暂停");
+        } else {
+            updateStatus("下载完成");
+        }
+    }
+
+    private void downloadFileWithChunks() throws Exception {
+        updateStatus("准备分块下载");
+        // 确保文件存在并是正确的尺寸
+        if (outputFile.exists()) {
+            if (outputFile.length() == fileInfo.getSize()) {
+                updateStatus("文件已存在");
+                updateProgress(1, 1);
+                return;
+            } else {
+                Files.delete(outputFile.toPath());
+            }
+        }
+
+        // 创建空文件
+        try (RandomAccessFile raf = new RandomAccessFile(outputFile, "rw")) {
+            raf.setLength(fileInfo.getSize());
+        }
+
+        // 下载并校验每个分块
+        for (ChunkInfo chunk : fileInfo.getChunkInfos()) {
+            if (isCancelled() || paused) break;
+
+            downloadChunk(chunk);
+        }
+
+        if (isCancelled()) {
+            updateStatus("已取消");
+        } else if (paused) {
+            updateStatus("已暂停");
+        } else {
+            updateStatus("分块下载完成");
+        }
+    }
+
+    private void downloadChunk(ChunkInfo chunk) throws Exception {
+
+        long downloadedInChunk = 0;
+
+        updateStatus("下载分块: " + formatRange(chunk.getStart(), chunk.getEnd()));
+
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("Range", "bytes=" + chunk.getStart() + "-" + chunk.getEnd())
+                .header("User-Agent", "JavaFX Downloader")
+                .build();
+
+        HttpResponse<InputStream> response = httpClient.send(request, HttpResponse.BodyHandlers.ofInputStream());
+
+        if (response.statusCode() != 206) {
+            throw new IOException("服务器不支持分块下载: " + response.statusCode());
+        }
+
+        try (InputStream is = response.body();
+             RandomAccessFile raf = new RandomAccessFile(outputFile, "rw")) {
+            raf.seek(chunk.getStart());
+
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+
+            while ((bytesRead = is.read(buffer)) != -1) {
+                if (isCancelled() || paused) break;
+                raf.write(buffer, 0, bytesRead);
+                downloadedInChunk += bytesRead;
+               // downloadedBytes += bytesRead;
+                // 更新总进度
+                //updateProgress(downloadedBytes, fileInfo.getSize());
+            }
+            // 校验分块MD5
+            if (!isCancelled() && !paused) {
+                verifyChunkMd5(chunk);
+            }
+        }
+    }
+
+    private void verifyChunkMd5(ChunkInfo chunk) throws Exception {
+        updateStatus("校验分块: " + formatRange(chunk.getStart(), chunk.getEnd()));
+
+        byte[] chunkData = new byte[(int) (chunk.getEnd() - chunk.getStart() + 1)];
+        try (RandomAccessFile raf = new RandomAccessFile(outputFile, "r")) {
+            raf.seek(chunk.getStart());
+            raf.readFully(chunkData);
+        }
+
+        String actualMd5 = calculateMd5(chunkData);
+        if (!actualMd5.equalsIgnoreCase(chunk.getMd5())) {
+            throw new IOException("分块MD5校验失败");
+        }
+
+        updateStatus("分块校验通过: " + formatRange(chunk.getStart(), chunk.getEnd()));
+    }
+
+    private void verifyFileMd5() throws Exception {
+        if (fileInfo.getMd5() == null || fileInfo.getMd5().isEmpty()) {
+            updateStatus("下载完成 (未校验MD5)");
+            return;
+        }
+
+        updateStatus("校验文件MD5...");
+
+        String actualMd5 = calculateFileMd5(outputFile);
+        if (!actualMd5.equalsIgnoreCase(fileInfo.getMd5())) {
+            Files.deleteIfExists(outputFile.toPath());
+            throw new IOException("文件MD5校验失败");
+        }
+
+        updateStatus("下载完成 (MD5校验通过)");
+    }
+
+    private boolean checkResumeSupport() throws Exception {
+        HttpRequest headRequest = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .method("HEAD", HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        HttpResponse<Void> response = httpClient.send(headRequest, HttpResponse.BodyHandlers.discarding());
+
+        if (response.statusCode() != 200) {
+            throw new IOException("HEAD请求失败: " + response.statusCode());
+        }
+
+        return response.headers().firstValue("Accept-Ranges")
+                .map(val -> val.equalsIgnoreCase("bytes"))
+                .orElse(false);
+    }
+
+    private String calculateMd5(byte[] data) throws Exception {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        byte[] digest = md.digest(data);
+        return bytesToHex(digest);
+    }
+
+    private String calculateFileMd5(File file) throws Exception {
+        MessageDigest md = MessageDigest.getInstance("MD5");
+        try (InputStream is = new FileInputStream(file)) {
+            byte[] buffer = new byte[8192];
+            int bytesRead;
+            while ((bytesRead = is.read(buffer)) != -1) {
+                md.update(buffer, 0, bytesRead);
+            }
+        }
+        return bytesToHex(md.digest());
+    }
+
+    private String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
+    }
+
+    private long lastBytesRead = 0;
+    private void startSpeedMonitorForTask() {
+        speedTimer = new Timer(true);
+        speedTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                long bytesRead = bufferSize.get();
+                long bytesReadSinceLastCheck = bytesRead - lastBytesRead;
+                lastBytesRead = bytesRead;
+                speed.set(bytesReadSinceLastCheck);
+            }
+        }, 1000, 1000);
+    }
+
+
+
+    private void resetForRetry() {
+        //downloadedBytes = 0;
+        updateProgress(0, 1);
+    }
+
+
+    public void pause() {
+        paused = true;
+        updateStatus("已暂停");
+    }
+
+
+    public void newCancel() {
+        cancelled = true;
+        paused = false;
+        cancel(true);
+        try {
+            if (outputFile.exists()) {
+                Files.deleteIfExists(outputFile.toPath());
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void updateStatus(String status) {
+        this.status = status;
+        updateMessage(status);
+    }
+
+
+    public String getStatus() {
+        return status;
+    }
+
+
+    public String getFileName() {
+        return fileName.get();
+    }
+
+    public StringProperty fileNameProperty() {
+        return fileName;
+    }
+
+    public long getSize() {
+        return size.get();
+    }
+
+    public SimpleLongProperty sizeProperty() {
+        return size;
+    }
+
+    public long getSpeed() {
+        return speed.get();
+    }
+
+    public SimpleLongProperty speedProperty() {
+        return speed;
+    }
+
+    private String formatSize(long bytes) {
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return String.format("%.1f KB", bytes / 1024.0);
+        if (bytes < 1024 * 1024 * 1024) return String.format("%.1f MB", bytes / (1024.0 * 1024));
+        return String.format("%.1f GB", bytes / (1024.0 * 1024 * 1024));
+    }
+
+    private String formatRange(long start, long end) {
+        return formatSize(start) + "-" + formatSize(end);
+    }
+}
