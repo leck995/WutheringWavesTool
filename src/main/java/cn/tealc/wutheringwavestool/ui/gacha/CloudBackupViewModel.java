@@ -83,6 +83,11 @@ public class CloudBackupViewModel extends BaseViewModel {
     }
 
     public void loadFileList(String username, String password) {
+        if (username == null || username.isBlank() || password == null || password.isBlank()){
+            NotificationManager.message(MessageInfo.warning("助手账号未设置，无法获取"));
+            return;
+        }
+
         loading.set(true);
         loaded.set(false);
         failed.set(false);
