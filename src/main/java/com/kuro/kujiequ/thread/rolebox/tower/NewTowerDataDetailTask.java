@@ -83,7 +83,7 @@ public class NewTowerDataDetailTask extends BaseTask<ResponseBody<NewTowerData>>
                 return responseBody;
             }
         } catch (IOException | InterruptedException | AccessTokenException e) {
-            LOG.error("错误", e);
+            LOG.error("错误:{}", e.getMessage());
             return new ResponseBody<>(1, e.getMessage());
         }
     }

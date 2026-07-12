@@ -42,7 +42,7 @@ public class CalculatorDataRefreshTask extends BaseTask<ResponseBody<String>> {
                 return new ResponseBody<>(1, "养成计算器刷新失败");
             }
         }catch (AccessTokenException | IOException | InterruptedException e) {
-            LOG.error("错误", e);
+            LOG.error("错误:{}", e.getMessage());
             return new ResponseBody<>(1, e.getMessage());
         }
     }

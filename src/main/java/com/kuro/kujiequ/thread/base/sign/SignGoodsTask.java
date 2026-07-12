@@ -2,6 +2,7 @@ package com.kuro.kujiequ.thread.base.sign;
 
 import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
+import com.kuro.kujiequ.AccessTokenException;
 import com.kuro.kujiequ.ApiConfig;
 import com.kuro.kujiequ.model.sign.SignGood;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -35,7 +36,7 @@ public class SignGoodsTask extends Task<ResponseBody<Pair<Boolean,List<SignGood>
     }
 
     @Override
-    protected ResponseBody<Pair<Boolean,List<SignGood>>> call() throws Exception {
+    protected ResponseBody<Pair<Boolean,List<SignGood>>> call() throws Exception{
         String url=String.format("%s?gameId=%s&serverId=%s&roleId=%s&userId=%s"
                 , ApiConfig.SIGNIN_INIT_URL,ApiConfig.PARAM_GAME_ID,ApiConfig.PARAM_SERVER_ID,userInfo.getRoleId(),userInfo.getUserId());
         HttpClient client = AppInjector.getInstance(HttpClient.class);
@@ -47,7 +48,9 @@ public class SignGoodsTask extends Task<ResponseBody<Pair<Boolean,List<SignGood>
                 ObjectMapper mapper=AppInjector.getInstance(ObjectMapper.class);
                 JsonNode tree = mapper.readTree(response.body());
                 int code = tree.get("code").asInt();
-                if (code == 200) {
+                if (code == 220) {
+                    throw new AccessTokenException();
+                }else if (code == 200) {
                     JsonNode data = tree.get("data");
                     JsonNode jsonNode = data.get("signInGoodsConfigs");
                     List<SignGood> signGoods = mapper.readValue(jsonNode.toString(), new TypeReference<List<SignGood>>() {
@@ -62,13 +65,13 @@ public class SignGoodsTask extends Task<ResponseBody<Pair<Boolean,List<SignGood>
                 body.setCode(code);
                 body.setMsg(tree.get("msg").asText());
                 return body;
-            }else {
+            }  else {
                 body.setCode(1);
                 body.setMsg("连接失败，错误状态码:" + response.statusCode());
                 return body;
             }
-        } catch (IOException | InterruptedException e) {
-            LOG.error("错误",e);
+        } catch (IOException | InterruptedException | AccessTokenException e) {
+            LOG.error("错误:{}", e.getMessage());
             body.setCode(1);
             body.setMsg(e.getMessage());
             return body;

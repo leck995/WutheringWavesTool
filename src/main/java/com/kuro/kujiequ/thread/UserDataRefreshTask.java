@@ -69,7 +69,6 @@ public class UserDataRefreshTask extends BaseTask<ResponseBody<String>> {
             }
             return new ResponseBody<>(200, "角色数据刷新成功");
         } catch (IOException | InterruptedException | AccessTokenException e) {
-            LOG.error("错误", e);
             return new ResponseBody<>(1, e.getMessage());
         }
     }

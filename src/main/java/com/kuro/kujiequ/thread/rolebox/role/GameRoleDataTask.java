@@ -87,7 +87,7 @@ public class GameRoleDataTask extends BaseTask<ResponseBody<List<Role>>> {
             return responseBody;
 
         } catch (IOException | InterruptedException | AccessTokenException e) {
-            LOG.error("错误", e);
+            LOG.error("错误:{}", e.getMessage());
             return new ResponseBody<>(1, e.getMessage());
         }
     }

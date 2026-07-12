@@ -26,7 +26,6 @@ public class ConfigService {
     // ========== 原始 String ==========
 
     public Optional<String> get(String key) {
-        LOG.debug("读取配置, key: {}", key);
         return Optional.ofNullable(dao.getValue(key));
     }
 
@@ -35,7 +34,6 @@ public class ConfigService {
     }
 
     public void set(String key, String value) {
-        LOG.info("保存配置, key: {}, value: {}", key, value);
         dao.saveOrUpdate(key, value);
     }
 

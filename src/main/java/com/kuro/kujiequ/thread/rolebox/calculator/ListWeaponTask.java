@@ -59,7 +59,7 @@ public class ListWeaponTask extends BaseTask<ResponseBody<List<WeaponForCalculat
                 return new ResponseBody<>(1,"无法获取养成计算器的武器列表");
             }
         } catch (AccessTokenException | IOException | InterruptedException e) {
-            LOG.error("错误", e);
+            LOG.error("错误:{}", e.getMessage());
             return new ResponseBody<>(1, e.getMessage());
         }
     }

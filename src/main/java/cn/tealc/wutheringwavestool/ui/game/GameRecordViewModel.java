@@ -71,7 +71,7 @@ public class GameRecordViewModel extends BaseViewModel {
                         break;
                     }
                 }
-                if (!hasUser) {
+                if (!hasUser && !roleIdList.isEmpty()) {
                     updateIndex(0);
                 }
             }
