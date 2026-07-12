@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.account;
 
 import atlantafx.base.theme.Styles;
+import cn.tealc.wutheringwavestool.base.AppConstants;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
@@ -130,7 +131,7 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
     @FXML
     void browserGuide(ActionEvent event) {
         try {
-            Desktop.getDesktop().browse(URI.create("https://www.yuque.com/chashuisuipian/sm05lg/pyk5otkcfhd1dqmf"));
+            Desktop.getDesktop().browse(URI.create(AppConstants.URL_TOKEN_GUIDE));
         } catch (IOException e) {
             log.info("跳转错误", e);
         }

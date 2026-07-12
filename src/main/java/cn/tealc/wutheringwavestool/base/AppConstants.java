@@ -9,7 +9,11 @@ public final class AppConstants {
     public static final String API_DECRYPT_KEY = "XSNLFgNCth8j8oJI3cNIdw==";
 
     public static final String URL_SUPPORT_LIST = "https://www.yuque.com/chashuisuipian/sm05lg/ag7ct2or8ecz98cp";
-    public static final String URL_PHANTOM_GUIDE = "https://wave.999758.xyz/pages/advance/phantom.html";
+    public static final String URL_GITHUB = "https://github.com/leck995/WutheringWavesTool";
+    public static final String URL_GITHUB_ISSUES = URL_GITHUB + "/issues";
+    public static final String URL_WIKI = "https://wwt-doc.999758.xyz";
+    public static final String URL_PHANTOM_GUIDE = URL_WIKI + "/pages/advance/phantom.html";
+    public static final String URL_TOKEN_GUIDE = URL_WIKI + "/pages/advance/token.html";
     public static final String URL_APP_UPDATE = "https://release.999758.xyz/wwt/release.json";
     public static final String URL_APP_UPDATE_DEV = "https://release.999758.xyz/wwt/release-dev.json";
     public static final String URL_APP_UPDATE_2 = "https://cdn.999758.xyz/wwt/release.json";
