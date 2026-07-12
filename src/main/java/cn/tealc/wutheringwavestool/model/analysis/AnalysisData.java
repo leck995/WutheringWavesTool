@@ -30,7 +30,8 @@ public class AnalysisData {
     private Integer ssrMax = 0;//五星最大抽数
     private Integer upSsrCount = 0; //UP五星数量
     private Double upSsrAvg = 0.0; //UP五星平均抽数
-    private Double nonBannerRate = 0.0; //五星不歪率
+    private Double nonBannerRate = 0.0; //五星不歪率（50/50胜率）
+    private Double upRate = 0.0; //五星UP率（UP角色占全部五星的比例）
 
     private Double srAvg = 0.0; //四星平均抽数
     private Integer srMin = 0;//四星最小抽数
@@ -176,6 +177,14 @@ public class AnalysisData {
 
     public void setNonBannerRate(Double nonBannerRate) {
         this.nonBannerRate = nonBannerRate;
+    }
+
+    public Double getUpRate() {
+        return upRate;
+    }
+
+    public void setUpRate(Double upRate) {
+        this.upRate = upRate;
     }
 
     public List<SsrData> getSrDataList() {

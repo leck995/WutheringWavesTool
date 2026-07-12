@@ -240,7 +240,32 @@ public class CardPoolAnalysisTask extends Task<ResponseBody<List<AnalysisData>>>
             }
             analysisData.setUpSsrCount(upSsrCount);
             analysisData.setUpSsrAvg(upSsrCount > 0 ? (double) totalUpPulls / upSsrCount : 0);
-            analysisData.setNonBannerRate(ssrIndexList.size() > 0 ? (double) upSsrCount / ssrIndexList.size() : 0);
+            // UP率：UP角色占全部五星的比例（旧 nonBannerRate 的计算逻辑）
+            analysisData.setUpRate(ssrIndexList.size() > 0 ? (double) upSsrCount / ssrIndexList.size() : 0);
+
+            // 计算真实的不歪率（50/50 胜率）：按时间正序遍历五星列表，
+            // 非大保底状态下出UP=不歪（赢了50/50），出常驻=歪了（输了50/50，下次进入大保底）
+            int totalFiftyFifty = 0;
+            int wonFiftyFifty = 0;
+            boolean isGuaranteed = false;
+            for (int i = ssrIndexList.size() - 1; i >= 0; i--) {
+                int idx = ssrIndexList.get(i);
+                CardInfo cardInfo = cardInfoList.get(idx);
+                boolean isUp = !baseSSRList.contains(String.valueOf(cardInfo.getResourceId()));
+                if (isGuaranteed) {
+                    // 大保底：必出UP角色，不计入50/50统计
+                    isGuaranteed = false;
+                } else {
+                    // 小保底（50/50情形）
+                    totalFiftyFifty++;
+                    if (isUp) {
+                        wonFiftyFifty++;
+                    } else {
+                        isGuaranteed = true;
+                    }
+                }
+            }
+            analysisData.setNonBannerRate(totalFiftyFifty > 0 ? (double) wonFiftyFifty / totalFiftyFifty : 0);
         } else {
             analysisData.setSsrAvg(0.0);
             analysisData.setSsrMax(0);
@@ -248,6 +273,7 @@ public class CardPoolAnalysisTask extends Task<ResponseBody<List<AnalysisData>>>
             analysisData.setSsrDataList(new ArrayList<>());
             analysisData.setUpSsrCount(0);
             analysisData.setUpSsrAvg(0.0);
+            analysisData.setUpRate(0.0);
             analysisData.setNonBannerRate(0.0);
         }
     }

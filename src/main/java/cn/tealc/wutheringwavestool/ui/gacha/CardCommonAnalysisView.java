@@ -174,7 +174,7 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
                 data.isEmpty() ? "0" : String.format("%.2f%%", data.getNonBannerRate() * 100));
         nonBannerRateRow.getStyleClass().add("non-banner-rate");
 
-        if (data.getNonBannerRate() == 0){
+        if (data.getUpRate() == null || data.getUpRate() == 0){
             nonBannerRateRow.setVisible(false);
         }
 
