@@ -44,8 +44,14 @@ public class NewFxTrayIcon extends TrayIcon {
                 if (e.getButton() == 3) {
                     Platform.runLater(() -> {
                         Point2D scale = getScale();
-                        stage.setX(e.getX() / scale.getY() - 5);
-                        stage.setY((e.getY() - stage.getHeight()) / scale.getY() - 5);
+                        // 转换为 JavaFX 逻辑坐标
+                        Screen primary = Screen.getPrimary();
+                        double[] logical = convertToLogical(e.getX(), e.getY(), scale, primary);
+                        double logicalX = logical[0];
+                        double logicalY = logical[1];
+
+                        stage.setX(logicalX - 5);
+                        stage.setY(logicalY - stage.getHeight() - 5);
                         if (!stage.isShowing()) {
                             stage.show();
                         } else {
@@ -59,15 +65,45 @@ public class NewFxTrayIcon extends TrayIcon {
 
 
     /**
-     * @description: 获取系统缩放比例
-     * @param:
-     * @return  javafx.geometry.Point2D
+     * @description: 获取系统缩放比例（物理像素 / 逻辑像素）
+     * 使用 GraphicsDevice.getDisplayMode() 获取物理分辨率，
+     * Screen.getBounds() 获取逻辑分辨率，两者相除得到真实缩放比。
      * @date:   2025/2/21
      */
     private Point2D getScale() {
-        double scaleX = Screen.getPrimary().getOutputScaleX();
-        double scaleY = Screen.getPrimary().getOutputScaleY();
-        return new Point2D(scaleX, scaleY);
+        try {
+            GraphicsDevice gd = GraphicsEnvironment.getLocalGraphicsEnvironment()
+                .getDefaultScreenDevice();
+            DisplayMode dm = gd.getDisplayMode();
+            Screen primary = Screen.getPrimary();
+            double scaleX = (double) dm.getWidth() / primary.getBounds().getWidth();
+            double scaleY = (double) dm.getHeight() / primary.getBounds().getHeight();
+            return new Point2D(scaleX, scaleY);
+        } catch (Exception e) {
+            // Fallback
+            double scaleX = Screen.getPrimary().getOutputScaleX();
+            double scaleY = Screen.getPrimary().getOutputScaleY();
+            return new Point2D(scaleX, scaleY);
+        }
+    }
+
+
+    /**
+     * @description: 将 AWT 屏幕坐标（可能是物理像素或逻辑像素）转换为 JavaFX 逻辑坐标
+     * 通过判断坐标值是否超出逻辑屏幕范围来区分物理/逻辑像素
+     */
+    private double[] convertToLogical(double awtX, double awtY, Point2D scale, Screen screen) {
+        double boundsWidth = screen.getBounds().getWidth();
+        double boundsHeight = screen.getBounds().getHeight();
+
+        // 如果坐标值超过了逻辑屏幕的宽高，说明 AWT 上报的是物理像素，需要除以缩放比
+        boolean awtIsPhysical = (awtX > boundsWidth) || (awtY > boundsHeight);
+
+        if (awtIsPhysical) {
+            return new double[]{awtX / scale.getX(), awtY / scale.getY()};
+        } else {
+            return new double[]{awtX, awtY};
+        }
     }
 
     private void initStage() {

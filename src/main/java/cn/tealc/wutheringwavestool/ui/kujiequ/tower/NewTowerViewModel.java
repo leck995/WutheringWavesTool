@@ -73,7 +73,7 @@ public class NewTowerViewModel extends BaseViewModel {
                         if (value.getData().isUnlock()){
                             updateData(newTowerData);
                         }
-                        isUnLock.set(value.getData().isUnlock());
+                        //isUnLock.set(value.getData().isUnlock());
                     }
                 }
             };
