@@ -62,6 +62,7 @@ public class UserDailyDataTask extends BaseTask<ResponseBody<RoleDailyData>> {
 
                 JsonNode tree = mapper.readTree(response.body());
                 int code = tree.get("code").asInt();
+                if (code == 220) throw new AccessTokenException();
                 ResponseBody<RoleDailyData> responseBody = new ResponseBody<>();
                 if (code == 200) {
                     RoleDailyData data = mapper.readValue(tree.get("data").toString(), RoleDailyData.class);

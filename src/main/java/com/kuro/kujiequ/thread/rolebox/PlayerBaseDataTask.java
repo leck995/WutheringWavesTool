@@ -72,6 +72,7 @@ public class PlayerBaseDataTask extends BaseTask<ResponseBody<RoleInfo>> {
                     responseBody.setData(roleInfo);
                     return responseBody;
                 } else {
+                    if (responseBody.getCode() == 220) throw new AccessTokenException();
                     checkTokenExpired(responseBody.getMsg(), userInfo);
                     return new ResponseBody<>(1, responseBody.getMsg());
                 }

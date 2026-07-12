@@ -1,7 +1,5 @@
 package com.kuro.kujiequ;
 
-import java.security.GeneralSecurityException;
-
 /**
  * @program: WutheringWavesTool
  * @description: 用户B-AT过期
@@ -10,7 +8,7 @@ import java.security.GeneralSecurityException;
  */
 public class AccessTokenException extends Exception {
     public AccessTokenException() {
-        super("用户Bat获取失败失败或过期");
+        super("用户Bat获取失败或登录状态过期，请重新尝试或重新登录");
     }
 
     public AccessTokenException(String message) {

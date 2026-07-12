@@ -55,6 +55,7 @@ public class RoleCultivateStatusTask extends BaseTask<ResponseBody<List<ExistedR
                 ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBody<List<ExistedRoleDataForCalculator>> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<List<ExistedRoleDataForCalculator>>>() {
                 });
+                if (responseBody.getCode() == 220) throw new AccessTokenException();
                 checkResponseTokenExpired(responseBody, userInfo);
                 return responseBody;
             } else {

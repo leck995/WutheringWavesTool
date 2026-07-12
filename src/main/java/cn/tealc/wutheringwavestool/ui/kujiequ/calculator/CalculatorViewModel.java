@@ -59,8 +59,6 @@ public class CalculatorViewModel extends BaseViewModel {
             ResponseBody<List<WeaponForCalculator>> responseBody = weaponTask.getValue();
             if (responseBody.getCode() == 200){
                 weaponList.setAll(responseBody.getData());
-            }else {
-                NotificationManager.message(MessageInfo.error(responseBody.getMsg()));
             }
         });
         weaponTask.setOnFailed(workerStateEvent -> {
@@ -74,7 +72,7 @@ public class CalculatorViewModel extends BaseViewModel {
             if (responseBody.getCode() == 200){
                 roleList.setAll(responseBody.getData());
             }else {
-                NotificationManager.message(MessageInfo.error(responseBody.getMsg()));
+                NotificationManager.message(MessageInfo.warning(responseBody.getMsg()));
             }
         });
         roleTask.setOnFailed(workerStateEvent -> {

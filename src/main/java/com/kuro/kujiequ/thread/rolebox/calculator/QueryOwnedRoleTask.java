@@ -44,6 +44,7 @@ public class QueryOwnedRoleTask extends BaseTask<ResponseBody<List<Integer>>> {
                 ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBody<List<Integer>> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<List<Integer>>>() {
                 });
+                if (responseBody.getCode() == 220) throw new AccessTokenException();
                 checkResponseTokenExpired(responseBody, userInfo);
                 return responseBody;
             }else {

@@ -53,6 +53,7 @@ public class BatchWeaponCostTask extends BaseTask<ResponseBody<CalculatorResult>
             if (response.statusCode() == 200) {
                 ResponseBody<CalculatorResult> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<CalculatorResult>>() {
                 });
+                if (responseBody.getCode() == 220) throw new AccessTokenException();
                 checkResponseTokenExpired(responseBody, userInfo);
                 return responseBody;
             } else {

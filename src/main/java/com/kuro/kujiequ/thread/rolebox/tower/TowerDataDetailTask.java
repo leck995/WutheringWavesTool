@@ -106,6 +106,7 @@ public class TowerDataDetailTask extends BaseTask<ResponseBody<DifficultyTotal>>
 
                     return responseBody;
                 } else {
+                    if (responseBodyForApi.getCode() == 220) throw new AccessTokenException();
                     checkTokenExpired(responseBodyForApi.getMsg(), userInfo);
                     return new ResponseBody<>(1, responseBodyForApi.getMsg(), false);
                 }

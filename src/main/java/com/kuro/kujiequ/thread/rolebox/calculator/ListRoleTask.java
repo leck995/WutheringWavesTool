@@ -49,8 +49,11 @@ public class ListRoleTask extends BaseTask<ResponseBody<List<RoleForCalculator>>
                 ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBody<List<RoleForCalculator>> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<List<RoleForCalculator>>>() {
                 });
+                if (responseBody.getCode() == 220) throw new AccessTokenException();
                 checkResponseTokenExpired(responseBody, userInfo);
-                responseBody.getData().sort(Comparator.comparingInt(RoleForCalculator::getPriority).reversed());
+                if (responseBody.getData() != null) {
+                    responseBody.getData().sort(Comparator.comparingInt(RoleForCalculator::getPriority).reversed());
+                }
                 return responseBody;
             }else {
                 return new ResponseBody<>(1,"无法获取养成计算器的角色列表");

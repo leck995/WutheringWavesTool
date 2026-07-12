@@ -58,6 +58,7 @@ public class GameRoleDataTask extends BaseTask<ResponseBody<List<Role>>> {
                 JsonNode tree = mapper.readTree(response.body());
                 int code = tree.get("code").asInt();
 
+                if (code == 220) throw new AccessTokenException();
                 if (code == 200 || code == 10902) {
                     responseBody.setCode(200);
                     String data = tree.get("data").asText();

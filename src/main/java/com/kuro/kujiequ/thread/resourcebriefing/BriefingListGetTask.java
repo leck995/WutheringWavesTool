@@ -4,6 +4,7 @@ import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kuro.kujiequ.AccessTokenException;
 import com.kuro.kujiequ.ApiConfig;
 import com.kuro.kujiequ.model.resourcebriefing.Briefing;
 import com.kuro.kujiequ.model.resourcebriefing.Title;
@@ -32,7 +33,7 @@ public class BriefingListGetTask extends BaseTask<ResponseBody<Briefing>> {
     }
 
     @Override
-    protected ResponseBody<Briefing> call() {
+    protected ResponseBody<Briefing> call(){
         URI uri = URI.create(ApiConfig.RESOURCE_BRIEFING_LIST);
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(uri)
@@ -48,21 +49,29 @@ public class BriefingListGetTask extends BaseTask<ResponseBody<Briefing>> {
                 ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBody<Briefing> briefingResponseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<Briefing>>() {
                 });
-                checkResponseTokenExpired(briefingResponseBody, userInfo);
 
-                briefingResponseBody.getData().getMonths().sort(Comparator.comparingInt(Title::getIndex));
-                briefingResponseBody.getData().getVersions().sort(Comparator.comparingInt(Title::getIndex));
-                briefingResponseBody.getData().getWeeks().sort(Comparator.comparingInt(Title::getIndex));
+                if (briefingResponseBody.getCode() == 220){
+                    throw new AccessTokenException();
+                }
+                boolean expired = checkResponseTokenExpired(briefingResponseBody, userInfo);
+                if(expired){
+                    throw new AccessTokenException();
+                }
+
+
+                if (briefingResponseBody.getCode() == 200 && briefingResponseBody.getData() != null) {
+                    briefingResponseBody.getData().getMonths().sort(Comparator.comparingInt(Title::getIndex));
+                    briefingResponseBody.getData().getVersions().sort(Comparator.comparingInt(Title::getIndex));
+                    briefingResponseBody.getData().getWeeks().sort(Comparator.comparingInt(Title::getIndex));
+                }
                 return briefingResponseBody;
             } else {
                 LOG.error("网络错误，状态码：{}", response.statusCode());
                 return ResponseBody.create(response.statusCode(), "网络错误", null);
             }
-        } catch (IOException | InterruptedException e) {
+        } catch (IOException | InterruptedException | AccessTokenException e) {
             LOG.error(e.getMessage());
             return ResponseBody.create(-1, e.getMessage(), null);
         }
-
-
     }
 }
