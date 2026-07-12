@@ -54,7 +54,6 @@ public class GameRoleDataTask extends BaseTask<ResponseBody<List<Role>>> {
             ResponseBody<List<Role>> responseBody = new ResponseBody<>();
             if (response.statusCode() == 200) {
                 ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
-                LOG.debug(response.body());
                 JsonNode tree = mapper.readTree(response.body());
                 int code = tree.get("code").asInt();
 

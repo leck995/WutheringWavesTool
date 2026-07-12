@@ -58,7 +58,6 @@ public class TowerDataDetailTask extends BaseTask<ResponseBody<DifficultyTotal>>
             HttpRequest request = builder.build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                LOG.debug("深塔：{}", response.body());
                 ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBodyForApi responseBodyForApi = mapper.readValue(response.body(), new TypeReference<ResponseBodyForApi>() {
                 });
@@ -66,7 +65,6 @@ public class TowerDataDetailTask extends BaseTask<ResponseBody<DifficultyTotal>>
                 if (responseBodyForApi.getCode() == 200 || responseBodyForApi.getCode() == 10902) {
                     ResponseBody<DifficultyTotal> responseBody = new ResponseBody<>(200, responseBodyForApi.getMsg(), responseBodyForApi.getSuccess());
                     String row = responseBodyForApi.getData();
-                    LOG.debug(row);
                     DifficultyTotal difficultyTotal = mapper.readValue(row, DifficultyTotal.class);
                     difficultyTotal.getDifficultyList().sort((o1, o2) -> {
                         if (o1.getDifficulty() == 3) {

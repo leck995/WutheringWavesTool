@@ -44,22 +44,10 @@ public class UserDailyDataTask extends BaseTask<ResponseBody<RoleDailyData>> {
         String url=String.format("%s?type=2&roleId=%s&sizeType=1&gameId=%s&serverId=%s"
                 , ApiConfig.DAILY_DATA_URL,userInfo.getRoleId(),ApiConfig.PARAM_GAME_ID,ApiConfig.PARAM_SERVER_ID);
         try {
-
-//            HTTPRequestMultipartBody body = new HTTPRequestMultipartBody.Builder()
-//                    .addPart("type", "2")
-//                    .addPart("roleId", userInfo.getRoleId())
-//                    .addPart("gameId", ApiConfig.PARAM_GAME_ID)
-//                    .addPart("sizeType","1")
-//                    .addPart("serverId",ApiConfig.PARAM_SERVER_ID)
-//                    .build();
-
             HttpRequest request = getBuilder(url,userInfo).build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
                 ObjectMapper mapper=AppInjector.getInstance(ObjectMapper.class);
-
-                LOG.debug(response.body().replace("\\",""));
-
                 JsonNode tree = mapper.readTree(response.body());
                 int code = tree.get("code").asInt();
                 if (code == 220) throw new AccessTokenException();

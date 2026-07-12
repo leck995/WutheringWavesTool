@@ -57,10 +57,6 @@ public class UserDataRefreshTask extends BaseTask<ResponseBody<String>> {
 
             HttpRequest request02 = builder02.build();
             HttpResponse<String> response02 = httpClient.send(request02, HttpResponse.BodyHandlers.ofString());
-      /*      HttpRequest request2 = HttpRequestUtil.getRequestWithSource(url2,token,"android");
-            HttpResponse<String> response2 = client.send(request2, HttpResponse.BodyHandlers.ofString());*/
-            LOG.info("角色刷新,每日数据状态码1: {}", response01.body());
-            LOG.info("游戏进度状态码2: {}", response02.body());
             // 检查响应中是否包含 token 过期信息
             if (response01.body().contains("登录已过期")) {
                 checkTokenExpired("登录已过期", userInfo);

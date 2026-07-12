@@ -55,7 +55,6 @@ public class PlayerBaseDataTask extends BaseTask<ResponseBody<RoleInfo>> {
             HttpRequest request = builder.build();
             HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             if (response.statusCode() == 200) {
-                LOG.debug(response.body().replace("\\",""));
                 ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBodyForApi responseBodyForApi = mapper.readValue(response.body(), new TypeReference<ResponseBodyForApi>() {
                 });
