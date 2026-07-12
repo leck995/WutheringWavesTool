@@ -3,6 +3,7 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.calculator;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
+import cn.tealc.wutheringwavestool.service.WebKujiequManager;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.kuro.kujiequ.model.calculator.list.RoleForCalculator;
 import com.kuro.kujiequ.model.calculator.list.WeaponForCalculator;
@@ -14,7 +15,10 @@ import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -23,17 +27,23 @@ import java.util.List;
  * @create: 2025-03-26 17:00
  */
 public class CalculatorViewModel extends BaseViewModel {
+    private static final Logger LOG = LoggerFactory.getLogger(CalculatorViewModel.class);
     private ObservableList<RoleForCalculator> roleList = FXCollections.observableArrayList();
     private ObservableList<WeaponForCalculator> weaponList = FXCollections.observableArrayList();
     @Inject
     private UserInfoDao userInfoDao;
+
+    @Inject
+    private WebKujiequManager webKujiequManager;
+
+    private UserInfo userInfo;
 
     public CalculatorViewModel() {
 
     }
 
     public void init(){
-        UserInfo userInfo = userInfoDao.getMain();
+        userInfo = userInfoDao.getMain();
         if (userInfo != null){
             //刷新缓存数据后再获取
             CalculatorDataRefreshTask calculatorDataRefreshTask = new CalculatorDataRefreshTask(userInfo);
@@ -79,6 +89,18 @@ public class CalculatorViewModel extends BaseViewModel {
             NotificationManager.message(MessageInfo.error("获取角色列表失败，请检查网络后重试"));
         });
         Thread.startVirtualThread(roleTask);
+    }
+
+
+    public void openGrowthCalculatorInWebView() {
+        if (userInfo != null) {
+            webKujiequManager.setUserInfo(userInfo);
+        }
+        try {
+            webKujiequManager.openGrowthCalculator();
+        } catch (IOException e) {
+            LOG.error("打开养成计算器网页失败", e);
+        }
     }
 
 

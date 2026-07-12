@@ -16,6 +16,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2MZ;
 
 public class ResourceBriefingView implements FxmlView<ResourceBriefingViewModel> {
@@ -38,6 +39,9 @@ public class ResourceBriefingView implements FxmlView<ResourceBriefingViewModel>
 
     @FXML
     private ComboBox<Title> recordTypeBox;
+
+    @FXML
+    private HBox actionBox;
 
     @FXML
     private ImageView starIcon;
@@ -84,6 +88,12 @@ public class ResourceBriefingView implements FxmlView<ResourceBriefingViewModel>
         });
         viewModel.init();
 
+        // 手机视图浏览按钮
+        Button phoneBtn = new Button(null, new FontIcon(Material2MZ.SMARTPHONE));
+        phoneBtn.getStyleClass().addAll("button-icon", "flat", "accent");
+        phoneBtn.setTooltip(new Tooltip("手机视图浏览"));
+        phoneBtn.setOnAction(e -> viewModel.openResourceBriefingInWebView());
+        actionBox.getChildren().add(phoneBtn);
     }
 
 

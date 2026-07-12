@@ -2,6 +2,7 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.role;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.WebKujiequManager;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
@@ -37,6 +38,10 @@ public class OwnRoleViewModel extends BaseViewModel {
     private final ObservableList<Role> roleList= FXCollections.observableArrayList();
     @Inject
     private UserInfoDao userInfoDao;
+
+    @Inject
+    private WebKujiequManager webKujiequManager;
+
     private UserInfo userInfo;
 
     public void init() {
@@ -62,6 +67,18 @@ public class OwnRoleViewModel extends BaseViewModel {
             publish("EMPTY");
         }
     }
+
+    public void openRoleBoxInWebView() {
+        if (userInfo != null) {
+            webKujiequManager.setUserInfo(userInfo);
+        }
+        try {
+            webKujiequManager.openRoleBox();
+        } catch (IOException e) {
+            LOG.error("打开数据终端网页失败", e);
+        }
+    }
+
 
     public ObservableList<Role> getRoleList() {
         return roleList;

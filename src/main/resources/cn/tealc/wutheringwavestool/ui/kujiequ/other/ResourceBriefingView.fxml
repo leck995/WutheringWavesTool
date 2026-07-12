@@ -25,7 +25,7 @@
                   <children>
                       <Label styleClass="title-2" text="%ui.resource_briefing.title" />
                       <Separator orientation="VERTICAL" />
-                      <HBox alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
+                              <HBox fx:id="actionBox" alignment="CENTER_LEFT" HBox.hgrow="ALWAYS">
                           <children>
                               <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toMonth" selected="true" styleClass="child-select" text="%ui.resource_briefing.month">
                                   <graphic>

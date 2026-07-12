@@ -3,6 +3,7 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.other;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.WebKujiequManager;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
@@ -19,12 +20,20 @@ import de.saxsys.mvvmfx.MvvmFX;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
 
 public class ResourceBriefingViewModel extends BaseViewModel {
+    private static final Logger LOG = LoggerFactory.getLogger(ResourceBriefingViewModel.class);
     public static final String EVENT_SELECT_BOX = "selectBox";
 
     @Inject
     private UserInfoDao userInfoDao;
+
+    @Inject
+    private WebKujiequManager webKujiequManager;
 
     private ObservableList<Item> starList = FXCollections.observableArrayList();
     private ObservableList<Item> coinList = FXCollections.observableArrayList();
@@ -100,6 +109,21 @@ public class ResourceBriefingViewModel extends BaseViewModel {
             NotificationManager.message(MessageInfo.error(workerStateEvent.getSource().getMessage()));
         });*/
         Thread.startVirtualThread(detailGetTask);
+    }
+
+
+    /**
+     * 通过 web-kujiequ.exe 在手机视图中打开资源简报网页
+     */
+    public void openResourceBriefingInWebView() {
+        if (userInfo != null) {
+            webKujiequManager.setUserInfo(userInfo);
+        }
+        try {
+            webKujiequManager.openResourceBriefing();
+        } catch (IOException e) {
+            LOG.error("打开资源简报网页失败", e);
+        }
     }
 
 

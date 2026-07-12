@@ -27,5 +27,6 @@ public class AppModule extends AbstractModule {
         bind(GameWindowMonitorService.class).in(Singleton.class);
         bind(TrayIconManager.class).in(Singleton.class);
         bind(TokenRefreshService.class).in(Singleton.class);
+        bind(WebKujiequManager.class).in(Singleton.class);
     }
 }

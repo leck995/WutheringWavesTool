@@ -14,15 +14,17 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2MZ;
 
 import java.net.URL;
@@ -46,6 +48,8 @@ public class CalculatorView implements FxmlView<CalculatorViewModel>, Initializa
     private FlowPane roleFlowPane;
     @FXML
     private FlowPane weaponFlowPane;
+    @FXML
+    private HBox actionBox;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -68,6 +72,15 @@ public class CalculatorView implements FxmlView<CalculatorViewModel>, Initializa
             root.getChildren().setAll(tipPane);
         });
         viewModel.init();
+
+        // 手机视图浏览按钮
+        Button phoneBtn = new Button(null, new FontIcon(Material2MZ.SMARTPHONE));
+        phoneBtn.getStyleClass().addAll("button-icon", "flat", "accent");
+        phoneBtn.setTooltip(new Tooltip("手机视图浏览"));
+        phoneBtn.setOnAction(e -> viewModel.openGrowthCalculatorInWebView());
+        Pane spacer = new Pane();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        actionBox.getChildren().addAll(spacer, phoneBtn);
     }
 
 

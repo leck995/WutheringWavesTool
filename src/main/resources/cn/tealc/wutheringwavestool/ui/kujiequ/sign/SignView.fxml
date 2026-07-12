@@ -19,7 +19,7 @@
    <children>
       <AnchorPane prefHeight="700.0" prefWidth="1000.0" styleClass="sign" stylesheets="@../../../css/kujiequ/Sign.css">
          <children>
-            <HBox alignment="CENTER" layoutX="840.0" layoutY="10.0" spacing="5.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="10.0">
+            <HBox fx:id="actionBox" alignment="CENTER" layoutX="840.0" layoutY="10.0" spacing="5.0" AnchorPane.rightAnchor="20.0" AnchorPane.topAnchor="10.0">
                <children>
                   <ComboBox fx:id="accountBox" prefWidth="150.0" />
                </children>

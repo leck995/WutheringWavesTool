@@ -19,7 +19,7 @@
    <children>
       <AnchorPane prefHeight="600.0" prefWidth="1000.0">
          <children>
-            <HBox spacing="15.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <HBox fx:id="actionBox" spacing="15.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <Label styleClass="title-2" text="%ui.calculator.title" />
                   <Separator orientation="VERTICAL" />

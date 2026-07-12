@@ -20,8 +20,10 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2MZ;
 
 import java.net.URL;
@@ -50,6 +52,8 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
     private ToggleSwitch autoSignSwitch;
     @FXML
     private StackPane root;
+    @FXML
+    private HBox actionBox;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -83,6 +87,13 @@ public class SignView implements Initializable, FxmlView<SignViewModel> {
         //注意这里位置不可换，需要viewModel.init()后，当前逻辑有瑕疵，找个机会换了
         accountBox.getSelectionModel().select(viewModel.getUserIndex());
         viewModel.userIndexProperty().bind(accountBox.getSelectionModel().selectedIndexProperty());
+
+        // 手机视图浏览按钮
+        Button phoneBtn = new Button(null, new FontIcon(Material2MZ.SMARTPHONE));
+        phoneBtn.getStyleClass().addAll("button-icon", "flat", "accent");
+        phoneBtn.setTooltip(new Tooltip("手机视图浏览"));
+        phoneBtn.setOnAction(e -> viewModel.openMonthSignInWebView());
+        actionBox.getChildren().add(phoneBtn);
     }
 
     @FXML

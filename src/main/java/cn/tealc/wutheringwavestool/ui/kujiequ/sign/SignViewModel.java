@@ -3,6 +3,7 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.sign;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.SignHistoryDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.WebKujiequManager;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
 import cn.tealc.wutheringwavestool.model.ResponseBody;
@@ -20,7 +21,10 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.util.Pair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.*;
 
 /**
@@ -30,11 +34,15 @@ import java.util.*;
  * @create: 2024-07-07 17:53
  */
 public class SignViewModel extends BaseViewModel {
+    private static final Logger LOG = LoggerFactory.getLogger(SignViewModel.class);
     @Inject
     private UserInfoDao userInfoDao;
 
     @Inject
     private SignHistoryDao signHistoryDao;
+
+    @Inject
+    private WebKujiequManager webKujiequManager;
 
     private final ObservableList<UserInfo> userInfoList= FXCollections.observableArrayList();
     private final SimpleIntegerProperty userIndex = new SimpleIntegerProperty(-1);
@@ -142,6 +150,20 @@ public class SignViewModel extends BaseViewModel {
         });
         Thread.startVirtualThread(task);
     }
+
+    public void openMonthSignInWebView() {
+        int index = userIndex.get();
+        if (index >= 0 && index < userInfoList.size()) {
+            UserInfo current = userInfoList.get(index);
+            webKujiequManager.setUserInfo(current);
+        }
+        try {
+            webKujiequManager.openMonthSign();
+        } catch (IOException e) {
+            LOG.error("打开每日签到网页失败", e);
+        }
+    }
+
 
     public int getUserIndex() {
         return userIndex.get();

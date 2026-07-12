@@ -54,6 +54,9 @@ public class OwnRoleView implements FxmlView<OwnRoleViewModel>, Initializable {
     @FXML
     private FlowPane roleFlowPane;
 
+    @FXML
+    private HBox actionBox;
+
     private List<ImageView> imageViews = new ArrayList<>();
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -73,6 +76,13 @@ public class OwnRoleView implements FxmlView<OwnRoleViewModel>, Initializable {
             root.getChildren().setAll(tipPane);
         });
         viewModel.init();
+
+        // 手机视图浏览按钮
+        Button phoneBtn = new Button(null, new FontIcon(Material2MZ.SMARTPHONE));
+        phoneBtn.getStyleClass().addAll("button-icon", "flat", "accent");
+        phoneBtn.setTooltip(new Tooltip("手机视图浏览"));
+        phoneBtn.setOnAction(e -> viewModel.openRoleBoxInWebView());
+        actionBox.getChildren().add(phoneBtn);
     }
 
     private class RoleCell extends StackPane{
