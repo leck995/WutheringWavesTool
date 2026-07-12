@@ -49,6 +49,7 @@ public class ListWeaponTask extends BaseTask<ResponseBody<List<WeaponForCalculat
                 ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBody<List<WeaponForCalculator>> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<List<WeaponForCalculator>>>() {
                 });
+                checkResponseTokenExpired(responseBody, userInfo);
                 responseBody.getData().sort(Comparator.comparingInt(WeaponForCalculator::getPriority).reversed());
                 return responseBody;
             }else {

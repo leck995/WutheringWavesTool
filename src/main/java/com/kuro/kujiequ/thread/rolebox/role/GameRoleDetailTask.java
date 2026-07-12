@@ -67,6 +67,7 @@ public class GameRoleDetailTask extends BaseTask<ResponseBody<RoleDetail>> {
                     responseBody.setData(roleDetail);
                     return responseBody;
                 } else {
+                    checkTokenExpired(responseBodyForApi.getMsg(), userInfo);
                     return new ResponseBody<>(1, responseBodyForApi.getMsg(), false);
                 }
             } else {

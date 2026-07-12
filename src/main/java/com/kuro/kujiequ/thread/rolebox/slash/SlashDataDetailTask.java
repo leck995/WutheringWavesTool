@@ -68,6 +68,7 @@ public class SlashDataDetailTask extends BaseTask<ResponseBody<SlashData>> {
                     saveToDB(slashData, mapper);
                     return responseBody;
                 } else {
+                    checkTokenExpired(responseBodyForApi.getMsg(), userInfo);
                     return new ResponseBody<>(1, responseBodyForApi.getMsg(), false);
                 }
             } else {

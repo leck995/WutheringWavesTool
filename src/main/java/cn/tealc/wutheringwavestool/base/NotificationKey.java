@@ -35,7 +35,7 @@ public class NotificationKey {
 
     public static final String ACCOUNT_UPDATE="ACCOUNT_UPDATE"; // 更新库街区账号
 
-
+    public static final String TOKEN_EXPIRED="TOKEN_EXPIRED"; // Kuro Token 过期，需重新登录
 
 
 }

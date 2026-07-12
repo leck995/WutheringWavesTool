@@ -72,7 +72,9 @@ public class GameRoleDataTask extends BaseTask<ResponseBody<List<Role>>> {
                     responseBody.setCode(code);
                     LOG.error("服务器返回异常，错误代码：{}", code);
                     JsonNode node = tree.get("msg");
-                    responseBody.setMsg(node.asText());
+                    String msg = node.asText();
+                    checkTokenExpired(msg, userInfo);
+                    responseBody.setMsg(msg);
                 }
 
             } else {

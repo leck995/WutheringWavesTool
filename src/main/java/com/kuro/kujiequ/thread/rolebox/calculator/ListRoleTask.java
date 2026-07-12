@@ -49,6 +49,7 @@ public class ListRoleTask extends BaseTask<ResponseBody<List<RoleForCalculator>>
                 ObjectMapper mapper = AppInjector.getInstance(ObjectMapper.class);
                 ResponseBody<List<RoleForCalculator>> responseBody = mapper.readValue(response.body(), new TypeReference<ResponseBody<List<RoleForCalculator>>>() {
                 });
+                checkResponseTokenExpired(responseBody, userInfo);
                 responseBody.getData().sort(Comparator.comparingInt(RoleForCalculator::getPriority).reversed());
                 return responseBody;
             }else {
