@@ -1,14 +1,9 @@
 target/
-!.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
 ### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
-.idea
+.idea/
 *.iws
 *.iml
 *.ipr
@@ -37,5 +32,33 @@ build/
 
 ### Mac OS ###
 .DS_Store
-/.idea/
-/.mvn/
+
+### Maven Wrapper (keep tracked: .mvn/wrapper/*) ###
+# Do not ignore /.mvn/ — wrapper must remain in git.
+
+### Local workspace cleanup ###
+/backup/
+
+### Local runtime / data ###
+/settings.json
+/sqlite.db
+/data/
+/data3/
+/data4/
+/assets/
+/log/
+/plugins/
+/游戏下载/
+
+### Build / temp ###
+/dependency-reduced-pom.xml
+*.log
+resource-temp*.json
+downloaded_file.json
+a.json
+
+### Archives / backups ###
+/*.zip
+/src*.zip
+/update.zip
+/WutheringWavesTool*.zip
