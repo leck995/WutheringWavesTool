@@ -8,6 +8,7 @@ import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import cn.tealc.wutheringwavestool.jna.GlobalKeyListener;
 import cn.tealc.wutheringwavestool.service.GameWindowMonitorService;
 import cn.tealc.wutheringwavestool.service.TokenRefreshService;
+import cn.tealc.wutheringwavestool.service.WebKujiequManager;
 import cn.tealc.wutheringwavestool.thread.system.ClearLogFileTask;
 import cn.tealc.wutheringwavestool.ui.system.MainView;
 import cn.tealc.wutheringwavestool.ui.system.MainViewModel;
@@ -125,6 +126,7 @@ public class WwtApp extends Application {
 
     public static void exit() {
         AppInjector.getInstance(GameWindowMonitorService.class).stop();
+        AppInjector.getInstance(WebKujiequManager.class).stop();
         AppInjector.getInstance(TrayIconManager.class).remove();
         Platform.setImplicitExit(true);
         JdbcUtils.exit();

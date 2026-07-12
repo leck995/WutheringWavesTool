@@ -11,11 +11,16 @@ import de.saxsys.mvvmfx.ViewTuple;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
+import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2MZ;
 
 public class TowerGroupView implements FxmlView<TowerGroupViewModel> {
@@ -41,6 +46,15 @@ public class TowerGroupView implements FxmlView<TowerGroupViewModel> {
             root.getChildren().setAll(tipPane);
         });
         viewModel.init();
+
+        // 手机视图浏览按钮（右上角）
+        Button phoneBtn = new Button(null, new FontIcon(Material2MZ.SMARTPHONE));
+        phoneBtn.getStyleClass().addAll("button-icon", "flat", "accent");
+        phoneBtn.setTooltip(new Tooltip("手机视图浏览"));
+        phoneBtn.setOnAction(e -> viewModel.openRoleBoxInWebView());
+        Pane spacer = new Pane();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        headerPane.getChildren().addAll(spacer, phoneBtn);
     }
 
 
