@@ -85,7 +85,7 @@
             <version>1.0.2</version>
         </dependency>
 
-        <!--MVVM START 以下使用jlink时需要自己添加模块信息-->
+        <!--MVVM START 以下使用jlink时需要自己添加模块信息，已提供该jar在/libs目录，也可直接替换为1.8.0-->
         <dependency>
             <groupId>de.saxsys</groupId>
             <artifactId>mvvmfx</artifactId>
