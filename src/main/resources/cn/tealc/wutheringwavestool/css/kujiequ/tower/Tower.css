@@ -76,15 +76,18 @@
 
 .tower .difficulty-list-view .list-cell > .tower-cell .tower-star{
     -fx-font-size: 15;
-    -fx-text-fill: -color-font-muted;
-    -fx-effect: dropshadow(gaussian, #35312e, 6, 0, 0, 0);
+    -fx-text-fill: #ff6666;
+}
+.tower .difficulty-list-view .list-cell > .tower-cell .tower-star .ikonli-font-icon {
+    -fx-icon-color: #ff6666;
+    -fx-fill: #ff6666;
 }
 .tower .difficulty-list-view .list-cell > .tower-cell .tower-star.full-star{
-    -fx-text-fill: #fff624;
+    -fx-text-fill: #ff6666;
 }
 .tower .difficulty-list-view .list-cell > .tower-cell .tower-star.full-star .ikonli-font-icon {
-    -fx-icon-color: #fff624;
-    -fx-fill: #fff624;
+    -fx-icon-color: #ff6666;
+    -fx-fill: #ff6666;
 }
 .tower .difficulty-list-view .scroll-bar{
     -fx-background-color: transparent;
@@ -101,15 +104,50 @@
 
 
 
-.tower .right .area{
-    -fx-spacing: 5;
+.tower .history-section > .label{
+    -fx-padding: 8 0 4 10;
+}
+
+.tower .right{
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+.tower .right > .viewport{
+    -fx-background-color: transparent;
+}
+.tower .right .scroll-bar{
+    -fx-background-color: transparent;
+}
+.tower .right .scroll-bar:vertical .thumb{
+    -fx-background-color: transparent;
+}
+.tower .right:hover .scroll-bar:vertical .thumb{
     -fx-background-color: -color-bg-default-30;
-    -fx-background-radius: 8;
-    -fx-padding: 15 15 15 15;
+}
+
+.tower .right .area{
+    -fx-spacing: 8;
+    -fx-background-color: -color-bg-default-40;
+    -fx-background-radius: 14;
+    -fx-border-radius: 14;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1;
+    -fx-padding: 16 18 14 18;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);
+}
+
+.tower .right .area:hover{
+    -fx-border-color: -color-accent-muted;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 16, 0, 0, 6);
+}
+
+.tower .right .area .area-header{
+    -fx-alignment: CENTER_LEFT;
 }
 
 .tower .right .area .area-title{
-    -fx-font-size: 20;
+    -fx-font-size: 18;
     -fx-font-weight: bold;
 }
 .tower .right .area .area-label{
@@ -119,19 +157,51 @@
 
 
 .tower .right .area .area-score{
-    -fx-font-size: 16;
+    -fx-font-size: 15;
     -fx-font-weight: bold;
-    -fx-text-fill: -color-accent-fg;
+    -fx-text-fill: #ff6666;
 }
+
+.tower .right .area .area-score.full-star{
+    -fx-text-fill: #ff6666;
+}
+
+.tower .right .area .area-score.full-star .ikonli-font-icon{
+    -fx-icon-color: #ff6666;
+    -fx-fill: #ff6666;
+}
+
+.tower .right .area .floor-list{
+    -fx-spacing: 2;
+}
+
+.tower .right .area .floor-row{
+    -fx-spacing: 16;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 4 0 4 0;
+}
+
+.tower .right .area .star-box{
+    -fx-spacing: 3;
+    -fx-min-width: 96;
+    -fx-alignment: CENTER_LEFT;
+}
+
+.tower .right .area .empty-hint{
+    -fx-padding: 8 0 4 0;
+    -fx-font-size: 13;
+}
+
 
 .tower .right .area .area-level{
     -fx-font-size: 22;
     -fx-font-weight: bold;
-    -fx-effect: dropshadow(gaussian, #2e2e2e, 4, 0, 0, 0);
+    -fx-padding:  0 4 0 4;
+    -fx-background-radius: 4;
 }
 .tower .right .area .area-level.s{
-    -fx-text-fill: #fff624;
-    -fx-background-color: #fff62420;
+    -fx-text-fill: #ff6666;
+    -fx-background-color: #ff666620;
 }
 .tower .right .area .area-level.a,
 .tower .right .area .area-level.b,
@@ -156,7 +226,9 @@
 
 
 .tower .right .area .floor-title{
-    -fx-font-size: 16;
+    -fx-font-size: 14;
+    -fx-min-width: 56;
+    -fx-text-fill: -color-font-muted;
 }
 
 .tower .right .area .floor-score{
@@ -179,7 +251,7 @@
 .tower .summary-bar .summary-score {
     -fx-font-size: 15;
     -fx-font-weight: bold;
-    -fx-text-fill: -color-accent-fg;
+    -fx-text-fill: #ff6666;
 }
 
 .tower .summary-bar .summary-progress {
@@ -196,8 +268,8 @@
 }
 
 .tower .summary-bar .summary-rank.s {
-    -fx-text-fill: #fff624;
-    -fx-background-color: #fff62420;
+    -fx-text-fill: #ff6666;
+    -fx-background-color: #ff666620;
     -fx-effect: dropshadow(gaussian, #2e2e2e, 4, 0, 0, 0);
 }
 

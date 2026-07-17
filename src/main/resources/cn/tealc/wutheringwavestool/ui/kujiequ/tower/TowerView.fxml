@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import atlantafx.base.controls.Spacer?>
+<?import java.lang.String?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
@@ -12,24 +15,48 @@
     <children>
         <AnchorPane prefHeight="200.0" prefWidth="200.0">
             <children>
-            <VBox layoutY="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0">
-               <children>
-                        <ListView fx:id="difficuityListview" prefHeight="300.0" prefWidth="150.0" styleClass="difficulty-list-view" />
-                  <VBox VBox.vgrow="ALWAYS">
-                     <children>
-                        <Label styleClass="title-3" text="往期历史" translateX="10.0" />
-                        <ListView fx:id="towerHistoryListview" prefHeight="200.0" prefWidth="210.0" styleClass="difficulty-list-view" VBox.vgrow="ALWAYS" />
-                     </children>
-                  </VBox>
-               </children>
-            </VBox>
-            <Label fx:id="title" layoutX="20.0" layoutY="20.0" styleClass="title-2" text="深境之塔" AnchorPane.leftAnchor="220.0" AnchorPane.topAnchor="10.0" />
-                <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="right" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
-                    <content>
-                  <FlowPane fx:id="areaFlowPane" columnHalignment="CENTER" hgap="50.0" vgap="40.0" />
-                    </content>
-                </ScrollPane>
-            <Label fx:id="seasonEndTimeLabel" styleClass="end-time" text="刷新" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="16.0" />
+                <VBox spacing="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0">
+                    <children>
+                        <ListView fx:id="difficuityListview" prefHeight="300.0" prefWidth="200.0" styleClass="difficulty-list-view" />
+                        <VBox fx:id="historySection" styleClass="history-section" VBox.vgrow="ALWAYS">
+                            <children>
+                                <Label text="往期历史">
+                                    <styleClass>
+                                        <String fx:value="title-3" />
+                                        <String fx:value="text-muted" />
+                                    </styleClass>
+                                </Label>
+                                <ListView fx:id="towerHistoryListview" prefHeight="200.0" prefWidth="200.0" styleClass="difficulty-list-view" VBox.vgrow="ALWAYS" />
+                            </children>
+                        </VBox>
+                    </children>
+                </VBox>
+                <VBox spacing="12.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="12.0">
+                            <children>
+                                <Label fx:id="title" styleClass="title-2" text="深境之塔" />
+                                <Spacer />
+                                <Label fx:id="seasonEndTimeLabel" styleClass="end-time" text="刷新" />
+                            </children>
+                        </HBox>
+                        <HBox fx:id="summaryBox" alignment="CENTER_LEFT" spacing="24.0" styleClass="summary-bar">
+                            <children>
+                                <Label fx:id="totalStarLabel" styleClass="summary-score" text="0 / 0">
+                                    <graphic>
+                                        <Label text="总星数：" />
+                                    </graphic>
+                                </Label>
+                                <Label fx:id="areaProgressLabel" styleClass="summary-progress" text="区域 0 / 0" />
+                            </children>
+                        </HBox>
+                        <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="right" VBox.vgrow="ALWAYS">
+                            <content>
+                                <FlowPane fx:id="areaFlowPane" columnHalignment="LEFT" hgap="24.0" vgap="24.0" />
+                            </content>
+                        </ScrollPane>
+                    </children>
+                </VBox>
             </children>
         </AnchorPane>
     </children>

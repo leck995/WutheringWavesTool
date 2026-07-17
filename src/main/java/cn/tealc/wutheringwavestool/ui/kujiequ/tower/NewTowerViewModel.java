@@ -70,10 +70,11 @@ public class NewTowerViewModel extends BaseViewModel {
                     ResponseBody<NewTowerData> value = towerDataDetailTask.getValue();
                     if (value.getCode() == 200) {
                         NewTowerData newTowerData = value.getData();
-                        if (value.getData().isUnlock()){
+                        boolean unlocked = newTowerData != null && newTowerData.isUnlock();
+                        isUnLock.set(unlocked);
+                        if (unlocked) {
                             updateData(newTowerData);
                         }
-                        //isUnLock.set(value.getData().isUnlock());
                     }
                 }
             };
