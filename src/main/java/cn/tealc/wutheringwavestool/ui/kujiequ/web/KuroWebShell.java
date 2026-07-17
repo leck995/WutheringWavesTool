@@ -309,13 +309,17 @@ public final class KuroWebShell {
             "/web/bridge-mock.js";
     private static final String SCROLLBAR_RESOURCE =
             "/web/scrollbar.js";
+    private static final String HIDE_ACTION_AREA_RESOURCE =
+            "/web/hide-action-area.js";
 
     private static final String BRIDGE_TEMPLATE = readResource(BRIDGE_RESOURCE);
     private static final String SCROLLBAR_SCRIPT = readResource(SCROLLBAR_RESOURCE);
+    private static final String HIDE_ACTION_AREA_SCRIPT = readResource(HIDE_ACTION_AREA_RESOURCE);
 
     private static String buildInitScript(AuthConfig auth) {
         String bridge = BRIDGE_TEMPLATE.replace("__KJQ_AUTH_JSON__", auth.toAuthJson());
-        return SCROLLBAR_SCRIPT + "\n" + bridge;
+        // scrollbar + 隐藏 H5 底部操作区 + bridge/auth
+        return SCROLLBAR_SCRIPT + "\n" + HIDE_ACTION_AREA_SCRIPT + "\n" + bridge;
     }
 
     private static String buildApplyAuthScript(AuthConfig auth) {
