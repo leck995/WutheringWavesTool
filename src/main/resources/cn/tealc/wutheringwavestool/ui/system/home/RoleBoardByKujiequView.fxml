@@ -144,7 +144,7 @@
                         <VBox alignment="CENTER" maxWidth="120.0" prefWidth="60.0">
                             <children>
                                 <Label fx:id="weeklyRougeLabel" contentDisplay="BOTTOM" styleClass="data-label-1" text="100%" />
-                                <Label fx:id="weeklyRougeTipLabel" styleClass="data-label-2" text="%ui.home.label.rouge" />
+                                <Label fx:id="weeklyRougeTipLabel" styleClass="data-label-2" text="%ui.home.label.weekly.frame.data" />
                             </children>
                             <padding>
                                 <Insets left="5.0" />

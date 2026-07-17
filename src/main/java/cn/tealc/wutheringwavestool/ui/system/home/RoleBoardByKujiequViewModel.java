@@ -54,9 +54,9 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
     private SimpleStringProperty box3Text = new SimpleStringProperty();
     private SimpleStringProperty box4Text = new SimpleStringProperty();
     private SimpleStringProperty weeklyRougeText = new SimpleStringProperty();
-    private SimpleStringProperty weeklyRougeTipText = new SimpleStringProperty("肉鸽");
+    private SimpleStringProperty weeklyRougeTipText = new SimpleStringProperty(LanguageManager.getString("ui.home.label.weekly.frame.data"));
     private SimpleStringProperty weeklyInstCountText = new SimpleStringProperty();
-    private SimpleStringProperty weeklyInstCountTipText = new SimpleStringProperty("周本");
+    private SimpleStringProperty weeklyInstCountTipText = new SimpleStringProperty(LanguageManager.getString("ui.home.label.weekly"));
     private SimpleStringProperty phantomBox1Text = new SimpleStringProperty();
     private SimpleStringProperty phantomBox2Text = new SimpleStringProperty();
     private SimpleStringProperty phantomBox3Text = new SimpleStringProperty();
@@ -155,7 +155,7 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
                         phantomBox3Text.set(String.valueOf(boxInfo.getNum()));
                     }
                 }
-                weeklyRougeText.set(String.format("%d", roleInfo.getRougeScore()));
+
                 rolePaneVisible.set(true);
                 onWeekEnd(roleInfo);
             } else {
@@ -212,6 +212,10 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
                     energyText.set(String.format("%d/%d", data.getEnergyData().getCur(), data.getEnergyData().getTotal()));
                     weeklyInstCountText.set(String.format("%d", data.getWeeklyData().getCur()));
                     storeEnergyText.set(String.format("%d/%d", data.getStoreEnergyData().getCur(), data.getStoreEnergyData().getTotal()));
+
+                    weeklyRougeText.set(String.format("%d", data.getWeeklyFrameData().getCur()));
+
+
                 } else {
                     rolePaneVisible.set(false);
                     MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
@@ -246,7 +250,7 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
                 NotificationManager.publish(NotificationKey.MESSAGE,
                         MessageInfo.warning(LanguageManager.getString("ui.home.label.weekly.message03")));
             } else {
-                weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.rouge"));
+                weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.weekly.frame.data"));
             }
         }
     }

@@ -27,9 +27,11 @@ public class RoleDailyData {
     private List<RoleDailyDetail> battlePassData;
     private RoleDailyDetail storeEnergyData; //结晶单质
     private RoleDailyDetail towerData; //逆境深塔·实验区
+    private RoleDailyDetail newTowerData; //终焉矩阵
     private RoleDailyDetail slashTowerData; //冥歌海墟·再生-湍渊
     private RoleDailyDetail weeklyData; //战歌重奏
-
+    private RoleDailyDetail weeklyFrameData; //周度游历
+    private RoleDailyDetail weeklyRougeData; //千道门扉的异想
     public int getGameId() {
         return gameId;
     }
@@ -164,5 +166,29 @@ public class RoleDailyData {
 
     public void setWeeklyData(RoleDailyDetail weeklyData) {
         this.weeklyData = weeklyData;
+    }
+
+    public RoleDailyDetail getNewTowerData() {
+        return newTowerData;
+    }
+
+    public void setNewTowerData(RoleDailyDetail newTowerData) {
+        this.newTowerData = newTowerData;
+    }
+
+    public RoleDailyDetail getWeeklyFrameData() {
+        return weeklyFrameData;
+    }
+
+    public void setWeeklyFrameData(RoleDailyDetail weeklyFrameData) {
+        this.weeklyFrameData = weeklyFrameData;
+    }
+
+    public RoleDailyDetail getWeeklyRougeData() {
+        return weeklyRougeData;
+    }
+
+    public void setWeeklyRougeData(RoleDailyDetail weeklyRougeData) {
+        this.weeklyRougeData = weeklyRougeData;
     }
 }
