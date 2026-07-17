@@ -85,7 +85,6 @@ open module cn.tealc.wutheringwavestool {
     exports cn.tealc.wutheringwavestool.ui.kujiequ.other;
     exports cn.tealc.wutheringwavestool.ui.kujiequ.web;
     exports com.kuro.kujiequ.thread.sms;
-    exports com.kuro.kujiequ.captcha;
     exports cn.tealc.wutheringwavestool.model.game.pool;
     exports cn.tealc.wutheringwavestool.thread.gacha.cloud;
     exports cn.tealc.wutheringwavestool.thread.system.account;

@@ -7,7 +7,7 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
 import com.jfoenixN.controls.JFXDialogLayout;
-import com.kuro.kujiequ.captcha.GeetestCaptchaDialog;
+import cn.tealc.wutheringwavestool.ui.kujiequ.web.GeetestCaptchaDialog;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.thread.sms.SendSmsTask;
 import de.saxsys.mvvmfx.FxmlView;

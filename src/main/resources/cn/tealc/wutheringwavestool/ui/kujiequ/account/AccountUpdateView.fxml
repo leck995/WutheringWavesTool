@@ -99,8 +99,8 @@
                         <Label text="验证码" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
                         <HBox GridPane.columnIndex="1" GridPane.rowIndex="1">
                            <children>
-                              <TextField fx:id="loginCodeField" maxWidth="250.0" promptText="输入验证码" />
-                              <Button fx:id="getCodeBtn" mnemonicParsing="false" onAction="#sendLoginCode" text="获取" />
+                              <TextField fx:id="loginCodeField" maxWidth="250.0" prefWidth="180.0" promptText="输入验证码" />
+                              <Button fx:id="getCodeBtn" mnemonicParsing="false" onAction="#sendLoginCode" prefWidth="70.0" text="发送" />
                            </children>
                         </HBox>
                         <Label layoutX="62.0" layoutY="76.0" text="类型" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
