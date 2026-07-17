@@ -49,8 +49,17 @@
     -fx-background-color: transparent;
     -fx-border-color: transparent;
 }
+/* 禁止横向滚动条（历史/难度列表内容应单列纵向滚动） */
+.tower .difficulty-list-view .scroll-bar:horizontal {
+    -fx-opacity: 0;
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+    -fx-pref-width: 0;
+    -fx-max-width: 0;
+    -fx-padding: 0;
+}
 .tower .difficulty-list-view .list-cell{
-    -fx-padding: 5,5,5,0;
+    -fx-padding: 5 5 5 0;
 }
 .tower .difficulty-list-view .list-cell,
 .tower .difficulty-list-view .list-cell:selected{
@@ -58,11 +67,11 @@
 }
 
 .tower .difficulty-list-view .list-cell > .tower-cell{
-    -fx-padding: 8,20,8,20;
+    -fx-padding: 8 12 8 12;
     -fx-spacing: 15;
     -fx-background-radius: 5;
     -fx-pref-height: 35;
-
+    -fx-max-width: infinity;
 }
 
 .tower .difficulty-list-view .list-cell:hover > .tower-cell,

@@ -17,7 +17,7 @@
             <children>
                 <VBox spacing="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0">
                     <children>
-                        <ListView fx:id="difficuityListview" prefHeight="300.0" prefWidth="200.0" styleClass="difficulty-list-view" />
+                        <ListView fx:id="difficuityListview" prefHeight="300.0" prefWidth="220.0" styleClass="difficulty-list-view" />
                         <VBox fx:id="historySection" styleClass="history-section" VBox.vgrow="ALWAYS">
                             <children>
                                 <Label text="往期历史">
@@ -26,12 +26,12 @@
                                         <String fx:value="text-muted" />
                                     </styleClass>
                                 </Label>
-                                <ListView fx:id="towerHistoryListview" prefHeight="200.0" prefWidth="200.0" styleClass="difficulty-list-view" VBox.vgrow="ALWAYS" />
+                                <ListView fx:id="towerHistoryListview" prefHeight="200.0" prefWidth="220.0" styleClass="difficulty-list-view" VBox.vgrow="ALWAYS" />
                             </children>
                         </VBox>
                     </children>
                 </VBox>
-                <VBox spacing="12.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="210.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
+                <VBox spacing="12.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="230.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
                     <children>
                         <HBox alignment="CENTER_LEFT" spacing="12.0">
                             <children>

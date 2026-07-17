@@ -185,7 +185,12 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
         public HistoryCell() {
             child.getChildren().add(title);
             title.getStyleClass().add("tower-name");
+            title.setMaxWidth(Double.MAX_VALUE);
+            title.setEllipsisString("…");
+            HBox.setHgrow(title, Priority.ALWAYS);
+            child.setMaxWidth(Double.MAX_VALUE);
             child.getStyleClass().add("tower-cell");
+            setMaxWidth(Double.MAX_VALUE);
         }
 
         @Override
