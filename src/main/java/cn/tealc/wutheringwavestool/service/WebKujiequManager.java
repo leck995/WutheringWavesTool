@@ -1,35 +1,36 @@
 package cn.tealc.wutheringwavestool.service;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.inject.Singleton;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * web-kujiequ.exe 守护进程管理器。
+ * web-kujiequ.exe 启动器（无 --daemon 版）。
  * <p>
- * 使用 --daemon 模式启动，通过 stdin 发送 JSON 命令热切换页面/用户。
- * 窗口关闭即进程退出；下次调用时自动重新启动。
- * 启动时通过 CLI 参数注入认证信息，运行中通过 stdin auth 热切换。
+ * 每次 open 都新建进程，命令行注入完整用户信息。
+ * 切换用户/页面时会先关掉旧进程，再起新进程，避免 A/B 用户粘住。
  * </p>
  *
- * @author Leck
+ * 用法：
+ * <pre>
+ *   manager.setExePath(".../web-kujiequ.exe");
+ *   manager.setUserInfo(userA);
+ *   manager.openGrowthCalculator();
+ *
+ *   manager.setUserInfo(userB);
+ *   manager.openRoleBox(); // 内部 stop 旧进程再 start 新进程
+ * </pre>
  */
 @Singleton
 public class WebKujiequManager {
@@ -39,27 +40,24 @@ public class WebKujiequManager {
     private static final String CHANNEL_ID = "19";
     private static final String GAME_ID = "3";
     private static final String EXE_NAME = "web-kujiequ.exe";
-    private static final long START_TIMEOUT_SECONDS = 10;
-
-    private final ObjectMapper objectMapper = new ObjectMapper();
-    private final ReentrantLock writeLock = new ReentrantLock();
 
     private Process process;
-    private BufferedWriter stdinWriter;
-    private Thread stdoutReaderThread;
-    private Thread stderrReaderThread;
+    private Thread logThread;
 
     private String token;
     private String userId;
     private String roleId;
     private String did;
+    private String serverId = SERVER_ID;
+    private String channelId = CHANNEL_ID;
+    private String gameId = GAME_ID;
     private String exePath;
 
     public WebKujiequManager() {
     }
 
     /**
-     * 设置当前用户信息。若守护进程已运行则通过 stdin 热切换认证。
+     * 设置当前用户信息（仅保存在 Java 侧，下次 open 时注入到新进程）。
      */
     public void setUserInfo(UserInfo userInfo) {
         if (userInfo == null) {
@@ -69,15 +67,15 @@ public class WebKujiequManager {
         this.token = userInfo.getToken();
         this.userId = userInfo.getUserId();
         this.roleId = userInfo.getRoleId();
+        // 确认 getDevCode() 就是 did；若字段名不同请改这里
         this.did = userInfo.getDevCode();
-        LOG.info("UserInfo set: userId={}, roleId={}", userId, roleId);
+        LOG.info("UserInfo set: userId={}, roleId={}, didLen={}",
+                userId, roleId, did == null ? 0 : did.length());
+    }
 
-        if (isRunning()) {
-            try {
-                sendAuthCommand();
-            } catch (IOException e) {
-                LOG.warn("热切换认证失败: {}", e.getMessage());
-            }
+    public void setServerId(String serverId) {
+        if (serverId != null && !serverId.isBlank()) {
+            this.serverId = serverId;
         }
     }
 
@@ -86,103 +84,41 @@ public class WebKujiequManager {
     }
 
     /**
-     * 启动守护进程。已运行则直接返回。
+     * 无 daemon 模式下 start 不单独做任何事。
+     * 保留方法是为了兼容旧调用；真正启动在 openXxx() 里。
      */
     public synchronized void start() throws IOException {
-        if (isRunning()) {
-            LOG.debug("WebKujiequ daemon already running");
-            return;
-        }
-
-        cleanup();
-
-        String exe = resolveExePath();
-        List<String> cmd = buildStartCommand(exe);
-        LOG.info("Starting WebKujiequ daemon: {}", exe);
-        LOG.debug("Command: {}", String.join(" ", cmd));
-
-        ProcessBuilder pb = new ProcessBuilder(cmd);
-        process = pb.start();
-
-        stdinWriter = new BufferedWriter(
-                new OutputStreamWriter(process.getOutputStream(), StandardCharsets.UTF_8));
-
-        CountDownLatch readyLatch = new CountDownLatch(1);
-        StringBuilder errorMessage = new StringBuilder();
-
-        stdoutReaderThread = Thread.startVirtualThread(() -> {
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getInputStream(), StandardCharsets.UTF_8))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    //LOG.debug("WebKujiequ: {}", line);
-                    if (line.startsWith("OK ready")) {
-                        readyLatch.countDown();
-                    } else if (line.startsWith("ERR")) {
-                        errorMessage.append(line);
-                        readyLatch.countDown();
-                    }
-                }
-            } catch (IOException e) {
-                LOG.debug("WebKujiequ stdout closed: {}", e.getMessage());
-            }
-            LOG.info("WebKujiequ daemon process ended");
-        });
-
-        stderrReaderThread = Thread.startVirtualThread(() -> {
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(process.getErrorStream(), StandardCharsets.UTF_8))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    LOG.warn("WebKujiequ stderr: {}", line);
-                }
-            } catch (IOException e) {
-                // ignore
-            }
-        });
-
-        try {
-            boolean ready = readyLatch.await(START_TIMEOUT_SECONDS, TimeUnit.SECONDS);
-            if (!ready) {
-                throw new IOException("WebKujiequ 守护进程启动超时 (" + START_TIMEOUT_SECONDS + "s)");
-            }
-            if (errorMessage.length() > 0) {
-                throw new IOException("WebKujiequ 启动出错: " + errorMessage);
-            }
-            LOG.info("WebKujiequ daemon ready");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            throw new IOException("等待 WebKujiequ 守护进程时被中断", e);
-        }
+        // one-shot：不预启动进程
+        resolveExePath(); // 仅校验 exe 是否存在
+        LOG.debug("WebKujiequ one-shot mode: start() is a no-op, openXxx() will launch process");
     }
 
     /**
-     * 停止守护进程。
+     * 停止当前窗口进程。
      */
-    public void stop() {
-        if (!isRunning()) {
+    public synchronized void stop() {
+        if (process == null) {
             return;
         }
-        LOG.info("Stopping WebKujiequ daemon");
-        try {
-            ObjectNode cmd = objectMapper.createObjectNode();
-            cmd.put("cmd", "quit");
-            sendCommand(cmd);
-        } catch (IOException e) {
-            LOG.warn("Failed to send quit command: {}", e.getMessage());
+        LOG.info("Stopping WebKujiequ process");
+        if (process.isAlive()) {
+            process.destroy();
+            try {
+                if (!process.waitFor(3, TimeUnit.SECONDS)) {
+                    process.destroyForcibly();
+                    process.waitFor(2, TimeUnit.SECONDS);
+                }
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                process.destroyForcibly();
+            }
         }
-
-        try {
-            process.waitFor(5, TimeUnit.SECONDS);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        if (logThread != null) {
+            logThread.interrupt();
+            logThread = null;
         }
-
-        if (process != null && process.isAlive()) {
-            process.destroyForcibly();
-        }
-        cleanup();
-        LOG.info("WebKujiequ daemon stopped");
+        process = null;
+        LOG.info("WebKujiequ process stopped");
     }
 
     public boolean isRunning() {
@@ -210,38 +146,81 @@ public class WebKujiequManager {
     }
 
     /**
-     * 打开指定内置页面。
-     * 进程存活时通过 stdin 热切换；已关闭则自动重启守护进程。
+     * 打开指定内置页面：先停旧进程，再以当前用户启动新进程。
      */
     public synchronized void openPage(String pageName) throws IOException {
-        if (!isRunning()) {
-            start();
-        }
-        sendCommand(buildOpenCommand(pageName, null));
+        ensureUserReady();
+        stop();
+        launch(pageName, null);
     }
 
     /**
-     * 打开自定义 URL。进程存活时热切换，已关闭则自动重启。
+     * 打开自定义 URL：先停旧进程，再以当前用户启动新进程。
      */
     public synchronized void openUrl(String url) throws IOException {
-        if (!isRunning()) {
-            start();
-        }
-        sendCommand(buildOpenCommand(null, url));
+        ensureUserReady();
+        stop();
+        launch(null, url);
     }
 
-    private List<String> buildStartCommand(String exe) {
+    // -------------------------------------------------------------------------
+
+    private void ensureUserReady() throws IOException {
+        if (token == null || token.isBlank()) {
+            throw new IOException("token 为空，请先 setUserInfo()");
+        }
+        if (did == null || did.isBlank()) {
+            throw new IOException("did 为空，请先 setUserInfo()（并确认 getDevCode() 返回 did）");
+        }
+    }
+
+    private void launch(String pageName, String url) throws IOException {
+        String exe = resolveExePath();
+        List<String> cmd = buildCommand(exe, pageName, url);
+        LOG.info("Starting WebKujiequ: page={}, userId={}, roleId={}",
+                pageName != null ? pageName : url, userId, roleId);
+        LOG.debug("Command: {}", redactCmd(cmd));
+
+        ProcessBuilder pb = new ProcessBuilder(cmd);
+        pb.redirectErrorStream(true);
+        process = pb.start();
+
+        // 读日志，避免管道堵死；用户关窗后进程结束
+        Process p = process;
+        logThread = Thread.startVirtualThread(() -> {
+            try (BufferedReader reader = new BufferedReader(
+                    new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    LOG.info("WebKujiequ: {}", line);
+                }
+            } catch (IOException e) {
+                LOG.debug("WebKujiequ log stream closed: {}", e.getMessage());
+            }
+            LOG.info("WebKujiequ process ended");
+        });
+    }
+
+    private List<String> buildCommand(String exe, String pageName, String url) {
         List<String> cmd = new ArrayList<>();
         cmd.add(exe);
-        cmd.add("--daemon");
-        if (token != null && !token.isBlank()) {
-            cmd.add("--token");
-            cmd.add(token);
+
+        if (url != null && !url.isBlank()) {
+            cmd.add("--url");
+            cmd.add(url);
+        } else if (pageName != null && !pageName.isBlank()) {
+            cmd.add("--page");
+            cmd.add(pageName);
+        } else {
+            cmd.add("--page");
+            cmd.add("mc-role-box");
         }
-        if (did != null && !did.isBlank()) {
-            cmd.add("--did");
-            cmd.add(did);
-        }
+
+        // 每次启动都注入完整用户信息（one-shot 核心）
+        cmd.add("--token");
+        cmd.add(nullToEmpty(token));
+        cmd.add("--did");
+        cmd.add(nullToEmpty(did));
         if (userId != null && !userId.isBlank()) {
             cmd.add("--user-id");
             cmd.add(userId);
@@ -251,11 +230,11 @@ public class WebKujiequManager {
             cmd.add(roleId);
         }
         cmd.add("--server-id");
-        cmd.add(SERVER_ID);
+        cmd.add(nullToEmpty(serverId));
         cmd.add("--channel-id");
-        cmd.add(CHANNEL_ID);
+        cmd.add(nullToEmpty(channelId));
         cmd.add("--game-id");
-        cmd.add(GAME_ID);
+        cmd.add(nullToEmpty(gameId));
         return cmd;
     }
 
@@ -268,7 +247,8 @@ public class WebKujiequManager {
             LOG.warn("Custom exe path not found: {}", exePath);
         }
 
-        File defaultPath = new File(System.getProperty("user.dir"), "helper" + File.separator + EXE_NAME);
+        File defaultPath = new File(System.getProperty("user.dir"),
+                "helper" + File.separator + EXE_NAME);
         if (defaultPath.exists()) {
             return defaultPath.getAbsolutePath();
         }
@@ -278,73 +258,18 @@ public class WebKujiequManager {
                         + "\nUse setExePath() to configure a custom path.");
     }
 
-    private ObjectNode buildAuthCommand() {
-        ObjectNode cmd = objectMapper.createObjectNode();
-        cmd.put("cmd", "auth");
-        if (token != null) {
-            cmd.put("token", token);
-        }
-        if (did != null) {
-            cmd.put("did", did);
-        }
-        if (userId != null) {
-            cmd.put("userId", userId);
-        }
-        if (roleId != null) {
-            cmd.put("roleId", roleId);
-        }
-        cmd.put("serverId", SERVER_ID);
-        cmd.put("channelId", CHANNEL_ID);
-        cmd.put("gameId", Integer.parseInt(GAME_ID));
-        return cmd;
+    private static String nullToEmpty(String s) {
+        return s == null ? "" : s;
     }
 
-    private void sendAuthCommand() throws IOException {
-        sendCommand(buildAuthCommand());
-    }
-
-    private ObjectNode buildOpenCommand(String pageName, String url) {
-        ObjectNode cmd = objectMapper.createObjectNode();
-        cmd.put("cmd", "open");
-        if (pageName != null) {
-            cmd.put("page", pageName);
-        }
-        if (url != null) {
-            cmd.put("url", url);
-        }
-        return cmd;
-    }
-
-    private void sendCommand(ObjectNode command) throws IOException {
-        writeLock.lock();
-        try {
-            String json = objectMapper.writeValueAsString(command);
-            LOG.debug("Sending: {}", json);
-            stdinWriter.write(json);
-            stdinWriter.newLine();
-            stdinWriter.flush();
-        } finally {
-            writeLock.unlock();
-        }
-    }
-
-    private void cleanup() {
-        if (stdoutReaderThread != null) {
-            stdoutReaderThread.interrupt();
-            stdoutReaderThread = null;
-        }
-        if (stderrReaderThread != null) {
-            stderrReaderThread.interrupt();
-            stderrReaderThread = null;
-        }
-        try {
-            if (stdinWriter != null) {
-                stdinWriter.close();
+    private static String redactCmd(List<String> cmd) {
+        List<String> copy = new ArrayList<>(cmd);
+        for (int i = 0; i < copy.size() - 1; i++) {
+            String a = copy.get(i);
+            if ("--token".equals(a) || "--did".equals(a)) {
+                copy.set(i + 1, "***");
             }
-        } catch (IOException e) {
-            // ignore
         }
-        stdinWriter = null;
-        process = null;
+        return String.join(" ", copy);
     }
 }
