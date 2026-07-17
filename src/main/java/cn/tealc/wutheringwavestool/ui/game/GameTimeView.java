@@ -190,7 +190,7 @@ public class GameTimeView implements FxmlView<GameTimeViewModel>, Initializable 
         colActions.setCellFactory(col -> new TableCell<>() {
             private final Button deleteBtn = new Button("删除");
             {
-                deleteBtn.getStyleClass().addAll(Styles.DANGER, Styles.SMALL);
+                deleteBtn.getStyleClass().addAll(Styles.DANGER, Styles.SMALL,Styles.FLAT);
                 deleteBtn.setGraphic(new FontIcon(Material2AL.DELETE_OUTLINE));
                 deleteBtn.setOnAction(e -> {
                     JFXDialogLayout dialogLayout = DialogBuilder.create()

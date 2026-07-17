@@ -6,6 +6,7 @@ import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.wutheringwavestool.service.ConfigService;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
@@ -29,23 +30,25 @@ import java.util.*;
  * @create: 2024-08-04 04:57
  */
 public class GameTimeViewModel extends BaseViewModel {
-    private final ObservableList<XYChart.Series<String,Double>> chartData= FXCollections.observableArrayList();
+    private final ObservableList<XYChart.Series<String, Double>> chartData = FXCollections.observableArrayList();
     private final ObservableList<GameTime> tableData = FXCollections.observableArrayList();
-    private final ObservableList<String> userInfoList= FXCollections.observableArrayList();
+    private final ObservableList<String> userInfoList = FXCollections.observableArrayList();
     private final SimpleIntegerProperty userIndex = new SimpleIntegerProperty(-1);
-    private final SimpleStringProperty allTotalTimeText=new SimpleStringProperty();
-    private final SimpleStringProperty currentTotalTimeText=new SimpleStringProperty();
-    private final SimpleStringProperty currentDayText=new SimpleStringProperty();
-    private final SimpleStringProperty currentTimeText=new SimpleStringProperty();
-    private final SimpleStringProperty currentUserName=new SimpleStringProperty();
-    private final SimpleDoubleProperty currentProgressValue=new SimpleDoubleProperty();
-    private final SimpleDoubleProperty totalProgressValue=new SimpleDoubleProperty();
+    private final SimpleStringProperty allTotalTimeText = new SimpleStringProperty();
+    private final SimpleStringProperty currentTotalTimeText = new SimpleStringProperty();
+    private final SimpleStringProperty currentDayText = new SimpleStringProperty();
+    private final SimpleStringProperty currentTimeText = new SimpleStringProperty();
+    private final SimpleStringProperty currentUserName = new SimpleStringProperty();
+    private final SimpleDoubleProperty currentProgressValue = new SimpleDoubleProperty();
+    private final SimpleDoubleProperty totalProgressValue = new SimpleDoubleProperty();
     private final SimpleBooleanProperty empty = new SimpleBooleanProperty(false);
 
     @Inject
     private GameTimeDao gameTimeDao;
     @Inject
     private UserInfoDao userInfoDao;
+    @Inject
+    private ConfigService configService;
 
     public void initialize() {
         List<String> allRoleId = gameTimeDao.getAllRoleId();
@@ -54,44 +57,46 @@ public class GameTimeViewModel extends BaseViewModel {
             return;
         }
         userInfoList.addAll(allRoleId);
-        if (!Config.setting().isNoKuJieQu()){
+        int index = 0;
+        String roleId = null;
+        if (!Config.setting().isUseLocalCacheUser()) {
+            Optional<String> optional = configService.get("LOCAL_CACHE_SELECTED_ROLE");
+            if (optional.isPresent()){
+                roleId = optional.get();
+            }
+        } else {
             UserInfo main = userInfoDao.getMain();
             if (main != null) {
-                boolean hasUser =false;
-                for (int i = 0; i < userInfoList.size(); i++) {
-                    if (Objects.equals(userInfoList.get(i), main.getRoleId())) {
-                        updateIndex(i);
-                        hasUser = true;
-                        break;
-                    }
-                }
-                if (!hasUser) {
-                    updateIndex(0);
-                }
-            }
-        }else {
-            if (!userInfoList.isEmpty()) {
-                updateIndex(0);
+                roleId = main.getRoleId();
             }
         }
+        if (roleId != null){
+            for (int i = 0; i < userInfoList.size(); i++) {
+                if (Objects.equals(userInfoList.get(i), roleId)) {
+                    index = i;
+                    break;
+                }
+            }
+        }
+        updateIndex(index);
     }
 
     /**
+     * @return void
      * @description: 更新当前选择的用户
-     * @param:	index
-     * @return  void
-     * @date:   2025/1/2
+     * @param: index
+     * @date: 2025/1/2
      */
-    public void updateIndex(int index){
+    public void updateIndex(int index) {
         userIndex.set(index);
         freshWithAccount();
     }
 
     /**
+     * @return void
      * @description: 更新用户数据
      * @param:
-     * @return  void
-     * @date:   2024/10/8
+     * @date: 2024/10/8
      */
     public void freshWithAccount() {
         chartData.clear();
@@ -109,7 +114,7 @@ public class GameTimeViewModel extends BaseViewModel {
 
         Map<String, List<GameTime>> mapInWeek = getMapInWeek(timeListByRoleId);
         //统计七日时长图表
-        updateChartDate(mapInWeek,LanguageManager.getString("ui.game_time.total.charts.main_account"));
+        updateChartDate(mapInWeek, LanguageManager.getString("ui.game_time.total.charts.main_account"));
         //统计当前账号全部时长
         double currentTotalTime = sunTime(mainMap);
         currentTotalTimeText.set(String.format("%.2f", currentTotalTime));
@@ -118,12 +123,12 @@ public class GameTimeViewModel extends BaseViewModel {
         UserInfo userInfo = userInfoDao.getUserByRoleId(roleId);
         if (userInfo != null) {
             currentUserName.set(userInfo.getRoleName());
-        }else {
+        } else {
             currentUserName.set(roleId);
         }
 
 
-        totalProgressValue.set(currentTotalTime/totalTime);
+        totalProgressValue.set(currentTotalTime / totalTime);
 
         updateCurrentGameTime(roleId);
     }
@@ -166,38 +171,38 @@ public class GameTimeViewModel extends BaseViewModel {
     }
 
     /**
+     * @return java.util.Map<java.lang.String,java.util.List<cn.tealc.wutheringwavestool.model.game.GameTime>>
      * @description: 对数据库的记录按照日期分类
-     * @param:	list
-     * @return  java.util.Map<java.lang.String,java.util.List<cn.tealc.wutheringwavestool.model.game.GameTime>>
-     * @date:   2024/8/4
+     * @param: list
+     * @date: 2024/8/4
      */
-    private Map<String,List<GameTime>> getMapInWeek(List<GameTime> list){
-        Map<String,List<GameTime>> map = new LinkedHashMap<>();
+    private Map<String, List<GameTime>> getMapInWeek(List<GameTime> list) {
+        Map<String, List<GameTime>> map = new LinkedHashMap<>();
         for (int i = list.size() - 1; i >= 0; i--) {
-            GameTime gameTime=list.get(i);
-            String key=gameTime.getGameDate();
+            GameTime gameTime = list.get(i);
+            String key = gameTime.getGameDate();
             if (!map.containsKey(key)) {
-                if (map.keySet().size() < 7){
+                if (map.keySet().size() < 7) {
                     List<GameTime> temp = new ArrayList<>();
                     temp.add(gameTime);
-                    map.put(key,temp);
+                    map.put(key, temp);
                 }
-            }else {
+            } else {
                 map.get(key).add(gameTime);
             }
         }
         return map;
     }
 
-    private Map<String,List<GameTime>> getMap(List<GameTime> list){
-        Map<String,List<GameTime>> map = new LinkedHashMap<>();
+    private Map<String, List<GameTime>> getMap(List<GameTime> list) {
+        Map<String, List<GameTime>> map = new LinkedHashMap<>();
         for (GameTime gameTime : list) {
-            String key=gameTime.getGameDate();
+            String key = gameTime.getGameDate();
             if (!map.containsKey(key)) {
                 List<GameTime> temp = new ArrayList<>();
                 temp.add(gameTime);
-                map.put(key,temp);
-            }else {
+                map.put(key, temp);
+            } else {
                 map.get(key).add(gameTime);
             }
         }
@@ -205,14 +210,14 @@ public class GameTimeViewModel extends BaseViewModel {
     }
 
     /**
+     * @return void
      * @description: 更新图表
-     * @param:	map
-     * @param:	name
-     * @return  void
-     * @date:   2024/8/4
+     * @param: map
+     * @param: name
+     * @date: 2024/8/4
      */
-    private void updateChartDate(Map<String,List<GameTime>> map,String name){
-        XYChart.Series<String,Double> series = new XYChart.Series<>();
+    private void updateChartDate(Map<String, List<GameTime>> map, String name) {
+        XYChart.Series<String, Double> series = new XYChart.Series<>();
         series.setName(name);
 
 
@@ -228,38 +233,38 @@ public class GameTimeViewModel extends BaseViewModel {
 
 
     /**
+     * @return double
      * @description: 计算出全部时间，以小时为单位
-     * @param:	map
-     * @return  double
-     * @date:   2024/8/4
+     * @param: map
+     * @date: 2024/8/4
      */
-    private double sunTime(Map<String,List<GameTime>> map){
-        long total=0;
+    private double sunTime(Map<String, List<GameTime>> map) {
+        long total = 0;
         for (String key : map.keySet()) {
             List<GameTime> gameTimes = map.get(key);
             long count = gameTimes.stream().mapToLong(GameTime::getDuration).sum();
             total = total + count;
         }
-        return total/1000.0/60.0/60.0;
+        return total / 1000.0 / 60.0 / 60.0;
     }
 
     /**
+     * @return void
      * @description: 获取当前账号游玩时间
      * @param:
-     * @return  void
-     * @date:   2024/8/4
+     * @date: 2024/8/4
      */
-    private void updateCurrentGameTime(String roleId){
+    private void updateCurrentGameTime(String roleId) {
         LocalDate localDate = LocalDate.now();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String date = dateTimeFormatter.format(localDate);
         List<GameTime> list = gameTimeDao.getTimeListByDataAndRoleId(date, roleId);
-        if (list !=null){
+        if (list != null) {
             long sum = list.stream().mapToLong(GameTime::getDuration).sum();
             int hour = (int) (sum / (1000 * 60 * 60));
             int minute = (int) ((sum % (1000 * 60 * 60)) / (1000 * 60));
-            currentProgressValue.set(sum / (1000.0 * 60.0 * 60.0)/24.0);
-            currentTimeText.set(String.format(LanguageManager.getString("ui.game_time.account.duration"),hour,minute));
+            currentProgressValue.set(sum / (1000.0 * 60.0 * 60.0) / 24.0);
+            currentTimeText.set(String.format(LanguageManager.getString("ui.game_time.account.duration"), hour, minute));
         }
     }
 

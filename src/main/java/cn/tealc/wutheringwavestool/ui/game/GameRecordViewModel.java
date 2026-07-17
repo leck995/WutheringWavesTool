@@ -6,6 +6,7 @@ import cn.tealc.wutheringwavestool.dao.GameTimeDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.game.GameRecord;
+import cn.tealc.wutheringwavestool.service.ConfigService;
 import cn.tealc.wutheringwavestool.service.GameRecordService;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
@@ -19,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.Optional;
 
 
 /**
@@ -53,33 +55,38 @@ public class GameRecordViewModel extends BaseViewModel {
     private GameRecordDao gameRecordDao;
     @Inject
     private UserInfoDao userInfoDao;
-
     @Inject
     private GameRecordService gameRecordService;
+    @Inject
+    private ConfigService configService;
 
     public void initialize() {
         List<String> roleIds = gameRecordDao.getAllRoleId();
+        if (roleIds == null || roleIds.isEmpty())
+            return;
         roleIdList.addAll(roleIds);
-        if (!Config.setting().isNoKuJieQu()){
+        int index = 0;
+        String roleId = null;
+        if (!Config.setting().isUseLocalCacheUser()) {
+            Optional<String> optional = configService.get("LOCAL_CACHE_SELECTED_ROLE");
+            if (optional.isPresent()){
+                roleId = optional.get();
+            }
+        } else {
             UserInfo main = userInfoDao.getMain();
             if (main != null) {
-                boolean hasUser =false;
-                for (int i = 0; i < roleIdList.size(); i++) {
-                    if (Objects.equals(roleIdList.get(i), main.getRoleId())) {
-                        updateIndex(i);
-                        hasUser = true;
-                        break;
-                    }
-                }
-                if (!hasUser && !roleIdList.isEmpty()) {
-                    updateIndex(0);
-                }
-            }
-        }else {
-            if (!roleIdList.isEmpty()) {
-                updateIndex(0);
+                roleId = main.getRoleId();
             }
         }
+        if (roleId != null){
+            for (int i = 0; i < roleIdList.size(); i++) {
+                if (Objects.equals(roleIdList.get(i), roleId)) {
+                    index = i;
+                    break;
+                }
+            }
+        }
+        updateIndex(index);
     }
 
     /**

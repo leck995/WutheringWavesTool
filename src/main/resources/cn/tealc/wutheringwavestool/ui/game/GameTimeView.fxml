@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.LineChart?>
@@ -31,7 +32,11 @@
                      <children>
                         <ComboBox fx:id="accountComboBox" prefWidth="160.0" styleClass="account-combo" />
                         <Region HBox.hgrow="ALWAYS" />
-                        <ToggleButton fx:id="tableToggleBtn" styleClass="accent" text="查看表格" />
+                        <ToggleButton fx:id="tableToggleBtn" text="查看表格">
+                           <styleClass>
+                              <String fx:value="accent" />
+                              <String fx:value="flat" />
+                           </styleClass></ToggleButton>
                      </children>
                   </HBox>
       
