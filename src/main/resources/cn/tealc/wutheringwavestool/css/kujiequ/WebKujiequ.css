@@ -1,0 +1,64 @@
+/* 手机窗主体；标题栏复用 Default.css 的 .headbar */
+.webkujiequ-root {
+    -fx-background-color: #1a1b1e;
+}
+
+.webkujiequ-root > .headbar.webkujiequ-header {
+    -fx-background-color: #e3e3e3;
+    -fx-border-color: transparent transparent rgba(0, 0, 0, 0.08) transparent;
+    -fx-border-width: 0 0 1 0;
+    -fx-pref-height: 40;
+    -fx-min-height: 40;
+}
+
+.webkujiequ-root > .headbar .leading .title {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 0 10;
+    -fx-min-width: 64;
+}
+
+.webkujiequ-page-nav {
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 0 0 4;
+}
+
+.webkujiequ-page-btn {
+    -fx-background-radius: 6;
+    -fx-min-width: 28;
+    -fx-min-height: 28;
+    -fx-pref-width: 28;
+    -fx-pref-height: 28;
+    -fx-padding: 0;
+    -fx-cursor: hand;
+    -fx-background-color: transparent;
+}
+
+.webkujiequ-page-btn .ikonli-font-icon {
+    -fx-icon-color: #5c5e66;
+    -fx-icon-size: 16;
+}
+
+.webkujiequ-page-btn:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.08);
+}
+
+.webkujiequ-page-btn:hover .ikonli-font-icon {
+    -fx-icon-color: #1a1b1e;
+}
+
+.webkujiequ-page-btn.selected {
+    -fx-background-color: rgba(92, 124, 250, 0.2);
+}
+
+.webkujiequ-page-btn.selected .ikonli-font-icon {
+    -fx-icon-color: #3b5bdb;
+}
+
+.webkujiequ-web-host {
+    -fx-background-color: #101113;
+}
+
+.webkujiequ-web-host .web-view {
+    -fx-background-color: #101113;
+}

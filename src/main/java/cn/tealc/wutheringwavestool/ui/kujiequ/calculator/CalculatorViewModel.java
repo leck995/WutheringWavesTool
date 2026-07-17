@@ -18,7 +18,6 @@ import javafx.collections.ObservableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.List;
 
 /**
@@ -96,11 +95,7 @@ public class CalculatorViewModel extends BaseViewModel {
         if (userInfo != null) {
             webKujiequManager.setUserInfo(userInfo);
         }
-        try {
-            webKujiequManager.openGrowthCalculator();
-        } catch (IOException e) {
-            LOG.error("打开养成计算器网页失败", e);
-        }
+        webKujiequManager.openGrowthCalculator();
     }
 
 

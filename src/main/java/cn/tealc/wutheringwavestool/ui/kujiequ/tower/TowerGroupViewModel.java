@@ -8,8 +8,6 @@ import com.kuro.kujiequ.model.sign.UserInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-
 public class TowerGroupViewModel extends BaseViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(TowerGroupViewModel.class);
 
@@ -29,16 +27,12 @@ public class TowerGroupViewModel extends BaseViewModel {
     }
 
     /**
-     * 通过 web-kujiequ.exe 打开数据终端网页
+     * 在内嵌 WebView 手机窗中打开数据终端
      */
     public void openRoleBoxInWebView() {
         if (userInfo != null) {
             webKujiequManager.setUserInfo(userInfo);
         }
-        try {
-            webKujiequManager.openRoleBox();
-        } catch (IOException e) {
-            LOG.error("打开数据终端网页失败", e);
-        }
+        webKujiequManager.openRoleBox();
     }
 }

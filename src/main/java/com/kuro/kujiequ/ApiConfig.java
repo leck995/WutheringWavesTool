@@ -41,6 +41,8 @@ public class ApiConfig {
 
     public static final String ACCOUNT_LOGIN="https://api.kurobbs.com/user/sdkLogin";
     public static final String ACCOUNT_SEEK_ROLE="https://api.kurobbs.com/gamer/role/list";
+    /** H5 发短信验证码（需极验 geeTestData） */
+    public static final String GET_SMS_CODE_H5 = "https://api.kurobbs.com/user/getSmsCodeForH5";
 
 
     public static final String ROLE_ACCESS_TOKEN="https://api.kurobbs.com/aki/roleBox/requestToken";

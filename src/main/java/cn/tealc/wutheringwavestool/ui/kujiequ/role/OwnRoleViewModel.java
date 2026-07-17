@@ -72,11 +72,7 @@ public class OwnRoleViewModel extends BaseViewModel {
         if (userInfo != null) {
             webKujiequManager.setUserInfo(userInfo);
         }
-        try {
-            webKujiequManager.openRoleBox();
-        } catch (IOException e) {
-            LOG.error("打开数据终端网页失败", e);
-        }
+        webKujiequManager.openRoleBox();
     }
 
 

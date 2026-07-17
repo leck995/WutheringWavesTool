@@ -1,12 +1,13 @@
 package com.kuro.kujiequ.thread.sms;
 
 import cn.tealc.wutheringwavestool.model.ResponseBody;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kuro.kujiequ.ApiConfig;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.net.http.HttpClient;
@@ -14,139 +15,104 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * 发送验证码
+ * 发送库街区短信验证码（H5 接口 + 极验 geeTestData）。
  *
  * @author leck
  * @date 2026/05/30
  */
 public class SendSmsTask extends Task<ResponseBody<Boolean>> {
+    private static final Logger LOG = LoggerFactory.getLogger(SendSmsTask.class);
+
     private static final HttpClient CLIENT = HttpClient.newBuilder()
-            .connectTimeout(Duration.ofSeconds(10))
+            .connectTimeout(Duration.ofSeconds(15))
             .followRedirects(HttpClient.Redirect.NORMAL)
             .build();
     private static final ObjectMapper MAPPER = new ObjectMapper();
-    private static final Logger LOG = LoggerFactory.getLogger(SendSmsTask.class);
-    private static final String GET_SMS_CODE_URL = "https://sdkapi.kurogame.com/sdkcom/v2/login/getPhoneCode.lg";
-    private static final String REFERER = "https://usercenter.kurogames.com/";
-    private static final String ORIGIN = "https://usercenter.kurogames.com";
-    private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0";
-    private static final String SEC_CH_UA = "\"Microsoft Edge\";v=\"143\", \"Chromium\";v=\"143\", \"Not A(Brand\";v=\"24\"";
-    private static final String E_PARAM = "1";
-    private static final String REDIRECT_URI = "1";
-    private static final String PACK_MARK = "1";
-    private static final String PROJECT_ID = "G152";
-    private static final String PRODUCT_ID = "A1493";
-    private static final String PLATFORM = "h5";
-    private static final String CHANNEL_ID = "211";
-    private static final String VERSION = "2.1.2";
-    private static final String SDK_VERSION = "2.1.2";
-    private static final String RESPONSE_TYPE = "code";
-    private static final String PKG = "com.kurogame.mingchao";
-    private static final String CLIENT_ID = "vvkewnskrxxwfo0yi61cy24l";
-    private static final String CLIENT_SECRET = "g9ej0i1jf3y68wchb0ncm266";
 
-    private String deviceId;
-    private String phone;
-    public SendSmsTask(String phone) {
+    private static final String CONTENT_TYPE =
+            "application/x-www-form-urlencoded; charset=UTF-8";
+    private static final String UA =
+            "Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) "
+                    + "AppleWebKit/605.1.15 (KHTML, like Gecko) KuroGameBox/3.1.3";
+    private static final String VERSION = "3.1.3";
+
+    private final String phone;
+    private final String geeTestJson;
+
+    public SendSmsTask(String phone, String geeTestJson) {
         this.phone = phone;
+        this.geeTestJson = geeTestJson;
     }
 
     @Override
     protected ResponseBody<Boolean> call() throws Exception {
-        String response = needCaptcha();
-        LOG.debug(response);
-        int code = MAPPER.readTree(response).path("code").asInt();
-        String msg = MAPPER.readTree(response).path("msg").asText();
-        if (code == 0){
-            return ResponseBody.create(200,msg,true);
-        }else if (code == 41000){
-            return ResponseBody.create(41000,msg,true);
-        }else{
-            return ResponseBody.create(-1,msg,true);
-        }
-    }
+        String devCode = randomDevCode();
+        Map<String, String> form = new LinkedHashMap<>();
+        form.put("mobile", phone);
+        form.put("geeTestData", geeTestJson == null ? "" : geeTestJson);
 
-
-
-
-    private String needCaptcha() {
-        deviceId = UUIDHelper.generateDeviceId();
-        Map<String, String> params = getBaseKuroParams();
-        params.putAll(Map.of(
-                "response_type", RESPONSE_TYPE,
-                "phone", phone,
-                "pkg", PKG,
-                "client_id", CLIENT_ID,
-                "client_secret", CLIENT_SECRET
-        ));
-
-        try {
-            String response = postKuro(GET_SMS_CODE_URL, buildFormBody(params));
-            return response;
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /** 将参数 Map 编码为 application/x-www-form-urlencoded 格式 */
-    private String buildFormBody(Map<String, String> params) {
-        return params.entrySet().stream()
-                .map(entry -> urlEncode(entry.getKey()) + "=" + urlEncode(entry.getValue()))
-                .collect(Collectors.joining("&"));
-    }
-
-    /** URL 编码辅助方法 */
-    private String urlEncode(String value) {
-        return URLEncoder.encode(value != null ? value : "", StandardCharsets.UTF_8);
-    }
-
-    private String postKuro(String url, String body) throws IOException, InterruptedException {
-        HttpRequest request = commonBuilder(url)
-                .header("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8")
-                .header("kr-ver", "1.9.0")
-                .header("sec-fetch-dest", "empty")
-                .header("sec-fetch-mode", "cors")
-                .header("Origin", ORIGIN)
-                .POST(HttpRequest.BodyPublishers.ofString(body))
+        HttpRequest request = HttpRequest.newBuilder(URI.create(ApiConfig.GET_SMS_CODE_H5))
+                .timeout(Duration.ofSeconds(20))
+                .header("Content-Type", CONTENT_TYPE)
+                .header("User-Agent", UA)
+                .header("source", "h5")
+                .header("devcode", devCode)
+                .header("version", VERSION)
+                .POST(HttpRequest.BodyPublishers.ofString(toForm(form)))
                 .build();
-        return CLIENT.send(request, HttpResponse.BodyHandlers.ofString()).body();
+
+        HttpResponse<String> response = CLIENT.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        String body = response.body() == null ? "" : response.body();
+        LOG.debug("getSmsCodeForH5 status={} body={}", response.statusCode(), body);
+
+        if (response.statusCode() < 200 || response.statusCode() >= 300) {
+            return ResponseBody.create(response.statusCode(), "连接失败，响应状态码:" + response.statusCode(), false);
+        }
+        if (body.isBlank()) {
+            return ResponseBody.create(-1, "服务器返回空响应", false);
+        }
+
+        JsonNode root = MAPPER.readTree(body);
+        boolean success = root.path("success").asBoolean(false)
+                || root.path("code").asInt(-1) == 0
+                || root.path("code").asInt(-1) == 200;
+        String msg = root.path("msg").asText(success ? "验证码发送成功" : "请求失败");
+        if (success) {
+            return ResponseBody.create(200, msg, true);
+        }
+        int code = root.path("code").asInt(-1);
+        return ResponseBody.create(code == 0 ? -1 : code, msg, false);
     }
 
-    /** 构建通用 HTTP 请求头（UA、Referer、sec-ch-ua 等） */
-    private HttpRequest.Builder commonBuilder(String url) {
-        return HttpRequest.newBuilder()
-                .uri(URI.create(url))
-                .header("Accept", "*/*")
-                .header("Accept-Language", "zh-CN,zh;q=0.9")
-                .header("sec-ch-ua", SEC_CH_UA)
-                .header("sec-ch-ua-mobile", "?0")
-                .header("sec-ch-ua-platform", "\"Windows\"")
-                .header("sec-fetch-site", "cross-site")
-                .header("Referer", REFERER)
-                .header("User-Agent", USER_AGENT);
+    public static String randomDevCode() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+        StringBuilder sb = new StringBuilder(32);
+        ThreadLocalRandom r = ThreadLocalRandom.current();
+        for (int i = 0; i < 32; i++) {
+            sb.append(chars.charAt(r.nextInt(chars.length())));
+        }
+        return sb.toString();
     }
 
-
-    /** 构建 Kuro API 请求的公共参数 */
-    private Map<String, String> getBaseKuroParams() {
-        return new HashMap<>(Map.of(
-                "redirect_uri", REDIRECT_URI,
-                "__e__", E_PARAM,
-                "pack_mark", PACK_MARK,
-                "projectId", PROJECT_ID,
-                "productId", PRODUCT_ID,
-                "platform", PLATFORM,
-                "channelId", CHANNEL_ID,
-                "deviceNum", deviceId,
-                "version", VERSION,
-                "sdkVersion", SDK_VERSION
-        ));
+    public static boolean isValidCnMobile(String mobile) {
+        return mobile != null && mobile.matches("^1[3-9]\\d{9}$");
     }
 
-
+    private static String toForm(Map<String, String> form) {
+        StringBuilder sb = new StringBuilder();
+        for (Map.Entry<String, String> e : form.entrySet()) {
+            if (!sb.isEmpty()) {
+                sb.append('&');
+            }
+            sb.append(URLEncoder.encode(e.getKey(), StandardCharsets.UTF_8));
+            sb.append('=');
+            sb.append(URLEncoder.encode(e.getValue() == null ? "" : e.getValue(), StandardCharsets.UTF_8));
+        }
+        return sb.toString();
+    }
 }

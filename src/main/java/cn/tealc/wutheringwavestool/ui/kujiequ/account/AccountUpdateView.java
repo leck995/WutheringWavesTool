@@ -1,12 +1,15 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.account;
 
 import atlantafx.base.theme.Styles;
+import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.base.AppConstants;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
 import com.jfoenixN.controls.JFXDialogLayout;
+import com.kuro.kujiequ.captcha.GeetestCaptchaDialog;
 import com.kuro.kujiequ.model.sign.UserInfo;
+import com.kuro.kujiequ.thread.sms.SendSmsTask;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.beans.binding.Bindings;
@@ -18,6 +21,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.VBox;
+import javafx.stage.Window;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +82,9 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
     @FXML
     private RadioButton webRadioBox;
 
+    @FXML
+    private Button getCodeBtn;
+
 
     public void initialize() {
         addTab.visibleProperty().bind(viewModel.loginTabVisibleProperty().not());
@@ -108,6 +115,35 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
                 loginCodeField.textProperty()
         );
         loginBtn.disableProperty().bind(isPhoneAndCodeEmpty);
+
+        if (getCodeBtn != null) {
+            BooleanBinding getCodeDisabled = Bindings.createBooleanBinding(
+                    () -> {
+                        String phone = loginPhoneFiled.getText() == null ? "" : loginPhoneFiled.getText().trim();
+                        return !SendSmsTask.isValidCnMobile(phone)
+                                || viewModel.isSmsSending()
+                                || viewModel.getSmsCooldown() > 0;
+                    },
+                    loginPhoneFiled.textProperty(),
+                    viewModel.smsSendingProperty(),
+                    viewModel.smsCooldownProperty()
+            );
+            getCodeBtn.disableProperty().bind(getCodeDisabled);
+            getCodeBtn.textProperty().bind(Bindings.createStringBinding(
+                    () -> {
+                        int left = viewModel.getSmsCooldown();
+                        if (left > 0) {
+                            return left + " 秒";
+                        }
+                        if (viewModel.isSmsSending()) {
+                            return "发送中";
+                        }
+                        return "获取";
+                    },
+                    viewModel.smsCooldownProperty(),
+                    viewModel.smsSendingProperty()
+            ));
+        }
 
         viewModel.subscribe(AccountUpdateViewModel.EVENT_CLOSE, (s, objects) -> closeDialog());
 
@@ -146,8 +182,35 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
 
     @FXML
     void sendLoginCode(ActionEvent event) {
-       // viewModel.sendSMS(this::showSmsFailDialog);
-        showSmsFailDialog();
+        String phone = loginPhoneFiled.getText() == null ? "" : loginPhoneFiled.getText().trim();
+        if (!SendSmsTask.isValidCnMobile(phone)) {
+            NotificationManager.message(MessageInfo.warning("请输入正确的 11 位手机号"));
+            return;
+        }
+        if (!viewModel.canRequestSms()) {
+            return;
+        }
+
+        Window owner = getCodeBtn != null && getCodeBtn.getScene() != null
+                ? getCodeBtn.getScene().getWindow()
+                : null;
+
+        GeetestCaptchaDialog captchaDialog = new GeetestCaptchaDialog();
+        captchaDialog.setOnSuccess(viewModel::sendSMS);
+        captchaDialog.setOnError(message -> {
+            // 致命失败：关闭极验窗并提供人工获取验证码兜底
+            if (message != null && (message.contains("加载失败")
+                    || message.contains("桥接失败")
+                    || message.contains("超时")
+                    || message.contains("脚本")
+                    || message.contains("无法弹出")
+                    || message.contains("调用滑块失败"))) {
+                captchaDialog.close();
+                NotificationManager.message(MessageInfo.warning(message));
+                showSmsFailDialog();
+            }
+        });
+        captchaDialog.show(owner);
     }
 
     private void showSmsFailDialog() {

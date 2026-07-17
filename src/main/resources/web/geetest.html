@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>GeeTest</title>
+  <style>
+    html, body { margin: 0; padding: 0; height: 100%; font-family: "Microsoft YaHei", sans-serif; background: #f8fafc; }
+    #status {
+      padding: 8px 12px; font-size: 13px; color: #334;
+      background: #fff; border-bottom: 1px solid #dde3ea;
+    }
+    #status.ok { color: #067647; }
+    #status.err { color: #b42318; }
+  </style>
+  <script>
+    (function () {
+      var srcs = [
+        "https://static.geetest.com/v4/gt4.js",
+        "https://static.geevisit.com/v4/gt4.js"
+      ];
+      var done = false, i = 0, t;
+      function fin() {
+        if (done) return;
+        done = true;
+        window.dispatchEvent(new Event("geetestready"));
+      }
+      function next() {
+        if (done) return;
+        if (i >= srcs.length) { fin(); return; }
+        var s = document.createElement("script");
+        s.src = srcs[i++];
+        s.onload = function () { window.initGeetest4 ? fin() : next(); };
+        s.onerror = next;
+        document.head.appendChild(s);
+        clearTimeout(t);
+        t = setTimeout(next, 3000);
+      }
+      next();
+      setTimeout(fin, 8000);
+    })();
+  </script>
+</head>
+<body>
+<div id="status">正在加载极验…</div>
+<script>
+  // 库街区 H5 发码 captchaId（与 getSmsCodeForH5 配套）
+  var CAPTCHA_ID = "ec4aa4174277d822d73f2442a165a2cd";
+  var captchaObj = null;
+  window.__geetestReady = false;
+  window.__lastError = "";
+
+  function setStatus(text, cls) {
+    var el = document.getElementById("status");
+    el.textContent = text;
+    el.className = cls || "";
+  }
+
+  // 若 javaBridge 尚未注入，短重试，避免 onReady 丢失
+  function notifyJava(method, payload) {
+    var args = payload == null ? "" : String(payload);
+    var tries = 0;
+    function attempt() {
+      try {
+        if (window.javaBridge && typeof window.javaBridge[method] === "function") {
+          window.javaBridge[method](args);
+          return;
+        }
+      } catch (e) {
+        console.error(e);
+      }
+      if (++tries < 40) {
+        setTimeout(attempt, 100); // 最多约 4 秒
+      }
+    }
+    attempt();
+  }
+
+  function whenGeetestReady(cb) {
+    if (window.initGeetest4) { cb(); return; }
+    window.addEventListener("geetestready", function () {
+      if (window.initGeetest4) cb();
+      else {
+        window.__lastError = "极验脚本加载失败（网络/CDN）";
+        setStatus(window.__lastError, "err");
+        notifyJava("onError", window.__lastError);
+      }
+    }, { once: true });
+  }
+
+  whenGeetestReady(function () {
+    if (!window.initGeetest4) {
+      window.__lastError = "极验脚本不可用";
+      setStatus(window.__lastError, "err");
+      notifyJava("onError", window.__lastError);
+      return;
+    }
+    window.initGeetest4({
+      captchaId: CAPTCHA_ID,
+      product: "bind",
+      language: "zho",
+      protocol: "https://"
+    }, function (captcha) {
+      captchaObj = captcha;
+      captcha.onReady(function () {
+        window.__geetestReady = true;
+        setStatus("极验已就绪", "ok");
+        notifyJava("onReady", "1");
+      }).onSuccess(function () {
+        var result = captcha.getValidate();
+        if (!result) {
+          setStatus("未拿到校验结果", "err");
+          notifyJava("onError", "未拿到极验校验结果");
+          return;
+        }
+        result.captcha_id = CAPTCHA_ID;
+        setStatus("极验通过", "ok");
+        notifyJava("onSuccess", JSON.stringify(result));
+      }).onError(function () {
+        setStatus("极验出错", "err");
+        notifyJava("onError", "极验验证出错");
+      }).onClose(function () {
+        notifyJava("onClose", "");
+      });
+    });
+  });
+
+  // 供 Java 查询 / 调用
+  window.isCaptchaReady = function () {
+    return !!(window.__geetestReady && captchaObj);
+  };
+
+  window.showCaptcha = function () {
+    if (!captchaObj || !window.__geetestReady) {
+      notifyJava("onError", "极验尚未就绪");
+      return false;
+    }
+    captchaObj.showBox();
+    return true;
+  };
+
+  window.resetCaptcha = function () {
+    if (captchaObj && captchaObj.reset) captchaObj.reset();
+    return true;
+  };
+
+  // Java 注入 bridge 后可主动拉一次状态
+  window.syncReadyToJava = function () {
+    if (window.__geetestReady) {
+      notifyJava("onReady", "1");
+      return true;
+    }
+    if (window.__lastError) {
+      notifyJava("onError", window.__lastError);
+    }
+    return false;
+  };
+</script>
+</body>
+</html>

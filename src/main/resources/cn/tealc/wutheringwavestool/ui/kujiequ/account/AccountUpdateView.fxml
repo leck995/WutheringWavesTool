@@ -100,7 +100,7 @@
                         <HBox GridPane.columnIndex="1" GridPane.rowIndex="1">
                            <children>
                               <TextField fx:id="loginCodeField" maxWidth="250.0" promptText="输入验证码" />
-                              <Button mnemonicParsing="false" onAction="#sendLoginCode" text="获取" />
+                              <Button fx:id="getCodeBtn" mnemonicParsing="false" onAction="#sendLoginCode" text="获取" />
                            </children>
                         </HBox>
                         <Label layoutX="62.0" layoutY="76.0" text="类型" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />

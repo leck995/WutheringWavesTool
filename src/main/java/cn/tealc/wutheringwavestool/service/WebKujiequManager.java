@@ -1,35 +1,35 @@
 package cn.tealc.wutheringwavestool.service;
 
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
+import cn.tealc.wutheringwavestool.model.webkujiequ.AuthConfig;
+import cn.tealc.wutheringwavestool.model.webkujiequ.PagePreset;
+import cn.tealc.wutheringwavestool.ui.kujiequ.web.KuroWebShell;
+import cn.tealc.wutheringwavestool.ui.kujiequ.web.WebKujiequView;
 import com.google.inject.Singleton;
 import com.kuro.kujiequ.model.sign.UserInfo;
+import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * web-kujiequ.exe 启动器（无 --daemon 版）。
+ * 库街区 H5 手机视图管理器（JavaFX WebView）。
  * <p>
- * 每次 open 都新建进程，命令行注入完整用户信息。
- * 切换用户/页面时会先关掉旧进程，再起新进程，避免 A/B 用户粘住。
+ * 替代原先 {@code web-kujiequ.exe} 进程方案：单例 Stage + WebView，
+ * 换用户/页面时 forceReload，关窗释放页面，应用退出 dispose。
  * </p>
  *
- * 用法：
  * <pre>
- *   manager.setExePath(".../web-kujiequ.exe");
  *   manager.setUserInfo(userA);
  *   manager.openGrowthCalculator();
  *
  *   manager.setUserInfo(userB);
- *   manager.openRoleBox(); // 内部 stop 旧进程再 start 新进程
+ *   manager.openRoleBox();
  * </pre>
  */
 @Singleton
@@ -39,237 +39,292 @@ public class WebKujiequManager {
     private static final String SERVER_ID = "76402e5b20be2c39f095a152090afddc";
     private static final String CHANNEL_ID = "19";
     private static final String GAME_ID = "3";
-    private static final String EXE_NAME = "web-kujiequ.exe";
 
-    private Process process;
-    private Thread logThread;
+    private final Object lock = new Object();
 
-    private String token;
-    private String userId;
-    private String roleId;
-    private String did;
-    private String serverId = SERVER_ID;
-    private String channelId = CHANNEL_ID;
-    private String gameId = GAME_ID;
-    private String exePath;
+    private AuthConfig auth = new AuthConfig()
+            .serverId(SERVER_ID)
+            .channelId(CHANNEL_ID)
+            .gameId(GAME_ID);
+
+    private KuroWebShell shell;
+    private WebKujiequView hostView;
+    private boolean stopped;
 
     public WebKujiequManager() {
     }
 
     /**
-     * 设置当前用户信息（仅保存在 Java 侧，下次 open 时注入到新进程）。
+     * 设置当前用户（仅内存；下次 open 注入）。
      */
     public void setUserInfo(UserInfo userInfo) {
         if (userInfo == null) {
             LOG.warn("setUserInfo: userInfo is null");
             return;
         }
-        this.token = userInfo.getToken();
-        this.userId = userInfo.getUserId();
-        this.roleId = userInfo.getRoleId();
-        // 确认 getDevCode() 就是 did；若字段名不同请改这里
-        this.did = userInfo.getDevCode();
+        AuthConfig next = auth.copy()
+                .token(userInfo.getToken())
+                .did(userInfo.getDevCode())
+                .userId(userInfo.getUserId())
+                .roleId(userInfo.getRoleId());
+        if (auth.serverId == null || auth.serverId.isBlank()) {
+            next.serverId(SERVER_ID);
+        }
+        next.channelId(CHANNEL_ID).gameId(GAME_ID);
+        setAuth(next);
         LOG.info("UserInfo set: userId={}, roleId={}, didLen={}",
-                userId, roleId, did == null ? 0 : did.length());
+                auth.userId, auth.roleId, auth.did == null ? 0 : auth.did.length());
     }
 
     public void setServerId(String serverId) {
         if (serverId != null && !serverId.isBlank()) {
-            this.serverId = serverId;
-        }
-    }
-
-    public void setExePath(String exePath) {
-        this.exePath = exePath;
-    }
-
-    /**
-     * 无 daemon 模式下 start 不单独做任何事。
-     * 保留方法是为了兼容旧调用；真正启动在 openXxx() 里。
-     */
-    public synchronized void start() throws IOException {
-        // one-shot：不预启动进程
-        resolveExePath(); // 仅校验 exe 是否存在
-        LOG.debug("WebKujiequ one-shot mode: start() is a no-op, openXxx() will launch process");
-    }
-
-    /**
-     * 停止当前窗口进程。
-     */
-    public synchronized void stop() {
-        if (process == null) {
-            return;
-        }
-        LOG.info("Stopping WebKujiequ process");
-        if (process.isAlive()) {
-            process.destroy();
-            try {
-                if (!process.waitFor(3, TimeUnit.SECONDS)) {
-                    process.destroyForcibly();
-                    process.waitFor(2, TimeUnit.SECONDS);
-                }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                process.destroyForcibly();
+            synchronized (lock) {
+                auth.serverId(serverId);
             }
         }
-        if (logThread != null) {
-            logThread.interrupt();
-            logThread = null;
-        }
-        process = null;
-        LOG.info("WebKujiequ process stopped");
+    }
+
+    /**
+     * @deprecated 已改为内嵌 WebView，无需 exe。保留方法避免旧调用编译失败。
+     */
+    @Deprecated
+    public void setExePath(String exePath) {
+        LOG.debug("setExePath ignored (embedded WebView): {}", exePath);
+    }
+
+    /** 兼容旧调用：懒初始化。 */
+    public void start() {
+        stopped = false;
+        LOG.debug("WebKujiequ embedded mode: start() ready");
+    }
+
+    /**
+     * 应用退出时调用：销毁 Stage 与 WebView，避免泄漏。
+     */
+    public void stop() {
+        stopped = true;
+        runOnFx(() -> {
+            if (hostView != null) {
+                hostView.dispose();
+                hostView = null;
+            } else if (shell != null && !shell.isDisposed()) {
+                shell.dispose();
+            }
+            shell = null;
+            LOG.info("WebKujiequManager stopped / disposed");
+            return null;
+        });
     }
 
     public boolean isRunning() {
-        return process != null && process.isAlive();
+        return hostView != null && hostView.isShowing() && !stopped;
     }
 
-    public void openRoleBox() throws IOException {
-        openPage("mc-role-box");
+    public void openRoleBox() {
+        openPage(PagePreset.MC_ROLE_BOX.id());
     }
 
-    public void openResourceBriefing() throws IOException {
-        openPage("resource-briefing");
+    public void openResourceBriefing() {
+        openPage(PagePreset.RESOURCE_BRIEFING.id());
     }
 
-    public void openCalendar() throws IOException {
-        openPage("mccalendar");
+    public void openCalendar() {
+        openPage(PagePreset.MC_CALENDAR.id());
     }
 
-    public void openGrowthCalculator() throws IOException {
-        openPage("growth-calculator");
+    public void openGrowthCalculator() {
+        openPage(PagePreset.GROWTH_CALCULATOR.id());
     }
 
-    public void openMonthSign() throws IOException {
-        openPage("mc-month-sign");
-    }
-
-    /**
-     * 打开指定内置页面：先停旧进程，再以当前用户启动新进程。
-     */
-    public synchronized void openPage(String pageName) throws IOException {
-        ensureUserReady();
-        stop();
-        launch(pageName, null);
+    public void openMonthSign() {
+        openPage(PagePreset.MC_MONTH_SIGN.id());
     }
 
     /**
-     * 打开自定义 URL：先停旧进程，再以当前用户启动新进程。
+     * 打开内置页面（任意线程可调）。
      */
-    public synchronized void openUrl(String url) throws IOException {
-        ensureUserReady();
-        stop();
-        launch(null, url);
+    public void openPage(String pageName) {
+        if (stopped) {
+            LOG.warn("openPage ignored: manager stopped");
+            return;
+        }
+        if (!ensureUserReady()) {
+            return;
+        }
+        Optional<PagePreset> preset = PagePreset.parse(pageName);
+        if (preset.isEmpty()) {
+            String msg = "未知页面: " + pageName;
+            LOG.error(msg);
+            notifyError(msg);
+            return;
+        }
+        openInternal(preset.get().defaultUrl(), preset.get());
+    }
+
+    /**
+     * 打开自定义 URL。
+     */
+    public void openUrl(String url) {
+        if (stopped) {
+            LOG.warn("openUrl ignored: manager stopped");
+            return;
+        }
+        if (!ensureUserReady()) {
+            return;
+        }
+        if (url == null || url.isBlank()) {
+            notifyError("URL 为空");
+            return;
+        }
+        PagePreset preset = PagePreset.detectFromUrl(url).orElse(null);
+        openInternal(url.trim(), preset);
     }
 
     // -------------------------------------------------------------------------
 
-    private void ensureUserReady() throws IOException {
-        if (token == null || token.isBlank()) {
-            throw new IOException("token 为空，请先 setUserInfo()");
-        }
-        if (did == null || did.isBlank()) {
-            throw new IOException("did 为空，请先 setUserInfo()（并确认 getDevCode() 返回 did）");
+    private void setAuth(AuthConfig next) {
+        synchronized (lock) {
+            auth = next == null ? new AuthConfig() : next.copy().normalize();
+            if (auth.channelId == null || auth.channelId.isBlank()) {
+                auth.channelId = CHANNEL_ID;
+            }
+            if (auth.gameId == null || auth.gameId.isBlank()) {
+                auth.gameId = GAME_ID;
+            }
+            if (auth.serverId == null || auth.serverId.isBlank()) {
+                auth.serverId = SERVER_ID;
+            }
+            if (shell != null && !shell.isDisposed()) {
+                shell.setAuth(auth);
+            }
         }
     }
 
-    private void launch(String pageName, String url) throws IOException {
-        String exe = resolveExePath();
-        List<String> cmd = buildCommand(exe, pageName, url);
-        LOG.info("Starting WebKujiequ: page={}, userId={}, roleId={}",
-                pageName != null ? pageName : url, userId, roleId);
-        LOG.debug("Command: {}", redactCmd(cmd));
+    private boolean ensureUserReady() {
+        AuthConfig snap;
+        synchronized (lock) {
+            snap = auth.copy();
+        }
+        if (snap.token == null || snap.token.isBlank()) {
+            notifyError("token 为空，请先选择库街区账号");
+            return false;
+        }
+        if (snap.did == null || snap.did.isBlank()) {
+            notifyError("did 为空，请重新登录库街区账号");
+            return false;
+        }
+        return true;
+    }
 
-        ProcessBuilder pb = new ProcessBuilder(cmd);
-        pb.redirectErrorStream(true);
-        process = pb.start();
+    private void openInternal(String baseUrl, PagePreset preset) {
+        AuthConfig snap;
+        synchronized (lock) {
+            snap = auth.copy();
+        }
+        String entry = PagePreset.resolveEntryUrl(baseUrl, snap, preset);
+        String title = preset != null ? preset.title() : "库街区";
 
-        // 读日志，避免管道堵死；用户关窗后进程结束
-        Process p = process;
-        logThread = Thread.startVirtualThread(() -> {
-            try (BufferedReader reader = new BufferedReader(
-                    new InputStreamReader(p.getInputStream(), StandardCharsets.UTF_8))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    LOG.info("WebKujiequ: {}", line);
+        try {
+            runOnFx(() -> {
+                ensureHost();
+                shell.setAuth(snap);
+                hostView.setActivePreset(preset);
+                hostView.setTitle(title);
+                shell.open(entry, snap, true);
+                hostView.showAndFocus();
+                LOG.info("Opened page title={} url={}", title, entry);
+                return null;
+            });
+        } catch (Exception e) {
+            LOG.error("打开库街区页面失败: {}", e.getMessage(), e);
+            notifyError("打开页面失败: " + e.getMessage());
+        }
+    }
+
+    /** 必须在 FX 线程。 */
+    private void ensureHost() {
+        if (shell != null && shell.isDisposed()) {
+            shell = null;
+            hostView = null;
+        }
+        if (hostView != null && hostView.isDisposed()) {
+            hostView = null;
+            shell = null;
+        }
+        if (shell == null) {
+            shell = new KuroWebShell();
+            shell.setAuth(auth.copy());
+        }
+        if (hostView == null) {
+            hostView = new WebKujiequView(shell);
+            // 标题栏图标切换页面（与 openPage 同一路径）
+            hostView.setPageOpenHandler(p -> {
+                if (p != null) {
+                    openPage(p.id());
                 }
-            } catch (IOException e) {
-                LOG.debug("WebKujiequ log stream closed: {}", e.getMessage());
-            }
-            LOG.info("WebKujiequ process ended");
-        });
-    }
-
-    private List<String> buildCommand(String exe, String pageName, String url) {
-        List<String> cmd = new ArrayList<>();
-        cmd.add(exe);
-
-        if (url != null && !url.isBlank()) {
-            cmd.add("--url");
-            cmd.add(url);
-        } else if (pageName != null && !pageName.isBlank()) {
-            cmd.add("--page");
-            cmd.add(pageName);
+            });
+            hostView.ensureCreated();
         } else {
-            cmd.add("--page");
-            cmd.add("mc-role-box");
+            hostView.ensureCreated();
         }
-
-        // 每次启动都注入完整用户信息（one-shot 核心）
-        cmd.add("--token");
-        cmd.add(nullToEmpty(token));
-        cmd.add("--did");
-        cmd.add(nullToEmpty(did));
-        if (userId != null && !userId.isBlank()) {
-            cmd.add("--user-id");
-            cmd.add(userId);
-        }
-        if (roleId != null && !roleId.isBlank()) {
-            cmd.add("--role-id");
-            cmd.add(roleId);
-        }
-        cmd.add("--server-id");
-        cmd.add(nullToEmpty(serverId));
-        cmd.add("--channel-id");
-        cmd.add(nullToEmpty(channelId));
-        cmd.add("--game-id");
-        cmd.add(nullToEmpty(gameId));
-        return cmd;
+        stopped = false;
     }
 
-    private String resolveExePath() throws FileNotFoundException {
-        if (exePath != null && !exePath.isBlank()) {
-            File f = new File(exePath);
-            if (f.exists()) {
-                return f.getAbsolutePath();
+    private void notifyError(String message) {
+        LOG.warn(message);
+        try {
+            if (Platform.isFxApplicationThread()) {
+                NotificationManager.message(MessageInfo.warning(message));
+            } else {
+                Platform.runLater(() -> NotificationManager.message(MessageInfo.warning(message)));
             }
-            LOG.warn("Custom exe path not found: {}", exePath);
+        } catch (Exception e) {
+            LOG.debug("notify failed: {}", e.getMessage());
         }
-
-        File defaultPath = new File(System.getProperty("user.dir"),
-                "helper" + File.separator + EXE_NAME);
-        if (defaultPath.exists()) {
-            return defaultPath.getAbsolutePath();
-        }
-
-        throw new FileNotFoundException(
-                "web-kujiequ.exe not found. Expected at: " + defaultPath.getAbsolutePath()
-                        + "\nUse setExePath() to configure a custom path.");
     }
 
-    private static String nullToEmpty(String s) {
-        return s == null ? "" : s;
-    }
-
-    private static String redactCmd(List<String> cmd) {
-        List<String> copy = new ArrayList<>(cmd);
-        for (int i = 0; i < copy.size() - 1; i++) {
-            String a = copy.get(i);
-            if ("--token".equals(a) || "--did".equals(a)) {
-                copy.set(i + 1, "***");
+    private <T> T runOnFx(FxCallable<T> action) {
+        if (Platform.isFxApplicationThread()) {
+            try {
+                return action.call();
+            } catch (RuntimeException e) {
+                throw e;
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         }
-        return String.join(" ", copy);
+        AtomicReference<T> ref = new AtomicReference<>();
+        AtomicReference<Throwable> err = new AtomicReference<>();
+        CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            try {
+                ref.set(action.call());
+            } catch (Throwable t) {
+                err.set(t);
+            } finally {
+                latch.countDown();
+            }
+        });
+        try {
+            if (!latch.await(60, TimeUnit.SECONDS)) {
+                throw new RuntimeException("JavaFX action timed out");
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("interrupted waiting for JavaFX", e);
+        }
+        if (err.get() != null) {
+            Throwable t = err.get();
+            if (t instanceof RuntimeException re) {
+                throw re;
+            }
+            throw new RuntimeException(t);
+        }
+        return ref.get();
+    }
+
+    @FunctionalInterface
+    private interface FxCallable<T> {
+        T call() throws Exception;
     }
 }

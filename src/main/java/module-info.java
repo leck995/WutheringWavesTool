@@ -5,6 +5,8 @@ open module cn.tealc.wutheringwavestool {
     requires javafx.graphics;
     requires javafx.media;
     requires javafx.swing;
+    requires javafx.web;
+    requires jdk.jsobject;
     requires org.kordamp.ikonli.core;
     requires org.kordamp.ikonli.material2;
     requires org.kordamp.ikonli.javafx;
@@ -81,7 +83,9 @@ open module cn.tealc.wutheringwavestool {
     exports cn.tealc.wutheringwavestool.ui.kujiequ.role;
     exports cn.tealc.wutheringwavestool.ui.kujiequ.sign;
     exports cn.tealc.wutheringwavestool.ui.kujiequ.other;
+    exports cn.tealc.wutheringwavestool.ui.kujiequ.web;
     exports com.kuro.kujiequ.thread.sms;
+    exports com.kuro.kujiequ.captcha;
     exports cn.tealc.wutheringwavestool.model.game.pool;
     exports cn.tealc.wutheringwavestool.thread.gacha.cloud;
     exports cn.tealc.wutheringwavestool.thread.system.account;

@@ -24,7 +24,6 @@ import javafx.util.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.*;
 
 /**
@@ -157,11 +156,7 @@ public class SignViewModel extends BaseViewModel {
             UserInfo current = userInfoList.get(index);
             webKujiequManager.setUserInfo(current);
         }
-        try {
-            webKujiequManager.openMonthSign();
-        } catch (IOException e) {
-            LOG.error("打开每日签到网页失败", e);
-        }
+        webKujiequManager.openMonthSign();
     }
 
 

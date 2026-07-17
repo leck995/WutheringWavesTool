@@ -11,10 +11,13 @@ import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.thread.base.user.LoginUserTask;
 import com.kuro.kujiequ.thread.rolebox.role.GameRoleSeekTask;
 import com.kuro.kujiequ.thread.sms.SendSmsTask;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class AccountUpdateViewModel extends BaseViewModel {
     public static final String EVENT_CLOSE = "EVENT_CLOSE";
@@ -32,6 +35,9 @@ public class AccountUpdateViewModel extends BaseViewModel {
     private final SimpleStringProperty code = new SimpleStringProperty("");
     private final SimpleBooleanProperty mobileSource = new SimpleBooleanProperty(true);
     private final SimpleBooleanProperty mainAccount = new SimpleBooleanProperty(true);
+    private final SimpleIntegerProperty smsCooldown = new SimpleIntegerProperty(0);
+    private final SimpleBooleanProperty smsSending = new SimpleBooleanProperty(false);
+    private final AtomicBoolean cooldownTickerRunning = new AtomicBoolean(false);
     private final boolean isAdd; //判断是添加还是修改
     private UserInfo oldUserInfo; //用于修改时保存的旧UserInfo
 
@@ -92,22 +98,97 @@ public class AccountUpdateViewModel extends BaseViewModel {
         Thread.startVirtualThread(task);
     }
 
-    public void sendSMS(Runnable callback) {
-        SendSmsTask task = new SendSmsTask(getPhone());
+    /**
+     * 极验通过后发送短信验证码。
+     *
+     * @param geeTestJson 极验校验结果 JSON
+     */
+    public void sendSMS(String geeTestJson) {
+        if (smsSending.get() || smsCooldown.get() > 0) {
+            return;
+        }
+        if (!SendSmsTask.isValidCnMobile(getPhone())) {
+            NotificationManager.message(MessageInfo.warning("请输入正确的 11 位手机号"));
+            return;
+        }
+        if (geeTestJson == null || geeTestJson.isBlank()) {
+            NotificationManager.message(MessageInfo.warning("极验结果为空，请重试"));
+            return;
+        }
+
+        smsSending.set(true);
+        SendSmsTask task = new SendSmsTask(getPhone(), geeTestJson);
         task.setOnSucceeded(event -> {
+            smsSending.set(false);
             ResponseBody<Boolean> value = task.getValue();
-            if (value.getCode() == 200) {
+            if (value != null && value.getCode() == 200) {
                 NotificationManager.message(MessageInfo.success("验证码发送成功"));
-            } else if (value.getCode() == 41000) {
-                callback.run();
+                startSmsCooldown(60);
             } else {
-                NotificationManager.message(MessageInfo.warning(value.getMsg()));
+                String msg = value == null || value.getMsg() == null || value.getMsg().isBlank()
+                        ? "验证码发送失败"
+                        : value.getMsg();
+                NotificationManager.message(MessageInfo.warning(msg));
             }
         });
         task.setOnFailed(workerStateEvent -> {
+            smsSending.set(false);
             NotificationManager.message(MessageInfo.error("验证码发送失败，请检查网络后重试"));
         });
         Thread.startVirtualThread(task);
+    }
+
+    private void startSmsCooldown(int seconds) {
+        smsCooldown.set(seconds);
+        if (!cooldownTickerRunning.compareAndSet(false, true)) {
+            return;
+        }
+        Thread t = new Thread(() -> {
+            try {
+                while (!Thread.currentThread().isInterrupted()) {
+                    int left = smsCooldown.get();
+                    if (left <= 0) {
+                        break;
+                    }
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        break;
+                    }
+                    Platform.runLater(() -> {
+                        int current = smsCooldown.get();
+                        if (current > 0) {
+                            smsCooldown.set(current - 1);
+                        }
+                    });
+                }
+            } finally {
+                cooldownTickerRunning.set(false);
+            }
+        }, "sms-cooldown");
+        t.setDaemon(true);
+        t.start();
+    }
+
+    public boolean canRequestSms() {
+        return !smsSending.get() && smsCooldown.get() <= 0;
+    }
+
+    public int getSmsCooldown() {
+        return smsCooldown.get();
+    }
+
+    public SimpleIntegerProperty smsCooldownProperty() {
+        return smsCooldown;
+    }
+
+    public boolean isSmsSending() {
+        return smsSending.get();
+    }
+
+    public SimpleBooleanProperty smsSendingProperty() {
+        return smsSending;
     }
 
 
