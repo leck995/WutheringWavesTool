@@ -1,627 +1,263 @@
 package cn.tealc.wutheringwavestool.base;
 
+import cn.tealc.wutheringwavestool.base.config.AppBehaviorSetting;
+import cn.tealc.wutheringwavestool.base.config.GachaSetting;
+import cn.tealc.wutheringwavestool.base.config.GameSetting;
+import cn.tealc.wutheringwavestool.base.config.LauncherSetting;
+import cn.tealc.wutheringwavestool.base.config.ServerSetting;
+import cn.tealc.wutheringwavestool.base.config.SignSetting;
+import cn.tealc.wutheringwavestool.base.config.UiSetting;
+import cn.tealc.wutheringwavestool.base.config.serializer.ObservableListDeserializer;
+import cn.tealc.wutheringwavestool.base.config.serializer.ObservableListSerializer;
 import cn.tealc.wutheringwavestool.model.SourceType;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import java.io.File;
-import javafx.beans.property.*;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Locale;
 
 /**
+ * 应用配置聚合容器。
+ * <p>实际字段分散在 7 个分组配置类中（{@link UiSetting}、{@link GameSetting}、
+ * {@link LauncherSetting}、{@link GachaSetting}、{@link SignSetting}、
+ * {@link ServerSetting}、{@link AppBehaviorSetting}），本类通过 {@code @JsonUnwrapped}
+ * 将它们打平为扁平 JSON，与历史 settings.json 格式保持兼容。
+ * <p>所有 getter/setter/xxxProperty 方法为 delegate 转发，保证现有 152 处
+ * {@code Config.setting().xxx()} 调用零改动。
+ *
  * @program: WutheringWavesTool
- * @description:
  * @author: Leck
  * @create: 2024-07-03 00:38
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonAutoDetect(
+        fieldVisibility = JsonAutoDetect.Visibility.ANY,
+        getterVisibility = JsonAutoDetect.Visibility.NONE,
+        isGetterVisibility = JsonAutoDetect.Visibility.NONE,
+        setterVisibility = JsonAutoDetect.Visibility.NONE
+)
 public class Setting {
-    private SimpleBooleanProperty devModel = new SimpleBooleanProperty(false); //开发者模式。用于测试
-    private SimpleObjectProperty<Locale> language = new SimpleObjectProperty<>(Locale.CHINA);
-    private SimpleDoubleProperty appWidth = new SimpleDoubleProperty(1280.0);
-    private SimpleDoubleProperty appHeight = new SimpleDoubleProperty(760.0);
-    private SimpleIntegerProperty uiScale = new SimpleIntegerProperty(100);
 
-    private SimpleBooleanProperty leftBarShow = new SimpleBooleanProperty(true); //左侧菜单栏是否关闭
-    private SimpleBooleanProperty theme = new SimpleBooleanProperty(false); //主题，false为亮色
-    private SimpleBooleanProperty support = new SimpleBooleanProperty(false);  //标志是否赞助
+    @JsonUnwrapped private final UiSetting ui = new UiSetting();
+    @JsonUnwrapped private final GameSetting game = new GameSetting();
+    @JsonUnwrapped private final LauncherSetting launcher = new LauncherSetting();
+    @JsonUnwrapped private final GachaSetting gacha = new GachaSetting();
+    @JsonUnwrapped private final SignSetting sign = new SignSetting();
+    @JsonUnwrapped private final ServerSetting server = new ServerSetting();
+    @JsonUnwrapped private final AppBehaviorSetting behavior = new AppBehaviorSetting();
 
-    private SimpleStringProperty homeViewIcon = new SimpleStringProperty();  //主页头像
-    private SimpleStringProperty homeViewRole = new SimpleStringProperty(); //主页人物
-    private SimpleStringProperty logLevel = new SimpleStringProperty("INFO"); //日志等级
-
-    private SimpleStringProperty skipVersion = new SimpleStringProperty(AppConstants.VERSION);
-
-    /*=================设置-首选===================*/
-    private SimpleObjectProperty<SourceType> gameRootDirSource = new SimpleObjectProperty<>(SourceType.DEFAULT); //游戏来源类型
-    private SimpleStringProperty gameRootDir = new SimpleStringProperty();//游戏根目录
-    private SimpleStringProperty gameStarAppPath = new SimpleStringProperty("Wuthering Waves.exe");//游戏启动文件
-    private SimpleBooleanProperty gameStartAppCustom = new SimpleBooleanProperty(false); //自定义启动程序
-    private SimpleStringProperty gameOfficialLauncherDir = new SimpleStringProperty();//游戏更新器目录
-
-    /*=================设置-基础设置===================*/
-    private SimpleBooleanProperty changeTitlebar = new SimpleBooleanProperty(true); //新标题栏
-    private SimpleBooleanProperty firstViewWithPoolAnalysis = new SimpleBooleanProperty(false);//启动页设置为抽卡分析
-    private SimpleBooleanProperty diyHomeBg = new SimpleBooleanProperty(false); //启用自定义背景
-    private SimpleStringProperty diyHomeBgName = new SimpleStringProperty(); //自定义背景文件名称
-    private SimpleIntegerProperty diyHomeBgType = new SimpleIntegerProperty(); // 0为默认，1为指定背景，2为背景文件夹
-    private SimpleStringProperty diyHomeBgDir = new SimpleStringProperty();
-
-    private SimpleBooleanProperty noKuJieQu = new SimpleBooleanProperty(getLanguage() != Locale.CHINA); //不使用库街区
-    private SimpleIntegerProperty closeEvent = new SimpleIntegerProperty(0); //关闭主界面行为，0选择，1退出，2最小化
-
-    private SimpleBooleanProperty useLocalCacheUser = new SimpleBooleanProperty(true);
-
-
-
-
-    /*=================设置-游戏行为===================*/
-    private SimpleBooleanProperty exitWhenGameOver = new SimpleBooleanProperty(false); //检测到游戏关闭自动关闭程序
-    private SimpleBooleanProperty hideWhenGameStart = new SimpleBooleanProperty(false); //检测到游戏启动自动隐藏程序至托盘
-    private SimpleBooleanProperty autoStartGame = new SimpleBooleanProperty(false); //手动启动程序时自动启动游戏
-
-    /*=================设置-其他设置===================*/
-    private SimpleBooleanProperty checkNewVersion = new SimpleBooleanProperty(true); //检查更新
-    private SimpleBooleanProperty autoStart = new SimpleBooleanProperty(false); //开机自启
-    private SimpleBooleanProperty silentStart = new SimpleBooleanProperty(false); //静默启动，不显示窗口
-
-    /*=============资源库=============*/
-    private SimpleIntegerProperty resourceSource = new SimpleIntegerProperty(getLanguage() == Locale.CHINA ? 1 : 0); //0代表Github，1代表码云或其他
-
-    /*=================高级启动相关===================*/
-    private SimpleBooleanProperty userAdvanceGameSettings = new SimpleBooleanProperty(false); //使用高级启动
-    private SimpleStringProperty appParams = new SimpleStringProperty(); //启动参数
-
-    /*=================抽卡分析相关===================*/
-    private SimpleStringProperty gachaCurrentPlayerId = new SimpleStringProperty(); //当前玩家
-    private SimpleBooleanProperty gachaListModel = new SimpleBooleanProperty(false); //抽卡界面显示模式
-
+    /**
+     * 启动参数列表。
+     * <p>使用自定义 Jackson 序列化器，与历史 settings.json 格式保持一致。
+     * <p>保留在 Setting 顶层而非 {@link LauncherSetting} 中，是因为
+     * {@code @JsonUnwrapped} 场景下字段级 {@code @JsonDeserialize(using=...)}
+     * 不生效，会导致 {@link ObservableList} 接口类型无法反序列化。
+     */
     @JsonSerialize(using = ObservableListSerializer.class)
     @JsonDeserialize(using = ObservableListDeserializer.class)
     private ObservableList<String> startUpParams = FXCollections.observableArrayList();
 
-    /*=================签到相关===================*/
-    private SimpleBooleanProperty autoKujieQuSign = new SimpleBooleanProperty(false); //使用高级启动
-    private SimpleIntegerProperty lastKujiequSignTime  = new SimpleIntegerProperty(0);
-
-
-    /*=================服务器相关===================*/
-    private SimpleStringProperty serverUsername = new SimpleStringProperty();
-    private SimpleStringProperty serverPassword = new SimpleStringProperty();
-
-    // 自定义序列化器
-    public static class ObservableListSerializer extends JsonSerializer<ObservableList<String>> {
-        @Override
-        public void serialize(ObservableList<String> value, JsonGenerator gen, com.fasterxml.jackson.databind.SerializerProvider serializers)
-                throws IOException {
-            gen.writeStartArray();
-            for (String item : value) {
-                gen.writeString(item);
-            }
-            gen.writeEndArray();
-        }
-    }
-
-    // 自定义反序列化器
-    public static class ObservableListDeserializer extends JsonDeserializer<ObservableList<String>> {
-        @Override
-        public ObservableList<String> deserialize(com.fasterxml.jackson.core.JsonParser p, DeserializationContext ctxt)
-                throws IOException {
-            List<String> list = p.readValueAs(List.class);
-            return FXCollections.observableArrayList(list);
-        }
-    }
-
-    public Locale getLanguage() {
-        return language.get();
-    }
-
-    public SimpleObjectProperty<Locale> languageProperty() {
-        return language;
-    }
-
-    public void setLanguage(Locale language) {
-        this.language.set(language);
-    }
-
-    public String getGameRootDir() {
-        return gameRootDir.get();
-    }
-
-    public SimpleStringProperty gameRootDirProperty() {
-        return gameRootDir;
-    }
-
-    public void setGameRootDir(String gameRootDir) {
-        this.gameRootDir.set(gameRootDir);
-    }
-
-    public boolean isFirstViewWithPoolAnalysis() {
-        return firstViewWithPoolAnalysis.get();
-    }
-
-    public SimpleBooleanProperty firstViewWithPoolAnalysisProperty() {
-        return firstViewWithPoolAnalysis;
-    }
-
-    public void setFirstViewWithPoolAnalysis(boolean firstViewWithPoolAnalysis) {
-        this.firstViewWithPoolAnalysis.set(firstViewWithPoolAnalysis);
-    }
-
-
-    public boolean isChangeTitlebar() {
-        return changeTitlebar.get();
-    }
-
-    public SimpleBooleanProperty changeTitlebarProperty() {
-        return changeTitlebar;
-    }
-
-    public void setChangeTitlebar(boolean changeTitlebar) {
-        this.changeTitlebar.set(changeTitlebar);
-    }
-
-    public boolean isTheme() {
-        return theme.get();
-    }
-
-    public SimpleBooleanProperty themeProperty() {
-        return theme;
-    }
-
-    public void setTheme(boolean theme) {
-        this.theme.set(theme);
-    }
-
-    public String getHomeViewIcon() {
-        return homeViewIcon.get();
-    }
-
-    public SimpleStringProperty homeViewIconProperty() {
-        return homeViewIcon;
-    }
-
-    public void setHomeViewIcon(String homeViewIcon) {
-        this.homeViewIcon.set(homeViewIcon);
-    }
-
-    public String getHomeViewRole() {
-        return homeViewRole.get();
-    }
-
-    public SimpleStringProperty homeViewRoleProperty() {
-        return homeViewRole;
-    }
-
-    public void setHomeViewRole(String homeViewRole) {
-        this.homeViewRole.set(homeViewRole);
-    }
-
-    public boolean isExitWhenGameOver() {
-        return exitWhenGameOver.get();
-    }
-
-    public SimpleBooleanProperty exitWhenGameOverProperty() {
-        return exitWhenGameOver;
-    }
-
-    public void setExitWhenGameOver(boolean exitWhenGameOver) {
-        this.exitWhenGameOver.set(exitWhenGameOver);
-    }
-
-    public boolean isHideWhenGameStart() {
-        return hideWhenGameStart.get();
-    }
-
-    public SimpleBooleanProperty hideWhenGameStartProperty() {
-        return hideWhenGameStart;
-    }
-
-    public void setHideWhenGameStart(boolean hideWhenGameStart) {
-        this.hideWhenGameStart.set(hideWhenGameStart);
-    }
-
-    public boolean isAutoStartGame() {
-        return autoStartGame.get();
-    }
-
-    public SimpleBooleanProperty autoStartGameProperty() {
-        return autoStartGame;
-    }
-
-    public void setAutoStartGame(boolean autoStartGame) {
-        this.autoStartGame.set(autoStartGame);
-    }
-
-    public boolean isDiyHomeBg() {
-        return diyHomeBg.get();
-    }
-
-    public SimpleBooleanProperty diyHomeBgProperty() {
-        return diyHomeBg;
-    }
-
-    public void setDiyHomeBg(boolean diyHomeBg) {
-        this.diyHomeBg.set(diyHomeBg);
-    }
-
-    public String getDiyHomeBgName() {
-        return diyHomeBgName.get();
-    }
-
-    public SimpleStringProperty diyHomeBgNameProperty() {
-        return diyHomeBgName;
-    }
-
-    public void setDiyHomeBgName(String diyHomeBgName) {
-        this.diyHomeBgName.set(diyHomeBgName);
-    }
-
-    public double getAppWidth() {
-        return appWidth.get();
-    }
-
-    public SimpleDoubleProperty appWidthProperty() {
-        return appWidth;
-    }
-
-    public void setAppWidth(double appWidth) {
-        this.appWidth.set(appWidth);
-    }
-
-    public double getAppHeight() {
-        return appHeight.get();
-    }
-
-    public SimpleDoubleProperty appHeightProperty() {
-        return appHeight;
-    }
-
-    public void setAppHeight(double appHeight) {
-        this.appHeight.set(appHeight);
-    }
-
-    public SourceType getGameRootDirSource() {
-        return gameRootDirSource.get();
-    }
-
-    public SimpleObjectProperty<SourceType> gameRootDirSourceProperty() {
-        return gameRootDirSource;
-    }
-
-    public void setGameRootDirSource(SourceType gameRootDirSource) {
-        this.gameRootDirSource.set(gameRootDirSource);
-    }
-
-    public String getLogLevel() {
-        return logLevel.get();
-    }
-
-    public SimpleStringProperty logLevelProperty() {
-        return logLevel;
-    }
-
-    public void setLogLevel(String logLevel) {
-        this.logLevel.set(logLevel);
-    }
-
-    public boolean isCheckNewVersion() {
-        return checkNewVersion.get();
-    }
-
-    public SimpleBooleanProperty checkNewVersionProperty() {
-        return checkNewVersion;
-    }
-
-    public void setCheckNewVersion(boolean checkNewVersion) {
-        this.checkNewVersion.set(checkNewVersion);
-    }
-
-    public boolean isAutoStart() {
-        return autoStart.get();
-    }
-
-    public SimpleBooleanProperty autoStartProperty() {
-        return autoStart;
-    }
-
-    public void setAutoStart(boolean autoStart) {
-        this.autoStart.set(autoStart);
-    }
-
-    public boolean isSilentStart() {
-        return silentStart.get();
-    }
-
-    public SimpleBooleanProperty silentStartProperty() {
-        return silentStart;
-    }
-
-    public void setSilentStart(boolean silentStart) {
-        this.silentStart.set(silentStart);
-    }
-
-    public boolean isLeftBarShow() {
-        return leftBarShow.get();
-    }
-
-    public SimpleBooleanProperty leftBarShowProperty() {
-        return leftBarShow;
-    }
-
-    public void setLeftBarShow(boolean leftBarShow) {
-        this.leftBarShow.set(leftBarShow);
-    }
-
-    public int getResourceSource() {
-        return resourceSource.get();
-    }
-
-    public SimpleIntegerProperty resourceSourceProperty() {
-        return resourceSource;
-    }
-
-    public void setResourceSource(int resourceSource) {
-        this.resourceSource.set(resourceSource);
-    }
-
-    public String getGameStarAppPath() {
-        return gameStarAppPath.get();
-    }
-
-    public SimpleStringProperty gameStarAppPathProperty() {
-        return gameStarAppPath;
-    }
-
-    public void setGameStarAppPath(String gameStarAppPath) {
-        this.gameStarAppPath.set(gameStarAppPath);
-    }
-
-    public boolean isGameStartAppCustom() {
-        return gameStartAppCustom.get();
-    }
-
-    public SimpleBooleanProperty gameStartAppCustomProperty() {
-        return gameStartAppCustom;
-    }
-
-    public void setGameStartAppCustom(boolean gameStartAppCustom) {
-        this.gameStartAppCustom.set(gameStartAppCustom);
-    }
-
-    public String getGameOfficialLauncherDir() {
-        return gameOfficialLauncherDir.get();
-    }
-
-    public SimpleStringProperty gameOfficialLauncherDirProperty() {
-        return gameOfficialLauncherDir;
-    }
-
-    public void setGameOfficialLauncherDir(String gameOfficialLauncherDir) {
-        this.gameOfficialLauncherDir.set(gameOfficialLauncherDir);
-    }
-
-    public boolean isNoKuJieQu() {
-        return noKuJieQu.get();
-    }
-
-    public SimpleBooleanProperty noKuJieQuProperty() {
-        return noKuJieQu;
-    }
-
-    public void setNoKuJieQu(boolean noKuJieQu) {
-        this.noKuJieQu.set(noKuJieQu);
-    }
-
-    public boolean isSupport() {
-        return support.get();
-    }
-
-    public SimpleBooleanProperty supportProperty() {
-        return support;
-    }
-
-    public void setSupport(boolean support) {
-        this.support.set(support);
-    }
-
-    public boolean isUserAdvanceGameSettings() {
-        return userAdvanceGameSettings.get();
-    }
-
-    public SimpleBooleanProperty userAdvanceGameSettingsProperty() {
-        return userAdvanceGameSettings;
-    }
-
-    public void setUserAdvanceGameSettings(boolean userAdvanceGameSettings) {
-        this.userAdvanceGameSettings.set(userAdvanceGameSettings);
-    }
-
-    public String getAppParams() {
-        return appParams.get();
-    }
-
-    public SimpleStringProperty appParamsProperty() {
-        return appParams;
-    }
-
-    public void setAppParams(String appParams) {
-        this.appParams.set(appParams);
-    }
-
-    public int getCloseEvent() {
-        return closeEvent.get();
-    }
-
-    public SimpleIntegerProperty closeEventProperty() {
-        return closeEvent;
-    }
-
-    public void setCloseEvent(int closeEvent) {
-        this.closeEvent.set(closeEvent);
-    }
-
-    public boolean isAutoKujieQuSign() {
-        return autoKujieQuSign.get();
-    }
-
-    public SimpleBooleanProperty autoKujieQuSignProperty() {
-        return autoKujieQuSign;
-    }
-
-    public void setAutoKujieQuSign(boolean autoKujieQuSign) {
-        this.autoKujieQuSign.set(autoKujieQuSign);
-    }
-
-    public ObservableList<String> getStartUpParams() {
-        return startUpParams;
-    }
-
-    public String getSkipVersion() {
-        return skipVersion.get();
-    }
-
-    public SimpleStringProperty skipVersionProperty() {
-        return skipVersion;
-    }
-
-    public void setSkipVersion(String skipVersion) {
-        this.skipVersion.set(skipVersion);
-    }
-
-    public int getDiyHomeBgType() {
-        return diyHomeBgType.get();
-    }
-
-    public SimpleIntegerProperty diyHomeBgTypeProperty() {
-        return diyHomeBgType;
-    }
-
-    public void setDiyHomeBgType(int diyHomeBgType) {
-        this.diyHomeBgType.set(diyHomeBgType);
-    }
-
-    public String getDiyHomeBgDir() {
-        return diyHomeBgDir.get();
-    }
-
-    public SimpleStringProperty diyHomeBgDirProperty() {
-        return diyHomeBgDir;
-    }
-
-    public void setDiyHomeBgDir(String diyHomeBgDir) {
-        this.diyHomeBgDir.set(diyHomeBgDir);
-    }
-
-    public String getGachaCurrentPlayerId() {
-        return gachaCurrentPlayerId.get();
-    }
-
-    public SimpleStringProperty gachaCurrentPlayerIdProperty() {
-        return gachaCurrentPlayerId;
-    }
-
-    public void setGachaCurrentPlayerId(String gachaCurrentPlayerId) {
-        this.gachaCurrentPlayerId.set(gachaCurrentPlayerId);
-    }
-
-    public boolean isGachaListModel() {
-        return gachaListModel.get();
-    }
-
-    public SimpleBooleanProperty gachaListModelProperty() {
-        return gachaListModel;
-    }
-
-    public void setGachaListModel(boolean gachaListModel) {
-        this.gachaListModel.set(gachaListModel);
-    }
-
-    public void setStartUpParams(ObservableList<String> startUpParams) {
-        this.startUpParams = startUpParams;
-    }
-
-    public int getUiScale() {
-        return uiScale.get();
-    }
-
-    public SimpleIntegerProperty uiScaleProperty() {
-        return uiScale;
-    }
-
-    public void setUiScale(int uiScale) {
-        this.uiScale.set(uiScale);
-    }
-
-    public boolean isDevModel() {
-        return devModel.get();
-    }
-
-    public SimpleBooleanProperty devModelProperty() {
-        return devModel;
-    }
-
-    public void setDevModel(boolean devModel) {
-        this.devModel.set(devModel);
-    }
-
-    public int getLastKujiequSignTime() {
-        return lastKujiequSignTime.get();
-    }
-
-    public SimpleIntegerProperty lastKujiequSignTimeProperty() {
-        return lastKujiequSignTime;
-    }
-
-    public void setLastKujiequSignTime(int lastKujiequSignTime) {
-        this.lastKujiequSignTime.set(lastKujiequSignTime);
-    }
-
-    public boolean isUseLocalCacheUser() {
-        return useLocalCacheUser.get();
-    }
-
-    public SimpleBooleanProperty useLocalCacheUserProperty() {
-        return useLocalCacheUser;
-    }
-
-    public void setUseLocalCacheUser(boolean useLocalCacheUser) {
-        this.useLocalCacheUser.set(useLocalCacheUser);
-    }
-
-    public String getServerUsername() {
-        return serverUsername.get();
-    }
-
-    public SimpleStringProperty serverUsernameProperty() {
-        return serverUsername;
-    }
-
-    public void setServerUsername(String serverUsername) {
-        this.serverUsername.set(serverUsername);
-    }
-
-    public String getServerPassword() {
-        return serverPassword.get();
-    }
-
-    public SimpleStringProperty serverPasswordProperty() {
-        return serverPassword;
-    }
-
-    public void setServerPassword(String serverPassword) {
-        this.serverPassword.set(serverPassword);
-    }
+    public Setting() {
+        // noKuJieQu / resourceSource 的默认值依赖 language，与原字段声明处逻辑保持一致
+        behavior.setNoKuJieQu(ui.getLanguage() != Locale.CHINA);
+        behavior.setResourceSource(ui.getLanguage() == Locale.CHINA ? 1 : 0);
+    }
+
+    // ============ 分组访问器 ============
+    public UiSetting getUi() { return ui; }
+    public GameSetting getGame() { return game; }
+    public LauncherSetting getLauncher() { return launcher; }
+    public GachaSetting getGacha() { return gacha; }
+    public SignSetting getSign() { return sign; }
+    public ServerSetting getServer() { return server; }
+    public AppBehaviorSetting getBehavior() { return behavior; }
+
+    // ============ UiSetting delegate ============
+    public Locale getLanguage() { return ui.getLanguage(); }
+    public SimpleObjectProperty<Locale> languageProperty() { return ui.languageProperty(); }
+    public void setLanguage(Locale language) { ui.setLanguage(language); }
+
+    public double getAppWidth() { return ui.getAppWidth(); }
+    public SimpleDoubleProperty appWidthProperty() { return ui.appWidthProperty(); }
+    public void setAppWidth(double appWidth) { ui.setAppWidth(appWidth); }
+
+    public double getAppHeight() { return ui.getAppHeight(); }
+    public SimpleDoubleProperty appHeightProperty() { return ui.appHeightProperty(); }
+    public void setAppHeight(double appHeight) { ui.setAppHeight(appHeight); }
+
+    public int getUiScale() { return ui.getUiScale(); }
+    public SimpleIntegerProperty uiScaleProperty() { return ui.uiScaleProperty(); }
+    public void setUiScale(int uiScale) { ui.setUiScale(uiScale); }
+
+    public boolean isLeftBarShow() { return ui.isLeftBarShow(); }
+    public SimpleBooleanProperty leftBarShowProperty() { return ui.leftBarShowProperty(); }
+    public void setLeftBarShow(boolean leftBarShow) { ui.setLeftBarShow(leftBarShow); }
+
+    public boolean isTheme() { return ui.isTheme(); }
+    public SimpleBooleanProperty themeProperty() { return ui.themeProperty(); }
+    public void setTheme(boolean theme) { ui.setTheme(theme); }
+
+    public boolean isChangeTitlebar() { return ui.isChangeTitlebar(); }
+    public SimpleBooleanProperty changeTitlebarProperty() { return ui.changeTitlebarProperty(); }
+    public void setChangeTitlebar(boolean changeTitlebar) { ui.setChangeTitlebar(changeTitlebar); }
+
+    public boolean isFirstViewWithPoolAnalysis() { return ui.isFirstViewWithPoolAnalysis(); }
+    public SimpleBooleanProperty firstViewWithPoolAnalysisProperty() { return ui.firstViewWithPoolAnalysisProperty(); }
+    public void setFirstViewWithPoolAnalysis(boolean firstViewWithPoolAnalysis) { ui.setFirstViewWithPoolAnalysis(firstViewWithPoolAnalysis); }
+
+    public boolean isDiyHomeBg() { return ui.isDiyHomeBg(); }
+    public SimpleBooleanProperty diyHomeBgProperty() { return ui.diyHomeBgProperty(); }
+    public void setDiyHomeBg(boolean diyHomeBg) { ui.setDiyHomeBg(diyHomeBg); }
+
+    public String getDiyHomeBgName() { return ui.getDiyHomeBgName(); }
+    public SimpleStringProperty diyHomeBgNameProperty() { return ui.diyHomeBgNameProperty(); }
+    public void setDiyHomeBgName(String diyHomeBgName) { ui.setDiyHomeBgName(diyHomeBgName); }
+
+    public int getDiyHomeBgType() { return ui.getDiyHomeBgType(); }
+    public SimpleIntegerProperty diyHomeBgTypeProperty() { return ui.diyHomeBgTypeProperty(); }
+    public void setDiyHomeBgType(int diyHomeBgType) { ui.setDiyHomeBgType(diyHomeBgType); }
+
+    public String getDiyHomeBgDir() { return ui.getDiyHomeBgDir(); }
+    public SimpleStringProperty diyHomeBgDirProperty() { return ui.diyHomeBgDirProperty(); }
+    public void setDiyHomeBgDir(String diyHomeBgDir) { ui.setDiyHomeBgDir(diyHomeBgDir); }
+
+    // ============ GameSetting delegate ============
+    public SourceType getGameRootDirSource() { return game.getGameRootDirSource(); }
+    public SimpleObjectProperty<SourceType> gameRootDirSourceProperty() { return game.gameRootDirSourceProperty(); }
+    public void setGameRootDirSource(SourceType gameRootDirSource) { game.setGameRootDirSource(gameRootDirSource); }
+
+    public String getGameRootDir() { return game.getGameRootDir(); }
+    public SimpleStringProperty gameRootDirProperty() { return game.gameRootDirProperty(); }
+    public void setGameRootDir(String gameRootDir) { game.setGameRootDir(gameRootDir); }
+
+    public String getGameStarAppPath() { return game.getGameStarAppPath(); }
+    public SimpleStringProperty gameStarAppPathProperty() { return game.gameStarAppPathProperty(); }
+    public void setGameStarAppPath(String gameStarAppPath) { game.setGameStarAppPath(gameStarAppPath); }
+
+    public boolean isGameStartAppCustom() { return game.isGameStartAppCustom(); }
+    public SimpleBooleanProperty gameStartAppCustomProperty() { return game.gameStartAppCustomProperty(); }
+    public void setGameStartAppCustom(boolean gameStartAppCustom) { game.setGameStartAppCustom(gameStartAppCustom); }
+
+    public String getGameOfficialLauncherDir() { return game.getGameOfficialLauncherDir(); }
+    public SimpleStringProperty gameOfficialLauncherDirProperty() { return game.gameOfficialLauncherDirProperty(); }
+    public void setGameOfficialLauncherDir(String gameOfficialLauncherDir) { game.setGameOfficialLauncherDir(gameOfficialLauncherDir); }
+
+    public boolean isExitWhenGameOver() { return game.isExitWhenGameOver(); }
+    public SimpleBooleanProperty exitWhenGameOverProperty() { return game.exitWhenGameOverProperty(); }
+    public void setExitWhenGameOver(boolean exitWhenGameOver) { game.setExitWhenGameOver(exitWhenGameOver); }
+
+    public boolean isHideWhenGameStart() { return game.isHideWhenGameStart(); }
+    public SimpleBooleanProperty hideWhenGameStartProperty() { return game.hideWhenGameStartProperty(); }
+    public void setHideWhenGameStart(boolean hideWhenGameStart) { game.setHideWhenGameStart(hideWhenGameStart); }
+
+    public boolean isAutoStartGame() { return game.isAutoStartGame(); }
+    public SimpleBooleanProperty autoStartGameProperty() { return game.autoStartGameProperty(); }
+    public void setAutoStartGame(boolean autoStartGame) { game.setAutoStartGame(autoStartGame); }
+
+    // ============ LauncherSetting delegate ============
+    public boolean isUserAdvanceGameSettings() { return launcher.isUserAdvanceGameSettings(); }
+    public SimpleBooleanProperty userAdvanceGameSettingsProperty() { return launcher.userAdvanceGameSettingsProperty(); }
+    public void setUserAdvanceGameSettings(boolean userAdvanceGameSettings) { launcher.setUserAdvanceGameSettings(userAdvanceGameSettings); }
+
+    public String getAppParams() { return launcher.getAppParams(); }
+    public SimpleStringProperty appParamsProperty() { return launcher.appParamsProperty(); }
+    public void setAppParams(String appParams) { launcher.setAppParams(appParams); }
+
+    public ObservableList<String> getStartUpParams() { return startUpParams; }
+    public void setStartUpParams(ObservableList<String> startUpParams) { this.startUpParams = startUpParams; }
+
+    // ============ GachaSetting delegate ============
+    public String getGachaCurrentPlayerId() { return gacha.getGachaCurrentPlayerId(); }
+    public SimpleStringProperty gachaCurrentPlayerIdProperty() { return gacha.gachaCurrentPlayerIdProperty(); }
+    public void setGachaCurrentPlayerId(String gachaCurrentPlayerId) { gacha.setGachaCurrentPlayerId(gachaCurrentPlayerId); }
+
+    public boolean isGachaListModel() { return gacha.isGachaListModel(); }
+    public SimpleBooleanProperty gachaListModelProperty() { return gacha.gachaListModelProperty(); }
+    public void setGachaListModel(boolean gachaListModel) { gacha.setGachaListModel(gachaListModel); }
+
+    // ============ SignSetting delegate ============
+    public boolean isAutoKujieQuSign() { return sign.isAutoKujieQuSign(); }
+    public SimpleBooleanProperty autoKujieQuSignProperty() { return sign.autoKujieQuSignProperty(); }
+    public void setAutoKujieQuSign(boolean autoKujieQuSign) { sign.setAutoKujieQuSign(autoKujieQuSign); }
+
+    public int getLastKujiequSignTime() { return sign.getLastKujiequSignTime(); }
+    public SimpleIntegerProperty lastKujiequSignTimeProperty() { return sign.lastKujiequSignTimeProperty(); }
+    public void setLastKujiequSignTime(int lastKujiequSignTime) { sign.setLastKujiequSignTime(lastKujiequSignTime); }
+
+    // ============ ServerSetting delegate ============
+    public String getServerUsername() { return server.getServerUsername(); }
+    public SimpleStringProperty serverUsernameProperty() { return server.serverUsernameProperty(); }
+    public void setServerUsername(String serverUsername) { server.setServerUsername(serverUsername); }
+
+    public String getServerPassword() { return server.getServerPassword(); }
+    public SimpleStringProperty serverPasswordProperty() { return server.serverPasswordProperty(); }
+    public void setServerPassword(String serverPassword) { server.setServerPassword(serverPassword); }
+
+    // ============ AppBehaviorSetting delegate ============
+    public boolean isDevModel() { return behavior.isDevModel(); }
+    public SimpleBooleanProperty devModelProperty() { return behavior.devModelProperty(); }
+    public void setDevModel(boolean devModel) { behavior.setDevModel(devModel); }
+
+    public boolean isSupport() { return behavior.isSupport(); }
+    public SimpleBooleanProperty supportProperty() { return behavior.supportProperty(); }
+    public void setSupport(boolean support) { behavior.setSupport(support); }
+
+    public String getSkipVersion() { return behavior.getSkipVersion(); }
+    public SimpleStringProperty skipVersionProperty() { return behavior.skipVersionProperty(); }
+    public void setSkipVersion(String skipVersion) { behavior.setSkipVersion(skipVersion); }
+
+    public boolean isCheckNewVersion() { return behavior.isCheckNewVersion(); }
+    public SimpleBooleanProperty checkNewVersionProperty() { return behavior.checkNewVersionProperty(); }
+    public void setCheckNewVersion(boolean checkNewVersion) { behavior.setCheckNewVersion(checkNewVersion); }
+
+    public boolean isAutoStart() { return behavior.isAutoStart(); }
+    public SimpleBooleanProperty autoStartProperty() { return behavior.autoStartProperty(); }
+    public void setAutoStart(boolean autoStart) { behavior.setAutoStart(autoStart); }
+
+    public boolean isSilentStart() { return behavior.isSilentStart(); }
+    public SimpleBooleanProperty silentStartProperty() { return behavior.silentStartProperty(); }
+    public void setSilentStart(boolean silentStart) { behavior.setSilentStart(silentStart); }
+
+    public int getCloseEvent() { return behavior.getCloseEvent(); }
+    public SimpleIntegerProperty closeEventProperty() { return behavior.closeEventProperty(); }
+    public void setCloseEvent(int closeEvent) { behavior.setCloseEvent(closeEvent); }
+
+    public int getResourceSource() { return behavior.getResourceSource(); }
+    public SimpleIntegerProperty resourceSourceProperty() { return behavior.resourceSourceProperty(); }
+    public void setResourceSource(int resourceSource) { behavior.setResourceSource(resourceSource); }
+
+    public boolean isNoKuJieQu() { return behavior.isNoKuJieQu(); }
+    public SimpleBooleanProperty noKuJieQuProperty() { return behavior.noKuJieQuProperty(); }
+    public void setNoKuJieQu(boolean noKuJieQu) { behavior.setNoKuJieQu(noKuJieQu); }
+
+    public boolean isUseLocalCacheUser() { return behavior.isUseLocalCacheUser(); }
+    public SimpleBooleanProperty useLocalCacheUserProperty() { return behavior.useLocalCacheUserProperty(); }
+    public void setUseLocalCacheUser(boolean useLocalCacheUser) { behavior.setUseLocalCacheUser(useLocalCacheUser); }
+
+    public String getHomeViewIcon() { return behavior.getHomeViewIcon(); }
+    public SimpleStringProperty homeViewIconProperty() { return behavior.homeViewIconProperty(); }
+    public void setHomeViewIcon(String homeViewIcon) { behavior.setHomeViewIcon(homeViewIcon); }
+
+    public String getHomeViewRole() { return behavior.getHomeViewRole(); }
+    public SimpleStringProperty homeViewRoleProperty() { return behavior.homeViewRoleProperty(); }
+    public void setHomeViewRole(String homeViewRole) { behavior.setHomeViewRole(homeViewRole); }
+
+    public String getLogLevel() { return behavior.getLogLevel(); }
+    public SimpleStringProperty logLevelProperty() { return behavior.logLevelProperty(); }
+    public void setLogLevel(String logLevel) { behavior.setLogLevel(logLevel); }
 
     /** 将当前设置持久化到 settings.json */
     public void save() {
