@@ -62,3 +62,11 @@ a.json
 /src*.zip
 /update.zip
 /WutheringWavesTool*.zip
+
+### Runtime artifacts mistakenly tracked / Windows redirection ###
+/nul
+/lock
+*.lock
+
+### Manual jar backups (not referenced by pom.xml) ###
+/libs/*.jar
