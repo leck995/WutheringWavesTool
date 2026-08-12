@@ -81,20 +81,27 @@ public class CardCommonAnalysisView implements FxmlView<CardCommonAnalysisViewMo
         int totalPages = (int) Math.ceil((double) allData.size() / PAGE_SIZE);
         int start = currentPage * PAGE_SIZE;
         int end = Math.min(start + PAGE_SIZE, allData.size());
+        int cardCount = end - start;
 
         contentPane.getChildren().clear();
         for (int i = start; i < end; i++) {
-            contentPane.getChildren().add(createPoolCard(allData.get(i)));
+            contentPane.getChildren().add(createPoolCard(allData.get(i), cardCount));
         }
 
         leftArrow.setDisable(currentPage <= 0);
         rightArrow.setDisable(currentPage >= totalPages - 1 || totalPages <= 1);
     }
 
-    private VBox createPoolCard(AnalysisData data) {
+    private VBox createPoolCard(AnalysisData data, int cardCount) {
         VBox card = new VBox();
         card.getStyleClass().add("pool-pane");
-        HBox.setHgrow(card, Priority.ALWAYS);
+
+        // 每个卡池宽度固定为 容器宽度/4（PAGE_SIZE），
+        // 不论实际卡池数量：4 个时正好铺满，2 个时保持同样宽度不拉伸，多出空间留白
+        double spacing = contentPane.getSpacing();
+        card.prefWidthProperty().bind(contentPane.widthProperty()
+                .subtract(spacing * (PAGE_SIZE - 1))
+                .divide(PAGE_SIZE));
 
         // Title row: pool name + total count
         StackPane titleRow = new StackPane();

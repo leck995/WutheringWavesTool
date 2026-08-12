@@ -161,7 +161,7 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
                         }
 
                         rolePaneVisible.set(true);
-                        onWeekEnd(roleInfo);
+                        onWeekEndChangeTip(roleInfo);
                     } else {
                         rolePaneVisible.set(false);
                     }
@@ -220,6 +220,7 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
 
                             weeklyRougeText.set(String.format("%d", data.getWeeklyFrameData().getCur()));
 
+                            onWeekEndCheckEvent(data);
 
                         } else {
                             rolePaneVisible.set(false);
@@ -239,7 +240,7 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
      *
      * @param roleInfo
      */
-    private void onWeekEnd(RoleInfo roleInfo) {
+    private void onWeekEndChangeTip(RoleInfo roleInfo) {
         if (roleInfo == null) {
             return;
         }
@@ -250,15 +251,28 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
             } else {
                 weeklyInstCountTipText.set(LanguageManager.getString("ui.home.label.weekly"));
             }
-            if (roleInfo.getRougeScore() < 6000) {
+        }
+    }
+
+    private void onWeekEndCheckEvent(RoleDailyData data) {
+        if (data == null) {
+            return;
+        }
+        LocalDate today = LocalDate.now();
+        if (today.getDayOfWeek() == DayOfWeek.SUNDAY) {
+            if (data.getWeeklyFrameData().getCur() < 6000) {
                 weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.weekly.tip"));
                 NotificationManager.publish(NotificationKey.MESSAGE,
-                        MessageInfo.warning(LanguageManager.getString("ui.home.label.weekly.message03")));
+                        MessageInfo.warning(LanguageManager.getString("ui.home.label.weekly.message02")));
             } else {
                 weeklyRougeTipText.set(LanguageManager.getString("ui.home.label.weekly.frame.data"));
             }
         }
     }
+
+
+
+
 
     /**
      * 开始进行库街区鸣潮签到
