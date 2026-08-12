@@ -28,5 +28,6 @@ public class AppModule extends AbstractModule {
         bind(TrayIconManager.class).in(Singleton.class);
         bind(TokenRefreshService.class).in(Singleton.class);
         bind(WebKujiequManager.class).in(Singleton.class);
+        bind(GachaStatService.class).in(Singleton.class);
     }
 }

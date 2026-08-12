@@ -1,6 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.gacha;
 
-import cn.tealc.wutheringwavestool.ui.gacha.CardStatViewModel.StatItem;
+import cn.tealc.wutheringwavestool.model.gacha.StatItem;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -17,15 +17,17 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
-import javafx.scene.shape.SVGPath;
+import org.kordamp.ikonli.Ikon;
+import org.kordamp.ikonli.antdesignicons.AntDesignIconsOutlined;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2AL;
+import org.kordamp.ikonli.material2.Material2MZ;
 
 import java.net.URL;
 import java.util.ResourceBundle;
@@ -36,14 +38,13 @@ import java.util.ResourceBundle;
  * @author Leck
  */
 public class CardStatView implements FxmlView<CardStatViewModel>, Initializable {
-    private static final String SPARKLE_PATH =
-            "M12 0 L15.2 8.8 L24 12 L15.2 15.2 L12 24 L8.8 15.2 L0 12 L8.8 8.8 Z";
-    private static final String ROLE_PATH =
-            "M12 2 L14.7 5.8 L19.4 4.6 L19 9.4 L23 12 L19 14.6 L19.4 19.4 L14.7 18.2 L12 22 " +
-            "L9.3 18.2 L4.6 19.4 L5 14.6 L1 12 L5 9.4 L4.6 4.6 L9.3 5.8 Z";
-    private static final String WEAPON_PATH =
-            "M12 1 L14.8 6.2 L20.6 5.4 L18 10.6 L23 14 L17.2 15 L17.6 21 L12 18.4 " +
-            "L6.4 21 L6.8 15 L1 14 L6 10.6 L3.4 5.4 L9.2 6.2 Z";
+
+    // ikonli 图标替代 SVG path
+    private static final Ikon STAR_ICON = AntDesignIconsOutlined.STAR;
+    private static final Ikon AVG_ICON = AntDesignIconsOutlined.AREA_CHART;
+    private static final Ikon DATE_ICON = AntDesignIconsOutlined.CLOCK_CIRCLE;
+    private static final Ikon ROLE_ICON = Material2MZ.PERSON;
+    private static final Ikon WEAPON_ICON = AntDesignIconsOutlined.TROPHY;
 
     @InjectViewModel
     private CardStatViewModel viewModel;
@@ -62,6 +63,7 @@ public class CardStatView implements FxmlView<CardStatViewModel>, Initializable 
     @FXML private VBox weaponCard;
     @FXML private ToggleButton roleBtn;
     @FXML private ToggleButton weaponBtn;
+    @FXML private ComboBox<String> rarityCombo;
     @FXML private ListView<StatItem> statListView;
 
     @Override
@@ -89,9 +91,9 @@ public class CardStatView implements FxmlView<CardStatViewModel>, Initializable 
         refreshRarityLegend();
 
         fillStatGroup();
-        fillCompareCard(roleCard, "角色池", "stat-role", ROLE_PATH,
+        fillCompareCard(roleCard, "角色池", "stat-role", ROLE_ICON,
                 viewModel.rolePullsTextProperty(), viewModel.roleSsrTextProperty(), viewModel.roleAvgTextProperty());
-        fillCompareCard(weaponCard, "武器池", "stat-weapon", WEAPON_PATH,
+        fillCompareCard(weaponCard, "武器池", "stat-weapon", WEAPON_ICON,
                 viewModel.weaponPullsTextProperty(), viewModel.weaponSsrTextProperty(), viewModel.weaponAvgTextProperty());
 
         statListView.setItems(viewModel.getStatItems());
@@ -105,6 +107,20 @@ public class CardStatView implements FxmlView<CardStatViewModel>, Initializable 
         weaponBtn.selectedProperty().addListener((obs, old, selected) -> {
             if (selected) viewModel.setWeaponFilter(true);
         });
+
+        rarityCombo.setItems(viewModel.getRarityOptions());
+        rarityCombo.getSelectionModel().select(0);
+        rarityCombo.getSelectionModel().selectedIndexProperty().addListener((obs, old, idx) -> {
+            if (idx != null) viewModel.setRarityFilter(idx.intValue());
+        });
+        // 弹出列表样式
+        rarityCombo.setVisibleRowCount(4);
+        rarityCombo.getStyleClass().add("combo-popup");
+
+        // 空列表提示
+        Label emptyHint = new Label("该筛选条件下无数据");
+        emptyHint.getStyleClass().add("stat-empty-hint");
+        statListView.setPlaceholder(emptyHint);
     }
 
     private void fillStatCard(VBox card, String title, SimpleStringProperty valueProperty,
@@ -114,7 +130,7 @@ public class CardStatView implements FxmlView<CardStatViewModel>, Initializable 
         titleLabel.getStyleClass().add("stat-label");
         Pane spacer = new Pane();
         HBox.setHgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
-        StackPane emblem = createEmblem(colorClass, SPARKLE_PATH);
+        StackPane emblem = createEmblem(colorClass, STAR_ICON);
         HBox header = new HBox(titleLabel, spacer, emblem);
         header.setAlignment(Pos.CENTER_LEFT);
 
@@ -175,20 +191,16 @@ public class CardStatView implements FxmlView<CardStatViewModel>, Initializable 
 
     private void fillStatGroup() {
         statGroup.getChildren().setAll(
-                createMetricTile("五星不歪率", viewModel.nonBannerRateTextProperty(), "metric-star", SPARKLE_PATH),
-                createMetricTile("五星平均", viewModel.ssrAvgTextProperty(), "metric-average",
-                        "M2 18 L7 12 L11 15 L17 5 L22 8"),
-                createMetricTile("抽卡时间", viewModel.dateRangeTextProperty(), "metric-date",
-                        "M12 2 A10 10 0 1 0 12 22 A10 10 0 1 0 12 2 M12 6 L12 12 L16 15")
+                createMetricTile("五星不歪率", viewModel.nonBannerRateTextProperty(), "metric-star", STAR_ICON),
+                createMetricTile("五星平均", viewModel.ssrAvgTextProperty(), "metric-average", AVG_ICON),
+                createMetricTile("抽卡时间", viewModel.dateRangeTextProperty(), "metric-date", DATE_ICON)
         );
     }
 
     private VBox createMetricTile(String title, SimpleStringProperty valueProperty,
-                                  String styleClass, String iconPath) {
-        SVGPath icon = new SVGPath();
-        icon.setContent(iconPath);
-        icon.setScaleX(0.68);
-        icon.setScaleY(0.68);
+                                  String styleClass, Ikon iconIkon) {
+        FontIcon icon = new FontIcon(iconIkon);
+        icon.setIconSize(18);
         icon.getStyleClass().add("metric-icon");
         StackPane iconBox = new StackPane(icon);
         iconBox.setMinSize(24, 24);
@@ -235,10 +247,10 @@ public class CardStatView implements FxmlView<CardStatViewModel>, Initializable 
         return tile;
     }
 
-    private void fillCompareCard(VBox card, String title, String styleClass, String iconPath,
+    private void fillCompareCard(VBox card, String title, String styleClass, Ikon iconIkon,
                                  SimpleStringProperty pullsProperty, SimpleStringProperty ssrProperty,
                                  SimpleStringProperty averageProperty) {
-        StackPane icon = createEmblem(styleClass, iconPath);
+        StackPane icon = createEmblem(styleClass, iconIkon);
         Label titleLabel = new Label(title);
         titleLabel.getStyleClass().add("pool-title");
         HBox header = new HBox(icon, titleLabel);
@@ -269,17 +281,15 @@ public class CardStatView implements FxmlView<CardStatViewModel>, Initializable 
         metric.setMaxHeight(Double.MAX_VALUE);
         metric.getStyleClass().add("pool-metric");
         if (last) metric.getStyleClass().add("last");
-        HBox.setHgrow(metric, javafx.scene.layout.Priority.ALWAYS);
+        HBox.setHgrow(metric, Priority.ALWAYS);
         return metric;
     }
 
-    private static StackPane createEmblem(String styleClass, String path) {
-        SVGPath sparkle = new SVGPath();
-        sparkle.setContent(path);
-        sparkle.setScaleX(0.65);
-        sparkle.setScaleY(0.65);
-        sparkle.getStyleClass().add("emblem-shape");
-        StackPane emblem = new StackPane(sparkle);
+    private static StackPane createEmblem(String styleClass, Ikon iconIkon) {
+        FontIcon icon = new FontIcon(iconIkon);
+        icon.setIconSize(16);
+        icon.getStyleClass().add("emblem-icon");
+        StackPane emblem = new StackPane(icon);
         emblem.getStyleClass().addAll("stat-emblem", styleClass);
         return emblem;
     }
@@ -367,12 +377,8 @@ public class CardStatView implements FxmlView<CardStatViewModel>, Initializable 
             setGraphic(root);
 
             int resourceId = item.getResourceId();
-            Thread.startVirtualThread(() -> {
-                Image image = LocalResourcesManager.header(resourceId, 64, 64);
-                Platform.runLater(() -> {
-                    if (getItem() == item && getGraphic() == root) avatar.setImage(image);
-                });
-            });
+            Image image = LocalResourcesManager.header(resourceId, 64, 64);
+            avatar.setImage(image);
         }
     }
 }

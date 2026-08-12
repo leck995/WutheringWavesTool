@@ -4,6 +4,7 @@ import atlantafx.base.controls.ToggleSwitch;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
 import cn.tealc.fxplugin.FxPlugin;
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.teafx.utils.message.MessageInfo;
@@ -222,6 +223,7 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
             if (toggleButton.isSelected()) {
                 if (statChild == null) {
                     statViewModel = new CardStatViewModel(viewModel.getPoolData() != null);
+                    statViewModel.setStatService(AppInjector.getInstance(cn.tealc.wutheringwavestool.service.GachaStatService.class));
                     ViewTuple<CardStatView, CardStatViewModel> viewTuple =
                             FluentViewLoader
                                     .fxmlView(CardStatView.class)

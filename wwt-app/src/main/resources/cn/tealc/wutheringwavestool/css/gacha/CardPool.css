@@ -629,12 +629,12 @@
     -fx-border-radius: 25px;
     -fx-effect: dropshadow(gaussian, rgba(44, 55, 72, 0.10), 6, 0.06, 0, 2);
 }
-.stat-view .stat-emblem.stat-total .emblem-shape { -fx-fill: #e6c7bf; }
-.stat-view .stat-emblem.stat-ssr .emblem-shape { -fx-fill: #f3d592; }
-.stat-view .stat-emblem.stat-sr .emblem-shape { -fx-fill: #cda7df; }
-.stat-view .stat-emblem.stat-up .emblem-shape { -fx-fill: #a9d8d4; }
-.stat-view .stat-emblem.stat-role .emblem-shape { -fx-fill: white; }
-.stat-view .stat-emblem.stat-weapon .emblem-shape { -fx-fill: white; }
+.stat-view .stat-emblem.stat-total .emblem-icon { -fx-icon-color: #e6c7bf; }
+.stat-view .stat-emblem.stat-ssr .emblem-icon { -fx-icon-color: #f3d592; }
+.stat-view .stat-emblem.stat-sr .emblem-icon { -fx-icon-color: #cda7df; }
+.stat-view .stat-emblem.stat-up .emblem-icon { -fx-icon-color: #a9d8d4; }
+.stat-view .stat-emblem.stat-role .emblem-icon { -fx-icon-color: white; }
+.stat-view .stat-emblem.stat-weapon .emblem-icon { -fx-icon-color: white; }
 .stat-view .stat-emblem.stat-role { -fx-background-color: #67af78; -fx-border-color: transparent; }
 .stat-view .stat-emblem.stat-weapon { -fx-background-color: #6099d4; -fx-border-color: transparent; }
 
@@ -732,19 +732,16 @@
     -fx-text-fill: -color-fg-default;
 }
 .stat-view .metric-icon {
-    -fx-fill: transparent;
-    -fx-stroke: #4c8fd8;
-    -fx-stroke-width: 2px;
+    -fx-icon-color: #4c8fd8;
 }
 .stat-view .metric-star .metric-icon {
-    -fx-fill: #ff8000;
-    -fx-stroke: #ff8000;
+    -fx-icon-color: #ff8000;
 }
 .stat-view .metric-average .metric-icon {
-    -fx-stroke: #e57373;
+    -fx-icon-color: #e57373;
 }
 .stat-view .metric-date .metric-icon {
-    -fx-stroke: -color-fg-muted;
+    -fx-icon-color: -color-fg-muted;
 }
 .stat-view .metric-date-line {
     -fx-font-size: 11px;
@@ -826,6 +823,40 @@
 .stat-view .filter-btn:selected {
     -fx-background-color: rgba(97, 157, 222, 0.18);
     -fx-text-fill: #397abe;
+}
+/* ComboBox：与 filter-group 背景统一 */
+.stat-view .filter-combo {
+    -fx-background-color: -color-bg-default-30;
+    -fx-background-radius: 14px;
+    -fx-border-color: transparent;
+    -fx-font-size: 11px;
+    -fx-pref-height: 26px;
+    -fx-cursor: hand;
+}
+.stat-view .filter-combo:hover {
+    -fx-background-color: -color-bg-default-50;
+}
+.stat-view .filter-combo:focused {
+    -fx-background-color: -color-bg-default-50;
+    -fx-border-color: transparent;
+}
+.stat-view .filter-combo .list-cell {
+    -fx-text-fill: -color-fg-muted;
+    -fx-padding: 0 10px;
+}
+.stat-view .filter-combo .arrow-button {
+    -fx-background-color: transparent;
+    -fx-padding: 0 6px;
+}
+.stat-view .filter-combo .arrow {
+    -fx-background-color: -color-fg-muted;
+    -fx-padding: 2px;
+    -fx-shape: "M0,0 L4,4 L8,0 Z";
+}
+
+.stat-view .stat-empty-hint {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-fg-muted;
 }
 .stat-view .list-view,
 .stat-view .list-view .virtual-flow,

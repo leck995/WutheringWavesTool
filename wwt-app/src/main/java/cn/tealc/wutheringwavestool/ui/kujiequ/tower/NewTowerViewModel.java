@@ -90,7 +90,7 @@ public class NewTowerViewModel extends BaseViewModel {
                     NewTowerData newTowerData = towerResp.getData();
                     boolean unlocked = newTowerData != null && newTowerData.isUnlock();
                     Platform.runLater(() -> {
-                        isUnLock.set(unlocked);
+                        //isUnLock.set(unlocked);
                         if (unlocked || newTowerData.getModeDetails() != null) {
                             updateData(newTowerData);
                         }
@@ -165,7 +165,7 @@ public class NewTowerViewModel extends BaseViewModel {
                 List<NewTowerModeDetail> list = objectMapper.readValue(d.getData(),
                         new TypeReference<List<NewTowerModeDetail>>() {});
                 updateHistoryData(list);
-                isUnLock.set(true);
+                //isUnLock.set(true);
             } catch (JsonProcessingException e) {
                 throw new RuntimeException(e);
             }
