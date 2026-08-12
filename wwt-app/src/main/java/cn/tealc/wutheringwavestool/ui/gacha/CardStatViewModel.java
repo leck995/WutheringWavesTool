@@ -185,7 +185,8 @@ public class CardStatViewModel implements ViewModel {
                 .toList();
         upSsrCountText.set(String.valueOf(upSsrCards.size()));
 
-        double nonBannerRate = totalSsr > 0 ? (double) upSsrCards.size() / totalSsr : 0;
+        // 不歪率（50/50 胜率）：只统计非常驻角色池，按大小保底机制计算
+        double nonBannerRate = calculateNonBannerRate(poolMap);
         nonBannerRateText.set(String.format("%.0f%%", nonBannerRate * 100));
 
         String startDate = allCards.stream().map(CardInfo::getTime).filter(Objects::nonNull).min(String::compareTo).orElse("");
@@ -243,16 +244,19 @@ public class CardStatViewModel implements ViewModel {
         for (CardInfo c : ssrCards) {
             if (filter == FilterType.ROLE && !"角色".equals(c.getResourceType())) continue;
             if (filter == FilterType.WEAPON && !"武器".equals(c.getResourceType())) continue;
-            byName.computeIfAbsent(c.getName(), k -> new StatAggregator(c.getResourceId())).add(c.getCount());
+            byName.computeIfAbsent(c.getName(), k -> new StatAggregator(c.getResourceId(), c.getQualityLevel()))
+                    .add(c.getCount());
         }
         for (CardInfo c : srCards) {
             if (filter == FilterType.ROLE && !"角色".equals(c.getResourceType())) continue;
             if (filter == FilterType.WEAPON && !"武器".equals(c.getResourceType())) continue;
-            byName.computeIfAbsent(c.getName(), k -> new StatAggregator(c.getResourceId())).add(c.getCount());
+            byName.computeIfAbsent(c.getName(), k -> new StatAggregator(c.getResourceId(), c.getQualityLevel()))
+                    .add(c.getCount());
         }
 
         statItems.setAll(byName.entrySet().stream()
-                .map(e -> new StatItem(e.getKey(), e.getValue().totalCount, e.getValue().resourceId))
+                .map(e -> new StatItem(e.getKey(), e.getValue().totalCount,
+                        e.getValue().resourceId, e.getValue().qualityLevel))
                 .sorted(Comparator.comparingInt(StatItem::getCount).reversed())
                 .toList());
     }
@@ -280,6 +284,58 @@ public class CardStatViewModel implements ViewModel {
         nameProp.set("—");
         idProp.set(0);
         return "—";
+    }
+
+    /**
+     * 计算真实不歪率（50/50 胜率）：只统计非常驻角色池。
+     * 按时间正序遍历每个非常驻角色池的五星列表，
+     * 大保底出 UP 不计入 50/50 统计，小保底出 UP=赢了，出常驻=歪了且下次大保底。
+     */
+    private double calculateNonBannerRate(Map<String, List<CardInfo>> poolMap) {
+        int totalFiftyFifty = 0;
+        int wonFiftyFifty = 0;
+
+        for (Map.Entry<String, List<CardInfo>> entry : poolMap.entrySet()) {
+            String poolName = entry.getKey();
+            // 只统计非常驻角色池（排除"角色常驻唤取"，且只看角色池）
+            if (poolName == null || !poolName.startsWith("角色") || poolName.contains("常驻")) {
+                continue;
+            }
+
+            List<CardInfo> cards = entry.getValue();
+            if (cards == null || cards.isEmpty()) continue;
+
+            // 找出五星记录的索引（按时间倒序排列，索引0=最新）
+            List<CardInfo> ssrCards = new ArrayList<>();
+            for (CardInfo c : cards) {
+                if (c.getQualityLevel() == 5) {
+                    ssrCards.add(c);
+                }
+            }
+            if (ssrCards.isEmpty()) continue;
+
+            // 按时间正序遍历（从最旧到最新，即列表末尾到开头）
+            boolean isGuaranteed = false;
+            for (int i = ssrCards.size() - 1; i >= 0; i--) {
+                CardInfo card = ssrCards.get(i);
+                boolean isUp = !BASE_SSR_IDS.contains(String.valueOf(card.getResourceId()));
+                if (isGuaranteed) {
+                    // 大保底：必出 UP，不计入 50/50 统计
+                    isGuaranteed = false;
+                } else {
+                    // 小保底（50/50 情形）
+                    totalFiftyFifty++;
+                    if (isUp) {
+                        wonFiftyFifty++;
+                    } else {
+                        // 歪了，下次进入大保底
+                        isGuaranteed = true;
+                    }
+                }
+            }
+        }
+
+        return totalFiftyFifty > 0 ? (double) wonFiftyFifty / totalFiftyFifty : 0;
     }
 
     private void clearAll() {
@@ -366,18 +422,27 @@ public class CardStatViewModel implements ViewModel {
         private final String name;
         private final int count;
         private final int resourceId;
-        public StatItem(String name, int count, int resourceId) {
-            this.name = name; this.count = count; this.resourceId = resourceId;
+        private final int qualityLevel;
+        public StatItem(String name, int count, int resourceId, int qualityLevel) {
+            this.name = name;
+            this.count = count;
+            this.resourceId = resourceId;
+            this.qualityLevel = qualityLevel;
         }
         public String getName() { return name; }
         public int getCount() { return count; }
         public int getResourceId() { return resourceId; }
+        public int getQualityLevel() { return qualityLevel; }
     }
 
     private static class StatAggregator {
         final int resourceId;
+        final int qualityLevel;
         int totalCount = 0;
-        StatAggregator(int resourceId) { this.resourceId = resourceId; }
+        StatAggregator(int resourceId, int qualityLevel) {
+            this.resourceId = resourceId;
+            this.qualityLevel = qualityLevel;
+        }
         void add(int count) { totalCount += count; }
     }
 }

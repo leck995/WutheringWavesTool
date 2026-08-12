@@ -11,7 +11,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.chart.PieChart;
@@ -191,24 +190,47 @@ public class CardStatView implements FxmlView<CardStatViewModel>, Initializable 
         icon.setScaleX(0.68);
         icon.setScaleY(0.68);
         icon.getStyleClass().add("metric-icon");
+        StackPane iconBox = new StackPane(icon);
+        iconBox.setMinSize(24, 24);
+        iconBox.setPrefSize(24, 24);
+        iconBox.setMaxSize(24, 24);
+        iconBox.getStyleClass().add("metric-icon-box");
         Label titleLabel = new Label(title);
         titleLabel.getStyleClass().add("metric-title");
-        HBox heading = new HBox(icon, titleLabel);
+        HBox heading = new HBox(iconBox, titleLabel);
         heading.setAlignment(Pos.CENTER_LEFT);
-        heading.setSpacing(6);
+        heading.setSpacing(5);
+        heading.getStyleClass().add("metric-heading");
 
-        Label value = new Label();
+        Node valueNode;
         if ("metric-date".equals(styleClass)) {
-            value.textProperty().bind(Bindings.createStringBinding(
-                    () -> compactDateRange(valueProperty.get()), valueProperty));
+            Label startDate = new Label();
+            Label endDate = new Label();
+            startDate.textProperty().bind(Bindings.createStringBinding(
+                    () -> dateRangePart(valueProperty.get(), 0), valueProperty));
+            endDate.textProperty().bind(Bindings.createStringBinding(
+                    () -> dateRangePart(valueProperty.get(), 1), valueProperty));
+            startDate.getStyleClass().add("metric-date-line");
+            endDate.getStyleClass().add("metric-date-line");
+            VBox dateLines = new VBox(startDate, endDate);
+            dateLines.setSpacing(1);
+            dateLines.getStyleClass().add("metric-date-lines");
+            valueNode = dateLines;
         } else {
+            Label value = new Label();
             value.textProperty().bind(valueProperty);
+            value.setWrapText(true);
+            value.getStyleClass().add("metric-value");
+            valueNode = value;
         }
-        value.setWrapText(true);
-        value.getStyleClass().add("metric-value");
-        VBox tile = new VBox(heading, value);
+        Pane spacer = new Pane();
+        VBox.setVgrow(spacer, javafx.scene.layout.Priority.ALWAYS);
+        VBox tile = new VBox(heading, spacer, valueNode);
         tile.getStyleClass().addAll("metric-tile", styleClass);
-        tile.setSpacing(4);
+        tile.setMinWidth(0);
+        tile.setPrefWidth(0);
+        tile.setMaxWidth(Double.MAX_VALUE);
+        tile.setSpacing(3);
         HBox.setHgrow(tile, javafx.scene.layout.Priority.ALWAYS);
         return tile;
     }
@@ -262,11 +284,11 @@ public class CardStatView implements FxmlView<CardStatViewModel>, Initializable 
         return emblem;
     }
 
-    private static String compactDateRange(String value) {
+    private static String dateRangePart(String value, int index) {
         if (value == null || value.isBlank()) return "—";
         String[] parts = value.split(" ~ ");
-        if (parts.length != 2) return value;
-        return datePart(parts[0]) + " ~ " + datePart(parts[1]);
+        if (parts.length != 2) return index == 0 ? datePart(value) : "—";
+        return datePart(parts[index]);
     }
 
     private static String datePart(String value) {
@@ -317,8 +339,11 @@ public class CardStatView implements FxmlView<CardStatViewModel>, Initializable 
             }
 
             VBox root = new VBox();
-            root.getStyleClass().add("rank-cell");
-            root.setSpacing(5);
+            String rarityClass = item.getQualityLevel() == 5 ? "rank-ssr" : "rank-sr";
+            root.getStyleClass().addAll("rank-cell", rarityClass);
+            root.setMinWidth(0);
+            root.setMaxWidth(Double.MAX_VALUE);
+            root.prefWidthProperty().bind(getListView().widthProperty().subtract(20));
 
             ImageView avatar = createAvatar(42);
             StackPane avatarFrame = new StackPane(avatar);
@@ -328,26 +353,17 @@ public class CardStatView implements FxmlView<CardStatViewModel>, Initializable 
 
             Label name = new Label(item.getName());
             name.getStyleClass().add("rank-name");
-            name.setMaxWidth(Double.MAX_VALUE);
-            HBox.setHgrow(name, javafx.scene.layout.Priority.ALWAYS);
+            Pane nameSpacer = new Pane();
+            HBox.setHgrow(nameSpacer, javafx.scene.layout.Priority.ALWAYS);
             Label count = new Label("x" + item.getCount());
             count.getStyleClass().add("rank-count");
-            HBox line = new HBox(avatarFrame, name, count);
+            HBox line = new HBox(avatarFrame, name, nameSpacer, count);
             line.setAlignment(Pos.CENTER_LEFT);
             line.setSpacing(9);
+            line.setMinWidth(0);
+            line.setMaxWidth(Double.MAX_VALUE);
 
-            int max = getListView().getItems().stream().mapToInt(StatItem::getCount).max().orElse(1);
-            double ratio = (double) item.getCount() / max;
-            Pane progressFill = new Pane();
-            progressFill.getStyleClass().add("rank-progress-fill");
-            StackPane progress = new StackPane(progressFill);
-            progress.setAlignment(Pos.CENTER_LEFT);
-            progress.setMaxWidth(Double.MAX_VALUE);
-            progress.getStyleClass().add("rank-progress");
-            progressFill.prefWidthProperty().bind(progress.widthProperty().multiply(ratio));
-            VBox.setMargin(progress, new Insets(0, 0, 0, 55));
-
-            root.getChildren().addAll(line, progress);
+            root.getChildren().add(line);
             setGraphic(root);
 
             int resourceId = item.getResourceId();

@@ -569,42 +569,25 @@
 
 /* ====== 统计子界面 ====== */
 .stat-view {
-    -fx-padding: 8px;
-    -fx-background-color: linear-gradient(to bottom right,
-        rgba(255, 239, 225, 0.82) 0%,
-        rgba(246, 241, 241, 0.72) 35%,
-        rgba(225, 235, 250, 0.78) 70%,
-        rgba(243, 226, 241, 0.72) 100%);
-    -fx-background-radius: 10px;
+    -fx-padding: 0;
+    -fx-background-color: transparent;
 }
 
 .stat-view .stat-card,
 .stat-view .stat-section,
 .stat-view .pool-summary {
-    -fx-background-color: rgba(255, 255, 255, 0.76);
-    -fx-background-radius: 8px;
-    -fx-border-color: rgba(255, 255, 255, 0.90);
-    -fx-border-radius: 8px;
+    -fx-background-color: -color-bg-default-50;
+    -fx-background-radius: 10px;
+    -fx-border-color: -color-border-default;
+    -fx-border-radius: 10px;
     -fx-border-width: 1px;
-    -fx-effect: dropshadow(gaussian, rgba(55, 64, 82, 0.16), 18, 0.10, 0, 5);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 4);
 }
 
 .stat-view .stat-card {
     -fx-padding: 17px 20px 15px 20px;
     -fx-spacing: 3px;
     -fx-alignment: TOP_LEFT;
-}
-.stat-view .stat-card.stat-total {
-    -fx-background-color: linear-gradient(to bottom right, rgba(255, 255, 255, 0.94), rgba(255, 241, 238, 0.88));
-}
-.stat-view .stat-card.stat-ssr {
-    -fx-background-color: linear-gradient(to bottom right, rgba(255, 255, 255, 0.94), rgba(255, 248, 229, 0.88));
-}
-.stat-view .stat-card.stat-sr {
-    -fx-background-color: linear-gradient(to bottom right, rgba(255, 255, 255, 0.94), rgba(235, 243, 255, 0.88));
-}
-.stat-view .stat-card.stat-up {
-    -fx-background-color: linear-gradient(to bottom right, rgba(255, 255, 255, 0.94), rgba(232, 248, 246, 0.88));
 }
 .stat-view .stat-card .stat-label {
     -fx-font-size: 17px;
@@ -626,7 +609,7 @@
 }
 .stat-view .stat-card.stat-total .stat-value { -fx-text-fill: #ef7377; }
 .stat-view .stat-card.stat-ssr .stat-value { -fx-text-fill: #eea13d; }
-.stat-view .stat-card.stat-sr .stat-value { -fx-text-fill: #5f8fce; }
+.stat-view .stat-card.stat-sr .stat-value { -fx-text-fill: #933fb1; }
 .stat-view .stat-card.stat-up .stat-value { -fx-text-fill: #38a6a1; }
 
 .stat-view .stat-emblem {
@@ -634,13 +617,13 @@
     -fx-min-height: 44px;
     -fx-max-width: 44px;
     -fx-max-height: 44px;
-    -fx-background-color: rgba(255, 255, 255, 0.70);
+    -fx-background-color: -color-bg-default-50;
     -fx-background-radius: 23px;
     -fx-border-color: rgba(120, 128, 145, 0.14);
     -fx-border-radius: 23px;
 }
 .stat-view .stat-card-avatar-frame {
-    -fx-background-color: rgba(255, 255, 255, 0.72);
+    -fx-background-color: -color-bg-default-50;
     -fx-background-radius: 25px;
     -fx-border-color: rgba(105, 119, 142, 0.18);
     -fx-border-radius: 25px;
@@ -648,7 +631,7 @@
 }
 .stat-view .stat-emblem.stat-total .emblem-shape { -fx-fill: #e6c7bf; }
 .stat-view .stat-emblem.stat-ssr .emblem-shape { -fx-fill: #f3d592; }
-.stat-view .stat-emblem.stat-sr .emblem-shape { -fx-fill: #b7d0ef; }
+.stat-view .stat-emblem.stat-sr .emblem-shape { -fx-fill: #cda7df; }
 .stat-view .stat-emblem.stat-up .emblem-shape { -fx-fill: #a9d8d4; }
 .stat-view .stat-emblem.stat-role .emblem-shape { -fx-fill: white; }
 .stat-view .stat-emblem.stat-weapon .emblem-shape { -fx-fill: white; }
@@ -686,11 +669,11 @@
     -fx-border-color: rgba(255, 255, 255, 0.95);
     -fx-border-width: 1.5px;
 }
-.stat-view .default-color0.chart-pie { -fx-pie-color: #ff9a59; }
-.stat-view .default-color1.chart-pie { -fx-pie-color: #f5ca4f; }
-.stat-view .default-color2.chart-pie { -fx-pie-color: #70bd78; }
+.stat-view .default-color0.chart-pie { -fx-pie-color: #ff8000; }
+.stat-view .default-color1.chart-pie { -fx-pie-color: #933fb1; }
+.stat-view .default-color2.chart-pie { -fx-pie-color: #04b6c6; }
 .stat-view .donut-center {
-    -fx-background-color: rgba(255, 255, 255, 0.96);
+    -fx-background-color: #ffffff;
     -fx-background-radius: 66px;
     -fx-effect: dropshadow(gaussian, rgba(31, 42, 55, 0.08), 7, 0.04, 0, 2);
 }
@@ -710,9 +693,9 @@
     -fx-max-height: 11px;
     -fx-background-radius: 6px;
 }
-.stat-view .rarity-dot.rarity-0 { -fx-background-color: #f39a52; }
-.stat-view .rarity-dot.rarity-1 { -fx-background-color: #f2c94c; }
-.stat-view .rarity-dot.rarity-2 { -fx-background-color: #6ebd78; }
+.stat-view .rarity-dot.rarity-0 { -fx-background-color: #ff8000; }
+.stat-view .rarity-dot.rarity-1 { -fx-background-color: #933fb1; }
+.stat-view .rarity-dot.rarity-2 { -fx-background-color: #04b6c6; }
 .stat-view .rarity-name,
 .stat-view .rarity-percent {
     -fx-font-size: 13px;
@@ -720,17 +703,29 @@
 }
 
 .stat-view .metric-tile {
-    -fx-min-width: 84px;
+    -fx-min-width: 0;
     -fx-min-height: 78px;
+    -fx-pref-height: 78px;
+    -fx-max-height: 78px;
     -fx-padding: 11px;
-    -fx-background-color: rgba(255, 255, 255, 0.72);
-    -fx-background-radius: 8px;
-    -fx-border-color: rgba(130, 138, 153, 0.14);
-    -fx-border-radius: 8px;
+    -fx-background-color: -color-bg-default-50;
+    -fx-background-radius: 10px;
+    -fx-border-color: -color-border-default;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
 }
 .stat-view .metric-title {
     -fx-font-size: 11px;
     -fx-text-fill: -color-fg-muted;
+}
+.stat-view .metric-heading {
+    -fx-min-height: 24px;
+    -fx-pref-height: 24px;
+    -fx-max-height: 24px;
+    -fx-alignment: center-left;
+}
+.stat-view .metric-icon-box {
+    -fx-alignment: center;
 }
 .stat-view .metric-value {
     -fx-font-size: 17px;
@@ -742,11 +737,21 @@
     -fx-stroke-width: 2px;
 }
 .stat-view .metric-star .metric-icon {
-    -fx-fill: #f0a541;
-    -fx-stroke: #f0a541;
+    -fx-fill: #ff8000;
+    -fx-stroke: #ff8000;
 }
-.stat-view .metric-date .metric-value {
+.stat-view .metric-average .metric-icon {
+    -fx-stroke: #e57373;
+}
+.stat-view .metric-date .metric-icon {
+    -fx-stroke: -color-fg-muted;
+}
+.stat-view .metric-date-line {
     -fx-font-size: 11px;
+    -fx-text-fill: -color-fg-default;
+}
+.stat-view .metric-date-lines {
+    -fx-alignment: center-left;
 }
 
 .stat-view .pool-summary {
@@ -777,7 +782,7 @@
 .stat-view .stat-role .pool-title { -fx-text-fill: #3d8650; }
 .stat-view .stat-weapon .pool-title { -fx-text-fill: #3879b8; }
 .stat-view .pool-values {
-    -fx-background-color: rgba(255, 255, 255, 0.58);
+    -fx-background-color: -color-bg-default-30;
     -fx-background-radius: 0 0 7px 7px;
     -fx-border-color: transparent rgba(120, 128, 145, 0.08) rgba(120, 128, 145, 0.08) rgba(120, 128, 145, 0.08);
     -fx-border-radius: 0 0 7px 7px;
@@ -804,7 +809,7 @@
     -fx-padding: 17px 13px 12px 13px;
 }
 .stat-view .filter-group {
-    -fx-background-color: rgba(105, 142, 183, 0.09);
+    -fx-background-color: -color-bg-default-30;
     -fx-background-radius: 14px;
     -fx-padding: 2px;
 }
@@ -831,48 +836,64 @@
 .stat-view .list-view .list-cell {
     -fx-padding: 3px 0;
 }
+.stat-view .list-view > .virtual-flow > .scroll-bar:horizontal {
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+    -fx-max-height: 0;
+    -fx-opacity: 0;
+}
 .stat-view .rank-cell {
-    -fx-padding: 8px 10px;
-    -fx-background-color: rgba(255, 255, 255, 0.70);
-    -fx-background-radius: 7px;
-    -fx-border-color: rgba(120, 128, 145, 0.08);
-    -fx-border-radius: 7px;
+    -fx-padding: 9px 11px;
+    -fx-background-color: -color-bg-default-50;
+    -fx-background-radius: 12px;
+    -fx-border-color: -color-border-muted;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
 }
 .stat-view .rank-avatar-frame {
-    -fx-background-color: rgba(116, 165, 216, 0.13);
     -fx-background-radius: 24px;
-    -fx-border-color: rgba(87, 139, 197, 0.22);
     -fx-border-radius: 24px;
+    -fx-border-width: 1px;
 }
 .stat-view .rank-name {
     -fx-font-size: 14px;
-    -fx-text-fill: -color-fg-default;
+    -fx-padding: 3px 8px;
+    -fx-background-radius: 9px;
+    -fx-border-radius: 9px;
+    -fx-border-width: 1px;
 }
 .stat-view .rank-count {
     -fx-padding: 2px 7px;
-    -fx-background-color: #6ba8e9;
     -fx-background-radius: 11px;
     -fx-font-size: 11px;
     -fx-text-fill: white;
 }
-.stat-view .rank-progress {
-    -fx-min-height: 6px;
-    -fx-pref-height: 6px;
-    -fx-max-height: 6px;
-    -fx-background-color: rgba(112, 126, 145, 0.14);
-    -fx-background-radius: 4px;
+.stat-view .rank-cell.rank-ssr .rank-avatar-frame,
+.stat-view .rank-cell.rank-ssr .rank-name {
+    -fx-background-color: rgba(255, 128, 0, 0.14);
+    -fx-border-color: rgba(255, 128, 0, 0.38);
 }
-.stat-view .rank-progress-fill {
-    -fx-min-height: 6px;
-    -fx-pref-height: 6px;
-    -fx-max-height: 6px;
-    -fx-background-color: linear-gradient(to right, #8cc8f6, #5d9fe6);
-    -fx-background-radius: 4px;
+.stat-view .rank-cell.rank-ssr .rank-name {
+    -fx-text-fill: #d96d00;
+}
+.stat-view .rank-cell.rank-ssr .rank-count {
+    -fx-background-color: #ff8000;
+}
+.stat-view .rank-cell.rank-sr .rank-avatar-frame,
+.stat-view .rank-cell.rank-sr .rank-name {
+    -fx-background-color: rgba(147, 63, 177, 0.14);
+    -fx-border-color: rgba(147, 63, 177, 0.38);
+}
+.stat-view .rank-cell.rank-sr .rank-name {
+    -fx-text-fill: #8736a3;
+}
+.stat-view .rank-cell.rank-sr .rank-count {
+    -fx-background-color: #933fb1;
 }
 
 .stat-view .stat-state-pane {
-    -fx-background-color: -color-bg-default-90;
-    -fx-background-radius: 8px;
+    -fx-background-color: -color-bg-default-50;
+    -fx-background-radius: 10px;
 }
 .stat-view .stat-state-label {
     -fx-font-size: 15px;
