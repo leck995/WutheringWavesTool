@@ -7,208 +7,76 @@
     <groupId>cn.tealc</groupId>
     <artifactId>wuthering-waves-tool</artifactId>
     <version>1.5.2</version>
+    <packaging>pom</packaging>
     <name>WutheringWavesTool</name>
+
+    <modules>
+        <module>wwt-kuro-api</module>
+        <module>wwt-app</module>
+    </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.10.0</junit.version>
         <javafx.version>25</javafx.version>
         <ikonli.version>12.3.1</ikonli.version>
+        <jackson.version>2.16.0</jackson.version>
+        <slf4j.version>2.1.0-alpha1</slf4j.version>
+        <commons-codec.version>1.17.1</commons-codec.version>
     </properties>
 
-    <dependencies>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-controls</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-fxml</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-media</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-swing</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-web</artifactId>
-            <version>${javafx.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.kordamp.ikonli</groupId>
-            <artifactId>ikonli-javafx</artifactId>
-            <version>${ikonli.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.kordamp.ikonli</groupId>
-            <artifactId>ikonli-material2-pack</artifactId>
-            <version>${ikonli.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.kordamp.ikonli</groupId>
-            <artifactId>ikonli-antdesignicons-pack</artifactId>
-            <version>${ikonli.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.kordamp.ikonli</groupId>
-            <artifactId>ikonli-fluentui-pack</artifactId>
-            <version>${ikonli.version}</version>
-        </dependency>
+    <dependencyManagement>
+        <dependencies>
+            <!-- 子模块间依赖 -->
+            <dependency>
+                <groupId>cn.tealc</groupId>
+                <artifactId>wwt-kuro-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
-        <dependency>
-            <groupId>io.github.mkpaz</groupId>
-            <artifactId>atlantafx-base</artifactId>
-            <version>2.0.1</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>2.16.0</version>
-        </dependency>
-
-        <!--有需要，可前往https://github.com/leck995/Teafx下载-->
-        <dependency>
-            <groupId>com.github.leck995</groupId>
-            <artifactId>teafx</artifactId>
-            <version>1.2.0</version>
-        </dependency>
-
-        <!--有需要，前往https://github.com/leck995/Fx-plugin下载-->
-        <dependency>
-            <groupId>com.github.leck995</groupId>
-            <artifactId>fx-plugin</artifactId>
-            <version>1.0.2</version>
-        </dependency>
-
-        <!--MVVM START 以下使用jlink时需要自己添加模块信息，已提供该jar在/libs目录，也可直接替换为1.8.0-->
-        <dependency>
-            <groupId>de.saxsys</groupId>
-            <artifactId>mvvmfx</artifactId>
-            <version>1.9.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>eu.lestard</groupId>
-            <artifactId>doc-annotations</artifactId>
-            <version>0.3</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.jodah</groupId>
-            <artifactId>typetools</artifactId>
-            <version>0.6.3</version>
-        </dependency>
-        <!--MVVM END-->
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>2.1.0-alpha1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.24.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>1.5.17</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.java.dev.jna</groupId>
-            <artifactId>jna-platform-jpms</artifactId>
-            <version>5.14.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.50.3.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>commons-dbutils</groupId>
-            <artifactId>commons-dbutils</artifactId>
-            <version>1.8.1</version>
-        </dependency>
-        <dependency>
-            <groupId>commons-codec</groupId>
-            <artifactId>commons-codec</artifactId>
-            <version>1.17.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jhlabs</groupId>
-            <artifactId>filters</artifactId>
-            <version>2.0.235-1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.coobird</groupId>
-            <artifactId>thumbnailator</artifactId>
-            <version>0.4.20</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.kwhat</groupId>
-            <artifactId>jnativehook</artifactId>
-            <version>2.2.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.controlsfx</groupId>
-            <artifactId>controlsfx</artifactId>
-            <version>11.2.2</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.testfx</groupId>
-            <artifactId>testfx-core</artifactId>
-            <version>4.0.18</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.testfx</groupId>
-            <artifactId>testfx-junit5</artifactId>
-            <version>4.0.18</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>com.guicedee.modules.services</groupId>
-            <artifactId>guice</artifactId>
-            <version>2.0.2</version>
-            <scope>compile</scope>
-        </dependency>
-    </dependencies>
+            <!-- 公共第三方依赖版本集中管理 -->
+            <dependency>
+                <groupId>com.fasterxml.jackson.core</groupId>
+                <artifactId>jackson-databind</artifactId>
+                <version>${jackson.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-controls</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-fxml</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-media</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-swing</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-web</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <build>
         <plugins>
@@ -220,60 +88,9 @@
                     <release>25</release>
                 </configuration>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.5.1</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                        <configuration>
-                            <transformers>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-                                <transformer
-                                        implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>cn.tealc.wutheringwavestool.Launcher</mainClass>
-                                </transformer>
-                            </transformers>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
-                <version>0.0.8</version>
-                <executions>
-                    <execution>
-                        <!-- Default configuration for running with: mvn clean javafx:run -->
-                        <id>default-cli</id>
-                        <configuration>
-                            <mainClass>cn.tealc.wutheringwavestool/cn.tealc.wutheringwavestool.Launcher</mainClass>
-                            <launcher>app</launcher>
-                            <jlinkImageName>runtime</jlinkImageName>
-                            <noManPages>true</noManPages>
-                            <stripDebug>true</stripDebug>
-                            <noHeaderFiles>true</noHeaderFiles>
-                            <options>
-                                <option>-Dprism.lcdtext=true</option>
-                                <option>-XX:+UseZGC</option>
-                                <option>-Djavafx.enablePreview=true</option>
-                                <option>--enable-native-access=com.sun.jna</option>
-                                <option>--enable-native-access=javafx.graphics</option>
-                                <option> --enable-native-access=org.xerial.sqlitejdbc</option>
-                            </options>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
+
     <repositories>
         <repository>
             <id>central</id>

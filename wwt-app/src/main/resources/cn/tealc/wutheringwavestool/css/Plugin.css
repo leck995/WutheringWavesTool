@@ -1,0 +1,9 @@
+.plugin .plugin-cell{
+    -fx-background-color: -color-bg-default-30;
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+}
+.plugin .plugin-cell:hover{
+   -fx-opacity: 0.8;
+    -fx-cursor: hand;
+}
