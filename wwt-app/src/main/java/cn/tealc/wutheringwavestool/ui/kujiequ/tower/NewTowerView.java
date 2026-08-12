@@ -59,7 +59,7 @@ public class NewTowerView implements FxmlView<NewTowerViewModel>, Initializable 
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        lockPane.visibleProperty().bind(viewModel.isUnLockProperty().not());
+        lockPane.visibleProperty().bind(viewModel.isUnLockProperty());
         contentPane.visibleProperty().bind(viewModel.isUnLockProperty());
         title.textProperty().bind(viewModel.titleProperty());
         seasonEndTimeLabel.textProperty().bind(viewModel.endTimeProperty());

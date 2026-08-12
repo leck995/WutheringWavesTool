@@ -110,7 +110,10 @@ public class NewTowerViewModel extends BaseViewModel {
         if (!difficulties.isEmpty()){
             NewTowerModeDetail first = difficulties.getFirst();
             title.set(modeName(first));
-            teams.setAll(first.getTeams());
+            if (first.getTeams() != null)
+                teams.setAll(first.getTeams());
+            else
+                teams.clear();
             updateSummary(first);
         }
         refreshEndTime();
@@ -137,7 +140,10 @@ public class NewTowerViewModel extends BaseViewModel {
 
     public void changeDifficulty(NewTowerModeDetail detail) {
         title.set(modeName(detail));
-        teams.setAll(detail.getTeams());
+        if (detail.getTeams() != null)
+            teams.setAll(detail.getTeams());
+        else
+            teams.clear();
         updateSummary(detail);
         refreshEndTime();
     }
