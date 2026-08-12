@@ -2,15 +2,13 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.account;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
+import com.kuro.kujiequ.KujiequManager;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.base.user.LoginUserTask;
-import com.kuro.kujiequ.thread.rolebox.role.GameRoleSeekTask;
-import com.kuro.kujiequ.thread.sms.SendSmsTask;
+import com.kuro.model.ResponseBody;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -25,6 +23,9 @@ public class AccountUpdateViewModel extends BaseViewModel {
 
     @Inject
     private UserInfoService userInfoService;
+
+    @Inject
+    private KujiequManager kujiequManager;
 
     private final SimpleBooleanProperty loginTabVisible = new SimpleBooleanProperty(true);
 
@@ -78,24 +79,26 @@ public class AccountUpdateViewModel extends BaseViewModel {
      * 验证码登陆的处理方法，与submit()区别在于多一条请求获取Token与生成did
      */
     public void loginBySMS() {
-        LoginUserTask task = new LoginUserTask(getPhone(), getCode(), false);
-        task.setOnSucceeded(workerStateEvent -> {
-            ResponseBody<UserInfo> value = task.getValue();
-            if (value.getCode() == 200) {
-                if (isAdd) {
-                    addUser(value.getData().getToken(), false, value.getData().getDevCode());
-                } else {
-                    updateUser(value.getData().getToken(), false, value.getData().getDevCode());
-                }
-            } else {
-                NotificationManager.message(MessageInfo.error("登录账号失败，原因：" + value.getMsg()));
+        Thread.startVirtualThread(() -> {
+            try {
+                ResponseBody<UserInfo> value = kujiequManager.loginUser(getPhone(), getCode(), false);
+                Platform.runLater(() -> {
+                    if (value.getCode() == 200) {
+                        if (isAdd) {
+                            addUser(value.getData().getToken(), false, value.getData().getDevCode());
+                        } else {
+                            updateUser(value.getData().getToken(), false, value.getData().getDevCode());
+                        }
+                    } else {
+                        NotificationManager.message(MessageInfo.error("登录账号失败，原因：" + value.getMsg()));
 
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() ->
+                        NotificationManager.message(MessageInfo.error("登录失败，请检查网络后重试")));
             }
         });
-        task.setOnFailed(workerStateEvent -> {
-            NotificationManager.message(MessageInfo.error("登录失败，请检查网络后重试"));
-        });
-        Thread.startVirtualThread(task);
     }
 
     /**
@@ -107,7 +110,7 @@ public class AccountUpdateViewModel extends BaseViewModel {
         if (smsSending.get() || smsCooldown.get() > 0) {
             return;
         }
-        if (!SendSmsTask.isValidCnMobile(getPhone())) {
+        if (!KujiequManager.isValidCnMobile(getPhone())) {
             NotificationManager.message(MessageInfo.warning("请输入正确的 11 位手机号"));
             return;
         }
@@ -117,25 +120,28 @@ public class AccountUpdateViewModel extends BaseViewModel {
         }
 
         smsSending.set(true);
-        SendSmsTask task = new SendSmsTask(getPhone(), geeTestJson);
-        task.setOnSucceeded(event -> {
-            smsSending.set(false);
-            ResponseBody<Boolean> value = task.getValue();
-            if (value != null && value.getCode() == 200) {
-                NotificationManager.message(MessageInfo.success("验证码发送成功"));
-                startSmsCooldown(60);
-            } else {
-                String msg = value == null || value.getMsg() == null || value.getMsg().isBlank()
-                        ? "验证码发送失败"
-                        : value.getMsg();
-                NotificationManager.message(MessageInfo.warning(msg));
+        Thread.startVirtualThread(() -> {
+            try {
+                ResponseBody<Boolean> value = kujiequManager.sendSmsCode(getPhone(), geeTestJson);
+                Platform.runLater(() -> {
+                    smsSending.set(false);
+                    if (value != null && value.getCode() == 200) {
+                        NotificationManager.message(MessageInfo.success("验证码发送成功"));
+                        startSmsCooldown(60);
+                    } else {
+                        String msg = value == null || value.getMsg() == null || value.getMsg().isBlank()
+                                ? "验证码发送失败"
+                                : value.getMsg();
+                        NotificationManager.message(MessageInfo.warning(msg));
+                    }
+                });
+            } catch (Exception e) {
+                Platform.runLater(() -> {
+                    smsSending.set(false);
+                    NotificationManager.message(MessageInfo.error("验证码发送失败，请检查网络后重试"));
+                });
             }
         });
-        task.setOnFailed(workerStateEvent -> {
-            smsSending.set(false);
-            NotificationManager.message(MessageInfo.error("验证码发送失败，请检查网络后重试"));
-        });
-        Thread.startVirtualThread(task);
     }
 
     private void startSmsCooldown(int seconds) {
@@ -200,24 +206,26 @@ public class AccountUpdateViewModel extends BaseViewModel {
      * @param did
      */
     public void addUser(String token, boolean isWeb, String did) {
-        GameRoleSeekTask task = new GameRoleSeekTask(token, isWeb);
-        task.setOnSucceeded(workerStateEvent -> {
-            ResponseBody<List<UserInfo>> value = task.getValue();
-            if (value.getCode() == 200) {
-                List<UserInfo> userInfoList = value.getData();
-                userInfoList.forEach(userInfo -> {
-                    userInfo.setMain(mainAccount.get());
-                    userInfo.setDevCode(did);
+        Thread.startVirtualThread(() -> {
+            try {
+                ResponseBody<List<UserInfo>> value = kujiequManager.seekGameRole(token, isWeb);
+                Platform.runLater(() -> {
+                    if (value.getCode() == 200) {
+                        List<UserInfo> userInfoList = value.getData();
+                        userInfoList.forEach(userInfo -> {
+                            userInfo.setMain(mainAccount.get());
+                            userInfo.setDevCode(did);
+                        });
+                        checkUserList(userInfoList);
+                    } else {
+                        NotificationManager.message(MessageInfo.error("添加账号失败，原因：" + value.getMsg()));
+                    }
                 });
-                checkUserList(userInfoList);
-            } else {
-                NotificationManager.message(MessageInfo.error("添加账号失败，原因：" + value.getMsg()));
+            } catch (Exception e) {
+                Platform.runLater(() ->
+                        NotificationManager.message(MessageInfo.error("添加账号失败，请检查网络后重试")));
             }
         });
-        task.setOnFailed(workerStateEvent -> {
-            NotificationManager.message(MessageInfo.error("添加账号失败，请检查网络后重试"));
-        });
-        Thread.startVirtualThread(task);
     }
 
 
@@ -229,25 +237,27 @@ public class AccountUpdateViewModel extends BaseViewModel {
      * @param did
      */
     private void updateUser(String token, boolean isWeb, String did) {
-        GameRoleSeekTask task = new GameRoleSeekTask(token, isWeb);
-        task.setOnSucceeded(workerStateEvent -> {
-            ResponseBody<List<UserInfo>> value = task.getValue();
-            if (value.getCode() == 200) {
-                List<UserInfo> userInfoList = value.getData();
-                userInfoList.forEach(userInfo -> {
-                    userInfo.setMain(mainAccount.get());
-                    userInfo.setId(oldUserInfo.getId());
-                    userInfo.setDevCode(did);
+        Thread.startVirtualThread(() -> {
+            try {
+                ResponseBody<List<UserInfo>> value = kujiequManager.seekGameRole(token, isWeb);
+                Platform.runLater(() -> {
+                    if (value.getCode() == 200) {
+                        List<UserInfo> userInfoList = value.getData();
+                        userInfoList.forEach(userInfo -> {
+                            userInfo.setMain(mainAccount.get());
+                            userInfo.setId(oldUserInfo.getId());
+                            userInfo.setDevCode(did);
+                        });
+                        checkUserList(userInfoList);
+                    } else {
+                        NotificationManager.message(MessageInfo.error("修改账号失败，原因：" + value.getMsg()));
+                    }
                 });
-                checkUserList(userInfoList);
-            } else {
-                NotificationManager.message(MessageInfo.error("修改账号失败，原因：" + value.getMsg()));
+            } catch (Exception e) {
+                Platform.runLater(() ->
+                        NotificationManager.message(MessageInfo.error("修改账号失败，请检查网络后重试")));
             }
         });
-        task.setOnFailed(workerStateEvent -> {
-            NotificationManager.message(MessageInfo.error("修改账号失败，请检查网络后重试"));
-        });
-        Thread.startVirtualThread(task);
     }
 
 

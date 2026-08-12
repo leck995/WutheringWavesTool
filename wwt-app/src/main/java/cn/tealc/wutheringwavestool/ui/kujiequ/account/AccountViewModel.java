@@ -6,8 +6,9 @@ import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
+import com.kuro.kujiequ.KujiequManager;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.rolebox.PlayerBaseDataTask;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -23,6 +24,9 @@ import java.util.Objects;
 public class AccountViewModel extends BaseViewModel {
     @Inject
     private UserInfoService userInfoService;
+
+    @Inject
+    private KujiequManager kujiequManager;
 
     private final ObservableList<UserInfo> accountList = FXCollections.observableArrayList();
 
@@ -77,11 +81,13 @@ public class AccountViewModel extends BaseViewModel {
     }
 
     public void getUserInfo(UserInfo userInfo) {
-        PlayerBaseDataTask task = new PlayerBaseDataTask(userInfo);
-        task.setOnSucceeded(event -> {
-        });
-        task.setOnFailed(workerStateEvent -> {
-            NotificationManager.message(MessageInfo.error("获取用户信息失败"));
+        Thread.startVirtualThread(() -> {
+            try {
+                kujiequManager.getPlayerBaseData(userInfo);
+            } catch (Exception e) {
+                Platform.runLater(() ->
+                        NotificationManager.message(MessageInfo.error("获取用户信息失败")));
+            }
         });
     }
 

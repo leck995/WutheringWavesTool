@@ -4,17 +4,18 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.SignHistoryDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.service.WebKujiequManager;
+import cn.tealc.wutheringwavestool.thread.SignTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
-import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.teafx.utils.message.MessageInfo;
-import cn.tealc.teafx.utils.message.MessageType;
+import com.kuro.kujiequ.KujiequManager;
 import com.kuro.kujiequ.model.sign.SignGood;
 import com.kuro.kujiequ.model.sign.SignRecord;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.base.sign.SignGoodsTask;
-import com.kuro.kujiequ.thread.base.sign.SignTask;
+import com.kuro.model.ResponseBody;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import de.saxsys.mvvmfx.MvvmFX;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -42,6 +43,9 @@ public class SignViewModel extends BaseViewModel {
 
     @Inject
     private WebKujiequManager webKujiequManager;
+
+    @Inject
+    private KujiequManager kujiequManager;
 
     private final ObservableList<UserInfo> userInfoList= FXCollections.observableArrayList();
     private final SimpleIntegerProperty userIndex = new SimpleIntegerProperty(-1);
@@ -108,23 +112,27 @@ public class SignViewModel extends BaseViewModel {
 
     private void getSignGoods(UserInfo userInfo){
         if (userInfo != null){
-            SignGoodsTask task=new SignGoodsTask(userInfo);
-            task.setOnSucceeded(workerStateEvent -> {
-                ResponseBody<Pair<Boolean, List<SignGood>>> value = task.getValue();
-                if (value.getCode() == 200){
-                    Pair<Boolean, List<SignGood>> data = value.getData();
-                    goodsList.setAll(data.getValue());
-                    isSign.set(data.getKey());
-                }else {
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            MessageInfo.warning(value.getMsg()),false);
+            Thread.startVirtualThread(() -> {
+                try {
+                    ResponseBody<KujiequManager.SignGoodsResult> value = kujiequManager.getSignGoods(userInfo);
+                    if (value.getCode() == 200 && value.getData() != null){
+                        KujiequManager.SignGoodsResult data = value.getData();
+                        Platform.runLater(() -> {
+                            goodsList.setAll(data.getSignGoods());
+                            isSign.set(data.getIsSign());
+                        });
+                    }else {
+                        Platform.runLater(() ->
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                    MessageInfo.warning(value.getMsg()),false));
+                    }
+                } catch (Exception e) {
+                    LOG.error("获取签到物品失败", e);
+                    Platform.runLater(() ->
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                    MessageInfo.error("获取签到物品失败，请检查网络后重试"), false));
                 }
             });
-            task.setOnFailed(workerStateEvent -> {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        MessageInfo.error("获取签到物品失败，请检查网络后重试"), false);
-            });
-            Thread.startVirtualThread(task);
         }
     }
 

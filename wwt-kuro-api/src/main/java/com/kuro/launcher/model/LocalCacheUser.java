@@ -1,6 +1,6 @@
 package com.kuro.launcher.model;
 
-import cn.tealc.wutheringwavestool.model.SourceType;
+import com.kuro.model.SourceType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 

@@ -2,20 +2,20 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.calculator;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
-import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
+import com.kuro.kujiequ.KujiequManager;
 import com.kuro.kujiequ.model.calculator.exist.ExistedRoleDataForCalculator;
 import com.kuro.kujiequ.model.calculator.exist.RoleAim;
 import com.kuro.kujiequ.model.calculator.list.RoleForCalculator;
 import com.kuro.kujiequ.model.calculator.result.CalculatorResult;
 import com.kuro.kujiequ.model.calculator.result.Cost;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.rolebox.calculator.BatchRoleCostTask;
-import com.kuro.kujiequ.thread.rolebox.calculator.RoleCultivateStatusTask;
+import com.kuro.model.ResponseBody;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
 import de.saxsys.mvvmfx.MvvmFX;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -66,6 +66,9 @@ public class CalculatorRoleEditViewModel extends BaseViewModel {
     @Inject
     private UserInfoDao userInfoDao;
 
+    @Inject
+    private KujiequManager kujiequManager;
+
     public CalculatorRoleEditViewModel(RoleForCalculator role,Image icon) {
         this.role = role;
         this.roleName.set(role.getRoleName());
@@ -78,42 +81,45 @@ public class CalculatorRoleEditViewModel extends BaseViewModel {
     public void ready(){
         UserInfo userInfo = userInfoDao.getMain();
         if (userInfo != null) {
-            RoleCultivateStatusTask task = new RoleCultivateStatusTask(userInfo,role.getRoleId());
-            task.setOnSucceeded(event -> {
-                ResponseBody<List<ExistedRoleDataForCalculator>> value = task.getValue();
-                if (value.getCode() == 200){
-                    List<ExistedRoleDataForCalculator> data = value.getData();
-                    if (data != null && !data.isEmpty()){ //当前账号已解锁该角色
-                        ExistedRoleDataForCalculator roleStatus = data.getFirst();
-                        roleLowLevel.set(roleStatus.getRoleLevel());
-                        skillLowLevel01.set(roleStatus.getSkillLevelList().get(0).getLevel());
-                        skillLowLevel02.set(roleStatus.getSkillLevelList().get(1).getLevel());
-                        skillLowLevel03.set(roleStatus.getSkillLevelList().get(4).getLevel());
-                        skillLowLevel04.set(roleStatus.getSkillLevelList().get(2).getLevel());
-                        skillLowLevel05.set(roleStatus.getSkillLevelList().get(3).getLevel());
+            Thread.startVirtualThread(() -> {
+                try {
+                    ResponseBody<List<ExistedRoleDataForCalculator>> value =
+                            kujiequManager.getRoleCultivateStatus(userInfo, role.getRoleId());
+                    Platform.runLater(() -> {
+                        if (value.getCode() == 200){
+                            List<ExistedRoleDataForCalculator> data = value.getData();
+                            if (data != null && !data.isEmpty()){ //当前账号已解锁该角色
+                                ExistedRoleDataForCalculator roleStatus = data.getFirst();
+                                roleLowLevel.set(roleStatus.getRoleLevel());
+                                skillLowLevel01.set(roleStatus.getSkillLevelList().get(0).getLevel());
+                                skillLowLevel02.set(roleStatus.getSkillLevelList().get(1).getLevel());
+                                skillLowLevel03.set(roleStatus.getSkillLevelList().get(4).getLevel());
+                                skillLowLevel04.set(roleStatus.getSkillLevelList().get(2).getLevel());
+                                skillLowLevel05.set(roleStatus.getSkillLevelList().get(3).getLevel());
 
-                        List<String> skillBreakList = roleStatus.getSkillBreakList();
-                        skillBreak01.set(!skillBreakList.contains("2-1"));
-                        skillBreak02.set(!skillBreakList.contains("3-1"));
-                        skillBreak03.set(!skillBreakList.contains("2-2"));
-                        skillBreak04.set(!skillBreakList.contains("3-2"));
-                        skillBreak05.set(!skillBreakList.contains("2-3"));
-                        skillBreak06.set(!skillBreakList.contains("3-3"));
-                        skillBreak07.set(!skillBreakList.contains("2-4"));
-                        skillBreak08.set(!skillBreakList.contains("3-4"));
-                        skillBreak09.set(!skillBreakList.contains("2-5"));
-                        skillBreak010.set(!skillBreakList.contains("3-5"));
-                    }
-                }else {
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            MessageInfo.warning(value.getMsg()));
+                                List<String> skillBreakList = roleStatus.getSkillBreakList();
+                                skillBreak01.set(!skillBreakList.contains("2-1"));
+                                skillBreak02.set(!skillBreakList.contains("3-1"));
+                                skillBreak03.set(!skillBreakList.contains("2-2"));
+                                skillBreak04.set(!skillBreakList.contains("3-2"));
+                                skillBreak05.set(!skillBreakList.contains("2-3"));
+                                skillBreak06.set(!skillBreakList.contains("3-3"));
+                                skillBreak07.set(!skillBreakList.contains("2-4"));
+                                skillBreak08.set(!skillBreakList.contains("3-4"));
+                                skillBreak09.set(!skillBreakList.contains("2-5"));
+                                skillBreak010.set(!skillBreakList.contains("3-5"));
+                            }
+                        }else {
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                    MessageInfo.warning(value.getMsg()));
+                        }
+                    });
+                } catch (Exception e) {
+                    Platform.runLater(() ->
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                    MessageInfo.error("同步角色练度失败，请检查网络后重试")));
                 }
             });
-            task.setOnFailed(workerStateEvent -> {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        MessageInfo.error("同步角色练度失败，请检查网络后重试"));
-            });
-            Thread.startVirtualThread(task);
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
                     MessageInfo.warning("当前不存在主用户信息，无法获取，请在账号界面添加用户信息"));
@@ -141,30 +147,32 @@ public class CalculatorRoleEditViewModel extends BaseViewModel {
             levelUpList.add(getSkillLevelUp(getSkillLowLevel04(),getSkillHighLevel04()));
             levelUpList.add(getSkillLevelUp(getSkillLowLevel05(),getSkillHighLevel05()));
 
-            BatchRoleCostTask task = new BatchRoleCostTask(userInfo,roleAim);
-            task.setOnSucceeded(workerStateEvent -> {
-                ResponseBody<CalculatorResult> responseBody = task.getValue();
-                if (responseBody.getCode() == 200){
-                    CalculatorResult data = responseBody.getData();
-                    if (data.getPreview().getAllCost() != null){
-                        totalCostList.setAll(data.getPreview().getAllCost());
-                    }
-                    if (data.getPreview().getMissingCost() != null){
-                        missingCostList.setAll(data.getPreview().getMissingCost());
-                    }
-                    if (data.getPreview().getSynthetic() != null){
-                        relateCostList.setAll(data.getPreview().getSynthetic());
-                    }
-                }else {
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            MessageInfo.warning(responseBody.getMsg()));
+            Thread.startVirtualThread(() -> {
+                try {
+                    ResponseBody<CalculatorResult> responseBody = kujiequManager.batchRoleCost(userInfo, roleAim);
+                    Platform.runLater(() -> {
+                        if (responseBody.getCode() == 200){
+                            CalculatorResult data = responseBody.getData();
+                            if (data.getPreview().getAllCost() != null){
+                                totalCostList.setAll(data.getPreview().getAllCost());
+                            }
+                            if (data.getPreview().getMissingCost() != null){
+                                missingCostList.setAll(data.getPreview().getMissingCost());
+                            }
+                            if (data.getPreview().getSynthetic() != null){
+                                relateCostList.setAll(data.getPreview().getSynthetic());
+                            }
+                        }else {
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                    MessageInfo.warning(responseBody.getMsg()));
+                        }
+                    });
+                } catch (Exception e) {
+                    Platform.runLater(() ->
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                    MessageInfo.error("计算材料失败，请检查网络后重试")));
                 }
             });
-            task.setOnFailed(workerStateEvent -> {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        MessageInfo.error("计算材料失败，请检查网络后重试"));
-            });
-            Thread.startVirtualThread(task);
         }
     }
 

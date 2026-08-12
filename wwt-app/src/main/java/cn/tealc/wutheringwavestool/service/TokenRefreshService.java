@@ -5,8 +5,9 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.kuro.kujiequ.KujiequManager;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.BaseTask;
+import com.kuro.model.ResponseBody;
 import de.saxsys.mvvmfx.MvvmFX;
 import javafx.application.Platform;
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ public class TokenRefreshService {
     private static final long B_AT_REFRESH_INTERVAL_MINUTES = 30; // B-At 定时刷新间隔
 
     private final UserInfoService userInfoService;
+    private final KujiequManager kujiequManager;
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor(r -> {
         Thread t = new Thread(r, "bat-refresh-scheduler");
         t.setDaemon(true);
@@ -39,8 +41,9 @@ public class TokenRefreshService {
     });
 
     @Inject
-    public TokenRefreshService(UserInfoService userInfoService) {
+    public TokenRefreshService(UserInfoService userInfoService, KujiequManager kujiequManager) {
         this.userInfoService = userInfoService;
+        this.kujiequManager = kujiequManager;
     }
 
     /**
@@ -57,7 +60,7 @@ public class TokenRefreshService {
         // 订阅账号更新通知 → 清除旧 B-At 并预取新 B-At
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.ACCOUNT_UPDATE, (key, payload) -> {
             Platform.runLater(() -> {
-                BaseTask.invalidateAllAccessTokens();
+                kujiequManager.invalidateAllAccessTokens();
                 LOG.info("账号已更新，B-At 缓存已全部清除");
                 // 立即预取主用户的 B-At
                 Platform.runLater(this::prefetchMainUserBAt);
@@ -81,7 +84,7 @@ public class TokenRefreshService {
      * 处理 Token 过期事件：清除 B-At 缓存并通知用户
      */
     private void handleTokenExpired(UserInfo userInfo) {
-        BaseTask.invalidateAccessToken(userInfo.getUserId());
+        kujiequManager.invalidateAccessToken(userInfo.getUserId());
 
         Platform.runLater(() -> {
             String roleName = userInfo.getRoleName() != null ? userInfo.getRoleName() : userInfo.getRoleId();
@@ -98,12 +101,12 @@ public class TokenRefreshService {
     private void prefetchMainUserBAt() {
         UserInfo mainUser = userInfoService.getMainUser();
         if (mainUser != null && mainUser.getToken() != null && !mainUser.getToken().isBlank()) {
-            if (BaseTask.isAccessTokenCached(mainUser.getUserId())) {
+            if (kujiequManager.isAccessTokenCached(mainUser.getUserId())) {
                 LOG.debug("B-At 已有缓存，跳过预取: userId={}", mainUser.getUserId());
                 return;
             }
             Thread.startVirtualThread(() -> {
-                boolean success = BaseTask.prefetchAccessToken(mainUser);
+                boolean success = kujiequManager.prefetchAccessToken(mainUser);
                 if (success) {
                     LOG.info("B-At 启动预取成功: {}", mainUser.getRoleName());
                 } else {
@@ -135,14 +138,14 @@ public class TokenRefreshService {
      */
     private void refreshBAtToken(UserInfo userInfo) {
         // 只有在有缓存时才需要提前刷新；无缓存时首次请求会自动获取
-        if (!BaseTask.isAccessTokenCached(userInfo.getUserId())) {
+        if (!kujiequManager.isAccessTokenCached(userInfo.getUserId())) {
             return;
         }
 
         Thread.startVirtualThread(() -> {
             // 先清除缓存，强制下次 getAccessToken 重新获取
-            BaseTask.invalidateAccessToken(userInfo.getUserId());
-            boolean success = BaseTask.prefetchAccessToken(userInfo);
+            kujiequManager.invalidateAccessToken(userInfo.getUserId());
+            boolean success = kujiequManager.prefetchAccessToken(userInfo);
             if (success) {
                 LOG.debug("B-At 定时刷新成功: {}", userInfo.getRoleName());
             } else {
@@ -175,24 +178,22 @@ public class TokenRefreshService {
      * 检测单个用户主 token 是否有效，通过调用 Kuro 轻量 API
      */
     private void checkUserTokenHealth(UserInfo userInfo) {
-        com.kuro.kujiequ.thread.rolebox.role.GameRoleSeekTask task =
-                new com.kuro.kujiequ.thread.rolebox.role.GameRoleSeekTask(
+        Thread.startVirtualThread(() -> {
+            try {
+                ResponseBody<?> result = kujiequManager.seekGameRole(
                         userInfo.getToken(), Boolean.TRUE.equals(userInfo.getIsWeb()));
-        task.setOnSucceeded(event -> {
-            cn.tealc.wutheringwavestool.model.ResponseBody<?> result = task.getValue();
-            if (result != null && result.getCode() == 200) {
-                LOG.debug("Token 健康检测通过: {}", userInfo.getRoleName());
-            } else if (result != null) {
-                String msg = result.getMsg();
-                if (msg != null && msg.contains("登录已过期")) {
-                    LOG.warn("Token 健康检测失败（已过期）: {}", userInfo.getRoleName());
-                    NotificationManager.publish(NotificationKey.TOKEN_EXPIRED, userInfo, msg);
+                if (result != null && result.getCode() == 200) {
+                    LOG.debug("Token 健康检测通过: {}", userInfo.getRoleName());
+                } else if (result != null) {
+                    String msg = result.getMsg();
+                    if (msg != null && msg.contains("登录已过期")) {
+                        LOG.warn("Token 健康检测失败（已过期）: {}", userInfo.getRoleName());
+                        NotificationManager.publish(NotificationKey.TOKEN_EXPIRED, userInfo, msg);
+                    }
                 }
+            } catch (Exception e) {
+                LOG.error("Token 健康检测异常: {}", userInfo.getRoleName(), e);
             }
         });
-        task.setOnFailed(event -> {
-            LOG.error("Token 健康检测异常: {}", userInfo.getRoleName(), task.getException());
-        });
-        Thread.startVirtualThread(task);
     }
 }

@@ -1,6 +1,9 @@
 package cn.tealc.wutheringwavestool.service;
 
+import cn.tealc.wutheringwavestool.dao.GameTowerDataDao;
 import cn.tealc.wutheringwavestool.model.tower.TowerData;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kuro.kujiequ.model.roleData.Role;
@@ -17,6 +20,9 @@ import java.util.stream.Collectors;
 public class TowerDataService {
 
     @Inject
+    private GameTowerDataDao gameTowerDataDao;
+
+    @Inject
     public TowerDataService() {}
 
     /** 将 API 响应中的深塔数据转为扁平 DB 记录列表 */
@@ -25,7 +31,7 @@ public class TowerDataService {
         Difficulty first = difficultyTotal.getDifficultyList().getFirst();
         if (first.getDifficulty() == 3) {
             long seasonEndTime = difficultyTotal.getSeasonEndTime();
-            long date = System.currentTimeMillis() + seasonEndTime;
+            long date = convertToHourlyTimestamp(System.currentTimeMillis() + seasonEndTime);
             for (TowerArea area : first.getTowerAreaList()) {
                 for (Floor floor : area.getFloorList()) {
                     TowerData data = new TowerData();
@@ -48,6 +54,12 @@ public class TowerDataService {
             }
         }
         return records;
+    }
+
+    /** 将深塔数据保存到数据库（原 TowerDataDetailTask.saveToDB 上移） */
+    public void saveToDB(DifficultyTotal difficultyTotal, String roleId) {
+        List<TowerData> records = extractTowerRecords(difficultyTotal, roleId);
+        records.forEach(gameTowerDataDao::add);
     }
 
     /** 将 DB 记录反向构建为嵌套的 Difficulty -> TowerArea -> Floor 结构 */
@@ -88,5 +100,16 @@ public class TowerDataService {
             if (o2.getDifficulty() == 3) return 1;
             return o2.getDifficulty() - o1.getDifficulty();
         });
+    }
+
+    /** 将给定的时间戳转换成当天 4 点（原 TowerDataDetailTask.convertToHourlyTimestamp 上移） */
+    public long convertToHourlyTimestamp(long timestamp) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(timestamp);
+        calendar.set(Calendar.HOUR_OF_DAY, 4);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTimeInMillis();
     }
 }

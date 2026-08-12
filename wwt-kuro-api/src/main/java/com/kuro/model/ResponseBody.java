@@ -1,0 +1,78 @@
+package com.kuro.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+/**
+ * @program: WutheringWavesTool
+ * @description: 统一 API 响应体
+ * @author: Leck
+ */
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class ResponseBody<T> {
+    private Integer code; //code可以随意设置，但成功必须是200
+    private String msg;
+    private T data;
+    private Boolean success;
+
+
+    public ResponseBody() {
+    }
+
+    public ResponseBody(Integer code, String msg) {
+        this.code = code;
+        this.msg = msg;
+        this.success = false;
+    }
+
+    public ResponseBody(Integer code, String msg, Boolean success) {
+        this.code = code;
+        this.msg = msg;
+        this.success = success;
+    }
+
+
+    public static <T> ResponseBody<T> create(Integer code, String msg, T t) {
+        ResponseBody<T> responseBody = new ResponseBody<>();
+        responseBody.setCode(code);
+        responseBody.setMsg(msg);
+        responseBody.setData(t);
+        return responseBody;
+    }
+
+
+    public boolean isSuccess() {
+        return success;
+    }
+
+    public Integer getCode() {
+        return code;
+    }
+
+    public void setCode(Integer code) {
+        this.code = code;
+    }
+
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
+    public T getData() {
+        return data;
+    }
+
+    public void setData(T data) {
+        this.data = data;
+    }
+
+    public Boolean getSuccess() {
+        return success;
+    }
+
+    public void setSuccess(Boolean success) {
+        this.success = success;
+    }
+}

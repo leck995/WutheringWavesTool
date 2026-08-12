@@ -3,22 +3,21 @@ package cn.tealc.wutheringwavestool.ui.system.home;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.teafx.utils.message.MessageInfo;
-import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.service.UserInfoService;
+import cn.tealc.wutheringwavestool.thread.SignTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.google.inject.Inject;
+import com.kuro.kujiequ.KujiequManager;
 import com.kuro.kujiequ.model.roleData.user.BoxInfo;
 import com.kuro.kujiequ.model.roleData.user.RoleDailyData;
 import com.kuro.kujiequ.model.roleData.user.RoleInfo;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.UserDataRefreshTask;
-import com.kuro.kujiequ.thread.base.UserDailyDataTask;
-import com.kuro.kujiequ.thread.base.sign.SignTask;
-import com.kuro.kujiequ.thread.rolebox.PlayerBaseDataTask;
+import com.kuro.model.ResponseBody;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import de.saxsys.mvvmfx.MvvmFX;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -37,6 +36,9 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(RoleBoardByKujiequViewModel.class);
     @Inject
     private UserInfoService userInfoService;
+
+    @Inject
+    private KujiequManager kujiequManager;
 
     private SimpleStringProperty energyText = new SimpleStringProperty();
     private SimpleStringProperty energyTimeText = new SimpleStringProperty();
@@ -94,22 +96,23 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
             return;
         }
 
-        UserDataRefreshTask task = new UserDataRefreshTask(userInfo);
-        task.setOnSucceeded(workerStateEvent -> {
-            ResponseBody<String> responseBody = task.getValue();
-            if (responseBody.getCode() == 200) {
-                getDailyData(userInfo);
-                getRoleData(userInfo);
-            } else {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        MessageInfo.warning(responseBody.getMsg()));
-                LOG.error(responseBody.getMsg());
+        Thread.startVirtualThread(() -> {
+            try {
+                ResponseBody<String> responseBody = kujiequManager.refreshUserData(userInfo);
+                if (responseBody.getCode() == 200) {
+                    getDailyData(userInfo);
+                    getRoleData(userInfo);
+                } else {
+                    Platform.runLater(() -> {
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                MessageInfo.warning(responseBody.getMsg()));
+                        LOG.error(responseBody.getMsg());
+                    });
+                }
+            } catch (Exception e) {
+                LOG.error("刷新库街区数据失败", e);
             }
         });
-        task.setOnFailed(workerStateEvent -> {
-            LOG.error("刷新库街区数据失败", workerStateEvent.getSource().getException());
-        });
-        Thread.startVirtualThread(task);
     }
 
 
@@ -119,53 +122,54 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
      * @param userInfo
      */
     private void getRoleData(UserInfo userInfo) {
-        PlayerBaseDataTask playerBaseDataTask = new PlayerBaseDataTask(userInfo);
-        playerBaseDataTask.setOnSucceeded(workerStateEvent -> {
-            ResponseBody<RoleInfo> responseBody = playerBaseDataTask.getValue();
-            if (responseBody.getCode() == 200) {
-                RoleInfo roleInfo = responseBody.getData();
-                //roleNameText.set(roleInfo.getName());
-                String template = LanguageManager.getString("ui.home.label.role.day");
-                gameLifeText.set(String.format(template, roleInfo.getActiveDays()));
-                levelText.set(String.format("LV.%d", roleInfo.getLevel()));
+        Thread.startVirtualThread(() -> {
+            try {
+                ResponseBody<RoleInfo> responseBody = kujiequManager.getPlayerBaseData(userInfo);
+                Platform.runLater(() -> {
+                    if (responseBody.getCode() == 200) {
+                        RoleInfo roleInfo = responseBody.getData();
+                        //roleNameText.set(roleInfo.getName());
+                        String template = LanguageManager.getString("ui.home.label.role.day");
+                        gameLifeText.set(String.format(template, roleInfo.getActiveDays()));
+                        levelText.set(String.format("LV.%d", roleInfo.getLevel()));
 
-                //energyText.set(String.format("%d/%d", roleInfo.getEnergy(), roleInfo.getMaxEnergy()));
-                //weeklyInstCountText.set(String.format("%d/%d", roleInfo.getWeeklyInstCountLimit() - roleInfo.getWeeklyInstCount(), roleInfo.getWeeklyInstCountLimit()));
-                //storeEnergyText.set(String.format("%d/%d", roleInfo.getStoreEnergy(), roleInfo.getStoreEnergyLimit()));
+                        //energyText.set(String.format("%d/%d", roleInfo.getEnergy(), roleInfo.getMaxEnergy()));
+                        //weeklyInstCountText.set(String.format("%d/%d", roleInfo.getWeeklyInstCountLimit() - roleInfo.getWeeklyInstCount(), roleInfo.getWeeklyInstCountLimit()));
+                        //storeEnergyText.set(String.format("%d/%d", roleInfo.getStoreEnergy(), roleInfo.getStoreEnergyLimit()));
 
-                String[] chests = LanguageManager.getStringArray("ui.home.label.chest.types");
-                for (BoxInfo boxInfo : roleInfo.getTreasureBoxList()) {
-                    if (boxInfo.getBoxName().equals(chests[0])) {
-                        box1Text.set(String.valueOf(boxInfo.getNum()));
-                    } else if (boxInfo.getBoxName().equals(chests[1])) {
-                        box2Text.set(String.valueOf(boxInfo.getNum()));
-                    } else if (boxInfo.getBoxName().equals(chests[2])) {
-                        box3Text.set(String.valueOf(boxInfo.getNum()));
-                    } else if (boxInfo.getBoxName().equals(chests[3])) {
-                        box4Text.set(String.valueOf(boxInfo.getNum()));
+                        String[] chests = LanguageManager.getStringArray("ui.home.label.chest.types");
+                        for (BoxInfo boxInfo : roleInfo.getTreasureBoxList()) {
+                            if (boxInfo.getBoxName().equals(chests[0])) {
+                                box1Text.set(String.valueOf(boxInfo.getNum()));
+                            } else if (boxInfo.getBoxName().equals(chests[1])) {
+                                box2Text.set(String.valueOf(boxInfo.getNum()));
+                            } else if (boxInfo.getBoxName().equals(chests[2])) {
+                                box3Text.set(String.valueOf(boxInfo.getNum()));
+                            } else if (boxInfo.getBoxName().equals(chests[3])) {
+                                box4Text.set(String.valueOf(boxInfo.getNum()));
+                            }
+                        }
+                        String[] phantoms = LanguageManager.getStringArray("ui.home.label.chest.phantoms");
+                        for (BoxInfo boxInfo : roleInfo.getPhantomBoxList()) {
+                            if (boxInfo.getBoxName().equals(phantoms[0])) {
+                                phantomBox1Text.set(String.valueOf(boxInfo.getNum()));
+                            } else if (boxInfo.getBoxName().equals(phantoms[1])) {
+                                phantomBox2Text.set(String.valueOf(boxInfo.getNum()));
+                            } else if (boxInfo.getBoxName().equals(phantoms[2])) {
+                                phantomBox3Text.set(String.valueOf(boxInfo.getNum()));
+                            }
+                        }
+
+                        rolePaneVisible.set(true);
+                        onWeekEnd(roleInfo);
+                    } else {
+                        rolePaneVisible.set(false);
                     }
-                }
-                String[] phantoms = LanguageManager.getStringArray("ui.home.label.chest.phantoms");
-                for (BoxInfo boxInfo : roleInfo.getPhantomBoxList()) {
-                    if (boxInfo.getBoxName().equals(phantoms[0])) {
-                        phantomBox1Text.set(String.valueOf(boxInfo.getNum()));
-                    } else if (boxInfo.getBoxName().equals(phantoms[1])) {
-                        phantomBox2Text.set(String.valueOf(boxInfo.getNum()));
-                    } else if (boxInfo.getBoxName().equals(phantoms[2])) {
-                        phantomBox3Text.set(String.valueOf(boxInfo.getNum()));
-                    }
-                }
-
-                rolePaneVisible.set(true);
-                onWeekEnd(roleInfo);
-            } else {
-                rolePaneVisible.set(false);
+                });
+            } catch (Exception e) {
+                LOG.error("获取角色基础数据失败", e);
             }
         });
-        playerBaseDataTask.setOnFailed(workerStateEvent -> {
-            LOG.error("获取角色基础数据失败", workerStateEvent.getSource().getException());
-        });
-        Thread.startVirtualThread(playerBaseDataTask);
     }
 
     /**
@@ -174,59 +178,60 @@ public class RoleBoardByKujiequViewModel extends BaseViewModel {
      * @param userInfo
      */
     private void getDailyData(UserInfo userInfo) {
-        UserDailyDataTask userDailyDataTask = new UserDailyDataTask(userInfo);
-        userDailyDataTask.setOnSucceeded(workerStateEvent -> {
-            ResponseBody<RoleDailyData> responseBody = userDailyDataTask.getValue();
-            if (responseBody != null) {
-                if (responseBody.getCode() == 200) {
-                    RoleDailyData data = responseBody.getData();
+        Thread.startVirtualThread(() -> {
+            try {
+                ResponseBody<RoleDailyData> responseBody = kujiequManager.getUserDailyData(userInfo);
+                if (responseBody != null) {
+                    Platform.runLater(() -> {
+                        if (responseBody.getCode() == 200) {
+                            RoleDailyData data = responseBody.getData();
 
-                    String[] strengths = LanguageManager.getStringArray("ui.home.label.daily.strength");
-                    if (data.getEnergyData().getRefreshTimeStamp() == 0) { //体力
-                        energyTimeText.set(strengths[2]);
-                    } else {
-                        long timestamp = data.getEnergyData().getRefreshTimeStamp() * 1000;
-                        Date date = new Date(timestamp);
-                        Instant instant = Instant.ofEpochMilli(timestamp);
-                        LocalDate dateFromTimestamp = instant.atZone(ZoneId.systemDefault()).toLocalDate();
-                        LocalDate currentDate = LocalDate.now();
-                        boolean isSameDay = dateFromTimestamp.equals(currentDate);
-                        if (isSameDay) { //今日体力满时间
-                            SimpleDateFormat formatter = new SimpleDateFormat(strengths[0]);
-                            energyTimeText.set(formatter.format(date));
-                        } else { //明日体力满时间
-                            SimpleDateFormat formatter = new SimpleDateFormat(strengths[1]);
-                            energyTimeText.set(formatter.format(date));
+                            String[] strengths = LanguageManager.getStringArray("ui.home.label.daily.strength");
+                            if (data.getEnergyData().getRefreshTimeStamp() == 0) { //体力
+                                energyTimeText.set(strengths[2]);
+                            } else {
+                                long timestamp = data.getEnergyData().getRefreshTimeStamp() * 1000;
+                                Date date = new Date(timestamp);
+                                Instant instant = Instant.ofEpochMilli(timestamp);
+                                LocalDate dateFromTimestamp = instant.atZone(ZoneId.systemDefault()).toLocalDate();
+                                LocalDate currentDate = LocalDate.now();
+                                boolean isSameDay = dateFromTimestamp.equals(currentDate);
+                                if (isSameDay) { //今日体力满时间
+                                    SimpleDateFormat formatter = new SimpleDateFormat(strengths[0]);
+                                    energyTimeText.set(formatter.format(date));
+                                } else { //明日体力满时间
+                                    SimpleDateFormat formatter = new SimpleDateFormat(strengths[1]);
+                                    energyTimeText.set(formatter.format(date));
+                                }
+                            }
+                            hasSign.set(data.isHasSignIn());
+                            livenessText.set(String.valueOf(data.getLivenessData().getCur()));
+                            battlePassLevelText.set(String.format(" LV.%02d", data.getBattlePassData().getFirst().getCur()));
+                            battlePassNumText.set(String.format("%d/%d", data.getBattlePassData().get(1).getCur(), data.getBattlePassData().get(1).getTotal()));
+                            double cur = data.getBattlePassData().get(1).getCur();
+                            double total = data.getBattlePassData().get(1).getTotal();
+                            battlePassProgress.set(cur / total);
+                            rolePaneVisible.set(true);
+
+                            roleNameText.set(data.getRoleName());
+                            energyText.set(String.format("%d/%d", data.getEnergyData().getCur(), data.getEnergyData().getTotal()));
+                            weeklyInstCountText.set(String.format("%d", data.getWeeklyData().getCur()));
+                            storeEnergyText.set(String.format("%d/%d", data.getStoreEnergyData().getCur(), data.getStoreEnergyData().getTotal()));
+
+                            weeklyRougeText.set(String.format("%d", data.getWeeklyFrameData().getCur()));
+
+
+                        } else {
+                            rolePaneVisible.set(false);
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                    MessageInfo.warning(responseBody.getMsg()), false);
                         }
-                    }
-                    hasSign.set(data.isHasSignIn());
-                    livenessText.set(String.valueOf(data.getLivenessData().getCur()));
-                    battlePassLevelText.set(String.format(" LV.%02d", data.getBattlePassData().getFirst().getCur()));
-                    battlePassNumText.set(String.format("%d/%d", data.getBattlePassData().get(1).getCur(), data.getBattlePassData().get(1).getTotal()));
-                    double cur = data.getBattlePassData().get(1).getCur();
-                    double total = data.getBattlePassData().get(1).getTotal();
-                    battlePassProgress.set(cur / total);
-                    rolePaneVisible.set(true);
-
-                    roleNameText.set(data.getRoleName());
-                    energyText.set(String.format("%d/%d", data.getEnergyData().getCur(), data.getEnergyData().getTotal()));
-                    weeklyInstCountText.set(String.format("%d", data.getWeeklyData().getCur()));
-                    storeEnergyText.set(String.format("%d/%d", data.getStoreEnergyData().getCur(), data.getStoreEnergyData().getTotal()));
-
-                    weeklyRougeText.set(String.format("%d", data.getWeeklyFrameData().getCur()));
-
-
-                } else {
-                    rolePaneVisible.set(false);
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            MessageInfo.warning(responseBody.getMsg()), false);
+                    });
                 }
+            } catch (Exception e) {
+                LOG.error("获取日常数据失败", e);
             }
         });
-        userDailyDataTask.setOnFailed(workerStateEvent -> {
-            LOG.error("获取日常数据失败", workerStateEvent.getSource().getException());
-        });
-        Thread.startVirtualThread(userDailyDataTask);
     }
 
     /**

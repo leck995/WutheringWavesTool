@@ -2,16 +2,17 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.role;
 
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.model.ResponseBody;
+import com.kuro.kujiequ.KujiequManager;
 import com.kuro.kujiequ.model.roleData.*;
 import com.kuro.kujiequ.model.roleData.weight.PhantomWeight;
 import cn.tealc.wutheringwavestool.thread.system.ui.ImgColorBgTask;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.rolebox.role.GameRoleDetailTask;
 import cn.tealc.wutheringwavestool.util.LocalDataManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
+import com.kuro.model.ResponseBody;
 import de.saxsys.mvvmfx.ViewModel;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -162,19 +163,21 @@ public class OwnRoleDetailViewModel implements ViewModel {
 
     private void load() {
         Pair<Role, Image> pair = rolePairList.get(selectIndex.get());
-        GameRoleDetailTask task = new GameRoleDetailTask(userInfo, pair.getKey().getRoleId());
-        task.setOnSucceeded(e -> {
-            ResponseBody<RoleDetail> value = task.getValue();
-            if (value.getCode() == 200) {
-                RoleDetail data = value.getData();
-                analysis(data);
+        Thread.startVirtualThread(() -> {
+            try {
+                KujiequManager kujiequManager = AppInjector.getInstance(KujiequManager.class);
+                ResponseBody<RoleDetail> value = kujiequManager.getGameRoleDetail(userInfo, pair.getKey().getRoleId());
+                if (value.getCode() == 200 && value.getData() != null) {
+                    RoleDetail data = value.getData();
+                    Platform.runLater(() -> analysis(data));
+                }
+            } catch (Exception e) {
+                LOG.error("获取角色详情失败", e);
+                Platform.runLater(() ->
+                        NotificationManager.publish(NotificationKey.MESSAGE,
+                                MessageInfo.error("获取角色详情失败，请检查网络后重试"), false));
             }
         });
-        task.setOnFailed(workerStateEvent -> {
-            NotificationManager.publish(NotificationKey.MESSAGE,
-                    MessageInfo.error("获取角色详情失败，请检查网络后重试"), false);
-        });
-        Thread.startVirtualThread(task);
     }
 
     private void analysis(RoleDetail data) {

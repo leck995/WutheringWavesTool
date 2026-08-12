@@ -7,7 +7,10 @@ import cn.tealc.wutheringwavestool.model.AnnouncementItem;
 import cn.tealc.wutheringwavestool.model.RedemptionCodeItem;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.service.AutoSignService;
+import cn.tealc.wutheringwavestool.service.GameNewTowerService;
+import cn.tealc.wutheringwavestool.service.SlashDataService;
 import cn.tealc.wutheringwavestool.service.TaskManageService;
+import cn.tealc.wutheringwavestool.service.TowerDataService;
 
 import cn.tealc.wutheringwavestool.service.ConfigService;
 import cn.tealc.wutheringwavestool.thread.system.AnnouncementGetTask;
@@ -19,8 +22,10 @@ import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.release.Release;
 import cn.tealc.wutheringwavestool.model.system.NavData;
 import cn.tealc.wutheringwavestool.thread.system.CheckGameConfigTask;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kuro.kujiequ.KujiequManager;
 import com.kuro.kujiequ.model.newTowerData.NewTowerData;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.model.slash.SlashData;
@@ -28,9 +33,6 @@ import com.kuro.kujiequ.model.slash.SlashDifficulty;
 import com.kuro.kujiequ.model.towerData.DifficultyTotal;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.thread.system.AppCheckVersionTask;
-import com.kuro.kujiequ.thread.rolebox.slash.SlashDataDetailTask;
-import com.kuro.kujiequ.thread.rolebox.tower.NewTowerDataDetailTask;
-import com.kuro.kujiequ.thread.rolebox.tower.TowerDataDetailTask;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.MvvmFX;
 import javafx.application.Platform;
@@ -63,6 +65,18 @@ public class MainViewModel extends BaseViewModel {
 
     @Inject
     private ConfigService configService;
+
+    @Inject
+    private KujiequManager kujiequManager;
+
+    @Inject
+    private TowerDataService towerDataService;
+
+    @Inject
+    private SlashDataService slashDataService;
+
+    @Inject
+    private GameNewTowerService gameNewTowerService;
 
     private static final String REDEMPTION_CODE = "REDEMPTION_CODE";
     private static final String ANNOUNCEMENTS = "ANNOUNCEMENTS";
@@ -259,10 +273,10 @@ public class MainViewModel extends BaseViewModel {
      */
     private void syncTower(UserInfo userInfo) {
         Thread.startVirtualThread(()->{
-            TowerDataDetailTask task = new TowerDataDetailTask(userInfo);
-            task.setOnSucceeded(workerStateEvent -> {
-                ResponseBody<DifficultyTotal> value = task.getValue();
-                if (value.getCode() == 200) {
+            try {
+                com.kuro.model.ResponseBody<DifficultyTotal> value = kujiequManager.getTowerData(userInfo);
+                if (value.getCode() == 200 && value.getData() != null) {
+                    towerDataService.saveToDB(value.getData(), userInfo.getRoleId());
                     long milliseconds = value.getData().getSeasonEndTime();
                     long millisecondsInADay = 24 * 60 * 60 * 1000;
                     double days = (double) milliseconds / (double) millisecondsInADay;
@@ -270,19 +284,17 @@ public class MainViewModel extends BaseViewModel {
                         MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.main.sync.message.tower")));
                     }
                 }
-            });
-            task.setOnFailed(workerStateEvent -> {
-                LOG.error("同步深塔数据失败", workerStateEvent.getSource().getException());
-            });
-            Thread.startVirtualThread(task);
+            } catch (Exception e) {
+                LOG.error("同步深塔数据失败", e);
+            }
         });
     }
     private void syncNewTower(UserInfo userInfo) {
         Thread.startVirtualThread(()->{
-            NewTowerDataDetailTask task = new NewTowerDataDetailTask(userInfo);
-            task.setOnSucceeded(workerStateEvent -> {
-                ResponseBody<NewTowerData> value = task.getValue();
-                if (value.getCode() == 200 && value.getData().isUnlock()) {
+            try {
+                com.kuro.model.ResponseBody<NewTowerData> value = kujiequManager.getNewTowerData(userInfo);
+                if (value.getCode() == 200 && value.getData() != null && value.getData().isUnlock()) {
+                    gameNewTowerService.saveToDB(value.getData(), userInfo.getRoleId());
                     long milliseconds = value.getData().getEndTime();
                     long millisecondsInADay = 24 * 60 * 60 * 1000;
                     double days = (double) milliseconds / (double) millisecondsInADay;
@@ -295,11 +307,9 @@ public class MainViewModel extends BaseViewModel {
                         }
                     }
                 }
-            });
-            task.setOnFailed(workerStateEvent -> {
-                LOG.error("同步新深塔数据失败", workerStateEvent.getSource().getException());
-            });
-            Thread.startVirtualThread(task);
+            } catch (Exception e) {
+                LOG.error("同步新深塔数据失败", e);
+            }
         });
     }
 
@@ -309,34 +319,38 @@ public class MainViewModel extends BaseViewModel {
      * @param userInfo
      */
     private void syncSlash(UserInfo userInfo) {
-        SlashDataDetailTask slashDataDetailTask = new SlashDataDetailTask(userInfo);
-        slashDataDetailTask.setOnSucceeded(workerStateEvent -> {
-            ResponseBody<SlashData> value = slashDataDetailTask.getValue();
-            if (value.getCode() == 200) {
-                long milliseconds = value.getData().getSeasonEndTime();
-                long millisecondsInADay = 24 * 60 * 60 * 1000;
-                double days = (double) milliseconds / (double) millisecondsInADay;
-                if (days > 0 && days < 1) {//不足一天时,提醒
-                    if (value.getData() == null || value.getData().getDifficultyList() == null || value.getData().getDifficultyList().isEmpty())
-                        return;
-                    boolean warning = false;
-                    for (SlashDifficulty slashDifficulty : value.getData().getDifficultyList()) {
-                        if (slashDifficulty.getAllScore() >= slashDifficulty.getMaxScore())
-                            continue;
-                        else {
-                            warning = true;
-                            break;
-                        }
+        Thread.startVirtualThread(()->{
+            try {
+                com.kuro.model.ResponseBody<SlashData> value = kujiequManager.getSlashData(userInfo);
+                if (value.getCode() == 200 && value.getData() != null) {
+                    try {
+                        slashDataService.saveToDB(value.getData(), userInfo.getRoleId());
+                    } catch (JsonProcessingException e) {
+                        LOG.error("海墟数据落库失败", e);
                     }
-                    if (warning && warningSlash.compareAndSet(false, true))
-                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.main.sync.message.slash")));
+                    long milliseconds = value.getData().getSeasonEndTime();
+                    long millisecondsInADay = 24 * 60 * 60 * 1000;
+                    double days = (double) milliseconds / (double) millisecondsInADay;
+                    if (days > 0 && days < 1) {//不足一天时,提醒
+                        if (value.getData().getDifficultyList() == null || value.getData().getDifficultyList().isEmpty())
+                            return;
+                        boolean warning = false;
+                        for (SlashDifficulty slashDifficulty : value.getData().getDifficultyList()) {
+                            if (slashDifficulty.getAllScore() >= slashDifficulty.getMaxScore())
+                                continue;
+                            else {
+                                warning = true;
+                                break;
+                            }
+                        }
+                        if (warning && warningSlash.compareAndSet(false, true))
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(LanguageManager.getString("ui.main.sync.message.slash")));
+                    }
                 }
+            } catch (Exception e) {
+                LOG.error("同步海墟数据失败", e);
             }
         });
-        slashDataDetailTask.setOnFailed(workerStateEvent -> {
-            LOG.error("同步海墟数据失败", workerStateEvent.getSource().getException());
-        });
-        Thread.startVirtualThread(slashDataDetailTask);
     }
 
 

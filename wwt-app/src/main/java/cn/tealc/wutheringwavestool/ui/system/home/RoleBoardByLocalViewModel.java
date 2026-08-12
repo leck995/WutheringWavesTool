@@ -4,7 +4,6 @@ import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.LocalCachePlayerData;
-import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.service.ConfigService;
@@ -14,14 +13,15 @@ import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.google.inject.Inject;
+import com.kuro.launcher.LauncherManager;
 import com.kuro.launcher.model.LocalCacheUser;
 import com.kuro.launcher.model.api.BaseData;
 import com.kuro.launcher.model.api.BattlePassData;
 import com.kuro.launcher.model.api.PlayerData;
 import com.kuro.launcher.model.api.PlayerInfo;
-import com.kuro.launcher.thread.api.QueryPlayerInfoTask;
-import com.kuro.launcher.thread.api.QueryRoleTask;
+import com.kuro.model.ResponseBody;
 import de.saxsys.mvvmfx.MvvmFX;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -47,6 +47,8 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
     private LocalCachePlayerDataService localCachePlayerDataService;
     @Inject
     private ConfigService configService;
+    @Inject
+    private LauncherManager launcherManager;
     private SimpleStringProperty energyText = new SimpleStringProperty();
     private SimpleStringProperty energyTimeText = new SimpleStringProperty();
     private SimpleStringProperty storeEnergyText = new SimpleStringProperty();
@@ -143,46 +145,50 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
     }
 
     private void queryPlayer(LocalCacheUser user) {
-        QueryPlayerInfoTask queryPlayerInfoTask = new QueryPlayerInfoTask(user.getOauthCode(), user.getType());
-        queryPlayerInfoTask.setOnSucceeded(event -> {
-            ResponseBody<PlayerInfo> body = queryPlayerInfoTask.getValue();
-            if (body.getCode() == 200) {
-                PlayerInfo data = body.getData();
-                LocalCachePlayerData playerData = new LocalCachePlayerData(data);
-                playerData.setOauthCode(user.getOauthCode());
-                playerData.setCuid(user.getCuid());
-                localCachePlayerDataService.saveOrUpdate(playerData);
-                configService.set(LOCAL_CACHE_SELECTED_ROLE,data.getRoleId());
-                freshRoleData(data.getRoleId(), user.getOauthCode());
-            }else {
-                NotificationManager.message(MessageInfo.error(body.getMsg()));
+        Thread.startVirtualThread(() -> {
+            try {
+                ResponseBody<PlayerInfo> body = launcherManager.queryPlayerInfo(user.getOauthCode(), user.getType());
+                Platform.runLater(() -> {
+                    if (body.getCode() == 200 && body.getData() != null) {
+                        PlayerInfo data = body.getData();
+                        LocalCachePlayerData playerData = new LocalCachePlayerData(data);
+                        playerData.setOauthCode(user.getOauthCode());
+                        playerData.setCuid(user.getCuid());
+                        localCachePlayerDataService.saveOrUpdate(playerData);
+                        configService.set(LOCAL_CACHE_SELECTED_ROLE, data.getRoleId());
+                        freshRoleData(data.getRoleId(), user.getOauthCode());
+                    } else {
+                        NotificationManager.message(MessageInfo.error(body.getMsg()));
+                    }
+                });
+            } catch (Exception e) {
+                LOG.error("获取玩家信息失败", e);
             }
         });
-        queryPlayerInfoTask.setOnFailed(workerStateEvent -> {
-            LOG.error("获取玩家信息失败", workerStateEvent.getSource().getException());
-        });
-        Thread.startVirtualThread(queryPlayerInfoTask);
     }
 
     private void freshRoleData(String roleId, String oauthCode) {
-        QueryRoleTask task = new QueryRoleTask(roleId, oauthCode);
-        task.setOnSucceeded(event -> {
-            ResponseBody<PlayerData> data = (ResponseBody<PlayerData>) event.getSource().getValue();
-            getBaseData(data.getData().getBaseData());
-            getBoxData(data.getData().getBaseData());
-            getBattlePassData(data.getData().getBattlePassData());
+        Thread.startVirtualThread(() -> {
+            try {
+                ResponseBody<PlayerData> data = launcherManager.queryRole(roleId, oauthCode);
+                Platform.runLater(() -> {
+                    if (data.getCode() == 200 && data.getData() != null) {
+                        getBaseData(data.getData().getBaseData());
+                        getBoxData(data.getData().getBaseData());
+                        getBattlePassData(data.getData().getBattlePassData());
 
-            Optional<LocalCachePlayerData> playerData = localCachePlayerDataService.getByRoleId(String.valueOf(data.getData().getBaseData().getId()));
-            playerData.ifPresent(p -> {
-                int headPhoto = Integer.parseInt(p.getHeadPhoto().substring(4));
-                Image header = LocalResourcesManager.header(headPhoto, 60, 60);
-                headIcon.set(header);
-            });
+                        Optional<LocalCachePlayerData> playerData = localCachePlayerDataService.getByRoleId(String.valueOf(data.getData().getBaseData().getId()));
+                        playerData.ifPresent(p -> {
+                            int headPhoto = Integer.parseInt(p.getHeadPhoto().substring(4));
+                            Image header = LocalResourcesManager.header(headPhoto, 60, 60);
+                            headIcon.set(header);
+                        });
+                    }
+                });
+            } catch (Exception e) {
+                LOG.error("获取角色数据失败", e);
+            }
         });
-        task.setOnFailed(workerStateEvent -> {
-            LOG.error("获取角色数据失败", workerStateEvent.getSource().getException());
-        });
-        Thread.startVirtualThread(task);
     }
 
 

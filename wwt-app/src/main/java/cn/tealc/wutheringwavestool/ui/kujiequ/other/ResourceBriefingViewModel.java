@@ -6,17 +6,17 @@ import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.service.WebKujiequManager;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
-import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
+import com.kuro.kujiequ.KujiequManager;
 import com.kuro.kujiequ.model.resourcebriefing.Briefing;
 import com.kuro.kujiequ.model.resourcebriefing.Item;
 import com.kuro.kujiequ.model.resourcebriefing.Record;
 import com.kuro.kujiequ.model.resourcebriefing.Title;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.resourcebriefing.BriefingDetailGetTask;
-import com.kuro.kujiequ.thread.resourcebriefing.BriefingListGetTask;
+import com.kuro.model.ResponseBody;
 import de.saxsys.mvvmfx.MvvmFX;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -33,6 +33,9 @@ public class ResourceBriefingViewModel extends BaseViewModel {
     @Inject
     private WebKujiequManager webKujiequManager;
 
+    @Inject
+    private KujiequManager kujiequManager;
+
     private ObservableList<Item> starList = FXCollections.observableArrayList();
     private ObservableList<Item> coinList = FXCollections.observableArrayList();
     private SimpleLongProperty starNum = new SimpleLongProperty();
@@ -40,7 +43,7 @@ public class ResourceBriefingViewModel extends BaseViewModel {
     private ObservableList<Title>  recordTypeList = FXCollections.observableArrayList();
     private Briefing briefing;
     private UserInfo userInfo;
-    private BriefingDetailGetTask.Type currentType = BriefingDetailGetTask.Type.MONTH;
+    private KujiequManager.BriefingType currentType = KujiequManager.BriefingType.MONTH;
     public void init() {
         userInfo = userInfoDao.getMain();
         if (userInfo != null){
@@ -52,20 +55,20 @@ public class ResourceBriefingViewModel extends BaseViewModel {
 
     public void toMonth(){
         recordTypeList.setAll(briefing.getMonths());
-        currentType = BriefingDetailGetTask.Type.MONTH;
+        currentType = KujiequManager.BriefingType.MONTH;
         publish(EVENT_SELECT_BOX);
 
     }
 
     public void toWeek(){
         recordTypeList.setAll(briefing.getWeeks());
-        currentType = BriefingDetailGetTask.Type.WEEK;
+        currentType = KujiequManager.BriefingType.WEEK;
         publish(EVENT_SELECT_BOX);
     }
 
     public void toVersion(){
         recordTypeList.setAll(briefing.getVersions());
-        currentType = BriefingDetailGetTask.Type.VERSION;
+        currentType = KujiequManager.BriefingType.VERSION;
         publish(EVENT_SELECT_BOX);
     }
 
@@ -75,38 +78,41 @@ public class ResourceBriefingViewModel extends BaseViewModel {
     }
 
     private void initList(){
-        BriefingListGetTask task = new BriefingListGetTask(userInfo);
-        task.setOnSucceeded(workerStateEvent -> {
-            ResponseBody<Briefing> value = task.getValue();
-            if (value.getCode() == 200){
-                briefing = value.getData();
-                toMonth();
-            }else{
-                NotificationManager.message(MessageInfo.warning(value.getMsg()));
+        Thread.startVirtualThread(() -> {
+            try {
+                ResponseBody<Briefing> value = kujiequManager.getBriefingList(userInfo);
+                Platform.runLater(() -> {
+                    if (value.getCode() == 200){
+                        briefing = value.getData();
+                        toMonth();
+                    }else{
+                        NotificationManager.message(MessageInfo.warning(value.getMsg()));
+                    }
+                });
+            } catch (Exception e) {
+                LOG.error("获取资源简报列表失败", e);
+                Platform.runLater(() ->
+                        NotificationManager.message(MessageInfo.error(e.getMessage())));
             }
         });
-        task.setOnFailed(workerStateEvent -> {
-            NotificationManager.message(MessageInfo.error(task.getException().getMessage()));
-        });
-        Thread.startVirtualThread(task);
     }
 
 
     private void refresh(int index){
-        BriefingDetailGetTask detailGetTask = new BriefingDetailGetTask(userInfo,String.valueOf(index),currentType);
+        Thread.startVirtualThread(() -> {
+            try {
+                ResponseBody<Record> value = kujiequManager.getBriefingDetail(userInfo, String.valueOf(index), currentType);
+                Platform.runLater(() -> {
+                    if (value.getCode() == 200){
+                        update(value.getData());
+                    }else{
 
-        detailGetTask.setOnSucceeded(workerStateEvent -> {
-            ResponseBody<Record> value = detailGetTask.getValue();
-            if (value.getCode() == 200){
-                update(value.getData());
-            }else{
-
+                    }
+                });
+            } catch (Exception e) {
+                LOG.error("获取资源简报详情失败", e);
             }
         });
-   /*     detailGetTask.setOnFailed(workerStateEvent -> {
-            NotificationManager.message(MessageInfo.error(workerStateEvent.getSource().getMessage()));
-        });*/
-        Thread.startVirtualThread(detailGetTask);
     }
 
 

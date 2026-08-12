@@ -1,7 +1,7 @@
 package cn.tealc.wutheringwavestool.service;
 
 import cn.tealc.wutheringwavestool.base.Config;
-import com.kuro.kujiequ.thread.base.sign.SignTask;
+import cn.tealc.wutheringwavestool.thread.SignTask;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

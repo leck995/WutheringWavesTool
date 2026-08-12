@@ -1,13 +1,14 @@
 package cn.tealc.wutheringwavestool.thread.game.download;
 
-import cn.tealc.wutheringwavestool.model.ResponseBody;
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
+import com.kuro.game.GameManager;
+import com.kuro.game.model.Type;
 import com.kuro.game.model.game.FileInfo;
 import com.kuro.game.model.game.GameResourceList;
 import com.kuro.game.model.launcher.LauncherResource;
 import com.kuro.game.model.launcher.item.UpdateData;
-import com.kuro.game.thread.GameResourceListGetTask;
-import com.kuro.game.thread.LauncherResourceTask;
+import com.kuro.model.ResponseBody;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,29 +27,24 @@ public class GlobalServerFileDownloadTask extends Task<Void> {
 
     @Override
     protected Void call() throws Exception {
-        LauncherResourceTask task = new LauncherResourceTask(LauncherResourceTask.Type.BILIBILI);
-        task.setOnSucceeded(workerStateEvent -> {
-            ResponseBody<LauncherResource> body = task.getValue();
-            if (body.getCode() == 200){
+        try {
+            GameManager gameManager = AppInjector.getInstance(GameManager.class);
+            ResponseBody<LauncherResource> body = gameManager.getLauncherResource(Type.BILIBILI);
+            if (body.getCode() == 200 && body.getData() != null){
                 LauncherResource resource = body.getData();
                 UpdateData updateData = resource.getUpdateData();
                 String host = updateData.getCdnList().getFirst().getUrl();
                 String indexUrl = host + updateData.getConfig().getIndexFile();
-                GameResourceListGetTask resourceListGetTask = new GameResourceListGetTask(indexUrl);
-                resourceListGetTask.setOnSucceeded(workerStateEvent1 -> {
-                    ResponseBody<GameResourceList> body1 = resourceListGetTask.getValue();
-                    if (body1.getCode() == 200){
-                        GameResourceList resourceList = body1.getData();
-                        String fileHost = host + updateData.getResourcesBasePath()+"/";
-                        filterServerFile(resourceList.getResource(),fileHost);
-                    }
-                });
-                resourceListGetTask.setOnFailed(workerStateEvent1 -> LOG.error("获取游戏资源列表失败", workerStateEvent1.getSource().getException()));
-                Thread.startVirtualThread(resourceListGetTask);
+                ResponseBody<GameResourceList> body1 = gameManager.getGameResourceList(indexUrl);
+                if (body1.getCode() == 200 && body1.getData() != null){
+                    GameResourceList resourceList = body1.getData();
+                    String fileHost = host + updateData.getResourcesBasePath()+"/";
+                    filterServerFile(resourceList.getResource(), fileHost);
+                }
             }
-        });
-        task.setOnFailed(workerStateEvent -> LOG.error("获取启动器资源失败", workerStateEvent.getSource().getException()));
-        Thread.startVirtualThread(task);
+        } catch (Exception e) {
+            LOG.error("获取启动器/游戏资源失败", e);
+        }
         return null;
     }
 

@@ -5,6 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
+import com.kuro.game.GameManager;
+import com.kuro.kujiequ.KujiequApiContext;
+import com.kuro.kujiequ.KujiequManager;
+import com.kuro.launcher.LauncherManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.sqlite.SQLiteDataSource;
@@ -83,5 +87,30 @@ public class DataSourceModule extends AbstractModule {
             setting = new Setting();
         }
         return setting;
+    }
+
+    @Provides
+    @Singleton
+    KujiequApiContext provideKujiequApiContext(HttpClient httpClient, ObjectMapper objectMapper) {
+        return new KujiequApiContext(httpClient, objectMapper,
+                (userInfo, msg) -> NotificationManager.publish(NotificationKey.TOKEN_EXPIRED, userInfo, msg));
+    }
+
+    @Provides
+    @Singleton
+    KujiequManager provideKujiequManager(KujiequApiContext ctx) {
+        return new KujiequManager(ctx);
+    }
+
+    @Provides
+    @Singleton
+    LauncherManager provideLauncherManager(HttpClient httpClient, ObjectMapper objectMapper) {
+        return new LauncherManager(httpClient, objectMapper);
+    }
+
+    @Provides
+    @Singleton
+    GameManager provideGameManager(HttpClient httpClient, ObjectMapper objectMapper) {
+        return new GameManager(httpClient, objectMapper);
     }
 }

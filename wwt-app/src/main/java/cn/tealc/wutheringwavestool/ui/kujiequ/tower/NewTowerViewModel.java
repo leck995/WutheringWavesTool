@@ -3,7 +3,6 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameNewTowerDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
-import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.tower.SlashDataForDB;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
@@ -11,33 +10,35 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
+import com.kuro.kujiequ.KujiequManager;
 import com.kuro.kujiequ.model.newTowerData.NewTowerData;
 import com.kuro.kujiequ.model.newTowerData.NewTowerModeDetail;
 import com.kuro.kujiequ.model.newTowerData.NewTowerTeam;
 import com.kuro.kujiequ.model.roleData.Role;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.rolebox.role.GameRoleDataTask;
-import com.kuro.kujiequ.thread.rolebox.tower.NewTowerDataDetailTask;
+import com.kuro.model.ResponseBody;
 import de.saxsys.mvvmfx.MvvmFX;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.util.Pair;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class NewTowerViewModel extends BaseViewModel {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(NewTowerViewModel.class);
     @Inject
     private ObjectMapper objectMapper;
     @Inject
     private UserInfoDao userInfoDao;
     @Inject
     private GameNewTowerDao gameNewTowerDao;
+    @Inject
+    private KujiequManager kujiequManager;
 
     private final ObservableList<NewTowerModeDetail> difficulties = FXCollections.observableArrayList();
     private final ObservableList<NewTowerTeam> teams = FXCollections.observableArrayList();
@@ -62,34 +63,40 @@ public class NewTowerViewModel extends BaseViewModel {
 
     public void loadData() {
         if (userInfo != null) {
-            NewTowerDataDetailTask towerDataDetailTask = new NewTowerDataDetailTask(userInfo);
-            GameRoleDataTask roleDataTask = new GameRoleDataTask(userInfo);
-            EventHandler<WorkerStateEvent> eventHandler = workerStateEvent -> {
-                if (towerDataDetailTask.state() == Future.State.SUCCESS && roleDataTask.state() == Future.State.SUCCESS) {
-                    updateRoleMap(roleDataTask.getValue());
-                    ResponseBody<NewTowerData> value = towerDataDetailTask.getValue();
-                    if (value.getCode() == 200) {
-                        NewTowerData newTowerData = value.getData();
-                        boolean unlocked = newTowerData != null && newTowerData.isUnlock();
+            Thread.startVirtualThread(() -> {
+                ResponseBody<List<Role>> roleResp;
+                ResponseBody<NewTowerData> towerResp;
+                try {
+                    roleResp = kujiequManager.getGameRoleData(userInfo);
+                } catch (Exception e) {
+                    LOG.error("获取角色数据失败", e);
+                    Platform.runLater(() ->
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                    MessageInfo.error("获取角色数据失败，请检查网络后重试"), false));
+                    return;
+                }
+                try {
+                    towerResp = kujiequManager.getNewTowerData(userInfo);
+                } catch (Exception e) {
+                    LOG.error("获取终焉矩阵数据失败", e);
+                    Platform.runLater(() ->
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                    MessageInfo.error("获取终焉矩阵数据失败，请检查网络后重试"), false));
+                    return;
+                }
+                // 一定要先处理 updateRoleMap
+                updateRoleMap(roleResp);
+                if (towerResp.getCode() == 200) {
+                    NewTowerData newTowerData = towerResp.getData();
+                    boolean unlocked = newTowerData != null && newTowerData.isUnlock();
+                    Platform.runLater(() -> {
                         isUnLock.set(unlocked);
                         if (unlocked || newTowerData.getModeDetails() != null) {
                             updateData(newTowerData);
                         }
-                    }
+                    });
                 }
-            };
-            towerDataDetailTask.setOnSucceeded(eventHandler);
-            towerDataDetailTask.setOnFailed(workerStateEvent -> {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        MessageInfo.error("获取终焉矩阵数据失败，请检查网络后重试"), false);
             });
-            roleDataTask.setOnSucceeded(eventHandler);
-            roleDataTask.setOnFailed(workerStateEvent -> {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        MessageInfo.error("获取角色数据失败，请检查网络后重试"), false);
-            });
-            Thread.startVirtualThread(towerDataDetailTask);
-            Thread.startVirtualThread(roleDataTask);
         }
     }
 

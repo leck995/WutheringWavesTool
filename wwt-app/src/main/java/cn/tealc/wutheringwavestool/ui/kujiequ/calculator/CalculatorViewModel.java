@@ -2,17 +2,16 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.calculator;
 
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
-import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.service.WebKujiequManager;
 import cn.tealc.teafx.utils.message.MessageInfo;
+import com.kuro.kujiequ.KujiequManager;
 import com.kuro.kujiequ.model.calculator.list.RoleForCalculator;
 import com.kuro.kujiequ.model.calculator.list.WeaponForCalculator;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.rolebox.calculator.CalculatorDataRefreshTask;
-import com.kuro.kujiequ.thread.rolebox.calculator.ListRoleTask;
-import com.kuro.kujiequ.thread.rolebox.calculator.ListWeaponTask;
+import com.kuro.model.ResponseBody;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.slf4j.Logger;
@@ -35,6 +34,9 @@ public class CalculatorViewModel extends BaseViewModel {
     @Inject
     private WebKujiequManager webKujiequManager;
 
+    @Inject
+    private KujiequManager kujiequManager;
+
     private UserInfo userInfo;
 
     public CalculatorViewModel() {
@@ -45,14 +47,16 @@ public class CalculatorViewModel extends BaseViewModel {
         userInfo = userInfoDao.getMain();
         if (userInfo != null){
             //刷新缓存数据后再获取
-            CalculatorDataRefreshTask calculatorDataRefreshTask = new CalculatorDataRefreshTask(userInfo);
-            calculatorDataRefreshTask.setOnSucceeded(event -> {
-                syncRoleData(userInfo);
+            Thread.startVirtualThread(() -> {
+                try {
+                    kujiequManager.refreshCalculatorData(userInfo);
+                    syncRoleData(userInfo);
+                } catch (Exception e) {
+                    LOG.error("刷新缓存失败", e);
+                    Platform.runLater(() ->
+                            NotificationManager.message(MessageInfo.error("刷新缓存失败，请检查网络后重试")));
+                }
             });
-            calculatorDataRefreshTask.setOnFailed(workerStateEvent -> {
-                NotificationManager.message(MessageInfo.error("刷新缓存失败，请检查网络后重试"));
-            });
-            Thread.startVirtualThread(calculatorDataRefreshTask);
         }else {
             publish("EMPTY");
         }
@@ -63,31 +67,34 @@ public class CalculatorViewModel extends BaseViewModel {
      * @param userInfo
      */
     private void syncRoleData(UserInfo userInfo) {
-        ListWeaponTask weaponTask = new ListWeaponTask(userInfo);
-        weaponTask.setOnSucceeded(e -> {
-            ResponseBody<List<WeaponForCalculator>> responseBody = weaponTask.getValue();
-            if (responseBody.getCode() == 200){
-                weaponList.setAll(responseBody.getData());
+        Thread.startVirtualThread(() -> {
+            try {
+                ResponseBody<List<WeaponForCalculator>> responseBody = kujiequManager.listCalculatorWeapon(userInfo);
+                if (responseBody.getCode() == 200 && responseBody.getData() != null){
+                    Platform.runLater(() -> weaponList.setAll(responseBody.getData()));
+                }
+            } catch (Exception e) {
+                LOG.error("获取武器列表失败", e);
+                Platform.runLater(() ->
+                        NotificationManager.message(MessageInfo.error("获取武器列表失败，请检查网络后重试")));
             }
         });
-        weaponTask.setOnFailed(workerStateEvent -> {
-            NotificationManager.message(MessageInfo.error("获取武器列表失败，请检查网络后重试"));
-        });
-        Thread.startVirtualThread(weaponTask);
 
-        ListRoleTask roleTask = new ListRoleTask(userInfo);
-        roleTask.setOnSucceeded(e -> {
-            ResponseBody<List<RoleForCalculator>> responseBody = roleTask.getValue();
-            if (responseBody.getCode() == 200){
-                roleList.setAll(responseBody.getData());
-            }else {
-                NotificationManager.message(MessageInfo.warning(responseBody.getMsg()));
+        Thread.startVirtualThread(() -> {
+            try {
+                ResponseBody<List<RoleForCalculator>> responseBody = kujiequManager.listCalculatorRole(userInfo);
+                if (responseBody.getCode() == 200 && responseBody.getData() != null){
+                    Platform.runLater(() -> roleList.setAll(responseBody.getData()));
+                }else {
+                    Platform.runLater(() ->
+                            NotificationManager.message(MessageInfo.warning(responseBody.getMsg())));
+                }
+            } catch (Exception e) {
+                LOG.error("获取角色列表失败", e);
+                Platform.runLater(() ->
+                        NotificationManager.message(MessageInfo.error("获取角色列表失败，请检查网络后重试")));
             }
         });
-        roleTask.setOnFailed(workerStateEvent -> {
-            NotificationManager.message(MessageInfo.error("获取角色列表失败，请检查网络后重试"));
-        });
-        Thread.startVirtualThread(roleTask);
     }
 
 

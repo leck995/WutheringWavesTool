@@ -3,23 +3,21 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameTowerDataDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
-import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.kuro.kujiequ.model.roleData.Role;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import cn.tealc.wutheringwavestool.model.tower.TowerData;
-import com.kuro.kujiequ.thread.rolebox.tower.TowerDataDetailTask;
 import com.kuro.kujiequ.model.towerData.*;
-import com.kuro.kujiequ.thread.rolebox.role.GameRoleDataTask;
+import cn.tealc.wutheringwavestool.service.TowerDataService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
+import com.kuro.kujiequ.KujiequManager;
+import com.kuro.model.ResponseBody;
 import de.saxsys.mvvmfx.MvvmFX;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.util.Pair;
 
 import java.text.SimpleDateFormat;
@@ -29,7 +27,6 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.Future;
 
 /**
  * @program: WutheringWavesTool
@@ -51,6 +48,10 @@ public class TowerViewModel extends BaseViewModel {
     private UserInfoDao userInfoDao;
     @Inject
     private GameTowerDataDao gameTowerDataDao;
+    @Inject
+    private KujiequManager kujiequManager;
+    @Inject
+    private TowerDataService towerDataService;
 
     public TowerViewModel() {
 
@@ -65,32 +66,36 @@ public class TowerViewModel extends BaseViewModel {
     }
 
     private void initData(){
-        TowerDataDetailTask towerDataDetailTask = new TowerDataDetailTask(userInfo);
-        GameRoleDataTask roleDataTask = new GameRoleDataTask(userInfo);
-        EventHandler<WorkerStateEvent> eventHandler = workerStateEvent -> {
-            if (towerDataDetailTask.state() == Future.State.SUCCESS && roleDataTask.state() == Future.State.SUCCESS){
-                updateRoleMap(roleDataTask.getValue()); //一定要先处理updateRoleMap
-                updateDifficulty(towerDataDetailTask.getValue());
+        Thread.startVirtualThread(() -> {
+            ResponseBody<List<Role>> roleResp;
+            ResponseBody<DifficultyTotal> towerResp;
+            try {
+                roleResp = kujiequManager.getGameRoleData(userInfo);
+            } catch (Exception e) {
+                Platform.runLater(() ->
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                MessageInfo.error("获取角色数据失败，请检查网络后重试"), false));
+                return;
             }
-        };
-        towerDataDetailTask.setOnSucceeded(eventHandler);
-        towerDataDetailTask.setOnFailed(workerStateEvent -> {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    MessageInfo.error("获取深塔数据失败，请检查网络后重试"), false);
+            try {
+                towerResp = kujiequManager.getTowerData(userInfo);
+            } catch (Exception e) {
+                Platform.runLater(() ->
+                        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                MessageInfo.error("获取深塔数据失败，请检查网络后重试"), false));
+                return;
+            }
+            // 一定要先处理 updateRoleMap
+            updateRoleMap(roleResp);
+            updateDifficulty(towerResp);
         });
-        roleDataTask.setOnSucceeded(eventHandler);
-        roleDataTask.setOnFailed(workerStateEvent -> {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    MessageInfo.error("获取角色数据失败，请检查网络后重试"), false);
-        });
-        Thread.startVirtualThread(towerDataDetailTask);
-        Thread.startVirtualThread(roleDataTask);
     }
 
 
     private void updateDifficulty(ResponseBody<DifficultyTotal> tower){
         if (tower.getCode() == 200) {
             DifficultyTotal data = tower.getData();
+            towerDataService.saveToDB(data, userInfo.getRoleId()); // 落库
             long milliseconds = data.getSeasonEndTime();
             long millisecondsInADay = 24 * 60 * 60 * 1000;
             long millisecondsInAnHour = 60 * 60 * 1000;

@@ -3,28 +3,27 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.GameSlashDataDao;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
-import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.model.tower.SlashDataForDB;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kuro.kujiequ.KujiequManager;
 import com.kuro.kujiequ.model.roleData.Role;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.kuro.kujiequ.model.slash.Challenge;
 import com.kuro.kujiequ.model.slash.SlashData;
 import com.kuro.kujiequ.model.slash.SlashDifficulty;
-import com.kuro.kujiequ.thread.rolebox.role.GameRoleDataTask;
-import com.kuro.kujiequ.thread.rolebox.slash.SlashDataDetailTask;
+import cn.tealc.wutheringwavestool.service.SlashDataService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
+import com.kuro.model.ResponseBody;
 import de.saxsys.mvvmfx.MvvmFX;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.concurrent.WorkerStateEvent;
-import javafx.event.EventHandler;
 import javafx.util.Pair;
 
 import java.text.SimpleDateFormat;
@@ -33,10 +32,9 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.concurrent.Future;
-import java.util.stream.Stream;
 
 public class SlashViewModel extends BaseViewModel {
+    private static final org.slf4j.Logger LOG = org.slf4j.LoggerFactory.getLogger(SlashViewModel.class);
     private final ObservableList<SlashDifficulty> difficulties = FXCollections.observableArrayList();
     private final ObservableList<Challenge> challenges = FXCollections.observableArrayList();
     private final ObservableList<Pair<Long, Pair<String, String>>> historyList = FXCollections.observableArrayList();
@@ -55,6 +53,10 @@ public class SlashViewModel extends BaseViewModel {
     private GameSlashDataDao gameSlashDataDao;
     @Inject
     private ObjectMapper objectMapper;
+    @Inject
+    private KujiequManager kujiequManager;
+    @Inject
+    private SlashDataService slashDataService;
 
     public SlashViewModel() {
         userInfo = userInfoDao.getMain();
@@ -70,29 +72,36 @@ public class SlashViewModel extends BaseViewModel {
      */
     public void initialize() {
         if (userInfo != null) {
-            SlashDataDetailTask slashDataDetailTask = new SlashDataDetailTask(userInfo);
-            GameRoleDataTask roleDataTask = new GameRoleDataTask(userInfo);
-            EventHandler<WorkerStateEvent> eventHandler = workerStateEvent -> {
-                if (slashDataDetailTask.state() == Future.State.SUCCESS && roleDataTask.state() == Future.State.SUCCESS) {
-                    updateRoleMap(roleDataTask.getValue());
-                    ResponseBody<SlashData> value = slashDataDetailTask.getValue();
-                    if (value.isSuccess()) {
-                        updateDate(value.getData());
-                    }
+            Thread.startVirtualThread(() -> {
+                ResponseBody<List<Role>> roleResp;
+                ResponseBody<SlashData> slashResp;
+                try {
+                    roleResp = kujiequManager.getGameRoleData(userInfo);
+                } catch (Exception e) {
+                    Platform.runLater(() ->
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                    MessageInfo.error("获取角色数据失败，请检查网络后重试"), false));
+                    return;
                 }
-            };
-            slashDataDetailTask.setOnSucceeded(eventHandler);
-            slashDataDetailTask.setOnFailed(workerStateEvent -> {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        MessageInfo.error("获取海墟数据失败，请检查网络后重试"), false);
+                try {
+                    slashResp = kujiequManager.getSlashData(userInfo);
+                } catch (Exception e) {
+                    Platform.runLater(() ->
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                    MessageInfo.error("获取海墟数据失败，请检查网络后重试"), false));
+                    return;
+                }
+                updateRoleMap(roleResp);
+                if (slashResp.isSuccess() && slashResp.getData() != null) {
+                    try {
+                        slashDataService.saveToDB(slashResp.getData(), userInfo.getRoleId()); // 落库
+                    } catch (JsonProcessingException e) {
+                        LOG.error("海墟数据落库失败", e);
+                    }
+                    SlashData data = slashResp.getData();
+                    Platform.runLater(() -> updateDate(data));
+                }
             });
-            roleDataTask.setOnSucceeded(eventHandler);
-            roleDataTask.setOnFailed(workerStateEvent -> {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        MessageInfo.error("获取角色数据失败，请检查网络后重试"), false);
-            });
-            Thread.startVirtualThread(slashDataDetailTask);
-            Thread.startVirtualThread(roleDataTask);
         }
         initHistory();
     }

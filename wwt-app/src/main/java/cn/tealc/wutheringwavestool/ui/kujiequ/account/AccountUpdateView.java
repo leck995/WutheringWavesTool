@@ -8,8 +8,8 @@ import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
 import com.jfoenixN.controls.JFXDialogLayout;
 import cn.tealc.wutheringwavestool.ui.kujiequ.web.GeetestCaptchaDialog;
+import com.kuro.kujiequ.KujiequManager;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.sms.SendSmsTask;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import javafx.beans.binding.Bindings;
@@ -120,7 +120,7 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
             BooleanBinding getCodeDisabled = Bindings.createBooleanBinding(
                     () -> {
                         String phone = loginPhoneFiled.getText() == null ? "" : loginPhoneFiled.getText().trim();
-                        return !SendSmsTask.isValidCnMobile(phone)
+                        return !KujiequManager.isValidCnMobile(phone)
                                 || viewModel.isSmsSending()
                                 || viewModel.getSmsCooldown() > 0;
                     },
@@ -183,7 +183,7 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
     @FXML
     void sendLoginCode(ActionEvent event) {
         String phone = loginPhoneFiled.getText() == null ? "" : loginPhoneFiled.getText().trim();
-        if (!SendSmsTask.isValidCnMobile(phone)) {
+        if (!KujiequManager.isValidCnMobile(phone)) {
             NotificationManager.message(MessageInfo.warning("请输入正确的 11 位手机号"));
             return;
         }

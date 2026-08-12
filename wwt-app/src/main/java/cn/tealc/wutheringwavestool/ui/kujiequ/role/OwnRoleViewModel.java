@@ -5,16 +5,16 @@ import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.service.WebKujiequManager;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
-import cn.tealc.wutheringwavestool.model.ResponseBody;
-import cn.tealc.teafx.utils.message.MessageInfo;
-import cn.tealc.teafx.utils.message.MessageType;
+import com.kuro.kujiequ.KujiequManager;
 import com.kuro.kujiequ.model.roleData.Role;
 import com.kuro.kujiequ.model.roleData.RoleDetail;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.rolebox.role.GameRoleDataTask;
-import com.kuro.kujiequ.thread.rolebox.role.GameRoleDetailTask;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
+import com.kuro.model.ResponseBody;
+import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.teafx.utils.message.MessageType;
 import de.saxsys.mvvmfx.MvvmFX;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.embed.swing.SwingFXUtils;
@@ -42,27 +42,32 @@ public class OwnRoleViewModel extends BaseViewModel {
     @Inject
     private WebKujiequManager webKujiequManager;
 
+    @Inject
+    private KujiequManager kujiequManager;
+
     private UserInfo userInfo;
 
     public void init() {
         userInfo= userInfoDao.getMain();
         if (userInfo != null) {
-            GameRoleDataTask task=new GameRoleDataTask(userInfo);
-            task.setOnSucceeded(workerStateEvent -> {
-                ResponseBody<List<Role>> responseBody = task.getValue();
-                if (responseBody.getCode() == 200){
-                    List<Role> list=responseBody.getData();
-                    roleList.setAll(list);
-                }else {
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            MessageInfo.warning(responseBody.getMsg()),false);
+            Thread.startVirtualThread(() -> {
+                try {
+                    ResponseBody<List<Role>> responseBody = kujiequManager.getGameRoleData(userInfo);
+                    if (responseBody.getCode() == 200){
+                        List<Role> list=responseBody.getData();
+                        Platform.runLater(() -> roleList.setAll(list));
+                    }else {
+                        Platform.runLater(() ->
+                                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                        MessageInfo.warning(responseBody.getMsg()),false));
+                    }
+                } catch (Exception e) {
+                    LOG.error("获取角色数据失败", e);
+                    Platform.runLater(() ->
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                    MessageInfo.error("获取角色数据失败，请检查网络后重试"), false));
                 }
             });
-            task.setOnFailed(workerStateEvent -> {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        MessageInfo.error("获取角色数据失败，请检查网络后重试"), false);
-            });
-            Thread.startVirtualThread(task);
         }else {
             publish("EMPTY");
         }

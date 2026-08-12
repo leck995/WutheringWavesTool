@@ -1,12 +1,12 @@
 package cn.tealc.wutheringwavestool.service;
 
-import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.util.DecodeUtil;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.kuro.launcher.model.LocalCacheUser;
+import com.kuro.model.SourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

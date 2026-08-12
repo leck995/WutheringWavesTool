@@ -3,18 +3,19 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.calculator;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.dao.UserInfoDao;
-import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
+import com.kuro.kujiequ.KujiequManager;
 import com.kuro.kujiequ.model.calculator.exist.WeaponAim;
 import com.kuro.kujiequ.model.calculator.list.WeaponForCalculator;
 import com.kuro.kujiequ.model.calculator.result.CalculatorResult;
 import com.kuro.kujiequ.model.calculator.result.Cost;
 import com.kuro.kujiequ.model.sign.UserInfo;
-import com.kuro.kujiequ.thread.rolebox.calculator.BatchWeaponCostTask;
+import com.kuro.model.ResponseBody;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
 import de.saxsys.mvvmfx.MvvmFX;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -40,6 +41,9 @@ public class CalculatorWeaponEditViewModel extends BaseViewModel {
     @Inject
     private UserInfoDao userInfoDao;
 
+    @Inject
+    private KujiequManager kujiequManager;
+
     public CalculatorWeaponEditViewModel(WeaponForCalculator weapon, Image icon) {
         this.weapon = weapon;
         this.weaponName.set(weapon.getWeaponName());
@@ -58,30 +62,32 @@ public class CalculatorWeaponEditViewModel extends BaseViewModel {
             weaponAim.setWeaponId(weapon.getWeaponId());
             weaponAim.setWeaponStartLevel((int)getStartLevel());
             weaponAim.setWeaponEndLevel( (int)getEndLevel());
-            BatchWeaponCostTask task = new BatchWeaponCostTask(userInfo,weaponAim);
-            task.setOnSucceeded(workerStateEvent -> {
-                ResponseBody<CalculatorResult> responseBody = task.getValue();
-                if (responseBody.getCode() == 200){
-                    CalculatorResult data = responseBody.getData();
-                    if (data.getPreview().getAllCost() != null){
-                        totalCostList.setAll(data.getPreview().getAllCost());
-                    }
-                    if (data.getPreview().getMissingCost() != null){
-                        missingCostList.setAll(data.getPreview().getMissingCost());
-                    }
-                    if (data.getPreview().getSynthetic() != null){
-                        relateCostList.setAll(data.getPreview().getSynthetic());
-                    }
-                }else {
-                    MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                            MessageInfo.warning(responseBody.getMsg()));
+            Thread.startVirtualThread(() -> {
+                try {
+                    ResponseBody<CalculatorResult> responseBody = kujiequManager.batchWeaponCost(userInfo, weaponAim);
+                    Platform.runLater(() -> {
+                        if (responseBody.getCode() == 200){
+                            CalculatorResult data = responseBody.getData();
+                            if (data.getPreview().getAllCost() != null){
+                                totalCostList.setAll(data.getPreview().getAllCost());
+                            }
+                            if (data.getPreview().getMissingCost() != null){
+                                missingCostList.setAll(data.getPreview().getMissingCost());
+                            }
+                            if (data.getPreview().getSynthetic() != null){
+                                relateCostList.setAll(data.getPreview().getSynthetic());
+                            }
+                        }else {
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                    MessageInfo.warning(responseBody.getMsg()));
+                        }
+                    });
+                } catch (Exception e) {
+                    Platform.runLater(() ->
+                            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
+                                    MessageInfo.error("计算材料失败，请检查网络后重试")));
                 }
             });
-            task.setOnFailed(workerStateEvent -> {
-                MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                        MessageInfo.error("计算材料失败，请检查网络后重试"));
-            });
-            Thread.startVirtualThread(task);
         }
 
 
