@@ -566,3 +566,210 @@
 .table-view:hover .virtual-flow .scroll-bar:vertical .thumb {
     -fx-background-color: -color-hover-emphasis;
 }
+
+/* ====== 统计子界面 ====== */
+.common-child .stat-card{
+    -fx-padding: 12px 16px;
+    -fx-background-radius: 10px;
+    -fx-background-color: -color-bg-default-50;
+    -fx-border-radius: 16;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 4);
+    -fx-spacing: 4px;
+    -fx-alignment: CENTER;
+}
+.common-child .stat-card .stat-label{
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-fg-muted;
+}
+.common-child .stat-card .stat-value{
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-accent-emphasis;
+}
+.common-child .stat-card .stat-value-small{
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+.common-child .stat-card .stat-sub{
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-fg-muted;
+}
+
+.common-child .conclusion-text{
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-fg-muted;
+}
+.common-child .conclusion-value{
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.common-child .stat-list-pane{
+    -fx-padding: 10px;
+    -fx-background-radius: 10px;
+    -fx-background-color: -color-bg-default-50;
+    -fx-border-radius: 16;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 4);
+}
+.common-child .stat-list-pane .list-view{
+    -fx-background-color: transparent;
+}
+.common-child .stat-item-row{
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 10px;
+}
+.common-child .stat-item-name{
+    -fx-font-size: 13px;
+}
+.common-child .stat-item-count{
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-accent-emphasis;
+}
+
+/* ====== 统计子界面：图文并茂样式 ====== */
+/* 统计卡片颜色区分 */
+.common-child .stat-card.stat-total .stat-value { -fx-text-fill: #ff6666; }
+.common-child .stat-card.stat-ssr .stat-value { -fx-text-fill: #ff8000; }
+.common-child .stat-card.stat-sr .stat-value { -fx-text-fill: #933fb1; }
+.common-child .stat-card.stat-up .stat-value { -fx-text-fill: #e57373; }
+
+/* 角色/武器对比卡片颜色 */
+.common-child .pool-pane.stat-role { -fx-border-color: #4caf5033; }
+.common-child .pool-pane.stat-role .title-3 { -fx-text-fill: #4caf50; }
+.common-child .pool-pane.stat-weapon { -fx-border-color: #2196f333; }
+.common-child .pool-pane.stat-weapon .title-3 { -fx-text-fill: #2196f3; }
+
+/* 统计行 */
+.common-child .stat-compare-row {
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 8px;
+}
+.common-child .stat-compare-row .stat-row-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-fg-muted;
+}
+.common-child .stat-compare-row .stat-row-value {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+.common-child .stat-compare-row .stat-row-value.stat-total { -fx-text-fill: #ff6666; }
+.common-child .stat-compare-row .stat-row-value.stat-ssr { -fx-text-fill: #ff8000; }
+.common-child .stat-compare-row .stat-row-value.stat-sr { -fx-text-fill: #933fb1; }
+.common-child .stat-compare-row .stat-row-value.stat-role { -fx-text-fill: #4caf50; }
+.common-child .stat-compare-row .stat-row-value.stat-weapon { -fx-text-fill: #2196f3; }
+.common-child .stat-compare-row .stat-row-value.stat-up { -fx-text-fill: #e57373; }
+
+/* 饼图颜色：五星橙、四星紫、三星青 */
+.common-child .stat-view .default-color0.chart-pie { -fx-pie-color: #ff8000; }
+.common-child .stat-view .default-color1.chart-pie { -fx-pie-color: #a855f7; }
+.common-child .stat-view .default-color2.chart-pie { -fx-pie-color: #22d3ee; }
+.common-child .stat-view .chart-legend {
+    -fx-font-size: 12px;
+}
+
+/* 右侧列表项 */
+.common-child .stat-view .list-view {
+    -fx-background-color: transparent;
+}
+.common-child .stat-view .list-view .list-cell {
+    -fx-padding: 4px 4px 4px 4px;
+}
+.common-child .stat-view .stat-item-count {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ff8000;
+}
+
+/* 统计卡片：头像 + 标题 + 数值 + 星声 */
+.common-child .stat-card .stat-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-fg-muted;
+}
+.common-child .stat-card .stat-sub-label {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-fg-muted;
+}
+.common-child .stat-card .stat-value {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+}
+.common-child .stat-card .stat-sub {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-fg-muted;
+}
+.common-child .stat-card.stat-total .stat-value { -fx-text-fill: #ff6666; }
+.common-child .stat-card.stat-ssr .stat-value { -fx-text-fill: #ff8000; }
+.common-child .stat-card.stat-sr .stat-value { -fx-text-fill: #933fb1; }
+.common-child .stat-card.stat-up .stat-value { -fx-text-fill: #e57373; }
+
+/* 角色/武器对比卡片 */
+.common-child .pool-pane.stat-role { -fx-border-color: #4caf5033; }
+.common-child .pool-pane.stat-role .title-3 { -fx-text-fill: #4caf50; }
+.common-child .pool-pane.stat-weapon { -fx-border-color: #2196f333; }
+.common-child .pool-pane.stat-weapon .title-3 { -fx-text-fill: #2196f3; }
+
+/* 统计行 */
+.common-child .stat-compare-row {
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 8px;
+}
+.common-child .stat-compare-row .stat-row-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-fg-muted;
+}
+.common-child .stat-compare-row .stat-row-value {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+}
+.common-child .stat-compare-row .stat-row-value.stat-total { -fx-text-fill: #ff6666; }
+.common-child .stat-compare-row .stat-row-value.stat-ssr { -fx-text-fill: #ff8000; }
+.common-child .stat-compare-row .stat-row-value.stat-sr { -fx-text-fill: #933fb1; }
+.common-child .stat-compare-row .stat-row-value.stat-role { -fx-text-fill: #4caf50; }
+.common-child .stat-compare-row .stat-row-value.stat-weapon { -fx-text-fill: #2196f3; }
+.common-child .stat-compare-row .stat-row-value.stat-up { -fx-text-fill: #e57373; }
+
+/* 饼图颜色 */
+.common-child .stat-view .default-color0.chart-pie { -fx-pie-color: #ff8000; }
+.common-child .stat-view .default-color1.chart-pie { -fx-pie-color: #a855f7; }
+.common-child .stat-view .default-color2.chart-pie { -fx-pie-color: #22d3ee; }
+
+/* 右侧列表 */
+.common-child .stat-view .list-view {
+    -fx-background-color: transparent;
+}
+.common-child .stat-view .list-view .list-cell {
+    -fx-padding: 4px;
+}
+
+/* 直观界面同款分割线（粉紫渐变） */
+.common-child .stat-view .stat-separator {
+    -fx-padding: 4 0 8 0;
+}
+.common-child .stat-view .stat-separator > .line {
+    -fx-border-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #cccbcb70 0.0%, #ff98d4 50.0%, #cccbcb70 100.0%) transparent transparent transparent;
+    -fx-border-insets: 1px 0 0 0;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+}
+
+/* 筛选按钮 */
+.common-child .stat-view .filter-btn {
+    -fx-background-color: transparent;
+    -fx-border-color: -color-border-default;
+    -fx-border-radius: 12px;
+    -fx-background-radius: 12px;
+    -fx-font-size: 12px;
+    -fx-padding: 3px 12px;
+    -fx-text-fill: -color-fg-muted;
+    -fx-cursor: hand;
+}
+.common-child .stat-view .filter-btn:selected {
+    -fx-background-color: -color-accent-emphasis;
+    -fx-border-color: -color-accent-emphasis;
+    -fx-text-fill: white;
+}

@@ -51,6 +51,8 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
     private Parent commonChild;
     private Parent detailChild;
     private Parent tableChild;
+    private Parent statChild;
+    private CardStatViewModel statViewModel;
     private Parent cloudChild;
 
     @Override
@@ -206,6 +208,36 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
                 Platform.runLater(() -> {
                     tableChild.setOpacity(1);
                     Animations.slideInUp(tableChild, Duration.millis(300)).play();
+                });
+            } else {
+                toggleButton.setSelected(true);
+            }
+        }
+    }
+
+
+    @FXML
+    void toStatChild(ActionEvent event) {
+        if (event.getSource() instanceof ToggleButton toggleButton) {
+            if (toggleButton.isSelected()) {
+                if (statChild == null) {
+                    statViewModel = new CardStatViewModel(viewModel.getPoolData() != null);
+                    ViewTuple<CardStatView, CardStatViewModel> viewTuple =
+                            FluentViewLoader
+                                    .fxmlView(CardStatView.class)
+                                    .viewModel(statViewModel)
+                                    .load();
+                    statChild = viewTuple.getView();
+                }
+                statChild.setOpacity(0);
+                content.getChildren().setAll(statChild);
+                // 统计界面直接读 pool.json，不依赖 AnalysisData
+                if (viewModel.getPlayer() != null) {
+                    statViewModel.loadData(viewModel.getPlayer());
+                }
+                Platform.runLater(() -> {
+                    statChild.setOpacity(1);
+                    Animations.slideInUp(statChild, Duration.millis(300)).play();
                 });
             } else {
                 toggleButton.setSelected(true);

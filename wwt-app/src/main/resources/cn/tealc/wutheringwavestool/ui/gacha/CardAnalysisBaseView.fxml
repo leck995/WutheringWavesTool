@@ -44,6 +44,11 @@
                               <Pane prefHeight="200.0" prefWidth="200.0" />
                            </graphic>
                         </ToggleButton>
+                        <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toStatChild" styleClass="child-select" text="统计" toggleGroup="$childSelectedToggle">
+                           <graphic>
+                              <Pane prefHeight="200.0" prefWidth="200.0" />
+                           </graphic>
+                        </ToggleButton>
                         <Separator orientation="VERTICAL">
                            <HBox.margin>
                               <Insets left="5.0" right="5.0" />
