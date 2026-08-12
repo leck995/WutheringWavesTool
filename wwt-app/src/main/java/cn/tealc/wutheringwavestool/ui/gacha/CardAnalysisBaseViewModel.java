@@ -255,7 +255,12 @@ public class CardAnalysisBaseViewModel extends BaseViewModel {
                     playerList.add(playerId);
                 }
                 Platform.runLater(()->{
-                    this.player.set(playerId);
+                    if (player.get() != null && player.get().equals(playerId)) {
+                        // playerId 未变，player.set 不触发 listener，需直接刷新分析
+                        analysis(playerId);
+                    } else {
+                        this.player.set(playerId);
+                    }
                     publish(EVENT_SELECTED_PLAYER);
                 });
 
