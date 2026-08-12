@@ -3,87 +3,129 @@
 <?import javafx.scene.chart.PieChart?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
-<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="600.0" prefWidth="1000.0" styleClass="common-child,stat-view" stylesheets="@../../css/gacha/CardPool.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.gacha.CardStatView">
+<AnchorPane prefHeight="600.0" prefWidth="1000.0" styleClass="common-child,stat-view"
+            stylesheets="@../../css/gacha/CardPool.css"
+            xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="cn.tealc.wutheringwavestool.ui.gacha.CardStatView">
    <children>
-      <HBox spacing="15.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <VBox spacing="12.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+            AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <!-- 左侧 -->
-            <VBox spacing="15.0" HBox.hgrow="ALWAYS">
+            <GridPane hgap="12.0" minHeight="194.0" prefHeight="194.0" VBox.vgrow="NEVER">
+               <columnConstraints>
+                  <ColumnConstraints percentWidth="25.0" />
+                  <ColumnConstraints percentWidth="25.0" />
+                  <ColumnConstraints percentWidth="25.0" />
+                  <ColumnConstraints percentWidth="25.0" />
+               </columnConstraints>
                <children>
-                  <!-- 顶部统计卡片行 -->
-                  <HBox spacing="10.0">
-                     <children>
-                        <VBox fx:id="cardTotal" styleClass="stat-card" HBox.hgrow="ALWAYS" />
-                        <VBox fx:id="cardSsr" styleClass="stat-card" HBox.hgrow="ALWAYS" />
-                        <VBox fx:id="cardSr" styleClass="stat-card" HBox.hgrow="ALWAYS" />
-                        <VBox fx:id="cardUpSsr" styleClass="stat-card" HBox.hgrow="ALWAYS" />
-                     </children>
-                  </HBox>
-
-                  <!-- 饼图 + 角色武器对比 -->
-                  <HBox spacing="10.0" VBox.vgrow="ALWAYS">
-                     <children>
-                        <!-- 左：饼图 + 补充统计 -->
-                        <VBox spacing="8.0" styleClass="pool-pane" HBox.hgrow="ALWAYS">
-                           <children>
-                              <Label styleClass="title-3" text="稀有度分布" />
-                              <PieChart fx:id="pieChart" maxHeight="220.0" maxWidth="220.0" minHeight="180.0" minWidth="180.0" />
-                              <VBox fx:id="statGroup" spacing="4.0" />
-                           </children>
-                        </VBox>
-
-                        <!-- 右：角色 vs 武器 -->
-                        <VBox spacing="10.0" HBox.hgrow="ALWAYS">
-                           <children>
-                              <VBox fx:id="roleCard" styleClass="pool-pane" />
-                              <VBox fx:id="weaponCard" styleClass="pool-pane" />
-                           </children>
-                        </VBox>
-                     </children>
-                  </HBox>
+                  <VBox fx:id="cardTotal" styleClass="stat-card" GridPane.columnIndex="0" />
+                  <VBox fx:id="cardSsr" styleClass="stat-card" GridPane.columnIndex="1" />
+                  <VBox fx:id="cardSr" styleClass="stat-card" GridPane.columnIndex="2" />
+                  <VBox fx:id="cardUpSsr" styleClass="stat-card" GridPane.columnIndex="3" />
                </children>
-            </VBox>
+            </GridPane>
 
-            <!-- 右侧：抽取次数排行 -->
-            <VBox prefWidth="300.0" spacing="5.0" styleClass="stat-list-pane">
+            <GridPane hgap="12.0" VBox.vgrow="ALWAYS">
+               <columnConstraints>
+                  <ColumnConstraints percentWidth="38.0" />
+                  <ColumnConstraints percentWidth="32.0" />
+                  <ColumnConstraints percentWidth="30.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints percentHeight="100.0" />
+               </rowConstraints>
                <children>
-                  <HBox alignment="CENTER_LEFT" spacing="10.0">
+                  <VBox spacing="10.0" styleClass="stat-section" GridPane.columnIndex="0">
                      <children>
-                        <Label styleClass="title-3" text="抽取次数排行" />
-                        <Pane HBox.hgrow="ALWAYS" />
-                        <ToggleButton fx:id="roleBtn" mnemonicParsing="false" styleClass="filter-btn" text="角色">
-                           <toggleGroup><ToggleGroup fx:id="filterGroup" /></toggleGroup>
-                        </ToggleButton>
-                        <ToggleButton fx:id="weaponBtn" mnemonicParsing="false" styleClass="filter-btn" text="武器" toggleGroup="$filterGroup" />
+                        <HBox alignment="CENTER_LEFT" spacing="8.0">
+                           <children>
+                              <Label styleClass="stat-section-title" text="稀有度分布" />
+                              <Label styleClass="stat-info" text="i" />
+                           </children>
+                        </HBox>
+                        <HBox alignment="CENTER" spacing="6.0" VBox.vgrow="ALWAYS">
+                           <children>
+                              <StackPane fx:id="donutPane" minHeight="190.0" minWidth="190.0"
+                                         prefHeight="220.0" prefWidth="220.0" HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <PieChart fx:id="pieChart" labelsVisible="false" legendVisible="false"
+                                              maxHeight="220.0" maxWidth="220.0" minHeight="190.0" minWidth="190.0" />
+                                    <StackPane maxHeight="128.0" maxWidth="128.0" minHeight="128.0" minWidth="128.0"
+                                               styleClass="donut-center">
+                                       <children>
+                                          <VBox alignment="CENTER" spacing="0.0">
+                                             <children>
+                                                <Label fx:id="donutTotalLabel" styleClass="donut-total" text="0" />
+                                                <Label styleClass="donut-caption" text="总抽数" />
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                    </StackPane>
+                                 </children>
+                              </StackPane>
+                              <VBox fx:id="rarityLegend" alignment="CENTER_LEFT" minWidth="118.0" spacing="14.0" />
+                           </children>
+                        </HBox>
+                        <HBox fx:id="statGroup" alignment="CENTER" spacing="6.0" />
                      </children>
-                  </HBox>
-                  <Separator styleClass="stat-separator" />
-                  <ListView fx:id="statListView" VBox.vgrow="ALWAYS" />
+                  </VBox>
+
+                  <VBox spacing="10.0" GridPane.columnIndex="1">
+                     <children>
+                        <VBox fx:id="roleCard" styleClass="pool-summary" VBox.vgrow="ALWAYS" />
+                        <VBox fx:id="weaponCard" styleClass="pool-summary" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
+
+                  <VBox spacing="9.0" styleClass="stat-section,stat-list-pane" GridPane.columnIndex="2">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="8.0">
+                           <children>
+                              <Label styleClass="stat-section-title" text="抽取次数排行" />
+                              <Pane HBox.hgrow="ALWAYS" />
+                              <HBox styleClass="filter-group">
+                                 <children>
+                                    <ToggleButton fx:id="roleBtn" mnemonicParsing="false" styleClass="filter-btn" text="角色">
+                                       <toggleGroup><ToggleGroup fx:id="filterGroup" /></toggleGroup>
+                                    </ToggleButton>
+                                    <ToggleButton fx:id="weaponBtn" mnemonicParsing="false" styleClass="filter-btn"
+                                                  text="武器" toggleGroup="$filterGroup" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
+                        <ListView fx:id="statListView" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
                </children>
-            </VBox>
+            </GridPane>
          </children>
-      </HBox>
+      </VBox>
 
-      <!-- 空状态 -->
-      <StackPane fx:id="emptyPane" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <StackPane fx:id="emptyPane" styleClass="stat-state-pane" visible="false"
+                 AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                 AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label styleClass="title-3" text="当前无数据，请先使用 获取 功能" translateY="-50.0" />
+            <Label styleClass="stat-state-label" text="当前无数据，请先使用“获取”功能" />
          </children>
       </StackPane>
-      <StackPane fx:id="loadingPane" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <StackPane fx:id="loadingPane" styleClass="stat-state-pane" visible="false"
+                 AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+                 AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <Label styleClass="title-3" text="加载中..." translateY="-50.0" />
+            <Label styleClass="stat-state-label" text="正在整理抽卡统计..." />
          </children>
       </StackPane>
    </children>

@@ -568,208 +568,313 @@
 }
 
 /* ====== 统计子界面 ====== */
-.common-child .stat-card{
-    -fx-padding: 12px 16px;
+.stat-view {
+    -fx-padding: 8px;
+    -fx-background-color: linear-gradient(to bottom right,
+        rgba(255, 239, 225, 0.82) 0%,
+        rgba(246, 241, 241, 0.72) 35%,
+        rgba(225, 235, 250, 0.78) 70%,
+        rgba(243, 226, 241, 0.72) 100%);
     -fx-background-radius: 10px;
-    -fx-background-color: -color-bg-default-50;
-    -fx-border-radius: 16;
-    -fx-border-color: -color-border-default;
+}
+
+.stat-view .stat-card,
+.stat-view .stat-section,
+.stat-view .pool-summary {
+    -fx-background-color: rgba(255, 255, 255, 0.76);
+    -fx-background-radius: 8px;
+    -fx-border-color: rgba(255, 255, 255, 0.90);
+    -fx-border-radius: 8px;
     -fx-border-width: 1px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 4);
-    -fx-spacing: 4px;
-    -fx-alignment: CENTER;
+    -fx-effect: dropshadow(gaussian, rgba(55, 64, 82, 0.16), 18, 0.10, 0, 5);
 }
-.common-child .stat-card .stat-label{
-    -fx-font-size: 12px;
-    -fx-text-fill: -color-fg-muted;
+
+.stat-view .stat-card {
+    -fx-padding: 17px 20px 15px 20px;
+    -fx-spacing: 3px;
+    -fx-alignment: TOP_LEFT;
 }
-.common-child .stat-card .stat-value{
-    -fx-font-size: 24px;
+.stat-view .stat-card.stat-total {
+    -fx-background-color: linear-gradient(to bottom right, rgba(255, 255, 255, 0.94), rgba(255, 241, 238, 0.88));
+}
+.stat-view .stat-card.stat-ssr {
+    -fx-background-color: linear-gradient(to bottom right, rgba(255, 255, 255, 0.94), rgba(255, 248, 229, 0.88));
+}
+.stat-view .stat-card.stat-sr {
+    -fx-background-color: linear-gradient(to bottom right, rgba(255, 255, 255, 0.94), rgba(235, 243, 255, 0.88));
+}
+.stat-view .stat-card.stat-up {
+    -fx-background-color: linear-gradient(to bottom right, rgba(255, 255, 255, 0.94), rgba(232, 248, 246, 0.88));
+}
+.stat-view .stat-card .stat-label {
+    -fx-font-size: 17px;
     -fx-font-weight: bold;
-    -fx-text-fill: -color-accent-emphasis;
+    -fx-text-fill: -color-fg-default;
 }
-.common-child .stat-card .stat-value-small{
-    -fx-font-size: 13px;
-    -fx-font-weight: bold;
-}
-.common-child .stat-card .stat-sub{
-    -fx-font-size: 11px;
-    -fx-text-fill: -color-fg-muted;
-}
-
-.common-child .conclusion-text{
-    -fx-font-size: 13px;
-    -fx-text-fill: -color-fg-muted;
-}
-.common-child .conclusion-value{
-    -fx-font-size: 18px;
-    -fx-font-weight: bold;
-}
-
-.common-child .stat-list-pane{
-    -fx-padding: 10px;
-    -fx-background-radius: 10px;
-    -fx-background-color: -color-bg-default-50;
-    -fx-border-radius: 16;
-    -fx-border-color: -color-border-default;
-    -fx-border-width: 1px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 4);
-}
-.common-child .stat-list-pane .list-view{
-    -fx-background-color: transparent;
-}
-.common-child .stat-item-row{
-    -fx-alignment: CENTER_LEFT;
-    -fx-spacing: 10px;
-}
-.common-child .stat-item-name{
-    -fx-font-size: 13px;
-}
-.common-child .stat-item-count{
-    -fx-font-size: 13px;
-    -fx-font-weight: bold;
-    -fx-text-fill: -color-accent-emphasis;
-}
-
-/* ====== 统计子界面：图文并茂样式 ====== */
-/* 统计卡片颜色区分 */
-.common-child .stat-card.stat-total .stat-value { -fx-text-fill: #ff6666; }
-.common-child .stat-card.stat-ssr .stat-value { -fx-text-fill: #ff8000; }
-.common-child .stat-card.stat-sr .stat-value { -fx-text-fill: #933fb1; }
-.common-child .stat-card.stat-up .stat-value { -fx-text-fill: #e57373; }
-
-/* 角色/武器对比卡片颜色 */
-.common-child .pool-pane.stat-role { -fx-border-color: #4caf5033; }
-.common-child .pool-pane.stat-role .title-3 { -fx-text-fill: #4caf50; }
-.common-child .pool-pane.stat-weapon { -fx-border-color: #2196f333; }
-.common-child .pool-pane.stat-weapon .title-3 { -fx-text-fill: #2196f3; }
-
-/* 统计行 */
-.common-child .stat-compare-row {
-    -fx-alignment: CENTER_LEFT;
-    -fx-spacing: 8px;
-}
-.common-child .stat-compare-row .stat-row-label {
-    -fx-font-size: 12px;
-    -fx-text-fill: -color-fg-muted;
-}
-.common-child .stat-compare-row .stat-row-value {
-    -fx-font-size: 15px;
+.stat-view .stat-card .stat-value {
+    -fx-font-size: 46px;
     -fx-font-weight: bold;
 }
-.common-child .stat-compare-row .stat-row-value.stat-total { -fx-text-fill: #ff6666; }
-.common-child .stat-compare-row .stat-row-value.stat-ssr { -fx-text-fill: #ff8000; }
-.common-child .stat-compare-row .stat-row-value.stat-sr { -fx-text-fill: #933fb1; }
-.common-child .stat-compare-row .stat-row-value.stat-role { -fx-text-fill: #4caf50; }
-.common-child .stat-compare-row .stat-row-value.stat-weapon { -fx-text-fill: #2196f3; }
-.common-child .stat-compare-row .stat-row-value.stat-up { -fx-text-fill: #e57373; }
-
-/* 饼图颜色：五星橙、四星紫、三星青 */
-.common-child .stat-view .default-color0.chart-pie { -fx-pie-color: #ff8000; }
-.common-child .stat-view .default-color1.chart-pie { -fx-pie-color: #a855f7; }
-.common-child .stat-view .default-color2.chart-pie { -fx-pie-color: #22d3ee; }
-.common-child .stat-view .chart-legend {
-    -fx-font-size: 12px;
-}
-
-/* 右侧列表项 */
-.common-child .stat-view .list-view {
-    -fx-background-color: transparent;
-}
-.common-child .stat-view .list-view .list-cell {
-    -fx-padding: 4px 4px 4px 4px;
-}
-.common-child .stat-view .stat-item-count {
+.stat-view .stat-card-detail,
+.stat-view .stat-card-name {
     -fx-font-size: 14px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #ff8000;
+    -fx-text-fill: -color-fg-default;
 }
-
-/* 统计卡片：头像 + 标题 + 数值 + 星声 */
-.common-child .stat-card .stat-label {
+.stat-view .stat-card-caption {
     -fx-font-size: 12px;
     -fx-text-fill: -color-fg-muted;
 }
-.common-child .stat-card .stat-sub-label {
-    -fx-font-size: 11px;
-    -fx-text-fill: -color-fg-muted;
+.stat-view .stat-card.stat-total .stat-value { -fx-text-fill: #ef7377; }
+.stat-view .stat-card.stat-ssr .stat-value { -fx-text-fill: #eea13d; }
+.stat-view .stat-card.stat-sr .stat-value { -fx-text-fill: #5f8fce; }
+.stat-view .stat-card.stat-up .stat-value { -fx-text-fill: #38a6a1; }
+
+.stat-view .stat-emblem {
+    -fx-min-width: 44px;
+    -fx-min-height: 44px;
+    -fx-max-width: 44px;
+    -fx-max-height: 44px;
+    -fx-background-color: rgba(255, 255, 255, 0.70);
+    -fx-background-radius: 23px;
+    -fx-border-color: rgba(120, 128, 145, 0.14);
+    -fx-border-radius: 23px;
 }
-.common-child .stat-card .stat-value {
-    -fx-font-size: 22px;
+.stat-view .stat-card-avatar-frame {
+    -fx-background-color: rgba(255, 255, 255, 0.72);
+    -fx-background-radius: 25px;
+    -fx-border-color: rgba(105, 119, 142, 0.18);
+    -fx-border-radius: 25px;
+    -fx-effect: dropshadow(gaussian, rgba(44, 55, 72, 0.10), 6, 0.06, 0, 2);
+}
+.stat-view .stat-emblem.stat-total .emblem-shape { -fx-fill: #e6c7bf; }
+.stat-view .stat-emblem.stat-ssr .emblem-shape { -fx-fill: #f3d592; }
+.stat-view .stat-emblem.stat-sr .emblem-shape { -fx-fill: #b7d0ef; }
+.stat-view .stat-emblem.stat-up .emblem-shape { -fx-fill: #a9d8d4; }
+.stat-view .stat-emblem.stat-role .emblem-shape { -fx-fill: white; }
+.stat-view .stat-emblem.stat-weapon .emblem-shape { -fx-fill: white; }
+.stat-view .stat-emblem.stat-role { -fx-background-color: #67af78; -fx-border-color: transparent; }
+.stat-view .stat-emblem.stat-weapon { -fx-background-color: #6099d4; -fx-border-color: transparent; }
+
+.stat-view .stat-section {
+    -fx-padding: 17px;
+}
+.stat-view .stat-section-title {
+    -fx-font-size: 17px;
     -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
 }
-.common-child .stat-card .stat-sub {
-    -fx-font-size: 12px;
-    -fx-text-fill: -color-fg-muted;
-}
-.common-child .stat-card.stat-total .stat-value { -fx-text-fill: #ff6666; }
-.common-child .stat-card.stat-ssr .stat-value { -fx-text-fill: #ff8000; }
-.common-child .stat-card.stat-sr .stat-value { -fx-text-fill: #933fb1; }
-.common-child .stat-card.stat-up .stat-value { -fx-text-fill: #e57373; }
-
-/* 角色/武器对比卡片 */
-.common-child .pool-pane.stat-role { -fx-border-color: #4caf5033; }
-.common-child .pool-pane.stat-role .title-3 { -fx-text-fill: #4caf50; }
-.common-child .pool-pane.stat-weapon { -fx-border-color: #2196f333; }
-.common-child .pool-pane.stat-weapon .title-3 { -fx-text-fill: #2196f3; }
-
-/* 统计行 */
-.common-child .stat-compare-row {
-    -fx-alignment: CENTER_LEFT;
-    -fx-spacing: 8px;
-}
-.common-child .stat-compare-row .stat-row-label {
-    -fx-font-size: 12px;
-    -fx-text-fill: -color-fg-muted;
-}
-.common-child .stat-compare-row .stat-row-value {
-    -fx-font-size: 15px;
+.stat-view .stat-info {
+    -fx-min-width: 17px;
+    -fx-min-height: 17px;
+    -fx-max-width: 17px;
+    -fx-max-height: 17px;
+    -fx-alignment: center;
+    -fx-border-color: -color-fg-muted;
+    -fx-border-radius: 9px;
+    -fx-font-size: 10px;
     -fx-font-weight: bold;
-}
-.common-child .stat-compare-row .stat-row-value.stat-total { -fx-text-fill: #ff6666; }
-.common-child .stat-compare-row .stat-row-value.stat-ssr { -fx-text-fill: #ff8000; }
-.common-child .stat-compare-row .stat-row-value.stat-sr { -fx-text-fill: #933fb1; }
-.common-child .stat-compare-row .stat-row-value.stat-role { -fx-text-fill: #4caf50; }
-.common-child .stat-compare-row .stat-row-value.stat-weapon { -fx-text-fill: #2196f3; }
-.common-child .stat-compare-row .stat-row-value.stat-up { -fx-text-fill: #e57373; }
-
-/* 饼图颜色 */
-.common-child .stat-view .default-color0.chart-pie { -fx-pie-color: #ff8000; }
-.common-child .stat-view .default-color1.chart-pie { -fx-pie-color: #a855f7; }
-.common-child .stat-view .default-color2.chart-pie { -fx-pie-color: #22d3ee; }
-
-/* 右侧列表 */
-.common-child .stat-view .list-view {
-    -fx-background-color: transparent;
-}
-.common-child .stat-view .list-view .list-cell {
-    -fx-padding: 4px;
+    -fx-text-fill: -color-fg-muted;
 }
 
-/* 直观界面同款分割线（粉紫渐变） */
-.common-child .stat-view .stat-separator {
-    -fx-padding: 4 0 8 0;
-}
-.common-child .stat-view .stat-separator > .line {
-    -fx-border-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #cccbcb70 0.0%, #ff98d4 50.0%, #cccbcb70 100.0%) transparent transparent transparent;
-    -fx-border-insets: 1px 0 0 0;
-    -fx-border-width: 1px;
+.stat-view .chart {
     -fx-padding: 0;
 }
-
-/* 筛选按钮 */
-.common-child .stat-view .filter-btn {
-    -fx-background-color: transparent;
-    -fx-border-color: -color-border-default;
-    -fx-border-radius: 12px;
-    -fx-background-radius: 12px;
+.stat-view .chart-content {
+    -fx-padding: 0;
+}
+.stat-view .chart-pie {
+    -fx-border-color: rgba(255, 255, 255, 0.95);
+    -fx-border-width: 1.5px;
+}
+.stat-view .default-color0.chart-pie { -fx-pie-color: #ff9a59; }
+.stat-view .default-color1.chart-pie { -fx-pie-color: #f5ca4f; }
+.stat-view .default-color2.chart-pie { -fx-pie-color: #70bd78; }
+.stat-view .donut-center {
+    -fx-background-color: rgba(255, 255, 255, 0.96);
+    -fx-background-radius: 66px;
+    -fx-effect: dropshadow(gaussian, rgba(31, 42, 55, 0.08), 7, 0.04, 0, 2);
+}
+.stat-view .donut-total {
+    -fx-font-size: 30px;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+}
+.stat-view .donut-caption {
     -fx-font-size: 12px;
-    -fx-padding: 3px 12px;
+    -fx-text-fill: -color-fg-muted;
+}
+.stat-view .rarity-dot {
+    -fx-min-width: 11px;
+    -fx-min-height: 11px;
+    -fx-max-width: 11px;
+    -fx-max-height: 11px;
+    -fx-background-radius: 6px;
+}
+.stat-view .rarity-dot.rarity-0 { -fx-background-color: #f39a52; }
+.stat-view .rarity-dot.rarity-1 { -fx-background-color: #f2c94c; }
+.stat-view .rarity-dot.rarity-2 { -fx-background-color: #6ebd78; }
+.stat-view .rarity-name,
+.stat-view .rarity-percent {
+    -fx-font-size: 13px;
+    -fx-text-fill: -color-fg-default;
+}
+
+.stat-view .metric-tile {
+    -fx-min-width: 84px;
+    -fx-min-height: 78px;
+    -fx-padding: 11px;
+    -fx-background-color: rgba(255, 255, 255, 0.72);
+    -fx-background-radius: 8px;
+    -fx-border-color: rgba(130, 138, 153, 0.14);
+    -fx-border-radius: 8px;
+}
+.stat-view .metric-title {
+    -fx-font-size: 11px;
+    -fx-text-fill: -color-fg-muted;
+}
+.stat-view .metric-value {
+    -fx-font-size: 17px;
+    -fx-text-fill: -color-fg-default;
+}
+.stat-view .metric-icon {
+    -fx-fill: transparent;
+    -fx-stroke: #4c8fd8;
+    -fx-stroke-width: 2px;
+}
+.stat-view .metric-star .metric-icon {
+    -fx-fill: #f0a541;
+    -fx-stroke: #f0a541;
+}
+.stat-view .metric-date .metric-value {
+    -fx-font-size: 11px;
+}
+
+.stat-view .pool-summary {
+    -fx-padding: 12px;
+    -fx-spacing: 0;
+}
+.stat-view .pool-summary.stat-role {
+    -fx-border-color: rgba(92, 164, 108, 0.25);
+}
+.stat-view .pool-summary.stat-weapon {
+    -fx-border-color: rgba(77, 142, 207, 0.25);
+}
+.stat-view .pool-header {
+    -fx-padding: 7px 10px;
+}
+.stat-view .stat-role .pool-header {
+    -fx-background-color: linear-gradient(to right, rgba(93, 169, 107, 0.20), rgba(93, 169, 107, 0.08));
+    -fx-background-radius: 7px 7px 0 0;
+}
+.stat-view .stat-weapon .pool-header {
+    -fx-background-color: linear-gradient(to right, rgba(81, 144, 210, 0.20), rgba(81, 144, 210, 0.08));
+    -fx-background-radius: 7px 7px 0 0;
+}
+.stat-view .pool-title {
+    -fx-font-size: 17px;
+    -fx-font-weight: bold;
+}
+.stat-view .stat-role .pool-title { -fx-text-fill: #3d8650; }
+.stat-view .stat-weapon .pool-title { -fx-text-fill: #3879b8; }
+.stat-view .pool-values {
+    -fx-background-color: rgba(255, 255, 255, 0.58);
+    -fx-background-radius: 0 0 7px 7px;
+    -fx-border-color: transparent rgba(120, 128, 145, 0.08) rgba(120, 128, 145, 0.08) rgba(120, 128, 145, 0.08);
+    -fx-border-radius: 0 0 7px 7px;
+}
+.stat-view .pool-metric {
+    -fx-alignment: center;
+    -fx-padding: 18px 5px;
+    -fx-border-color: transparent rgba(120, 128, 145, 0.12) transparent transparent;
+    -fx-border-width: 0 1px 0 0;
+}
+.stat-view .pool-metric.last {
+    -fx-border-color: transparent;
+}
+.stat-view .pool-metric-title {
+    -fx-font-size: 12px;
+    -fx-text-fill: -color-fg-muted;
+}
+.stat-view .pool-metric-value {
+    -fx-font-size: 26px;
+    -fx-text-fill: -color-fg-default;
+}
+
+.stat-view .stat-list-pane {
+    -fx-padding: 17px 13px 12px 13px;
+}
+.stat-view .filter-group {
+    -fx-background-color: rgba(105, 142, 183, 0.09);
+    -fx-background-radius: 14px;
+    -fx-padding: 2px;
+}
+.stat-view .filter-btn {
+    -fx-min-width: 45px;
+    -fx-background-color: transparent;
+    -fx-background-radius: 12px;
+    -fx-border-color: transparent;
+    -fx-padding: 3px 10px;
+    -fx-font-size: 11px;
     -fx-text-fill: -color-fg-muted;
     -fx-cursor: hand;
 }
-.common-child .stat-view .filter-btn:selected {
-    -fx-background-color: -color-accent-emphasis;
-    -fx-border-color: -color-accent-emphasis;
+.stat-view .filter-btn:selected {
+    -fx-background-color: rgba(97, 157, 222, 0.18);
+    -fx-text-fill: #397abe;
+}
+.stat-view .list-view,
+.stat-view .list-view .virtual-flow,
+.stat-view .list-view .clipped-container,
+.stat-view .list-view .sheet {
+    -fx-background-color: transparent;
+}
+.stat-view .list-view .list-cell {
+    -fx-padding: 3px 0;
+}
+.stat-view .rank-cell {
+    -fx-padding: 8px 10px;
+    -fx-background-color: rgba(255, 255, 255, 0.70);
+    -fx-background-radius: 7px;
+    -fx-border-color: rgba(120, 128, 145, 0.08);
+    -fx-border-radius: 7px;
+}
+.stat-view .rank-avatar-frame {
+    -fx-background-color: rgba(116, 165, 216, 0.13);
+    -fx-background-radius: 24px;
+    -fx-border-color: rgba(87, 139, 197, 0.22);
+    -fx-border-radius: 24px;
+}
+.stat-view .rank-name {
+    -fx-font-size: 14px;
+    -fx-text-fill: -color-fg-default;
+}
+.stat-view .rank-count {
+    -fx-padding: 2px 7px;
+    -fx-background-color: #6ba8e9;
+    -fx-background-radius: 11px;
+    -fx-font-size: 11px;
     -fx-text-fill: white;
+}
+.stat-view .rank-progress {
+    -fx-min-height: 6px;
+    -fx-pref-height: 6px;
+    -fx-max-height: 6px;
+    -fx-background-color: rgba(112, 126, 145, 0.14);
+    -fx-background-radius: 4px;
+}
+.stat-view .rank-progress-fill {
+    -fx-min-height: 6px;
+    -fx-pref-height: 6px;
+    -fx-max-height: 6px;
+    -fx-background-color: linear-gradient(to right, #8cc8f6, #5d9fe6);
+    -fx-background-radius: 4px;
+}
+
+.stat-view .stat-state-pane {
+    -fx-background-color: -color-bg-default-90;
+    -fx-background-radius: 8px;
+}
+.stat-view .stat-state-label {
+    -fx-font-size: 15px;
+    -fx-text-fill: -color-fg-muted;
 }
