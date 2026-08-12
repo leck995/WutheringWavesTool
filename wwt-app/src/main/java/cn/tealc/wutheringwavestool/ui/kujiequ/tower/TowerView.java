@@ -2,7 +2,6 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 
 import atlantafx.base.controls.Spacer;
 import atlantafx.base.theme.Styles;
-import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import com.kuro.kujiequ.model.roleData.Role;
 import com.kuro.kujiequ.model.towerData.Difficulty;
 import com.kuro.kujiequ.model.towerData.Floor;
@@ -23,6 +22,7 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.util.Pair;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 
 import java.net.URL;
@@ -43,7 +43,7 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
     @FXML
     private ListView<Difficulty> difficuityListview;
     @FXML
-    private FlowPane areaFlowPane;
+    private GridPane areaGridPane;
     @FXML
     private Label seasonEndTimeLabel;
     @FXML
@@ -55,9 +55,9 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
     @FXML
     private Label totalStarLabel;
     @FXML
-    private Label areaProgressLabel;
-    @FXML
     private HBox summaryBox;
+    @FXML
+    private ProgressBar starProgressBar;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -85,10 +85,13 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
         });
 
         viewModel.getTowerAreaList().addListener((ListChangeListener<? super TowerArea>) change -> {
-            areaFlowPane.getChildren().clear();
+            areaGridPane.getChildren().clear();
             List<? extends TowerArea> areas = change.getList();
-            for (TowerArea towerArea : areas) {
-                areaFlowPane.getChildren().add(new AreaCell(towerArea));
+            for (int i = 0; i < areas.size(); i++) {
+                AreaCell areaCell = new AreaCell(areas.get(i));
+                GridPane.setHgrow(areaCell, Priority.ALWAYS);
+                GridPane.setVgrow(areaCell, Priority.ALWAYS);
+                areaGridPane.add(areaCell, i % 3, i / 3);
             }
             updateSummary(areas);
         });
@@ -115,23 +118,19 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
     private void updateSummary(List<? extends TowerArea> areas) {
         int star = 0;
         int maxStar = 0;
-        int clearedAreas = 0;
         for (TowerArea area : areas) {
             star += area.getStar();
             maxStar += area.getMaxStar();
-            if (area.getStar() > 0) {
-                clearedAreas++;
-            }
         }
         totalStarLabel.setText(String.format("%d / %d", star, maxStar));
-        areaProgressLabel.setText(String.format("区域 %d / %d", clearedAreas, areas.size()));
+        starProgressBar.setProgress(maxStar > 0 ? (double) star / maxStar : 0);
         summaryBox.setVisible(!areas.isEmpty());
         summaryBox.setManaged(!areas.isEmpty());
     }
 
 
     static class DifficultyCell extends ListCell<Difficulty> {
-        private final StackPane child;
+        private final HBox child;
         private final Label title = new Label();
         private final Label star = new Label();
 
@@ -139,13 +138,15 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
             title.getStyleClass().add("tower-name");
             star.getStyleClass().add("tower-star");
 
-            FontIcon fontIcon = new FontIcon(Material2MZ.STAR_OUTLINE);
+            FontIcon areaIcon = new FontIcon(Material2AL.ADJUST);
+            areaIcon.getStyleClass().add("tower-area-icon");
+
+            FontIcon fontIcon = new FontIcon(Material2MZ.STAR);
             star.setGraphic(fontIcon);
             star.setContentDisplay(ContentDisplay.RIGHT);
-            child = new StackPane(title, star);
-
-            StackPane.setAlignment(title, Pos.CENTER_LEFT);
-            StackPane.setAlignment(star, Pos.CENTER_RIGHT);
+            child = new HBox(8, areaIcon, title, new Spacer(), star);
+            child.setAlignment(Pos.CENTER_LEFT);
+            HBox.setHgrow(title, Priority.ALWAYS);
             setGraphic(child);
             child.getStyleClass().add("tower-cell");
         }
@@ -179,17 +180,22 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
     }
 
     static class HistoryCell extends ListCell<Pair<Long, Pair<String, String>>> {
-        private final HBox child = new HBox();
-        private final Label title = new Label();
+        private final HBox child = new HBox(8);
+        private final VBox dateBox = new VBox(1);
+        private final Label startDate = new Label();
+        private final Label endDate = new Label();
+        private final Label marker = new Label();
 
         public HistoryCell() {
-            child.getChildren().add(title);
-            title.getStyleClass().add("tower-name");
-            title.setMaxWidth(Double.MAX_VALUE);
-            title.setEllipsisString("…");
-            HBox.setHgrow(title, Priority.ALWAYS);
+            child.setAlignment(Pos.CENTER_LEFT);
+            marker.getStyleClass().add("history-marker");
+            startDate.getStyleClass().add("history-start-date");
+            endDate.getStyleClass().add("history-end-date");
+            dateBox.getChildren().addAll(startDate, endDate);
+            HBox.setHgrow(dateBox, Priority.ALWAYS);
+            child.getChildren().addAll(marker, dateBox);
             child.setMaxWidth(Double.MAX_VALUE);
-            child.getStyleClass().add("tower-cell");
+            child.getStyleClass().addAll("tower-cell", "classic-history-cell");
             setMaxWidth(Double.MAX_VALUE);
         }
 
@@ -198,10 +204,12 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
             super.updateItem(pair, empty);
             if (!empty) {
                 setDisable(false);
-                title.setText(pair.getValue().getKey() + " — " + pair.getValue().getValue());
+                startDate.setText(pair.getValue().getKey());
+                endDate.setText(pair.getValue().getValue());
                 setGraphic(child);
             } else {
-                title.setText(null);
+                startDate.setText(null);
+                endDate.setText(null);
                 setGraphic(null);
                 setDisable(true);
             }
@@ -209,19 +217,16 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
     }
 
     class AreaCell extends VBox {
-        // 与改版前一致：使用 star01.png，按 30px 加载
-        private static final Image STAR_IMAGE = new Image(
-                FXResourcesLoader.load("image/kujiequ/star01.png"), 30, 30, true, true, true);
-
         public AreaCell(TowerArea towerArea) {
-            setPrefWidth(400.0);
-            setMinWidth(360.0);
+            setMinWidth(0);
+            setMaxWidth(Double.MAX_VALUE);
+            setMaxHeight(Double.MAX_VALUE);
             setSpacing(6);
-            getStyleClass().add("area");
+            getStyleClass().addAll("area", "classic-area-card");
 
-            // --- 标题行：区域名 + 星数 ---
-            HBox header = new HBox(10);
-            header.setAlignment(Pos.CENTER_LEFT);
+            // --- 标题区：塔名称在上，星数在下 ---
+            VBox header = new VBox(3);
+            header.setAlignment(Pos.CENTER);
             header.getStyleClass().add("area-header");
 
             Label areaTitle = new Label(towerArea.getAreaName());
@@ -229,12 +234,12 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
 
             Label areaScore = new Label(String.format("%d / %d", towerArea.getStar(), towerArea.getMaxStar()));
             areaScore.getStyleClass().add("area-score");
-            FontIcon starIcon = new FontIcon(Material2MZ.STAR_OUTLINE);
+            FontIcon starIcon = new FontIcon(Material2MZ.STAR);
             areaScore.setGraphic(starIcon);
             areaScore.setContentDisplay(ContentDisplay.RIGHT);
             areaScore.getStyleClass().add("full-star");
 
-            header.getChildren().addAll(areaTitle, new Spacer(), areaScore);
+            header.getChildren().addAll(areaTitle, areaScore);
 
             Separator separator = new Separator(Orientation.HORIZONTAL);
             getChildren().addAll(header, separator);
@@ -256,10 +261,10 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
             getChildren().add(floorList);
         }
 
-        private HBox buildFloorRow(Floor floor) {
-            HBox row = new HBox();
+        private VBox buildFloorRow(Floor floor) {
+            VBox row = new VBox(5);
             row.getStyleClass().add("floor-row");
-            row.setAlignment(Pos.CENTER_LEFT);
+            row.setAlignment(Pos.TOP_LEFT);
 
             Label floorName = new Label(String.format("第%d层", floor.getFloor()));
             floorName.getStyleClass().add("floor-title");
@@ -269,20 +274,19 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
             starBox.setAlignment(Pos.CENTER_LEFT);
             int earned = Math.max(0, Math.min(floor.getStar(), FLOOR_MAX_STAR));
             for (int i = 0; i < FLOOR_MAX_STAR; i++) {
-                ImageView star = new ImageView(STAR_IMAGE);
-                // 已获得的星保持原图亮度；仅未获得的星降低透明度占位
-                if (i >= earned) {
-                    star.setOpacity(0.35);
-                } else {
-                    star.setOpacity(1.0);
-                }
+                boolean unlocked = i < earned;
+                FontIcon star = new FontIcon(unlocked ? Material2MZ.STAR : Material2MZ.STAR_BORDER);
+                star.getStyleClass().add(unlocked ? "floor-star-earned" : "floor-star-empty");
                 starBox.getChildren().add(star);
             }
 
-            HBox roleRow = new HBox(8);
+            HBox floorContent = new HBox(7);
+            floorContent.getStyleClass().add("floor-content");
+            floorContent.setAlignment(Pos.CENTER_LEFT);
+
+            HBox roleRow = new HBox(5);
             roleRow.getStyleClass().add("role-row");
-            roleRow.setAlignment(Pos.CENTER_LEFT);
-            HBox.setHgrow(roleRow, Priority.ALWAYS);
+            roleRow.setAlignment(Pos.CENTER_RIGHT);
 
             if (floor.getRoleList() != null && !floor.getRoleList().isEmpty()) {
                 for (SimpleRole role : floor.getRoleList()) {
@@ -290,11 +294,14 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
                 }
             } else {
                 Label empty = new Label("暂无数据");
-                empty.getStyleClass().add(Styles.TEXT_MUTED);
+                empty.getStyleClass().addAll(Styles.TEXT_MUTED, "floor-empty-text");
                 roleRow.getChildren().add(empty);
             }
 
-            row.getChildren().addAll(floorName, starBox, roleRow);
+            Pane contentSpacer = new Pane();
+            HBox.setHgrow(contentSpacer, Priority.ALWAYS);
+            floorContent.getChildren().addAll(starBox, contentSpacer, roleRow);
+            row.getChildren().addAll(floorName, floorContent);
             return row;
         }
 
@@ -303,9 +310,11 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
             roleItem.getStyleClass().add("role-item");
 
             ImageView roleIv = new ImageView();
-            Image image = LocalResourcesManager.header(role.getRoleId(), 50, 50);
+            Image image = LocalResourcesManager.header(role.getRoleId(), 40, 40);
             roleIv.setImage(image);
-            Circle circle = new Circle(25, 25, 25);
+            roleIv.setFitWidth(40);
+            roleIv.setFitHeight(40);
+            Circle circle = new Circle(20, 20, 20);
             roleIv.setClip(circle);
             roleItem.getChildren().add(roleIv);
 

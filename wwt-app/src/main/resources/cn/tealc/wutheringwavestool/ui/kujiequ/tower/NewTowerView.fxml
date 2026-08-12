@@ -2,72 +2,143 @@
 
 <?import atlantafx.base.controls.Spacer?>
 <?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.TilePane?>
 <?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<StackPane prefHeight="800.0" prefWidth="1100.0" styleClass="tower" stylesheets="@../../../css/kujiequ/tower/Tower.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.tower.NewTowerView">
+<StackPane prefHeight="760.0" prefWidth="1100.0" stylesheets="@../../../css/kujiequ/tower/Tower.css"
+           xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.tower.NewTowerView">
+    <styleClass>
+        <String fx:value="tower" />
+        <String fx:value="new-tower" />
+    </styleClass>
     <children>
-        <AnchorPane prefHeight="200.0" prefWidth="200.0">
-            <children>
-                <VBox layoutY="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0">
+        <BorderPane fx:id="pagePane">
+            <left>
+                <VBox minWidth="178.0" prefWidth="190.0" maxWidth="190.0" spacing="18.0" styleClass="tower-sidebar">
                     <children>
-                        <ListView fx:id="difficuityListview" prefHeight="300.0" prefWidth="150.0" styleClass="difficulty-list-view" />
-                        <VBox VBox.vgrow="ALWAYS">
+                        <VBox spacing="8.0" VBox.vgrow="NEVER">
                             <children>
-                                <Label styleClass="title-3" text="往期历史" translateX="10.0" />
-                                <ListView fx:id="towerHistoryListview" prefHeight="200.0" prefWidth="210.0" styleClass="difficulty-list-view" VBox.vgrow="ALWAYS" />
+                                <Label styleClass="sidebar-caption" text="挑战模式" />
+                                <ListView fx:id="difficuityListview" minHeight="118.0" prefHeight="128.0"
+                                          styleClass="tower-nav-list" />
+                            </children>
+                        </VBox>
+                        <Spacer VBox.vgrow="ALWAYS" />
+                        <VBox minHeight="205.0" prefHeight="238.0" spacing="8.0" styleClass="history-panel">
+                            <children>
+                                <HBox alignment="CENTER_LEFT" spacing="9.0" styleClass="history-heading">
+                                    <children>
+                                        <FontIcon iconLiteral="mdal-history" iconSize="18" />
+                                        <Label text="往期历史" />
+                                    </children>
+                                </HBox>
+                                <ListView fx:id="towerHistoryListview" styleClass="history-list" VBox.vgrow="ALWAYS" />
                             </children>
                         </VBox>
                     </children>
+                    <padding>
+                        <Insets bottom="18.0" left="4.0" right="14.0" top="18.0" />
+                    </padding>
                 </VBox>
-            <StackPane fx:id="rightPane" prefHeight="150.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-               <children>
-                  <StackPane fx:id="lockPane" prefHeight="150.0" prefWidth="200.0">
-                     <children>
-                        <Label text="矩阵尚未开启">
-                           <styleClass>
-                              <String fx:value="title-3" />
-                              <String fx:value="text-muted" />
-                           </styleClass>
-                        </Label>
-                     </children>
-                  </StackPane>
-                  <VBox fx:id="contentPane" prefHeight="200.0" prefWidth="100.0" spacing="15.0">
-                     <children>
-                            <HBox alignment="CENTER_LEFT" spacing="12.0">
-                                <children>
-                                    <Label fx:id="title" styleClass="title-2" text="终焉矩阵" />
-                                    <Spacer />
-                                    <Label fx:id="seasonEndTimeLabel" styleClass="end-time" text="刷新" />
-                                </children>
-                            </HBox>
-                            <HBox fx:id="summaryBox" alignment="CENTER_LEFT" spacing="25.0" styleClass="summary-bar">
-                                <children>
-                                    <Label fx:id="totalScoreLabel" styleClass="summary-score" text="0">
-                                 <graphic>
-                                    <Label text="累计积分：" />
-                                 </graphic>
-                              </Label>
-                                    <Label fx:id="progressLabel" styleClass="summary-progress" text="第1轮 5/5" />
-                                    <Label fx:id="rankLabel" styleClass="summary-rank" text="S" />
-                                </children>
-                            </HBox>
-                            <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="right" VBox.vgrow="ALWAYS">
-                                <content>
-                                    <FlowPane fx:id="areaFlowPane" columnHalignment="CENTER" hgap="50.0" vgap="40.0" />
-                                </content>
-                            </ScrollPane>
-                     </children>
-                  </VBox>
-               </children>
-            </StackPane>
-            </children>
-        </AnchorPane>
+            </left>
+            <center>
+                <StackPane fx:id="rightPane" styleClass="tower-content">
+                    <children>
+                        <StackPane fx:id="lockPane" styleClass="tower-lock-pane">
+                            <children>
+                                <VBox alignment="CENTER" spacing="10.0">
+                                    <children>
+                                        <Label styleClass="lock-symbol" text="◆" />
+                                        <Label styleClass="title-3" text="矩阵尚未开启" />
+                                    </children>
+                                </VBox>
+                            </children>
+                        </StackPane>
+                        <VBox fx:id="contentPane" spacing="16.0">
+                            <children>
+                                <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="page-heading">
+                                    <children>
+                                        <VBox spacing="2.0">
+                                            <children>
+                                                <Label styleClass="heading-eyebrow" text="HISTORY RECORD" />
+                                                <Label fx:id="title" styleClass="tower-page-title" text="终焉矩阵" />
+                                            </children>
+                                        </VBox>
+                                        <Label styleClass="heading-spark" text="✦" />
+                                        <Spacer />
+                                        <Label fx:id="seasonEndTimeLabel" styleClass="end-time" text="刷新时间" />
+                                    </children>
+                                </HBox>
+
+                                <HBox fx:id="summaryBox" alignment="CENTER_LEFT" spacing="18.0" styleClass="matrix-summary">
+                                    <children>
+                                        <VBox alignment="CENTER_LEFT" spacing="1.0" styleClass="score-block">
+                                            <children>
+                                                <Label styleClass="metric-caption" text="累计积分" />
+                                                <Label fx:id="totalScoreLabel" styleClass="summary-score" text="0" />
+                                            </children>
+                                        </VBox>
+                                        <StackPane fx:id="rankEmblem" minHeight="84.0" minWidth="84.0" prefHeight="84.0"
+                                                   prefWidth="84.0" styleClass="rank-emblem">
+                                            <children>
+                                                <StackPane styleClass="rank-emblem-middle">
+                                                    <children>
+                                                        <StackPane styleClass="rank-emblem-inner">
+                                                            <children>
+                                                                <Label fx:id="rankLabel" styleClass="summary-rank" text="S" />
+                                                            </children>
+                                                        </StackPane>
+                                                    </children>
+                                                </StackPane>
+                                            </children>
+                                        </StackPane>
+                                        <VBox alignment="CENTER_LEFT" spacing="3.0" styleClass="progress-block">
+                                            <children>
+                                                <Label styleClass="metric-caption" text="本期进度" />
+                                                <Label fx:id="progressLabel" styleClass="summary-progress" text="第2轮  1/5" />
+                                            </children>
+                                        </VBox>
+                                        <Spacer />
+                                        <StackPane minHeight="88.0" minWidth="180.0" prefHeight="88.0" prefWidth="210.0"
+                                                   styleClass="matrix-art">
+                                            <children>
+                                                <Label styleClass="matrix-art-word" text="MATRIX" />
+                                                <Label styleClass="matrix-art-symbol" text="✦" />
+                                            </children>
+                                        </StackPane>
+                                    </children>
+                                </HBox>
+
+                                <ScrollPane fx:id="contentScroll" fitToWidth="true" hbarPolicy="NEVER" styleClass="tower-scroll"
+                                            VBox.vgrow="ALWAYS">
+                                    <content>
+                                        <TilePane fx:id="areaTilePane" alignment="TOP_LEFT" hgap="16.0" prefColumns="2"
+                                                  prefTileHeight="174.0" prefTileWidth="420.0" tileAlignment="TOP_LEFT" vgap="16.0" />
+                                    </content>
+                                </ScrollPane>
+                                <HBox alignment="CENTER" spacing="7.0" styleClass="tower-footnote">
+                                    <children>
+                                        <Label styleClass="footnote-symbol" text="ⓘ" />
+                                        <Label text="数据仅供参考，实际结果请以游戏内为准" />
+                                    </children>
+                                </HBox>
+                            </children>
+                            <padding>
+                                <Insets bottom="10.0" left="12.0" right="14.0" top="14.0" />
+                            </padding>
+                        </VBox>
+                    </children>
+                </StackPane>
+            </center>
+        </BorderPane>
     </children>
 </StackPane>

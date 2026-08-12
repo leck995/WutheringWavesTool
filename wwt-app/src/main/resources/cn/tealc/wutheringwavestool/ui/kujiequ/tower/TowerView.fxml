@@ -2,62 +2,88 @@
 
 <?import atlantafx.base.controls.Spacer?>
 <?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane prefHeight="800.0" prefWidth="1100.0" styleClass="tower" stylesheets="@../../../css/kujiequ/tower/Tower.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.tower.TowerView">
+<StackPane prefHeight="800.0" prefWidth="1100.0" stylesheets="@../../../css/kujiequ/tower/Tower.css"
+           xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.tower.TowerView">
+    <styleClass>
+        <String fx:value="tower" />
+        <String fx:value="classic-tower" />
+    </styleClass>
     <children>
-        <AnchorPane prefHeight="200.0" prefWidth="200.0">
-            <children>
-                <VBox spacing="8.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0">
+        <BorderPane styleClass="classic-tower-layout">
+            <left>
+                <VBox minWidth="216.0" prefWidth="224.0" maxWidth="224.0" spacing="10.0" styleClass="classic-sidebar-card">
                     <children>
-                        <ListView fx:id="difficuityListview" prefHeight="300.0" prefWidth="220.0" styleClass="difficulty-list-view" />
-                        <VBox fx:id="historySection" styleClass="history-section" VBox.vgrow="ALWAYS">
+                        <Label styleClass="classic-section-title" text="区域选择" />
+                        <ListView fx:id="difficuityListview" minHeight="218.0" prefHeight="232.0"
+                                  styleClass="difficulty-list-view" />
+                        <Separator />
+                        <VBox fx:id="historySection" spacing="7.0" styleClass="history-section" VBox.vgrow="ALWAYS">
                             <children>
-                                <Label text="往期历史">
-                                    <styleClass>
-                                        <String fx:value="title-3" />
-                                        <String fx:value="text-muted" />
-                                    </styleClass>
-                                </Label>
-                                <ListView fx:id="towerHistoryListview" prefHeight="200.0" prefWidth="220.0" styleClass="difficulty-list-view" VBox.vgrow="ALWAYS" />
+                                <Label styleClass="classic-section-title" text="往期历史" />
+                                <ListView fx:id="towerHistoryListview" minHeight="180.0" prefHeight="340.0"
+                                          styleClass="difficulty-list-view" VBox.vgrow="ALWAYS" />
+                            </children>
+                        </VBox>
+                    </children>
+                    <padding>
+                        <Insets bottom="15.0" left="12.0" right="12.0" top="15.0" />
+                    </padding>
+                </VBox>
+            </left>
+            <center>
+                <VBox spacing="12.0" styleClass="classic-main">
+                    <children>
+                        <VBox spacing="12.0" styleClass="classic-results-panel" VBox.vgrow="ALWAYS">
+                            <children>
+                                <HBox fx:id="summaryBox" alignment="CENTER_LEFT" spacing="12.0" styleClass="summary-bar">
+                                    <children>
+                                        <Label fx:id="title" styleClass="classic-page-title" text="深境之塔" />
+                                        <Separator orientation="VERTICAL" />
+                                        <Label fx:id="totalStarLabel" styleClass="summary-score" text="0 / 0">
+                                            <graphic>
+                                                <Label text="总星数：" />
+                                            </graphic>
+                                        </Label>
+                                        <ProgressBar fx:id="starProgressBar" minWidth="110.0" prefWidth="120.0"
+                                                     maxWidth="120.0" progress="0.0" styleClass="star-progress" />
+                                        <Spacer />
+                                        <Label fx:id="seasonEndTimeLabel" styleClass="end-time" text="刷新" />
+                                    </children>
+                                </HBox>
+                                <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER" styleClass="right"
+                                            VBox.vgrow="ALWAYS">
+                                    <content>
+                                        <GridPane fx:id="areaGridPane" alignment="TOP_LEFT" hgap="5.0" vgap="5.0">
+                                            <columnConstraints>
+                                                <ColumnConstraints hgrow="ALWAYS" minWidth="0.0" percentWidth="33.333" />
+                                                <ColumnConstraints hgrow="ALWAYS" minWidth="0.0" percentWidth="33.333" />
+                                                <ColumnConstraints hgrow="ALWAYS" minWidth="0.0" percentWidth="33.333" />
+                                            </columnConstraints>
+                                        </GridPane>
+                                    </content>
+                                </ScrollPane>
                             </children>
                         </VBox>
                     </children>
                 </VBox>
-                <VBox spacing="12.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="230.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-                    <children>
-                        <HBox alignment="CENTER_LEFT" spacing="12.0">
-                            <children>
-                                <Label fx:id="title" styleClass="title-2" text="深境之塔" />
-                                <Spacer />
-                                <Label fx:id="seasonEndTimeLabel" styleClass="end-time" text="刷新" />
-                            </children>
-                        </HBox>
-                        <HBox fx:id="summaryBox" alignment="CENTER_LEFT" spacing="24.0" styleClass="summary-bar">
-                            <children>
-                                <Label fx:id="totalStarLabel" styleClass="summary-score" text="0 / 0">
-                                    <graphic>
-                                        <Label text="总星数：" />
-                                    </graphic>
-                                </Label>
-                                <Label fx:id="areaProgressLabel" styleClass="summary-progress" text="区域 0 / 0" />
-                            </children>
-                        </HBox>
-                        <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="right" VBox.vgrow="ALWAYS">
-                            <content>
-                                <FlowPane fx:id="areaFlowPane" columnHalignment="LEFT" hgap="24.0" vgap="24.0" />
-                            </content>
-                        </ScrollPane>
-                    </children>
-                </VBox>
-            </children>
-        </AnchorPane>
+            </center>
+            <padding>
+                <Insets bottom="10.0" left="8.0" right="10.0" top="10.0" />
+            </padding>
+        </BorderPane>
     </children>
 </StackPane>

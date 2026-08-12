@@ -350,3 +350,782 @@
 .tower .right .area .buff-section .image-view {
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 4, 0, 0, 2);
 }
+
+/* ========== NewTowerView / 终焉矩阵 ========== */
+
+.new-tower {
+    -tower-blue: #5c9cf5;
+    -tower-violet: #a875ef;
+    -tower-green: #5bc58d;
+    -tower-orange: #f59a5c;
+    -fx-background-color: transparent;
+}
+
+.new-tower .tower-sidebar,
+.new-tower .tower-content,
+.new-tower .tower-scroll,
+.new-tower .tower-scroll > .viewport {
+    -fx-background-color: transparent;
+}
+
+.new-tower .tower-sidebar {
+    -fx-border-color: transparent rgba(130, 139, 158, 0.14) transparent transparent;
+    -fx-border-width: 0 1 0 0;
+}
+
+.new-tower .sidebar-caption,
+.new-tower .heading-eyebrow,
+.new-tower .metric-caption,
+.new-tower .team-eyebrow {
+    -fx-text-fill: -color-font-muted;
+    -fx-font-size: 11;
+}
+
+.new-tower .sidebar-caption,
+.new-tower .heading-eyebrow,
+.new-tower .team-eyebrow {
+    -fx-font-weight: bold;
+}
+
+.new-tower .tower-nav-list,
+.new-tower .history-list {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-padding: 0;
+}
+
+.new-tower .tower-nav-list .list-cell,
+.new-tower .history-list .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 3 0;
+}
+
+.new-tower .tower-nav-list .list-cell > .tower-nav-cell {
+    -fx-min-height: 48;
+    -fx-pref-height: 48;
+    -fx-padding: 0 13 0 14;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: transparent;
+}
+
+.new-tower .tower-nav-list .list-cell:hover > .tower-nav-cell {
+    -fx-background-color: -color-bg-default-30;
+}
+
+.new-tower .tower-nav-list .list-cell:selected > .tower-nav-cell {
+    -fx-background-color: -color-bg-default-60;
+    -fx-border-color: rgba(92, 156, 245, 0.20);
+    -fx-effect: dropshadow(gaussian, rgba(44, 92, 164, 0.08), 14, 0, 0, 5);
+}
+
+.new-tower .tower-nav-list .tower-name {
+    -fx-font-size: 14;
+    -fx-font-weight: normal;
+}
+
+.new-tower .tower-nav-list .list-cell:selected .tower-name {
+    -fx-text-fill: -color-accent-fg;
+    -fx-font-weight: bold;
+}
+
+.new-tower .tower-nav-list .tower-star .ikonli-font-icon {
+    -fx-icon-color: #ff6f7d;
+}
+
+.new-tower .tower-nav-list .scroll-bar,
+.new-tower .history-list .scroll-bar {
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+}
+
+.new-tower .history-panel {
+    -fx-padding: 15 12 12 12;
+    -fx-background-color: -color-bg-default-40;
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(132, 143, 166, 0.15);
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(32, 47, 73, 0.07), 16, 0, 0, 6);
+}
+
+.new-tower .history-heading {
+    -fx-padding: 0 3 9 3;
+    -fx-border-color: transparent transparent rgba(135, 145, 164, 0.16) transparent;
+    -fx-border-width: 0 0 1 0;
+}
+
+.new-tower .history-heading > .label {
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+}
+
+.new-tower .history-heading .ikonli-font-icon {
+    -fx-icon-color: -color-accent-fg;
+}
+
+.new-tower .history-list .list-cell > .history-cell-content {
+    -fx-max-width: infinity;
+    -fx-padding: 10 11;
+    -fx-background-color: transparent;
+    -fx-background-radius: 7;
+}
+
+.new-tower .history-list .list-cell:hover > .history-cell-content,
+.new-tower .history-list .list-cell:selected > .history-cell-content {
+    -fx-background-color: -color-bg-default-60;
+}
+
+.new-tower .history-date {
+    -fx-font-size: 13;
+    -fx-font-weight: bold;
+}
+
+.new-tower .history-description {
+    -fx-font-size: 11;
+    -fx-text-fill: -color-font-muted;
+}
+
+.new-tower .page-heading {
+    -fx-min-height: 54;
+    -fx-padding: 0 3 0 3;
+}
+
+.new-tower .tower-page-title {
+    -fx-font-size: 27;
+    -fx-font-weight: bold;
+}
+
+.new-tower .heading-spark {
+    -fx-text-fill: #68b9ed;
+    -fx-font-size: 18;
+}
+
+.new-tower .end-time {
+    -fx-font-size: 12;
+    -fx-font-weight: normal;
+    -fx-text-fill: -color-font-muted;
+    -fx-padding: 5 11;
+    -fx-background-color: -color-bg-default-30;
+    -fx-background-radius: 20;
+}
+
+.new-tower .matrix-summary {
+    -fx-min-height: 112;
+    -fx-pref-height: 112;
+    -fx-padding: 10 14 10 25;
+    -fx-background-color:
+        linear-gradient(to right, rgba(92, 156, 245, 0.12), transparent 30%),
+        -color-bg-default-50;
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(132, 152, 190, 0.16);
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(45, 64, 105, 0.08), 18, 0, 0, 7);
+}
+
+.new-tower .score-block {
+    -fx-min-width: 125;
+}
+
+.new-tower .summary-score {
+    -fx-font-size: 31;
+    -fx-font-weight: bold;
+    -fx-text-fill: #9b68ea;
+}
+
+.new-tower .rank-emblem {
+    -fx-padding: 7;
+    -fx-background-color: rgba(255, 255, 255, 0.24);
+    -fx-background-radius: 50;
+    -fx-border-color: rgba(116, 180, 255, 0.36);
+    -fx-border-radius: 50;
+    -fx-effect: dropshadow(gaussian, rgba(79, 135, 235, 0.28), 18, 0.25, 0, 3);
+}
+
+.new-tower .rank-emblem-middle {
+    -fx-padding: 7;
+    -fx-background-color: rgba(105, 164, 246, 0.20);
+    -fx-background-radius: 45;
+    -fx-border-color: rgba(116, 180, 255, 0.48);
+    -fx-border-radius: 45;
+}
+
+.new-tower .rank-emblem-inner {
+    -fx-background-color: rgba(86, 143, 235, 0.30);
+    -fx-background-radius: 38;
+    -fx-border-color: rgba(228, 245, 255, 0.75);
+    -fx-border-width: 2;
+    -fx-border-radius: 38;
+}
+
+.new-tower .summary-rank {
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+    -fx-font-size: 30;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(43, 86, 170, 0.7), 4, 0, 0, 1);
+}
+
+.new-tower .rank-emblem.a .rank-emblem-inner {
+    -fx-background-color: rgba(170, 113, 232, 0.34);
+    -fx-border-color: rgba(227, 207, 255, 0.82);
+}
+
+.new-tower .rank-emblem.b .rank-emblem-inner,
+.new-tower .rank-emblem.c .rank-emblem-inner {
+    -fx-background-color: rgba(103, 150, 185, 0.30);
+}
+
+.new-tower .progress-block {
+    -fx-min-width: 115;
+    -fx-padding: 0 0 0 5;
+}
+
+.new-tower .summary-progress {
+    -fx-font-size: 17;
+    -fx-font-weight: bold;
+}
+
+.new-tower .matrix-art {
+    -fx-border-color: transparent transparent transparent rgba(131, 153, 190, 0.15);
+    -fx-border-width: 0 0 0 1;
+}
+
+.new-tower .matrix-art-symbol {
+    -fx-font-size: 38;
+    -fx-text-fill: rgba(103, 153, 226, 0.45);
+}
+
+.new-tower .matrix-art-word {
+    -fx-font-size: 28;
+    -fx-font-weight: bold;
+    -fx-text-fill: rgba(108, 135, 180, 0.10);
+}
+
+.new-tower .tower-scroll {
+    -fx-padding: 1 0 0 0;
+}
+
+.new-tower .tower-scroll .scroll-bar:horizontal {
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+}
+
+.new-tower .tower-scroll .scroll-bar:vertical {
+    -fx-background-color: transparent;
+    -fx-pref-width: 7;
+}
+
+.new-tower .tower-scroll .scroll-bar:vertical .thumb {
+    -fx-background-color: rgba(120, 135, 160, 0.24);
+    -fx-background-radius: 8;
+}
+
+.new-tower .matrix-team-card {
+    -fx-padding: 14 18 16 18;
+    -fx-spacing: 8;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-width: 1 1 1 3;
+    -fx-effect: dropshadow(gaussian, rgba(34, 52, 82, 0.08), 16, 0, 0, 6);
+}
+
+.new-tower .matrix-team-card.team-blue {
+    -team-accent: -tower-blue;
+    -fx-background-color: linear-gradient(to right, rgba(92, 156, 245, 0.13), transparent 48%), -color-bg-default-50;
+    -fx-border-color: rgba(92, 156, 245, 0.70) rgba(92, 156, 245, 0.18) rgba(92, 156, 245, 0.18) -tower-blue;
+}
+
+.new-tower .matrix-team-card.team-violet {
+    -team-accent: -tower-violet;
+    -fx-background-color: linear-gradient(to right, rgba(168, 117, 239, 0.13), transparent 48%), -color-bg-default-50;
+    -fx-border-color: rgba(168, 117, 239, 0.70) rgba(168, 117, 239, 0.18) rgba(168, 117, 239, 0.18) -tower-violet;
+}
+
+.new-tower .matrix-team-card.team-green {
+    -team-accent: -tower-green;
+    -fx-background-color: linear-gradient(to right, rgba(91, 197, 141, 0.13), transparent 48%), -color-bg-default-50;
+    -fx-border-color: rgba(91, 197, 141, 0.70) rgba(91, 197, 141, 0.18) rgba(91, 197, 141, 0.18) -tower-green;
+}
+
+.new-tower .matrix-team-card.team-orange {
+    -team-accent: -tower-orange;
+    -fx-background-color: linear-gradient(to right, rgba(245, 154, 92, 0.13), transparent 48%), -color-bg-default-50;
+    -fx-border-color: rgba(245, 154, 92, 0.70) rgba(245, 154, 92, 0.18) rgba(245, 154, 92, 0.18) -tower-orange;
+}
+
+.new-tower .matrix-team-card:hover {
+    -fx-translate-y: -1;
+    -fx-effect: dropshadow(gaussian, rgba(34, 52, 82, 0.15), 20, 0, 0, 8);
+}
+
+.new-tower .team-card-header {
+    -fx-min-height: 48;
+}
+
+.new-tower .team-index {
+    -fx-font-size: 31;
+    -fx-font-weight: bold;
+    -fx-text-fill: -team-accent;
+}
+
+.new-tower .team-title {
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+}
+
+.new-tower .team-score-caption {
+    -fx-font-size: 12;
+    -fx-text-fill: -color-font-muted;
+}
+
+.new-tower .team-score {
+    -fx-font-size: 17;
+    -fx-font-weight: bold;
+    -fx-text-fill: -team-accent;
+}
+
+.new-tower .team-divider {
+    -fx-min-height: 1;
+    -fx-pref-height: 1;
+    -fx-background-color: linear-gradient(to right, rgba(126, 139, 160, 0.22), transparent);
+}
+
+.new-tower .team-card-body {
+    -fx-min-height: 72;
+}
+
+.new-tower .team-stage .round-info {
+    -fx-font-size: 12;
+    -fx-text-fill: -color-font-muted;
+}
+
+.new-tower .team-stage .pass-info {
+    -fx-font-size: 20;
+    -fx-font-weight: bold;
+}
+
+.new-tower .role-avatar-frame {
+    -fx-padding: 2;
+    -fx-background-color: rgba(255, 255, 255, 0.36);
+    -fx-background-radius: 32;
+    -fx-border-color: rgba(255, 255, 255, 0.62);
+    -fx-border-radius: 32;
+    -fx-effect: dropshadow(gaussian, rgba(31, 46, 75, 0.14), 7, 0, 0, 2);
+}
+
+.new-tower .chain-unlock-num {
+    -fx-min-width: 19;
+    -fx-pref-width: 19;
+    -fx-min-height: 19;
+    -fx-pref-height: 19;
+    -fx-padding: 0;
+    -fx-alignment: center;
+    -fx-background-color: -color-bg-default;
+    -fx-background-radius: 12;
+    -fx-border-color: rgba(120, 133, 154, 0.22);
+    -fx-border-radius: 12;
+    -fx-font-size: 10;
+    -fx-font-weight: bold;
+    -fx-translate-x: 2;
+    -fx-translate-y: -2;
+    -fx-effect: dropshadow(gaussian, rgba(24, 37, 57, 0.18), 4, 0, 0, 1);
+}
+
+.new-tower .buff-frame {
+    -fx-cursor: hand;
+    -fx-background-color: rgba(255, 255, 255, 0.28);
+    -fx-background-radius: 32;
+    -fx-border-color: rgba(255, 255, 255, 0.54);
+    -fx-border-radius: 32;
+    -fx-effect: dropshadow(gaussian, rgba(31, 46, 75, 0.11), 9, 0, 0, 3);
+}
+
+.new-tower .buff-frame:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.52);
+    -fx-effect: dropshadow(gaussian, -team-accent, 10, 0, 0, 2);
+}
+
+.new-tower .buff-frame.empty .ikonli-font-icon {
+    -fx-icon-color: -team-accent;
+}
+
+.new-tower .tower-footnote {
+    -fx-min-height: 25;
+    -fx-text-fill: -color-font-muted;
+}
+
+.new-tower .tower-footnote .label {
+    -fx-font-size: 11;
+    -fx-text-fill: -color-font-muted;
+}
+
+.new-tower .footnote-symbol {
+    -fx-font-size: 13;
+    -fx-text-fill: -color-font-muted;
+}
+
+.new-tower .tower-lock-pane {
+    -fx-background-color: -color-bg-default-40;
+    -fx-background-radius: 8;
+}
+
+.new-tower .lock-symbol {
+    -fx-font-size: 24;
+    -fx-text-fill: -color-font-muted;
+}
+
+/* ========== TowerView / 逆境深塔 ========== */
+
+.classic-tower,
+.classic-tower .classic-tower-layout,
+.classic-tower .classic-main {
+    -fx-background-color: transparent;
+}
+
+.classic-tower .classic-tower-layout {
+    -fx-background-insets: 0;
+}
+
+.classic-tower .classic-sidebar-card {
+    -fx-background-color: -color-bg-default-40;
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(132, 143, 166, 0.18);
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(32, 47, 73, 0.08), 16, 0, 0, 6);
+}
+
+.classic-tower .classic-main {
+    -fx-padding: 0 0 0 14;
+}
+
+.classic-tower .classic-section-title {
+    -fx-padding: 0 5 3 5;
+    -fx-font-size: 15;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+}
+
+.classic-tower .classic-sidebar-card > .separator {
+    -fx-padding: 3 4 5 4;
+}
+
+.classic-tower .classic-sidebar-card > .separator > .line {
+    -fx-border-color: rgba(126, 139, 160, 0.20) transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+}
+
+.classic-tower .difficulty-list-view {
+    -fx-padding: 0;
+}
+
+.classic-tower .difficulty-list-view .list-cell {
+    -fx-padding: 3 0;
+}
+
+.classic-tower .difficulty-list-view .list-cell > .tower-cell {
+    -fx-min-height: 40;
+    -fx-pref-height: 40;
+    -fx-padding: 7 10;
+    -fx-background-radius: 7;
+    -fx-border-radius: 7;
+    -fx-border-color: transparent;
+}
+
+.classic-tower .difficulty-list-view .list-cell:hover > .tower-cell {
+    -fx-background-color: -color-bg-default-30;
+}
+
+.classic-tower .difficulty-list-view .list-cell:selected > .tower-cell {
+    -fx-background-color: -color-bg-default-60;
+    -fx-border-color: rgba(92, 156, 245, 0.18);
+}
+
+.classic-tower .difficulty-list-view .list-cell:selected .tower-name {
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-accent-fg;
+}
+
+.classic-tower .difficulty-list-view .tower-area-icon {
+    -fx-icon-size: 17;
+    -fx-icon-color: -color-font-muted;
+}
+
+.tower.classic-tower .difficulty-list-view .list-cell > .tower-cell .tower-star {
+    -fx-text-fill: -color-fg-default;
+}
+
+.tower.classic-tower .difficulty-list-view .list-cell > .tower-cell .tower-star .ikonli-font-icon {
+    -fx-icon-color: -color-fg-default;
+    -fx-fill: -color-fg-default;
+}
+
+.classic-tower .difficulty-list-view .list-cell:selected .tower-area-icon {
+    -fx-icon-color: -color-accent-fg;
+}
+
+.tower.classic-tower .difficulty-list-view .list-cell:selected > .tower-cell .tower-star {
+    -fx-text-fill: -color-accent-fg;
+}
+
+.tower.classic-tower .difficulty-list-view .list-cell:selected > .tower-cell .tower-star .ikonli-font-icon {
+    -fx-icon-color: -color-accent-fg;
+    -fx-fill: -color-accent-fg;
+}
+
+.classic-tower .history-section {
+    -fx-padding: 1 0 0 0;
+}
+
+.classic-tower .history-section > .label {
+    -fx-padding: 0 5 3 5;
+}
+
+.classic-tower .history-section .difficulty-list-view .list-cell > .classic-history-cell {
+    -fx-min-height: 50;
+    -fx-pref-height: 50;
+    -fx-padding: 7 9;
+}
+
+.classic-tower .history-marker {
+    -fx-min-width: 8;
+    -fx-pref-width: 8;
+    -fx-min-height: 8;
+    -fx-pref-height: 8;
+    -fx-background-color: transparent;
+    -fx-background-radius: 8;
+    -fx-border-color: -color-font-muted;
+    -fx-border-radius: 8;
+    -fx-border-width: 1.2;
+}
+
+.classic-tower .difficulty-list-view .list-cell:selected .history-marker {
+    -fx-background-color: -color-accent-fg;
+    -fx-border-color: -color-accent-fg;
+}
+
+.classic-tower .history-start-date {
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+}
+
+.classic-tower .history-end-date {
+    -fx-font-size: 11;
+    -fx-text-fill: -color-font-muted;
+}
+
+.classic-tower .classic-heading-row {
+    -fx-min-height: 42;
+    -fx-padding: 0 2 0 2;
+}
+
+.classic-tower .classic-page-title {
+    -fx-font-size: 25;
+    -fx-font-weight: bold;
+}
+
+.classic-tower .classic-heading-row .end-time {
+    -fx-font-size: 14;
+    -fx-padding: 6 14;
+    -fx-effect: dropshadow(gaussian, rgba(38, 105, 190, 0.14), 10, 0, 0, 4);
+}
+
+.classic-tower .summary-bar {
+    -fx-min-height: 50;
+    -fx-padding: 8 12;
+    -fx-background-color: -color-bg-default-30;
+    -fx-background-radius: 7;
+    -fx-border-color: rgba(132, 143, 166, 0.14);
+    -fx-border-radius: 7;
+}
+
+.classic-tower .summary-bar > .separator {
+    -fx-padding: 3 0;
+}
+
+.classic-tower .summary-bar > .separator > .line {
+    -fx-border-color: transparent rgba(126, 139, 160, 0.22) transparent transparent;
+    -fx-border-width: 0 1 0 0;
+}
+
+.classic-tower .summary-bar .classic-page-title {
+    -fx-min-width: 94;
+    -fx-font-size: 21;
+}
+
+.classic-tower .summary-bar .end-time {
+    -fx-font-size: 13;
+    -fx-padding: 6 13;
+}
+
+.classic-tower .classic-results-panel {
+    -fx-padding: 6;
+    -fx-background-color: -color-bg-default-40;
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(132, 143, 166, 0.18);
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(32, 47, 73, 0.08), 16, 0, 0, 6);
+}
+
+.classic-tower .star-progress {
+    -fx-min-width: 110;
+    -fx-pref-width: 120;
+    -fx-max-width: 120;
+    -fx-pref-height: 7;
+}
+
+.classic-tower .star-progress > .track {
+    -fx-background-color: rgba(119, 131, 151, 0.18);
+    -fx-background-radius: 6;
+}
+
+.classic-tower .star-progress > .bar {
+    -fx-background-color: #ef5e62;
+    -fx-background-insets: 0;
+    -fx-background-radius: 6;
+    -fx-padding: 3.5;
+}
+
+.classic-tower .right {
+    -fx-background-color: transparent;
+}
+
+.classic-tower .right > .viewport {
+    -fx-background-color: transparent;
+}
+
+.classic-tower .right .grid-pane {
+    -fx-background-color: transparent;
+}
+
+.classic-tower .summary-bar .summary-score {
+    -fx-font-size: 14;
+}
+
+.classic-tower .right .area {
+    -fx-background-color: -color-bg-default-30;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 7 6;
+    -fx-effect: none;
+}
+
+.classic-tower .right .classic-area-card {
+    -fx-min-height: 410;
+    -fx-pref-height: 410;
+}
+
+.classic-tower .right .classic-area-card .area-title {
+    -fx-font-size: 16;
+}
+
+.classic-tower .right .classic-area-card .area-header {
+    -fx-min-height: 48;
+    -fx-spacing: 3;
+    -fx-alignment: center;
+}
+
+.classic-tower .right .classic-area-card .area-header .area-title {
+    -fx-alignment: center;
+}
+
+.classic-tower .right .classic-area-card .area-header .area-score {
+    -fx-alignment: center;
+    -fx-text-fill: -color-fg-default;
+}
+
+.tower.classic-tower .right .classic-area-card .area-header .area-score .ikonli-font-icon {
+    -fx-icon-color: #e9ad2f;
+    -fx-fill: #e9ad2f;
+}
+
+.classic-tower .right .classic-area-card > .separator {
+    -fx-padding: 2 18 5 18;
+}
+
+.classic-tower .right .classic-area-card > .separator > .line {
+    -fx-border-color: linear-gradient(to right,
+        rgba(126, 139, 160, 0.04),
+        rgba(126, 139, 160, 0.38) 22%,
+        rgba(126, 139, 160, 0.38) 78%,
+        rgba(126, 139, 160, 0.04)) transparent transparent transparent;
+    -fx-border-width: 1 0 0 0;
+    -fx-border-insets: 0;
+}
+
+.classic-tower .right .classic-area-card .floor-list {
+    -fx-spacing: 7;
+}
+
+.classic-tower .right .classic-area-card .floor-row {
+    -fx-min-height: 76;
+    -fx-padding: 4 4;
+    -fx-spacing: 5;
+    -fx-alignment: top-left;
+    -fx-background-color: -color-bg-default-30;
+    -fx-background-radius: 7;
+    -fx-border-color: rgba(132, 143, 166, 0.12);
+    -fx-border-radius: 7;
+}
+
+.classic-tower .right .classic-area-card .floor-title {
+    -fx-font-size: 12;
+    -fx-font-weight: bold;
+}
+
+.classic-tower .right .classic-area-card .floor-content {
+    -fx-alignment: center-left;
+    -fx-spacing: 7;
+    -fx-max-width: infinity;
+}
+
+.classic-tower .right .classic-area-card .star-box {
+    -fx-min-width: 0;
+    -fx-spacing: 1;
+    -fx-alignment: center-left;
+}
+
+.classic-tower .right .classic-area-card .star-box .floor-star-earned {
+    -fx-icon-size: 23;
+    -fx-icon-color: #e9ad2f;
+    -fx-effect: dropshadow(gaussian, rgba(233, 173, 47, 0.30), 4, 0, 0, 1);
+}
+
+.classic-tower .right .classic-area-card .star-box .floor-star-empty {
+    -fx-icon-size: 23;
+    -fx-icon-color: rgba(48, 53, 61, 0.48);
+    -fx-effect: none;
+}
+
+.classic-tower .right .classic-area-card .role-row {
+    -fx-spacing: 5;
+    -fx-alignment: center-right;
+}
+
+.classic-tower .right .classic-area-card .role-item {
+    -fx-min-width: 44;
+    -fx-pref-width: 44;
+    -fx-max-width: 44;
+    -fx-min-height: 44;
+    -fx-pref-height: 44;
+    -fx-max-height: 44;
+    -fx-padding: 2;
+    -fx-background-color: rgba(255, 255, 255, 0.38);
+    -fx-background-radius: 24;
+    -fx-border-color: rgba(255, 255, 255, 0.92);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 24;
+    -fx-effect: dropshadow(gaussian, rgba(30, 42, 66, 0.14), 5, 0, 0, 1);
+}
+
+.classic-tower .right .classic-area-card .chain-unlock-num {
+    -fx-pref-width: 15;
+    -fx-pref-height: 15;
+    -fx-font-size: 9;
+}
+
+.classic-tower .right .classic-area-card .floor-empty-text {
+    -fx-font-size: 10;
+}
