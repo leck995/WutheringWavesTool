@@ -8,6 +8,7 @@ import cn.tealc.wutheringwavestool.thread.SignTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
 import com.kuro.kujiequ.KujiequManager;
+import com.kuro.kujiequ.api.KujiequSignApi;
 import com.kuro.kujiequ.model.sign.SignGood;
 import com.kuro.kujiequ.model.sign.SignRecord;
 import com.kuro.kujiequ.model.sign.UserInfo;
@@ -114,9 +115,9 @@ public class SignViewModel extends BaseViewModel {
         if (userInfo != null){
             Thread.startVirtualThread(() -> {
                 try {
-                    ResponseBody<KujiequManager.SignGoodsResult> value = kujiequManager.getSignGoods(userInfo);
+                    ResponseBody<KujiequSignApi.SignGoodsResult> value = kujiequManager.getSignGoods(userInfo);
                     if (value.getCode() == 200 && value.getData() != null){
-                        KujiequManager.SignGoodsResult data = value.getData();
+                        KujiequSignApi.SignGoodsResult data = value.getData();
                         Platform.runLater(() -> {
                             goodsList.setAll(data.getSignGoods());
                             isSign.set(data.getIsSign());

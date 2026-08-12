@@ -9,6 +9,7 @@ import com.google.inject.Inject;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
 import com.kuro.kujiequ.KujiequManager;
+import com.kuro.kujiequ.api.KujiequSignApi;
 import com.kuro.kujiequ.model.resourcebriefing.Briefing;
 import com.kuro.kujiequ.model.resourcebriefing.Item;
 import com.kuro.kujiequ.model.resourcebriefing.Record;
@@ -43,7 +44,7 @@ public class ResourceBriefingViewModel extends BaseViewModel {
     private ObservableList<Title>  recordTypeList = FXCollections.observableArrayList();
     private Briefing briefing;
     private UserInfo userInfo;
-    private KujiequManager.BriefingType currentType = KujiequManager.BriefingType.MONTH;
+    private KujiequSignApi.BriefingType currentType = KujiequSignApi.BriefingType.MONTH;
     public void init() {
         userInfo = userInfoDao.getMain();
         if (userInfo != null){
@@ -55,20 +56,20 @@ public class ResourceBriefingViewModel extends BaseViewModel {
 
     public void toMonth(){
         recordTypeList.setAll(briefing.getMonths());
-        currentType = KujiequManager.BriefingType.MONTH;
+        currentType = KujiequSignApi.BriefingType.MONTH;
         publish(EVENT_SELECT_BOX);
 
     }
 
     public void toWeek(){
         recordTypeList.setAll(briefing.getWeeks());
-        currentType = KujiequManager.BriefingType.WEEK;
+        currentType = KujiequSignApi.BriefingType.WEEK;
         publish(EVENT_SELECT_BOX);
     }
 
     public void toVersion(){
         recordTypeList.setAll(briefing.getVersions());
-        currentType = KujiequManager.BriefingType.VERSION;
+        currentType = KujiequSignApi.BriefingType.VERSION;
         publish(EVENT_SELECT_BOX);
     }
 

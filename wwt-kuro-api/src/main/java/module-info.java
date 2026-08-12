@@ -6,6 +6,7 @@ open module cn.tealc.wwt.kuro.api {
 
     exports com.kuro.model;
     exports com.kuro.kujiequ;
+    exports com.kuro.kujiequ.api;
     exports com.kuro.kujiequ.model.sign;
     exports com.kuro.kujiequ.model.roleData;
     exports com.kuro.kujiequ.model.roleData.user;
