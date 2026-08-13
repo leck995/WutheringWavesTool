@@ -65,6 +65,13 @@ public class TowerViewModel extends BaseViewModel {
         }
     }
 
+    public void refresh() {
+        userInfo = userInfoDao.getMain();
+        if (userInfo != null) {
+            initData();
+        }
+    }
+
     private void initData(){
         Thread.startVirtualThread(() -> {
             ResponseBody<List<Role>> roleResp;
@@ -188,7 +195,13 @@ public class TowerViewModel extends BaseViewModel {
 
         List<TowerArea> areaList = new ArrayList<>(towerAreaMap.values().stream().toList());
         areaList.sort(Comparator.comparing(TowerArea::getAreaId));
-        areaList.forEach(towerArea -> towerArea.getFloorList().sort(Comparator.comparing(Floor::getFloor)));
+        areaList.forEach(towerArea -> {
+            towerArea.getFloorList().sort(Comparator.comparing(Floor::getFloor));
+            int star = towerArea.getFloorList().stream().mapToInt(Floor::getStar).sum();
+            int maxStar = towerArea.getFloorList().size() * 3;
+            towerArea.setStar(star);
+            towerArea.setMaxStar(maxStar);
+        });
         this.towerAreaList.setAll(areaList);
 
     }

@@ -58,6 +58,8 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
     private HBox summaryBox;
     @FXML
     private ProgressBar starProgressBar;
+    @FXML
+    private HBox endTimeBox;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -78,6 +80,8 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
                 boolean show = newValue.getDifficulty() == 3;
                 seasonEndTimeLabel.setVisible(show);
                 seasonEndTimeLabel.setManaged(show);
+                endTimeBox.setVisible(show);
+                endTimeBox.setManaged(show);
                 historySection.setVisible(show);
                 historySection.setManaged(show);
                 towerHistoryListview.getSelectionModel().clearSelection();
@@ -102,6 +106,8 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
             if (newValue != null) {
                 viewModel.changeHistory(newValue.getKey());
                 difficuityListview.getSelectionModel().clearSelection();
+                endTimeBox.setVisible(false);
+                endTimeBox.setManaged(false);
             }
         });
         Label historyPlaceholder = new Label("尚无往期记录");
@@ -113,6 +119,8 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
         historySection.setManaged(false);
         seasonEndTimeLabel.setVisible(false);
         seasonEndTimeLabel.setManaged(false);
+        endTimeBox.setVisible(false);
+        endTimeBox.setManaged(false);
     }
 
     private void updateSummary(List<? extends TowerArea> areas) {
@@ -222,7 +230,8 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
             setMaxWidth(Double.MAX_VALUE);
             setMaxHeight(Double.MAX_VALUE);
             setSpacing(6);
-            getStyleClass().addAll("area", "classic-area-card");
+            int areaId = towerArea.getAreaId();
+            getStyleClass().addAll("area", "classic-area-card", teamStyle(areaId));
 
             // --- 标题区：塔名称在上，星数在下 ---
             VBox header = new VBox(3);
@@ -326,6 +335,15 @@ public class TowerView implements FxmlView<TowerViewModel>, Initializable {
                 roleItem.getChildren().add(num);
             }
             return roleItem;
+        }
+
+        private String teamStyle(int id) {
+            return switch ((id - 1) % 4) {
+                case 1 -> "team-violet";
+                case 2 -> "team-green";
+                case 3 -> "team-orange";
+                default -> "team-blue";
+            };
         }
     }
 }

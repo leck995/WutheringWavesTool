@@ -61,6 +61,11 @@ public class NewTowerViewModel extends BaseViewModel {
         initHistory();
     }
 
+    public void refresh() {
+        userInfo = userInfoDao.getMain();
+        loadData();
+    }
+
     public void loadData() {
         if (userInfo != null) {
             Thread.startVirtualThread(() -> {

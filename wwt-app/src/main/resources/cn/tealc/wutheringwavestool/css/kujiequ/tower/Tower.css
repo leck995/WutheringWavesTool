@@ -729,20 +729,20 @@
 }
 
 .new-tower .chain-unlock-num {
-    -fx-min-width: 19;
-    -fx-pref-width: 19;
-    -fx-min-height: 19;
-    -fx-pref-height: 19;
+    -fx-min-width: 15;
+    -fx-pref-width: 15;
+    -fx-min-height: 15;
+    -fx-pref-height: 15;
     -fx-padding: 0;
     -fx-alignment: center;
     -fx-background-color: -color-bg-default;
     -fx-background-radius: 12;
     -fx-border-color: rgba(120, 133, 154, 0.22);
     -fx-border-radius: 12;
-    -fx-font-size: 10;
+    -fx-font-size: 9;
     -fx-font-weight: bold;
-    -fx-translate-x: 2;
-    -fx-translate-y: -2;
+    -fx-translate-x: 3;
+    -fx-translate-y: -3;
     -fx-effect: dropshadow(gaussian, rgba(24, 37, 57, 0.18), 4, 0, 0, 1);
 }
 
@@ -762,6 +762,20 @@
 
 .new-tower .buff-frame.empty .ikonli-font-icon {
     -fx-icon-color: -team-accent;
+}
+
+/* ========== NewTowerView 缩小版卡片 ========== */
+
+.new-tower .new-tower-card {
+    -fx-padding: 9 14 11 14;
+}
+
+.new-tower .new-tower-card .team-card-header {
+    -fx-min-height: 36;
+}
+
+.new-tower .new-tower-card .team-card-body {
+    -fx-min-height: 54;
 }
 
 .new-tower .tower-footnote {
@@ -1028,6 +1042,67 @@
     -fx-effect: none;
 }
 
+/* TowerView AreaCell 匹配 SlashView 渐变背景 */
+.new-tower.classic-tower .right .area {
+    -fx-background-color:
+        linear-gradient(to right, rgba(92, 156, 245, 0.13), transparent 48%),
+        -color-bg-default-50;
+    -fx-border-color: rgba(92, 156, 245, 0.18) rgba(92, 156, 245, 0.18) rgba(92, 156, 245, 0.18) rgba(92, 156, 245, 0.18);
+    -fx-border-width: 3 1 1 1;
+    -fx-effect: dropshadow(gaussian, rgba(34, 52, 82, 0.08), 16, 0, 0, 6);
+    -fx-padding: 9 14 11 14;
+}
+
+.new-tower.classic-tower .right .area.team-blue {
+    -team-accent: -tower-blue;
+    -fx-background-color:
+        linear-gradient(to right, rgba(92, 156, 245, 0.13), transparent 48%),
+        -color-bg-default-50;
+    -fx-border-color: -tower-blue rgba(92, 156, 245, 0.18) rgba(92, 156, 245, 0.18) rgba(92, 156, 245, 0.18);
+}
+
+.new-tower.classic-tower .right .area.team-violet {
+    -team-accent: -tower-violet;
+    -fx-background-color:
+        linear-gradient(to right, rgba(168, 117, 239, 0.13), transparent 48%),
+        -color-bg-default-50;
+    -fx-border-color: -tower-violet rgba(168, 117, 239, 0.18) rgba(168, 117, 239, 0.18) rgba(168, 117, 239, 0.18);
+}
+
+.new-tower.classic-tower .right .area.team-green {
+    -team-accent: -tower-green;
+    -fx-background-color:
+        linear-gradient(to right, rgba(91, 197, 141, 0.13), transparent 48%),
+        -color-bg-default-50;
+    -fx-border-color: -tower-green rgba(91, 197, 141, 0.18) rgba(91, 197, 141, 0.18) rgba(91, 197, 141, 0.18);
+}
+
+.new-tower.classic-tower .right .area.team-orange {
+    -team-accent: -tower-orange;
+    -fx-background-color:
+        linear-gradient(to right, rgba(245, 154, 92, 0.13), transparent 48%),
+        -color-bg-default-50;
+    -fx-border-color: -tower-orange rgba(245, 154, 92, 0.18) rgba(245, 154, 92, 0.18) rgba(245, 154, 92, 0.18);
+}
+
+/* TowerView summary-bar 匹配 SlashView 渐变背景 */
+.new-tower.classic-tower .summary-bar {
+    -fx-background-color:
+        linear-gradient(to right, rgba(92, 156, 245, 0.12), transparent 30%),
+        -color-bg-default-50;
+    -fx-border-color: rgba(132, 152, 190, 0.16);
+    -fx-effect: dropshadow(gaussian, rgba(45, 64, 105, 0.08), 18, 0, 0, 7);
+}
+
+.new-tower.classic-tower .summary-bar .end-time {
+    -fx-font-size: 13;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-accent-fg;
+    -fx-padding: 6 14;
+    -fx-background-color: -color-accent-muted;
+    -fx-background-radius: 20;
+}
+
 .classic-tower .right .classic-area-card {
     -fx-min-height: 410;
     -fx-pref-height: 410;
@@ -1196,6 +1271,35 @@
     -fx-font-size: 15;
     -fx-font-weight: bold;
     -fx-text-fill: #ff6666;
+}
+
+.new-tower.classic-tower .summary-bar .summary-rank {
+    -fx-font-size: 18;
+    -fx-font-weight: bold;
+    -fx-padding: 2 8 2 8;
+    -fx-background-radius: 4;
+    -fx-text-fill: #ffec16;
+    -fx-background-color: #ffec1620;
+}
+
+.new-tower.classic-tower .summary-bar .summary-rank.s {
+    -fx-text-fill: #ffec16;
+    -fx-background-color: #ffec1620;
+}
+
+.new-tower.classic-tower .summary-bar .summary-rank.a {
+    -fx-text-fill: #ff6b9d;
+    -fx-background-color: #ff6b9d20;
+}
+
+.new-tower.classic-tower .summary-bar .summary-rank.b {
+    -fx-text-fill: #3d8fd9;
+    -fx-background-color: #56b8ff30;
+}
+
+.new-tower.classic-tower .summary-bar .summary-rank.c {
+    -fx-text-fill: -color-font-muted;
+    -fx-background-color: -color-bg-default-40;
 }
 
 .new-tower .slash-card {

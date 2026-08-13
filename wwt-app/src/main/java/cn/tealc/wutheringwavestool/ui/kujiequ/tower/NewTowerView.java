@@ -15,7 +15,6 @@ import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
-import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
@@ -23,7 +22,6 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
@@ -32,6 +30,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.shape.Circle;
 import javafx.util.Pair;
 import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2AL;
 import org.kordamp.ikonli.material2.Material2MZ;
 
 import java.net.URL;
@@ -51,6 +50,8 @@ public class NewTowerView implements FxmlView<NewTowerViewModel>, Initializable 
     @FXML
     private Label seasonEndTimeLabel;
     @FXML
+    private HBox endTimeBox;
+    @FXML
     private Label title;
     @FXML
     private ListView<Pair<Long, Pair<String, String>>> towerHistoryListview;
@@ -61,23 +62,15 @@ public class NewTowerView implements FxmlView<NewTowerViewModel>, Initializable 
     @FXML
     private Label rankLabel;
     @FXML
-    private StackPane rankEmblem;
-    @FXML
-    private StackPane lockPane;
-    @FXML
-    private VBox contentPane;
-    @FXML
     private ScrollPane contentScroll;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        lockPane.setVisible(false);
-        lockPane.setManaged(false);
-        contentPane.setVisible(true);
-
         title.textProperty().bind(viewModel.titleProperty());
         seasonEndTimeLabel.textProperty().bind(viewModel.endTimeProperty());
         seasonEndTimeLabel.managedProperty().bind(seasonEndTimeLabel.textProperty().isNotEmpty());
+        endTimeBox.visibleProperty().bind(seasonEndTimeLabel.textProperty().isNotEmpty());
+        endTimeBox.managedProperty().bind(seasonEndTimeLabel.textProperty().isNotEmpty());
         totalScoreLabel.textProperty().bind(viewModel.totalScoreProperty());
         progressLabel.textProperty().bind(viewModel.progressInfoProperty());
         rankLabel.textProperty().bind(viewModel.rankTextProperty());
@@ -117,12 +110,9 @@ public class NewTowerView implements FxmlView<NewTowerViewModel>, Initializable 
     }
 
     private void updateRankStyle(String rank) {
-        rankEmblem.getStyleClass().removeAll("s", "a", "b", "c");
         rankLabel.getStyleClass().removeAll("s", "a", "b", "c");
         if (rank != null && !rank.isBlank()) {
-            String style = rank.toLowerCase();
-            rankEmblem.getStyleClass().add(style);
-            rankLabel.getStyleClass().add(style);
+            rankLabel.getStyleClass().add(rank.toLowerCase());
         }
     }
 
@@ -146,56 +136,69 @@ public class NewTowerView implements FxmlView<NewTowerViewModel>, Initializable 
     }
 
     static class DifficultyCell extends ListCell<NewTowerModeDetail> {
-        private final HBox content = new HBox(10);
+        private final HBox content = new HBox(8);
         private final Label name = new Label();
-        private final Label state = new Label();
 
         DifficultyCell() {
             content.setAlignment(Pos.CENTER_LEFT);
-            content.getStyleClass().add("tower-nav-cell");
             name.getStyleClass().add("tower-name");
             HBox.setHgrow(name, Priority.ALWAYS);
 
-            FontIcon star = new FontIcon(Material2MZ.STAR_OUTLINE);
-            state.setGraphic(star);
-            state.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
-            state.getStyleClass().add("tower-star");
-            content.getChildren().addAll(name, new Spacer(), state);
+            FontIcon areaIcon = new FontIcon(Material2AL.ADJUST);
+            areaIcon.getStyleClass().add("tower-area-icon");
+
+            content.getChildren().addAll(areaIcon, name, new Spacer());
+            content.getStyleClass().add("tower-cell");
         }
 
         @Override
         protected void updateItem(NewTowerModeDetail difficulty, boolean empty) {
             super.updateItem(difficulty, empty);
             if (empty || difficulty == null) {
+                setDisable(true);
+                setVisible(false);
                 setGraphic(null);
                 return;
             }
+            setDisable(false);
+            setVisible(true);
             name.setText(difficulty.getModeId() == 0 ? "稳态协议" : "奇点扩张");
             setGraphic(content);
         }
     }
 
     static class HistoryCell extends ListCell<Pair<Long, Pair<String, String>>> {
-        private final VBox content = new VBox(2);
-        private final Label date = new Label();
-        private final Label description = new Label("终焉矩阵记录");
+        private final HBox child = new HBox(8);
+        private final VBox dateBox = new VBox(1);
+        private final Label startDate = new Label();
+        private final Label endDate = new Label();
+        private final Label marker = new Label();
 
         HistoryCell() {
-            content.getStyleClass().add("history-cell-content");
-            date.getStyleClass().add("history-date");
-            description.getStyleClass().add("history-description");
-            content.getChildren().addAll(date, description);
+            child.setAlignment(Pos.CENTER_LEFT);
+            marker.getStyleClass().add("history-marker");
+            startDate.getStyleClass().add("history-start-date");
+            endDate.getStyleClass().add("history-end-date");
+            dateBox.getChildren().addAll(startDate, endDate);
+            HBox.setHgrow(dateBox, Priority.ALWAYS);
+            child.getChildren().addAll(marker, dateBox);
+            child.setMaxWidth(Double.MAX_VALUE);
+            child.getStyleClass().addAll("tower-cell", "classic-history-cell");
+            setMaxWidth(Double.MAX_VALUE);
         }
 
         @Override
         protected void updateItem(Pair<Long, Pair<String, String>> history, boolean empty) {
             super.updateItem(history, empty);
             if (empty || history == null) {
+                setDisable(true);
                 setGraphic(null);
                 return;
             }
-            date.setText(history.getValue().getKey());
-            setGraphic(content);
+            setDisable(false);
+            startDate.setText(history.getValue().getKey());
+            endDate.setText(history.getValue().getValue());
+            setGraphic(child);
         }
     }
 
@@ -206,8 +209,7 @@ public class NewTowerView implements FxmlView<NewTowerViewModel>, Initializable 
             this.towerTeam = towerTeam;
             setMinWidth(0);
             setMaxWidth(Double.MAX_VALUE);
-            setPrefHeight(174);
-            getStyleClass().addAll("matrix-team-card", teamStyle(index));
+            getStyleClass().addAll("matrix-team-card", "new-tower-card", teamStyle(index));
 
             getChildren().addAll(createHeader(index), createDivider(), createTeamDetails());
         }
@@ -228,7 +230,7 @@ public class NewTowerView implements FxmlView<NewTowerViewModel>, Initializable 
             titleBox.getChildren().addAll(eyebrow, teamName);
 
             HBox scoreBox = new HBox(7);
-            scoreBox.setAlignment(Pos.BASELINE_RIGHT);
+            scoreBox.setAlignment(Pos.CENTER_RIGHT);
             scoreBox.getStyleClass().add("team-score-box");
             Label scoreCaption = new Label("积分");
             scoreCaption.getStyleClass().add("team-score-caption");
@@ -288,18 +290,18 @@ public class NewTowerView implements FxmlView<NewTowerViewModel>, Initializable 
 
         private StackPane createRoleAvatar(NewTowerRole role) {
             StackPane frame = new StackPane();
-            frame.setMinSize(58, 58);
-            frame.setPrefSize(58, 58);
-            frame.setMaxSize(58, 58);
+            frame.setMinSize(48, 48);
+            frame.setPrefSize(48, 48);
+            frame.setMaxSize(48, 48);
             frame.getStyleClass().add("role-avatar-frame");
 
             ImageView avatar = new ImageView();
-            Image image = LocalResourcesManager.header(role.getRoleId(), 54, 54);
+            Image image = LocalResourcesManager.header(role.getRoleId(), 44, 44);
             avatar.setImage(image);
-            avatar.setFitWidth(54);
-            avatar.setFitHeight(54);
+            avatar.setFitWidth(44);
+            avatar.setFitHeight(44);
             avatar.setPreserveRatio(false);
-            avatar.setClip(new Circle(27, 27, 27));
+            avatar.setClip(new Circle(22, 22, 22));
             frame.getChildren().add(avatar);
 
             Role roleDetail = viewModel.getRoleMap().get(role.getRoleId());
@@ -314,9 +316,9 @@ public class NewTowerView implements FxmlView<NewTowerViewModel>, Initializable 
 
         private StackPane createBuffView() {
             StackPane frame = new StackPane();
-            frame.setMinSize(58, 58);
-            frame.setPrefSize(58, 58);
-            frame.setMaxSize(58, 58);
+            frame.setMinSize(48, 48);
+            frame.setPrefSize(48, 48);
+            frame.setMaxSize(48, 48);
             frame.getStyleClass().add("buff-frame");
 
             List<NewTowerBuff> buffs = towerTeam.getBuffs();
@@ -328,9 +330,9 @@ public class NewTowerView implements FxmlView<NewTowerViewModel>, Initializable 
             }
 
             NewTowerBuff buff = buffs.getFirst();
-            ImageView buffIcon = new ImageView(LocalResourcesManager.imageBuffer(buff.getBuffIcon(), 42, 42, true, true));
-            buffIcon.setFitWidth(42);
-            buffIcon.setFitHeight(42);
+            ImageView buffIcon = new ImageView(LocalResourcesManager.imageBuffer(buff.getBuffIcon(), 34, 34, true, true));
+            buffIcon.setFitWidth(34);
+            buffIcon.setFitHeight(34);
             buffIcon.setPreserveRatio(true);
             frame.getChildren().add(buffIcon);
 

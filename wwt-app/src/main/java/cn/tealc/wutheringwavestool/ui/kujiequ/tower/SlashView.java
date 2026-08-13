@@ -47,11 +47,16 @@ public class SlashView implements FxmlView<SlashViewModel> {
     private HBox infoPane;
 
     @FXML
+    private HBox endTimeBox;
+
+    @FXML
     private ListView<Pair<Long, Pair<String, String>>> towerHistoryListview;
 
     public void initialize() {
         title.textProperty().bind(viewModel.titleProperty());
         infoPane.visibleProperty().bind(viewModel.endTimeVisibleProperty());
+        endTimeBox.visibleProperty().bind(viewModel.endTimeVisibleProperty());
+        endTimeBox.managedProperty().bind(viewModel.endTimeVisibleProperty());
         seasonEndTimeLabel.textProperty().bind(viewModel.endTimeProperty());
         scoreLabel01.textProperty().bind(viewModel.score01Property());
         scoreLabel02.textProperty().bind(viewModel.score02Property());
@@ -216,7 +221,7 @@ public class SlashView implements FxmlView<SlashViewModel> {
             titleBox.getChildren().addAll(eyebrow, title);
 
             HBox scoreBox = new HBox(7);
-            scoreBox.setAlignment(Pos.BASELINE_RIGHT);
+            scoreBox.setAlignment(Pos.CENTER_RIGHT);
 
             if (challenge.getRank() != null) {
                 Label rank = new Label(challenge.getRank());

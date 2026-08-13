@@ -132,6 +132,10 @@ public class SlashViewModel extends BaseViewModel {
 
     }
 
+    public void refresh() {
+        initialize();
+    }
+
 
     /**
      * 根据截止日期显示历史战绩

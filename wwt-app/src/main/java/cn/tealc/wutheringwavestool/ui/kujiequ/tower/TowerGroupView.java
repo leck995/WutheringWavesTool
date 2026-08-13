@@ -8,6 +8,7 @@ import de.saxsys.mvvmfx.FluentViewLoader;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
 import de.saxsys.mvvmfx.ViewTuple;
+import javafx.animation.RotateTransition;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -19,6 +20,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
+import javafx.scene.transform.Rotate;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2MZ;
@@ -28,6 +30,12 @@ public class TowerGroupView implements FxmlView<TowerGroupViewModel> {
     private TowerGroupViewModel viewModel;
     @FXML
     private ToggleGroup childSelectedToggle;
+    @FXML
+    private ToggleButton towerToggle;
+    @FXML
+    private ToggleButton slashToggle;
+    @FXML
+    private ToggleButton newTowerToggle;
     @FXML
     private StackPane content;
     @FXML
@@ -39,6 +47,12 @@ public class TowerGroupView implements FxmlView<TowerGroupViewModel> {
     private Node slashView;
     private Node newTowerView;
 
+    private TowerViewModel towerViewModel;
+    private SlashViewModel slashViewModel;
+    private NewTowerViewModel newTowerViewModel;
+
+    private boolean refreshing = false;
+
     public void initialize() {
         createTowerView();
         viewModel.subscribe("EMPTY",(s, objects) -> {
@@ -47,14 +61,33 @@ public class TowerGroupView implements FxmlView<TowerGroupViewModel> {
         });
         viewModel.init();
 
+        // 刷新按钮
+        Button refreshBtn = new Button(null, new FontIcon(Material2MZ.REFRESH));
+        refreshBtn.getStyleClass().addAll("button-icon", "flat");
+        refreshBtn.setTooltip(new Tooltip("刷新数据"));
+        refreshBtn.setOnAction(e -> {
+            if (refreshing) return;
+            refreshing = true;
+            refreshBtn.setDisable(true);
+            RotateTransition rt = new RotateTransition(Duration.millis(600), refreshBtn.getGraphic());
+            rt.setByAngle(360);
+            rt.setAxis(Rotate.Z_AXIS);
+            rt.setOnFinished(ev -> {
+                refreshBtn.setDisable(false);
+                refreshing = false;
+            });
+            rt.play();
+            refreshCurrentTab();
+        });
         // 手机视图浏览按钮（右上角）
         Button phoneBtn = new Button(null, new FontIcon(Material2MZ.SMARTPHONE));
-        phoneBtn.getStyleClass().addAll("button-icon", "flat", "accent");
+        phoneBtn.getStyleClass().addAll("button-icon", "flat");
         phoneBtn.setTooltip(new Tooltip("手机视图浏览"));
         phoneBtn.setOnAction(e -> viewModel.openRoleBoxInWebView());
+        HBox actionBox = new HBox(10, refreshBtn, phoneBtn);
         Pane spacer = new Pane();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        headerPane.getChildren().addAll(spacer, phoneBtn);
+        headerPane.getChildren().addAll(spacer, actionBox);
     }
 
 
@@ -66,6 +99,7 @@ public class TowerGroupView implements FxmlView<TowerGroupViewModel> {
             if (slashView == null) {
                 ViewTuple<SlashView, SlashViewModel> viewTuple = FluentViewLoader.fxmlView(SlashView.class).load();
                 slashView = viewTuple.getView();
+                slashViewModel = viewTuple.getViewModel();
             }
             content.getChildren().setAll(slashView);
             Animations.slideInUp(slashView, Duration.millis(300)).play();
@@ -81,6 +115,7 @@ public class TowerGroupView implements FxmlView<TowerGroupViewModel> {
             if (newTowerView == null) {
                 ViewTuple<NewTowerView, NewTowerViewModel> viewTuple = FluentViewLoader.fxmlView(NewTowerView.class).load();
                 newTowerView = viewTuple.getView();
+                newTowerViewModel = viewTuple.getViewModel();
             }
             content.getChildren().setAll(newTowerView);
             Animations.slideInUp(newTowerView, Duration.millis(300)).play();
@@ -104,8 +139,19 @@ public class TowerGroupView implements FxmlView<TowerGroupViewModel> {
         if (towerView == null) {
             ViewTuple<TowerView, TowerViewModel> viewTuple = FluentViewLoader.fxmlView(TowerView.class).load();
             towerView = viewTuple.getView();
+            towerViewModel = viewTuple.getViewModel();
         }
         content.getChildren().setAll(towerView);
         Animations.slideInUp(towerView, Duration.millis(300)).play();
+    }
+
+    private void refreshCurrentTab() {
+        if (towerToggle.isSelected() && towerViewModel != null) {
+            towerViewModel.refresh();
+        } else if (slashToggle.isSelected() && slashViewModel != null) {
+            slashViewModel.refresh();
+        } else if (newTowerToggle.isSelected() && newTowerViewModel != null) {
+            newTowerViewModel.refresh();
+        }
     }
 }

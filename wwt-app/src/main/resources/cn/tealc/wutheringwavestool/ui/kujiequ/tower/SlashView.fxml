@@ -81,7 +81,7 @@
                                             </children>
                                         </HBox>
                                         <Spacer />
-                                        <HBox alignment="CENTER_LEFT" spacing="6.0" styleClass="end-time-box">
+                                        <HBox fx:id="endTimeBox" alignment="CENTER_LEFT" spacing="6.0" styleClass="end-time-box">
                                             <children>
                                                 <FontIcon iconLiteral="mdmz-timer" iconSize="16" />
                                                 <Label fx:id="seasonEndTimeLabel" styleClass="end-time" text="刷新" />

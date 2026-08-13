@@ -21,7 +21,7 @@
                   <Separator orientation="VERTICAL" />
                   <HBox>
                      <children>
-                        <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toTower" selected="true" styleClass="child-select" text="%ui.tower.title.nav.title01">
+                        <ToggleButton fx:id="towerToggle" contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toTower" selected="true" styleClass="child-select" text="%ui.tower.title.nav.title01">
                            <graphic>
                               <Pane prefHeight="200.0" prefWidth="200.0" />
                            </graphic>
@@ -29,12 +29,12 @@
                               <ToggleGroup fx:id="childSelectedToggle" />
                            </toggleGroup>
                         </ToggleButton>
-                        <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toSlash" styleClass="child-select" text="%ui.tower.title.nav.title02" toggleGroup="$childSelectedToggle">
+                        <ToggleButton fx:id="slashToggle" contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toSlash" styleClass="child-select" text="%ui.tower.title.nav.title02" toggleGroup="$childSelectedToggle">
                            <graphic>
                               <Pane prefHeight="200.0" prefWidth="200.0" />
                            </graphic>
                         </ToggleButton>
-                        <ToggleButton contentDisplay="BOTTOM" layoutX="198.0" layoutY="10.0" mnemonicParsing="false" onAction="#toNewTower" styleClass="child-select" text="%ui.tower.title.nav.title03" toggleGroup="$childSelectedToggle">
+                        <ToggleButton fx:id="newTowerToggle" contentDisplay="BOTTOM" layoutX="198.0" layoutY="10.0" mnemonicParsing="false" onAction="#toNewTower" styleClass="child-select" text="%ui.tower.title.nav.title03" toggleGroup="$childSelectedToggle">
                            <graphic>
                               <Pane prefHeight="200.0" prefWidth="200.0" />
                            </graphic>
