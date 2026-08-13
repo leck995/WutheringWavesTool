@@ -670,7 +670,6 @@
 }
 
 .new-tower .matrix-team-card:hover {
-    -fx-translate-y: -1;
     -fx-effect: dropshadow(gaussian, rgba(34, 52, 82, 0.15), 20, 0, 0, 8);
 }
 
@@ -716,7 +715,7 @@
 }
 
 .new-tower .team-stage .pass-info {
-    -fx-font-size: 20;
+    -fx-font-size: 18;
     -fx-font-weight: bold;
 }
 
@@ -822,6 +821,10 @@
     -fx-text-fill: -color-fg-default;
 }
 
+.classic-tower .sidebar-section-icon {
+    -fx-icon-color: -color-font-muted;
+}
+
 .classic-tower .classic-sidebar-card > .separator {
     -fx-padding: 3 4 5 4;
 }
@@ -858,7 +861,6 @@
 }
 
 .classic-tower .difficulty-list-view .list-cell:selected .tower-name {
-    -fx-font-weight: bold;
     -fx-text-fill: -color-accent-fg;
 }
 
@@ -1142,4 +1144,105 @@
 
 .classic-tower .right .classic-area-card .floor-empty-text {
     -fx-font-size: 10;
+}
+
+/* ========== SlashView / 全息战略 ==========
+   卡片直接复用 .new-tower .matrix-team-card 的渐变背景 + 配色左边框，
+   无需额外覆盖规则。role-avatar-frame / buff-frame / chain-unlock-num
+   / team-index / team-title / team-score 等均复用 NewTower 既有规则。 */
+
+.new-tower.classic-tower .summary-bar {
+    -fx-min-height: 56;
+    -fx-padding: 10 14 10 20;
+    -fx-background-color:
+        linear-gradient(to right, rgba(92, 156, 245, 0.12), transparent 30%),
+        -color-bg-default-50;
+    -fx-background-radius: 8;
+    -fx-border-color: rgba(132, 152, 190, 0.16);
+    -fx-border-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(45, 64, 105, 0.08), 18, 0, 0, 7);
+}
+
+.new-tower.classic-tower .summary-bar .classic-page-title {
+    -fx-font-size: 22;
+    -fx-text-fill: -color-fg-default;
+}
+
+.new-tower.classic-tower .summary-bar .end-time-box {
+    -fx-padding: 6 14;
+    -fx-background-color: -color-accent-muted;
+    -fx-background-radius: 20;
+}
+
+.new-tower.classic-tower .summary-bar .end-time-box .end-time {
+    -fx-font-size: 13;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-accent-fg;
+    -fx-padding: 0;
+    -fx-background-color: transparent;
+}
+
+.new-tower.classic-tower .summary-bar .end-time-box .ikonli-font-icon {
+    -fx-icon-color: -color-accent-fg;
+}
+
+.new-tower.classic-tower .summary-bar .slash-score-label {
+    -fx-font-size: 13;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-font-muted;
+}
+
+.new-tower.classic-tower .summary-bar .slash-score-value {
+    -fx-font-size: 15;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ff6666;
+}
+
+.new-tower .slash-card {
+    -fx-padding: 9 14 11 14;
+}
+
+.new-tower .slash-card .team-card-header {
+    -fx-min-height: 36;
+}
+
+.new-tower .slash-card .team-card-body {
+    -fx-min-height: 54;
+}
+
+.new-tower .slash-card .summary-rank {
+    -fx-font-size: 16;
+    -fx-font-weight: bold;
+    -fx-padding: 1 6 1 6;
+    -fx-background-radius: 3;
+}
+
+.new-tower .slash-card .summary-rank.sss {
+    -fx-text-fill: #ff6666;
+    -fx-background-color: #ff666620;
+}
+
+.new-tower .slash-card .summary-rank.ss {
+    -fx-text-fill: #ff6666;
+    -fx-background-color: #ff666620;
+}
+
+.new-tower .slash-card .summary-rank.s {
+    -fx-text-fill: #ffec16;
+    -fx-background-color: #ffec1620;
+}
+
+.new-tower .slash-card .summary-rank.a {
+    -fx-text-fill: #ff6b9d;
+    -fx-background-color: #ff6b9d20;
+}
+
+.new-tower .slash-card .summary-rank.b {
+    -fx-text-fill: #56b8ff;
+    -fx-background-color: #56b8ff20;
+}
+
+.new-tower .slash-card .summary-rank.c {
+    -fx-text-fill: -color-font-muted;
+    -fx-background-color: -color-bg-default-40;
 }
