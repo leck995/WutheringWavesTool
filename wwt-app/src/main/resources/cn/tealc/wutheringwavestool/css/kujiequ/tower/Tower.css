@@ -236,8 +236,10 @@
 
 .tower .right .area .floor-title{
     -fx-font-size: 14;
-    -fx-min-width: 56;
-    -fx-text-fill: -color-font-muted;
+    -fx-font-weight: bold;
+    -fx-min-width: 35;
+    -fx-text-fill: -color-font-default;
+
 }
 
 .tower .right .area .floor-score{
@@ -327,12 +329,24 @@
 }
 
 .tower .right .area .role-item {
+    -fx-min-width: 54;
+    -fx-pref-width: 54;
+    -fx-max-width: 54;
+    -fx-min-height: 54;
+    -fx-pref-height: 54;
+    -fx-max-height: 54;
     -fx-padding: 2;
+    -fx-background-color: rgba(255, 255, 255, 0.38);
+    -fx-background-radius: 30;
+    -fx-border-color: rgba(255, 255, 255, 0.92);
+    -fx-border-width: 1.5;
+    -fx-border-radius: 30;
+    -fx-effect: dropshadow(gaussian, rgba(30, 42, 66, 0.14), 5, 0, 0, 1);
 }
 
 .tower .right .area .role-item > .chain-unlock-num {
-    -fx-translate-x: 5;
-    -fx-translate-y: -5;
+    -fx-translate-x: 3;
+    -fx-translate-y: -3;
 }
 
 .tower .right .area .buff-section {

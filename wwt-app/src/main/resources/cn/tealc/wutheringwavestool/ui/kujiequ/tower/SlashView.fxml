@@ -1,59 +1,96 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import atlantafx.base.controls.Spacer?>
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.FlowPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane prefHeight="800.0" prefWidth="1100.0" styleClass="tower" stylesheets="@../../../css/kujiequ/tower/Tower.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.tower.SlashView">
+<StackPane prefHeight="800.0" prefWidth="1100.0" stylesheets="@../../../css/kujiequ/tower/Tower.css"
+           xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.tower.SlashView">
+    <styleClass>
+        <String fx:value="tower" />
+        <String fx:value="classic-tower" />
+    </styleClass>
     <children>
-        <AnchorPane prefHeight="200.0" prefWidth="200.0">
-            <children>
-                <VBox layoutY="60.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="10.0">
+        <BorderPane styleClass="classic-tower-layout">
+            <left>
+                <VBox minWidth="216.0" prefWidth="224.0" maxWidth="224.0" spacing="10.0" styleClass="classic-sidebar-card">
                     <children>
-                        <ListView fx:id="difficuityListview" prefHeight="300.0" prefWidth="150.0" styleClass="difficulty-list-view" />
-                        <VBox VBox.vgrow="ALWAYS">
+                        <Label styleClass="classic-section-title" text="区域选择" />
+                        <ListView fx:id="difficuityListview" minHeight="218.0" prefHeight="232.0"
+                                  styleClass="difficulty-list-view" />
+                        <Separator />
+                        <VBox spacing="7.0" styleClass="history-section" VBox.vgrow="ALWAYS">
                             <children>
-                                <Label styleClass="title-3" text="往期历史" translateX="10.0" />
-                                <ListView fx:id="towerHistoryListview" prefHeight="200.0" prefWidth="210.0" styleClass="difficulty-list-view" VBox.vgrow="ALWAYS" />
+                                <Label styleClass="classic-section-title" text="往期历史" />
+                                <ListView fx:id="towerHistoryListview" minHeight="180.0" prefHeight="340.0"
+                                          styleClass="difficulty-list-view" VBox.vgrow="ALWAYS" />
+                            </children>
+                        </VBox>
+                    </children>
+                    <padding>
+                        <Insets bottom="15.0" left="12.0" right="12.0" top="15.0" />
+                    </padding>
+                </VBox>
+            </left>
+            <center>
+                <VBox spacing="12.0" styleClass="classic-main">
+                    <children>
+                        <VBox spacing="12.0" styleClass="classic-results-panel" VBox.vgrow="ALWAYS">
+                            <children>
+                                <HBox fx:id="summaryBar" alignment="CENTER_LEFT" spacing="12.0" styleClass="summary-bar">
+                                    <children>
+                                        <Label fx:id="title" styleClass="classic-page-title" text="深境之塔" />
+                                        <Separator orientation="VERTICAL" />
+                                        <HBox fx:id="infoPane" alignment="CENTER_LEFT" spacing="20.0">
+                                            <children>
+                                                <HBox alignment="CENTER_LEFT">
+                                                    <children>
+                                                        <Label text="湍渊：" />
+                                                        <Label fx:id="scoreLabel02" text="2000/5000" />
+                                                    </children>
+                                                </HBox>
+                                                <HBox alignment="CENTER_LEFT">
+                                                    <children>
+                                                        <Label text="海隙：" />
+                                                        <Label fx:id="scoreLabel01" text="2000/5000" />
+                                                    </children>
+                                                </HBox>
+                                                <Label fx:id="seasonEndTimeLabel" styleClass="end-time" text="刷新" />
+                                            </children>
+                                        </HBox>
+                                        <Spacer />
+                                    </children>
+                                </HBox>
+                                <ScrollPane fitToHeight="false" fitToWidth="true" hbarPolicy="NEVER" styleClass="right"
+                                            VBox.vgrow="ALWAYS">
+                                    <content>
+                                        <GridPane fx:id="areaGridPane" alignment="TOP_CENTER" hgap="20.0" vgap="20.0">
+                                            <columnConstraints>
+                                                <ColumnConstraints hgrow="ALWAYS" minWidth="0.0" percentWidth="50.0" />
+                                                <ColumnConstraints hgrow="ALWAYS" minWidth="0.0" percentWidth="50.0" />
+                                            </columnConstraints>
+                                        </GridPane>
+                                    </content>
+                                </ScrollPane>
                             </children>
                         </VBox>
                     </children>
                 </VBox>
-            <HBox alignment="CENTER_LEFT" layoutX="220.0" layoutY="10.0" spacing="20.0" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
-               <children>
-                      <Label fx:id="title" styleClass="title-2" text="深境之塔" />
-                  <Spacer />
-                  <HBox fx:id="infoPane" alignment="CENTER" spacing="20.0">
-                     <children>
-                        <HBox alignment="CENTER_LEFT">
-                           <children>
-                              <Label text="湍渊：" />
-                              <Label fx:id="scoreLabel02" text="2000/5000" />
-                           </children>
-                        </HBox>
-                        <HBox alignment="CENTER_LEFT">
-                           <children>
-                              <Label text="海隙：" />
-                              <Label fx:id="scoreLabel01" text="2000/5000" />
-                           </children>
-                        </HBox>
-                            <Label fx:id="seasonEndTimeLabel" styleClass="end-time" text="刷新" />
-                     </children>
-                  </HBox>
-               </children>
-            </HBox>
-                <ScrollPane fitToHeight="true" fitToWidth="true" styleClass="right" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="220.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="60.0">
-                    <content>
-                        <FlowPane fx:id="areaFlowPane" columnHalignment="CENTER" hgap="50.0" vgap="40.0" />
-                    </content>
-                </ScrollPane>
-            </children>
-        </AnchorPane>
+            </center>
+            <padding>
+                <Insets bottom="10.0" left="8.0" right="10.0" top="10.0" />
+            </padding>
+        </BorderPane>
     </children>
 </StackPane>

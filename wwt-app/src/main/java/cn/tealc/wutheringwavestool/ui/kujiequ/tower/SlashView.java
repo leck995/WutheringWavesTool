@@ -26,7 +26,7 @@ import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.util.Pair;
 import org.kordamp.ikonli.javafx.FontIcon;
-import org.kordamp.ikonli.material2.Material2MZ;
+import org.kordamp.ikonli.material2.Material2AL;
 
 
 public class SlashView implements FxmlView<SlashViewModel> {
@@ -35,7 +35,7 @@ public class SlashView implements FxmlView<SlashViewModel> {
     private SlashViewModel viewModel;
 
     @FXML
-    private FlowPane areaFlowPane;
+    private GridPane areaGridPane;
 
     @FXML
     private ListView<SlashDifficulty> difficuityListview;
@@ -76,9 +76,13 @@ public class SlashView implements FxmlView<SlashViewModel> {
         });
 
         viewModel.getChallenges().addListener((ListChangeListener<? super Challenge>) change -> {
-            areaFlowPane.getChildren().clear();
-            for (Challenge challenge : change.getList()) {
-                areaFlowPane.getChildren().add(new AreaCell(challenge));
+            areaGridPane.getChildren().clear();
+            java.util.List<? extends Challenge> challenges = change.getList();
+            for (int i = 0; i < challenges.size(); i++) {
+                AreaCell areaCell = new AreaCell(challenges.get(i));
+                GridPane.setHgrow(areaCell, Priority.ALWAYS);
+                GridPane.setVgrow(areaCell, Priority.NEVER);
+                areaGridPane.add(areaCell, i % 2, i / 2);
             }
         });
 
@@ -96,21 +100,18 @@ public class SlashView implements FxmlView<SlashViewModel> {
     }
 
     static class DifficultyCell extends ListCell<SlashDifficulty> {
-        private final StackPane child;
+        private final HBox child;
         private final Label title = new Label();
-        private final Label star = new Label();
 
         public DifficultyCell() {
             title.getStyleClass().add("tower-name");
-            star.getStyleClass().add("tower-star");
 
-            FontIcon fontIcon = new FontIcon(Material2MZ.STAR_OUTLINE);
-            star.setGraphic(fontIcon);
-            star.setContentDisplay(ContentDisplay.RIGHT);
-            child = new StackPane(title, star);
+            FontIcon areaIcon = new FontIcon(Material2AL.ADJUST);
+            areaIcon.getStyleClass().add("tower-area-icon");
 
-            StackPane.setAlignment(title, Pos.CENTER_LEFT);
-            StackPane.setAlignment(star, Pos.CENTER_RIGHT);
+            child = new HBox(8, areaIcon, title, new Spacer());
+            child.setAlignment(Pos.CENTER_LEFT);
+            HBox.setHgrow(title, Priority.ALWAYS);
             setGraphic(child);
             child.getStyleClass().add("tower-cell");
         }
@@ -122,19 +123,9 @@ public class SlashView implements FxmlView<SlashViewModel> {
                 setDisable(false);
                 setVisible(true);
                 title.setText(difficulty.getDifficultyName());
-/*                int sum = difficulty.getTowerAreaList().stream().mapToInt(TowerArea::getStar).sum();
-                int max = difficulty.getTowerAreaList().stream().mapToInt(TowerArea::getMaxStar).sum();
-                title.setText(difficulty.getDifficultyName());
-                star.setText(String.format("%2d",sum));
-                if (sum == max){
-                    star.getStyleClass().add("full-star");
-                }else {
-                    star.getStyleClass().remove("full-star");
-                }*/
                 setGraphic(child);
             } else {
                 title.setText(null);
-                star.setText(null);
                 setDisable(true);
                 setVisible(false);
                 setGraphic(null);
@@ -143,13 +134,23 @@ public class SlashView implements FxmlView<SlashViewModel> {
     }
 
     static class HistoryCell extends ListCell<Pair<Long, Pair<String, String>>> {
-        private final HBox child = new HBox();
-        private final Label title = new Label();
+        private final HBox child = new HBox(8);
+        private final VBox dateBox = new VBox(1);
+        private final Label startDate = new Label();
+        private final Label endDate = new Label();
+        private final Label marker = new Label();
 
         public HistoryCell() {
-            child.getChildren().add(title);
-            title.getStyleClass().add("tower-name");
-            child.getStyleClass().add("tower-cell");
+            child.setAlignment(Pos.CENTER_LEFT);
+            marker.getStyleClass().add("history-marker");
+            startDate.getStyleClass().add("history-start-date");
+            endDate.getStyleClass().add("history-end-date");
+            dateBox.getChildren().addAll(startDate, endDate);
+            HBox.setHgrow(dateBox, Priority.ALWAYS);
+            child.getChildren().addAll(marker, dateBox);
+            child.setMaxWidth(Double.MAX_VALUE);
+            child.getStyleClass().addAll("tower-cell", "classic-history-cell");
+            setMaxWidth(Double.MAX_VALUE);
         }
 
         @Override
@@ -157,10 +158,12 @@ public class SlashView implements FxmlView<SlashViewModel> {
             super.updateItem(pair, b);
             if (!b) {
                 setDisable(false);
-                title.setText(pair.getValue().getKey() + "--" + pair.getValue().getValue());
+                startDate.setText(pair.getValue().getKey());
+                endDate.setText(pair.getValue().getValue());
                 setGraphic(child);
             } else {
-                title.setText(null);
+                startDate.setText(null);
+                endDate.setText(null);
                 setGraphic(null);
                 setDisable(true);
             }
@@ -180,8 +183,9 @@ public class SlashView implements FxmlView<SlashViewModel> {
 
         public AreaCell(Challenge challenge) {
             this.challenge = challenge;
-            setPrefWidth(400.0);
-            setPrefHeight(160.0);
+            setMinWidth(0);
+            setMaxWidth(Double.MAX_VALUE);
+            setMinHeight(160.0);
             VBox headBar = new VBox();
             HBox titleVBox = new HBox();
 
@@ -237,37 +241,44 @@ public class SlashView implements FxmlView<SlashViewModel> {
             for (int i = 0; i < challenge.getHalfList().size(); i++) {
                 Half half = challenge.getHalfList().get(i);
                 HBox floorHBox = new HBox();
-                Label floorName = new Label();
-                HBox starHBox = new HBox();
+                // 左：第N队 + 分数
+                HBox leftBox = new HBox();
+                // 中：角色头像
                 HBox roleHbox = new HBox();
+                // 右：buff 图标
+                HBox buffBox = new HBox();
 
-                //floorName.
-                floorName.getStyleClass().add("floor-title");
-                starHBox.setSpacing(5.0);
-                starHBox.setAlignment(Pos.CENTER_LEFT);
-                HBox.setHgrow(starHBox, Priority.ALWAYS);
+                leftBox.setSpacing(8.0);
+                leftBox.setAlignment(Pos.CENTER_LEFT);
+                HBox.setHgrow(leftBox, Priority.NEVER);
 
-                roleHbox.setSpacing(10.0);
+                roleHbox.setSpacing(5.0);
                 roleHbox.setAlignment(Pos.CENTER);
-                HBox.setHgrow(roleHbox,Priority.ALWAYS);
+                HBox.setHgrow(roleHbox, Priority.ALWAYS);
 
+                buffBox.setAlignment(Pos.CENTER_RIGHT);
+                HBox.setHgrow(buffBox, Priority.NEVER);
+
+                Label floorName = new Label();
+                floorName.getStyleClass().add("floor-title");
                 Label scoreLabel = new Label();
                 scoreLabel.getStyleClass().add("floor-score");
-                floorHBox.getChildren().addAll(floorName, scoreLabel, roleHbox, starHBox);
-                floorHBox.setSpacing(10.0);
-                //floorHBox.setMinHeight(40.0);
-                floorHBox.setAlignment(Pos.CENTER_LEFT);
-                floorName.setText(String.format("第%d队", i + 1));
+                scoreLabel.setMinWidth(40.0);
+                floorName.setText(String.format("%d队", i + 1));
                 scoreLabel.setText(String.valueOf(half.getScore()));
+                leftBox.getChildren().addAll(floorName, scoreLabel);
+
+                StackPane buffFrame = new StackPane();
+                buffFrame.getStyleClass().addAll("role-item", "buff-frame");
 
                 ImageView buffIcon = new ImageView(LocalResourcesManager.imageBuffer(half.getBuffIcon(), 50, 50, true, true));
                 buffIcon.setFitWidth(50);
                 buffIcon.setFitHeight(50);
-                starHBox.getChildren().add(buffIcon);
-
-                starHBox.setAlignment(Pos.CENTER);
-                starHBox.getStyleClass().add("floor-buff");
-
+                Circle buffCircle = new Circle(25, 25, 25);
+                buffIcon.setClip(buffCircle);
+                buffFrame.getChildren().add(buffIcon);
+                buffBox.getChildren().add(buffFrame);
+                buffBox.getStyleClass().add("floor-buff");
 
                 Label buffDesc = new Label(String.format("%s：%s", half.getBuffName(), half.getBuffDescription()));
                 buffDesc.setWrapText(true);
@@ -276,18 +287,18 @@ public class SlashView implements FxmlView<SlashViewModel> {
                 popover.setTitle(half.getBuffName());
                 popover.setDetachable(false);
                 popover.setArrowLocation(Popover.ArrowLocation.TOP_LEFT);
-                starHBox.setOnMouseClicked(event -> {
-                    popover.show(starHBox);
-                });
-
+                buffFrame.setOnMouseClicked(event -> popover.show(buffFrame));
 
                 if (half.getRoleList() != null && !half.getRoleList().isEmpty()) {
                     for (SimpleRole role : half.getRoleList()) {
                         StackPane roleItem = new StackPane();
+                        roleItem.getStyleClass().add("role-item");
 
                         ImageView roleIv = new ImageView();
                         Image image = LocalResourcesManager.header(role.getRoleId(), 50, 50);
                         roleIv.setImage(image);
+                        roleIv.setFitWidth(50);
+                        roleIv.setFitHeight(50);
                         Circle circle = new Circle(25, 25, 25);
                         roleIv.setClip(circle);
                         roleItem.getChildren().add(roleIv);
@@ -296,14 +307,9 @@ public class SlashView implements FxmlView<SlashViewModel> {
                         if (roleDetail != null) {
                             Label num = new Label(String.valueOf(roleDetail.getChainUnlockNum()));
                             num.getStyleClass().add("chain-unlock-num");
-                            num.setTranslateX(5);
-                            num.setTranslateY(-5);
-                            roleItem.getChildren().add(num);
                             StackPane.setAlignment(num, Pos.TOP_RIGHT);
-                        } else {
-                            System.out.println("null");
+                            roleItem.getChildren().add(num);
                         }
-
 
                         roleHbox.getChildren().add(roleItem);
                     }
@@ -311,6 +317,10 @@ public class SlashView implements FxmlView<SlashViewModel> {
                     Label label = new Label("暂无数据");
                     roleHbox.getChildren().add(label);
                 }
+
+                floorHBox.getChildren().addAll(leftBox, roleHbox, buffBox);
+                floorHBox.setSpacing(10.0);
+                floorHBox.setAlignment(Pos.CENTER_LEFT);
 
                 getChildren().add(floorHBox);
             }
