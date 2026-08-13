@@ -99,13 +99,18 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
 
         Optional<String> optional = configService.get(LOCAL_CACHE_SELECTED_ROLE);
         if (optional.isPresent()){
+            LOG.info("updateRoleData: 从配置中读取到上次选中的角色 roleId={}", optional.get());
             Optional<LocalCachePlayerData> userFormDB = localCachePlayerDataService.getByRoleId(optional.get());
-            if (userFormDB.isPresent() && !isCacheExpired(userFormDB.get().getUpdateTime())){
+            if (userFormDB.isPresent() && !isCacheExpired(userFormDB.get().getUpdateTime())
+                    && userFormDB.get().getRoleId() != null){
+                LOG.info("updateRoleData: 缓存未过期，直接使用 roleId={}", userFormDB.get().getRoleId());
                 freshRoleData(userFormDB.get().getRoleId(), userFormDB.get().getOauthCode());
             }else {
+                LOG.info("updateRoleData: 缓存过期/不存在/roleId为空，走 loadLocalCacheUser");
                 loadLocalCacheUser();
             }
         }else {
+            LOG.info("updateRoleData: 未找到上次选中的角色，走 loadLocalCacheUser");
             loadLocalCacheUser();
         }
     }
@@ -121,14 +126,19 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
         Optional<List<LocalCacheUser>> list = launcherUserService.readLocalCacheUser();
         if (list.isPresent()){
             LocalCacheUser user = list.get().getFirst();
+            LOG.info("loadLocalCacheUser: 读取到本地缓存用户 oauthCode={}", user.getOauthCode());
             Optional<LocalCachePlayerData> userFormDB = localCachePlayerDataService.getByOauthCode(user.getOauthCode());
-            if (userFormDB.isPresent() && !isCacheExpired(userFormDB.get().getUpdateTime())) {
+            if (userFormDB.isPresent() && !isCacheExpired(userFormDB.get().getUpdateTime())
+                    && userFormDB.get().getRoleId() != null) {
+                LOG.info("loadLocalCacheUser: 玩家数据缓存未过期，直接用 roleId={}", userFormDB.get().getRoleId());
                 freshRoleData(userFormDB.get().getRoleId(), userFormDB.get().getOauthCode());
                 configService.set(LOCAL_CACHE_SELECTED_ROLE, userFormDB.get().getRoleId());
             } else {
+                LOG.info("loadLocalCacheUser: 玩家数据缓存过期/不存在/roleId为空，调用 queryPlayer");
                 queryPlayer(user);
             }
         }else {
+            LOG.info("loadLocalCacheUser: 未读取到本地缓存用户");
             NotificationManager.message(MessageInfo.info(LanguageManager.getString("ui.home.label.no_data")));
         }
 
@@ -149,7 +159,7 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
             try {
                 ResponseBody<PlayerInfo> body = launcherManager.queryPlayerInfo(user.getOauthCode(), user.getType());
                 Platform.runLater(() -> {
-                    if (body.getCode() == 200 && body.getData() != null) {
+                    if (body != null && body.getCode() == 200 && body.getData() != null) {
                         PlayerInfo data = body.getData();
                         LocalCachePlayerData playerData = new LocalCachePlayerData(data);
                         playerData.setOauthCode(user.getOauthCode());
@@ -158,7 +168,9 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
                         configService.set(LOCAL_CACHE_SELECTED_ROLE, data.getRoleId());
                         freshRoleData(data.getRoleId(), user.getOauthCode());
                     } else {
-                        NotificationManager.message(MessageInfo.error(body.getMsg()));
+                        String msg = body != null ? body.getMsg() : "获取玩家数据失败，返回为空";
+                        LOG.warn("queryPlayerInfo 失败: {}", msg);
+                        NotificationManager.message(MessageInfo.error(msg));
                     }
                 });
             } catch (Exception e) {
@@ -170,9 +182,10 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
     private void freshRoleData(String roleId, String oauthCode) {
         Thread.startVirtualThread(() -> {
             try {
+                LOG.info("查询角色数据, roleId={}, oauthCode={}", roleId, oauthCode);
                 ResponseBody<PlayerData> data = launcherManager.queryRole(roleId, oauthCode);
                 Platform.runLater(() -> {
-                    if (data.getCode() == 200 && data.getData() != null) {
+                    if (data != null && data.getCode() == 200 && data.getData() != null) {
                         getBaseData(data.getData().getBaseData());
                         getBoxData(data.getData().getBaseData());
                         getBattlePassData(data.getData().getBattlePassData());
@@ -183,6 +196,10 @@ public class RoleBoardByLocalViewModel extends BaseViewModel {
                             Image header = LocalResourcesManager.header(headPhoto, 60, 60);
                             headIcon.set(header);
                         });
+                    } else {
+                        String msg = data != null ? data.getMsg() : "获取角色数据失败，返回为空";
+                        LOG.warn("freshRoleData 失败: {}", msg);
+                        NotificationManager.message(MessageInfo.error(msg));
                     }
                 });
             } catch (Exception e) {
