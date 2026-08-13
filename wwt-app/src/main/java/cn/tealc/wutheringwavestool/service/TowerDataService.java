@@ -102,6 +102,16 @@ public class TowerDataService {
         });
     }
 
+    /** 获取指定角色的所有赛季结束时间列表，降序 */
+    public List<Long> getEndTimeListByRoleId(String roleId) {
+        return gameTowerDataDao.getEndTimeListByRoleId(roleId);
+    }
+
+    /** 获取指定角色和赛季结束时间的深塔记录 */
+    public Set<TowerData> getRecordsByRoleIdAndEndTime(String roleId, long endTime) {
+        return gameTowerDataDao.getListByRoleIdAndEndTime(roleId, endTime);
+    }
+
     /** 将给定的时间戳转换成当天 4 点（原 TowerDataDetailTask.convertToHourlyTimestamp 上移） */
     public long convertToHourlyTimestamp(long timestamp) {
         Calendar calendar = Calendar.getInstance();

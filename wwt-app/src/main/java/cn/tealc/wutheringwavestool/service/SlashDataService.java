@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Singleton
 public class SlashDataService {
@@ -79,6 +80,16 @@ public class SlashDataService {
         data.setEndTime(date);
 
         gameSlashDataDao.add(data);
+    }
+
+    /** 获取指定角色的所有赛季结束时间列表，降序 */
+    public List<Long> getEndTimesByRoleId(String roleId) {
+        return gameSlashDataDao.getEndTimesByRoleId(roleId);
+    }
+
+    /** 获取指定角色和赛季结束时间的海墟数据 */
+    public Optional<SlashDataForDB> getByRoleIdAndEndTime(String roleId, long endTime) {
+        return gameSlashDataDao.getByRoleIdAndEndTime(roleId, endTime);
     }
 
     /** 将给定的时间戳转换成当天 4 点（原 SlashDataDetailTask.convertToHourlyTimestamp 上移） */

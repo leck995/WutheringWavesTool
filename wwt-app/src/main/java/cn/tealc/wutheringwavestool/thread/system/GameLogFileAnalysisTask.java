@@ -1,8 +1,8 @@
 package cn.tealc.wutheringwavestool.thread.system;
 
 import cn.tealc.wutheringwavestool.base.AppInjector;
-import cn.tealc.wutheringwavestool.dao.GameRecordDao;
-import cn.tealc.wutheringwavestool.dao.GameTimeDao;
+import cn.tealc.wutheringwavestool.service.GameRecordService;
+import cn.tealc.wutheringwavestool.service.GameTimeService;
 import cn.tealc.wutheringwavestool.model.game.GameRecordForLog;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
@@ -275,11 +275,11 @@ public class GameLogFileAnalysisTask extends Task<List<GameTime>> {
      * 保存每日游戏行为记录到数据库，跳过无有效数据的记录
      */
     private void saveRecords(List<GameRecordForLog> records) {
-        GameRecordDao dao = AppInjector.getInstance(GameRecordDao.class);
+        GameRecordService gameRecordService = AppInjector.getInstance(GameRecordService.class);
         for (GameRecordForLog record : records) {
             if (hasValidData(record)) {
                 record.setCreateDate(formatDate(record.getCloseTime()));
-                dao.addOrUpdateRecord(record);
+                gameRecordService.addOrUpdateRecord(record);
                 LOG.info("保存游戏记录: {}", record);
             }
         }
@@ -301,7 +301,7 @@ public class GameLogFileAnalysisTask extends Task<List<GameTime>> {
      * 保存各账号游玩时长到数据库，自动处理跨天拆分
      */
     private void saveGameTimes(List<GameTime> gameTimes) {
-        GameTimeDao dao = AppInjector.getInstance(GameTimeDao.class);
+        GameTimeService gameTimeService = AppInjector.getInstance(GameTimeService.class);
         for (GameTime gameTime : gameTimes) {
             Long start = gameTime.getStartTime();
             Long end = gameTime.getEndTime();
@@ -312,9 +312,9 @@ public class GameLogFileAnalysisTask extends Task<List<GameTime>> {
             LocalDate endDate = toLocalDate(end);
 
             if (startDate.isBefore(endDate)) {
-                saveCrossDayGameTime(gameTime, start, end, duration, dao, startDate);
+                saveCrossDayGameTime(gameTime, start, end, duration, gameTimeService, startDate);
             } else {
-                saveSingleDayGameTime(gameTime, start, duration, dao, endDate);
+                saveSingleDayGameTime(gameTime, start, duration, gameTimeService, endDate);
             }
         }
     }
@@ -323,7 +323,7 @@ public class GameLogFileAnalysisTask extends Task<List<GameTime>> {
      * 跨天游玩时长拆分为昨天和今天两条记录
      */
     private void saveCrossDayGameTime(GameTime gameTime, long start, long end, long duration,
-                                      GameTimeDao dao, LocalDate startDate) {
+                                      GameTimeService gameTimeService, LocalDate startDate) {
         LocalDateTime startDateTime = toLocalDateTime(start);
         LocalDateTime endOfDay = startDate.plusDays(1).atStartOfDay();
         long yesterdayMillis = ChronoUnit.MILLIS.between(startDateTime, endOfDay);
@@ -331,14 +331,14 @@ public class GameLogFileAnalysisTask extends Task<List<GameTime>> {
         // 昨天
         GameTime yesterday = buildGameTime(gameTime.getRoleId(), startDate,
                 start, yesterdayMillis);
-        dao.addTime(yesterday);
+        gameTimeService.addTime(yesterday);
         LOG.info("保存跨天游玩时长（昨天）: {}", yesterday);
 
         // 今天
         long todayMillis = duration - yesterdayMillis;
         GameTime today = buildGameTime(gameTime.getRoleId(), startDate.plusDays(1),
                 end - todayMillis, todayMillis);
-        dao.addTime(today);
+        gameTimeService.addTime(today);
         LOG.info("保存跨天游玩时长（今天）: {}", today);
     }
 
@@ -346,9 +346,9 @@ public class GameLogFileAnalysisTask extends Task<List<GameTime>> {
      * 单天游玩时长
      */
     private void saveSingleDayGameTime(GameTime gameTime, long start, long duration,
-                                       GameTimeDao dao, LocalDate date) {
+                                       GameTimeService gameTimeService, LocalDate date) {
         GameTime record = buildGameTime(gameTime.getRoleId(), date, start, duration);
-        dao.addTime(record);
+        gameTimeService.addTime(record);
         LOG.info("保存单天游玩时长: {}", record);
     }
 

@@ -2,7 +2,7 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.other;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.wutheringwavestool.service.WebKujiequManager;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
@@ -29,7 +29,7 @@ public class ResourceBriefingViewModel extends BaseViewModel {
     public static final String EVENT_SELECT_BOX = "selectBox";
 
     @Inject
-    private UserInfoDao userInfoDao;
+    private UserInfoService userInfoService;
 
     @Inject
     private WebKujiequManager webKujiequManager;
@@ -46,7 +46,7 @@ public class ResourceBriefingViewModel extends BaseViewModel {
     private UserInfo userInfo;
     private KujiequSignApi.BriefingType currentType = KujiequSignApi.BriefingType.MONTH;
     public void init() {
-        userInfo = userInfoDao.getMain();
+        userInfo = userInfoService.getMainUser();
         if (userInfo != null){
             initList();
         }else {

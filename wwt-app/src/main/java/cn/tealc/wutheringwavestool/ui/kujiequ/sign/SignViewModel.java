@@ -1,8 +1,8 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.sign;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.dao.SignHistoryDao;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.SignService;
+import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.wutheringwavestool.service.WebKujiequManager;
 import cn.tealc.wutheringwavestool.thread.SignTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
@@ -37,10 +37,10 @@ import java.util.*;
 public class SignViewModel extends BaseViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(SignViewModel.class);
     @Inject
-    private UserInfoDao userInfoDao;
+    private UserInfoService userInfoService;
 
     @Inject
-    private SignHistoryDao signHistoryDao;
+    private SignService signService;
 
     @Inject
     private WebKujiequManager webKujiequManager;
@@ -56,9 +56,9 @@ public class SignViewModel extends BaseViewModel {
     private final ObservableList<SignRecord> signHistoryList= FXCollections.observableArrayList();
 
     public void init() {
-        List<UserInfo> userInfos = userInfoDao.getAll();
+        List<UserInfo> userInfos = userInfoService.getAllUsers();
         userInfoList.setAll(userInfos);
-        UserInfo main = userInfoDao.getMain();
+        UserInfo main = userInfoService.getMainUser();
         if (main != null) {
             for (int i = 0; i < userInfoList.size(); i++) {
                 if (Objects.equals(userInfoList.get(i).getId(), main.getId())) {
@@ -83,7 +83,7 @@ public class SignViewModel extends BaseViewModel {
     }
 
     private void getSignHistory(UserInfo userInfo){
-        List<SignRecord> histories = signHistoryDao.getHistoriesByRoleId(userInfo.getRoleId());
+        List<SignRecord> histories = signService.getHistoriesByRoleId(userInfo.getRoleId());
 
 
         Map<String,SignRecord> map=new HashMap<>();

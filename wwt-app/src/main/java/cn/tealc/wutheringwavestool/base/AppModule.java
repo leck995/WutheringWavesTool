@@ -29,5 +29,7 @@ public class AppModule extends AbstractModule {
         bind(TokenRefreshService.class).in(Singleton.class);
         bind(WebKujiequManager.class).in(Singleton.class);
         bind(GachaStatService.class).in(Singleton.class);
+        bind(GameSettingService.class).in(Singleton.class);
+        bind(GameRoleDataService.class).in(Singleton.class);
     }
 }

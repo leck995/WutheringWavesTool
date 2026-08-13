@@ -11,6 +11,7 @@ import com.kuro.kujiequ.model.newTowerData.NewTowerModeDetail;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Optional;
 
 @Singleton
 public class GameNewTowerService {
@@ -43,6 +44,16 @@ public class GameNewTowerService {
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /** 获取指定角色的所有赛季结束时间列表，降序 */
+    public List<Long> getEndTimesByRoleId(String roleId) {
+        return gameNewTowerDao.getEndTimesByRoleId(roleId);
+    }
+
+    /** 获取指定角色和赛季结束时间的新深塔数据 */
+    public Optional<SlashDataForDB> getByRoleIdAndEndTime(String roleId, long endTime) {
+        return gameNewTowerDao.getByRoleIdAndEndTime(roleId, endTime);
     }
 
     private long convertToHourlyTimestamp(long timestamp) {

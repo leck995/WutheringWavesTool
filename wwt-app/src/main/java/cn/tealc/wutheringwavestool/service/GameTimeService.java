@@ -54,4 +54,32 @@ public class GameTimeService {
     public List<GameTime> getTimesByRoleId(String roleId) {
         return gameTimeDao.getTimeListByRoleId(roleId);
     }
+
+    public List<GameTime> getTimeListByData(String date) {
+        return gameTimeDao.getTimeListByData(date);
+    }
+
+    public List<GameTime> getTimeListByDataAndRoleId(String date, String roleId) {
+        return gameTimeDao.getTimeListByDataAndRoleId(date, roleId);
+    }
+
+    public int addTime(GameTime gameTime) {
+        return gameTimeDao.addTime(gameTime);
+    }
+
+    public int updateTime(GameTime gameTime) {
+        return gameTimeDao.updateTime(gameTime);
+    }
+
+    public int deleteTimeById(Integer id) {
+        return gameTimeDao.deleteTimeById(id);
+    }
+
+    public boolean deleteTimeByData(String date) {
+        return gameTimeDao.deleteTimeByData(date);
+    }
+
+    public boolean deleteTimeByDataAndRoleId(String date, String roleId) {
+        return gameTimeDao.deleteTimeByDataAndRoleId(date, roleId);
+    }
 }

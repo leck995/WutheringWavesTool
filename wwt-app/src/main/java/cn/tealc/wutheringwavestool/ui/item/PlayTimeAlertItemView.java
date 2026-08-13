@@ -5,7 +5,7 @@ import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.base.AppInjector;
-import cn.tealc.wutheringwavestool.dao.GameTimeDao;
+import cn.tealc.wutheringwavestool.service.GameTimeService;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.jfoenixN.controls.JFXDialogLayout;
@@ -26,7 +26,7 @@ import java.util.List;
  * @description: 修改游戏时间的View
  */
 public class PlayTimeAlertItemView extends JFXDialogLayout {
-    private final GameTimeDao dao = AppInjector.getInstance(GameTimeDao.class);
+    private final GameTimeService gameTimeService = AppInjector.getInstance(GameTimeService.class);
     private final Button okBtn;
     private final Button cancelBtn;
     private final String date;
@@ -35,7 +35,7 @@ public class PlayTimeAlertItemView extends JFXDialogLayout {
 
     public PlayTimeAlertItemView() {
         date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"));
-        List<GameTime> times = dao.getTimeListByData(date);
+        List<GameTime> times = gameTimeService.getTimeListByData(date);
         ObservableList<String> roleList = FXCollections.observableList(getDistinctRoles(times));
 
         Label title = new Label("修改今日时长");
@@ -111,14 +111,14 @@ public class PlayTimeAlertItemView extends JFXDialogLayout {
     }
 
     private void resetTime() {
-        dao.deleteTimeByData(date);
+        gameTimeService.deleteTimeByData(date);
         NotificationManager.message(MessageInfo.success("今日时长重置完成"));
         MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_GAME_TIME_UPDATE);
     }
 
     private void alert(GameTime gameTime) {
-        dao.deleteTimeByDataAndRoleId(gameTime.getGameDate(), gameTime.getRoleId());
-        if (dao.addTime(gameTime) > 0) {
+        gameTimeService.deleteTimeByDataAndRoleId(gameTime.getGameDate(), gameTime.getRoleId());
+        if (gameTimeService.addTime(gameTime) > 0) {
             NotificationManager.message(MessageInfo.success("修改时长成功"));
         } else {
             NotificationManager.message(MessageInfo.error("修改时长失败"));

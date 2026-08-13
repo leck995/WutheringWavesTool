@@ -53,6 +53,10 @@ public class GameRecordService {
         return gameRecordDao.getAllRoleId();
     }
 
+    public Integer addOrUpdateRecord(GameRecord record) {
+        return gameRecordDao.addOrUpdateRecord(record);
+    }
+
     public static class GameRecordAggregation {
         public int battle;
         public int paralysis;

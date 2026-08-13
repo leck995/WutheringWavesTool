@@ -4,7 +4,7 @@ import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.dao.GameTimeDao;
+import cn.tealc.wutheringwavestool.service.GameTimeService;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.jfoenixN.controls.JFXDialogLayout;
@@ -30,7 +30,7 @@ public class GameTimeAddView extends JFXDialogLayout {
 
     private static final DateTimeFormatter FMT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    private final GameTimeDao dao = AppInjector.getInstance(GameTimeDao.class);
+    private final GameTimeService gameTimeService = AppInjector.getInstance(GameTimeService.class);
 
     private final TextField roleIdField;
     private final TextField startTimeField;
@@ -199,7 +199,7 @@ public class GameTimeAddView extends JFXDialogLayout {
         record.setEndTime(endMillis);
         record.setDuration(endMillis - startMillis);
 
-        if (dao.addTime(record) > 0) {
+        if (gameTimeService.addTime(record) > 0) {
             NotificationManager.message(MessageInfo.success("添加游玩记录成功"));
             MvvmFX.getNotificationCenter().publish(NotificationKey.HOME_GAME_TIME_UPDATE);
             cancelBtn.fireEvent(new ActionEvent());

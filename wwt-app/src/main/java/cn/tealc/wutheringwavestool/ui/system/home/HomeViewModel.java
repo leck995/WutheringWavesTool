@@ -3,8 +3,7 @@ package cn.tealc.wutheringwavestool.ui.system.home;
 import cn.tealc.wutheringwavestool.WwtApp;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.dao.GameTimeDao;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.GameTimeService;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
@@ -43,9 +42,7 @@ import java.util.stream.Stream;
 public class HomeViewModel extends BaseViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(HomeViewModel.class);
     @Inject
-    private UserInfoDao userInfoDao;
-    @Inject
-    private GameTimeDao gameTimeDao;
+    private GameTimeService gameTimeService;
     private SimpleStringProperty gameTimeText = new SimpleStringProperty();
     private SimpleStringProperty gameTimeTipText = new SimpleStringProperty();
     private SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
@@ -90,7 +87,7 @@ public class HomeViewModel extends BaseViewModel {
         LocalDate localDate = LocalDate.now();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String date = dateTimeFormatter.format(localDate);
-        return gameTimeDao.getTimeListByData(date);
+        return gameTimeService.getTimeListByData(date);
     }
 
     private void updateGameTimeText(long sum) {

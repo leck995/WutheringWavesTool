@@ -1,8 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.dao.GameSlashDataDao;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.tower.SlashDataForDB;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,6 +13,7 @@ import com.kuro.kujiequ.model.slash.Challenge;
 import com.kuro.kujiequ.model.slash.SlashData;
 import com.kuro.kujiequ.model.slash.SlashDifficulty;
 import cn.tealc.wutheringwavestool.service.SlashDataService;
+import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
 import com.kuro.model.ResponseBody;
@@ -48,18 +47,16 @@ public class SlashViewModel extends BaseViewModel {
     private final Map<Integer, Role> roleMap = new HashMap<>();
 
     @Inject
-    private UserInfoDao userInfoDao;
+    private UserInfoService userInfoService;
     @Inject
-    private GameSlashDataDao gameSlashDataDao;
+    private SlashDataService slashDataService;
     @Inject
     private ObjectMapper objectMapper;
     @Inject
     private KujiequManager kujiequManager;
-    @Inject
-    private SlashDataService slashDataService;
 
     public SlashViewModel() {
-        userInfo = userInfoDao.getMain();
+        userInfo = userInfoService.getMainUser();
     }
 
     /**
@@ -116,7 +113,7 @@ public class SlashViewModel extends BaseViewModel {
      */
     private void initHistory() {
         if (userInfo != null) {
-            List<Long> endTimeList = gameSlashDataDao.getEndTimesByRoleId(userInfo.getRoleId());
+            List<Long> endTimeList = slashDataService.getEndTimesByRoleId(userInfo.getRoleId());
             SimpleDateFormat endFormat = new SimpleDateFormat("yyyy.MM.dd");
             DateTimeFormatter startFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd");
             endTimeList.forEach(endTime -> {
@@ -146,7 +143,7 @@ public class SlashViewModel extends BaseViewModel {
      * @date: 2025/5/29
      */
     public void changHistory(long timestamp) {
-        Optional<SlashDataForDB> data = gameSlashDataDao.getByRoleIdAndEndTime(userInfo.getRoleId(),timestamp);
+        Optional<SlashDataForDB> data = slashDataService.getByRoleIdAndEndTime(userInfo.getRoleId(),timestamp);
         data.ifPresent(slashData -> {
             try {
                 List<SlashDifficulty> list = objectMapper.readValue(slashData.getData(), new TypeReference<List<SlashDifficulty>>() {

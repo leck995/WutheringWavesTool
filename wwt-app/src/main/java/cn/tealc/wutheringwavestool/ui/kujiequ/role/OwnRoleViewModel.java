@@ -1,7 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.role;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.wutheringwavestool.service.WebKujiequManager;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
@@ -37,7 +37,7 @@ public class OwnRoleViewModel extends BaseViewModel {
     private static final Logger LOG= LoggerFactory.getLogger(OwnRoleViewModel.class);
     private final ObservableList<Role> roleList= FXCollections.observableArrayList();
     @Inject
-    private UserInfoDao userInfoDao;
+    private UserInfoService userInfoService;
 
     @Inject
     private WebKujiequManager webKujiequManager;
@@ -48,7 +48,7 @@ public class OwnRoleViewModel extends BaseViewModel {
     private UserInfo userInfo;
 
     public void init() {
-        userInfo= userInfoDao.getMain();
+        userInfo= userInfoService.getMainUser();
         if (userInfo != null) {
             Thread.startVirtualThread(() -> {
                 try {

@@ -1,7 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.calculator;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
 import com.kuro.kujiequ.KujiequManager;
@@ -64,7 +64,7 @@ public class CalculatorRoleEditViewModel extends BaseViewModel {
     private final RoleForCalculator role;
 
     @Inject
-    private UserInfoDao userInfoDao;
+    private UserInfoService userInfoService;
 
     @Inject
     private KujiequManager kujiequManager;
@@ -79,7 +79,7 @@ public class CalculatorRoleEditViewModel extends BaseViewModel {
      * 同步角色练度
      */
     public void ready(){
-        UserInfo userInfo = userInfoDao.getMain();
+        UserInfo userInfo = userInfoService.getMainUser();
         if (userInfo != null) {
             Thread.startVirtualThread(() -> {
                 try {
@@ -132,7 +132,7 @@ public class CalculatorRoleEditViewModel extends BaseViewModel {
      * @param otherSkills
      */
     public void calculate(List<String> otherSkills){
-        UserInfo userInfo = userInfoDao.getMain();
+        UserInfo userInfo = userInfoService.getMainUser();
         if (userInfo != null) {
             RoleAim roleAim = new RoleAim();
             roleAim.setRoleId(role.getRoleId());

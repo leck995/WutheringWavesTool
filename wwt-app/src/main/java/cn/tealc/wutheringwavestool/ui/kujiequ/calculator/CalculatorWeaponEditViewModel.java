@@ -2,7 +2,7 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.calculator;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
 import com.kuro.kujiequ.KujiequManager;
@@ -39,7 +39,7 @@ public class CalculatorWeaponEditViewModel extends BaseViewModel {
     private WeaponForCalculator weapon;
 
     @Inject
-    private UserInfoDao userInfoDao;
+    private UserInfoService userInfoService;
 
     @Inject
     private KujiequManager kujiequManager;
@@ -56,7 +56,7 @@ public class CalculatorWeaponEditViewModel extends BaseViewModel {
             return;
         }
 
-        UserInfo userInfo = userInfoDao.getMain();
+        UserInfo userInfo = userInfoService.getMainUser();
         if (userInfo != null) {
             WeaponAim weaponAim = new WeaponAim();
             weaponAim.setWeaponId(weapon.getWeaponId());

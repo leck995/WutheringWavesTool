@@ -110,6 +110,11 @@ public class SignService {
         }
     }
 
+    /** 获取指定角色的签到历史记录 */
+    public List<SignRecord> getHistoriesByRoleId(String roleId) {
+        return signHistoryDao.getHistoriesByRoleId(roleId);
+    }
+
     public static boolean isSignedToday(Long lastSignTimeMillis) {
         if (lastSignTimeMillis == null) return false;
         LocalDate today = LocalDate.now();

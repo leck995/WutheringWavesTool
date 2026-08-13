@@ -1,8 +1,8 @@
 package cn.tealc.wutheringwavestool.thread.system;
 
 import cn.tealc.wutheringwavestool.base.AppInjector;
-import cn.tealc.wutheringwavestool.dao.GameRecordDao;
-import cn.tealc.wutheringwavestool.dao.GameTimeDao;
+import cn.tealc.wutheringwavestool.service.GameRecordService;
+import cn.tealc.wutheringwavestool.service.GameTimeService;
 import cn.tealc.wutheringwavestool.model.game.GameRecordForLog;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
@@ -208,11 +208,11 @@ public class NewGameLogFileAnalysisTask extends Task<List<GameTime>> {
      * @date:   2025/2/21
      */
     private void saveRecords(List<GameRecordForLog> records) {
-        GameRecordDao dao = AppInjector.getInstance(GameRecordDao.class);
+        GameRecordService gameRecordService = AppInjector.getInstance(GameRecordService.class);
         for (GameRecordForLog record : records) {
             if (hasValidRecordData(record)) {
                 record.setCreateDate(formatDate(record.getCloseTime(), GAME_DATE_FORMAT));
-                dao.addOrUpdateRecord(record);
+                gameRecordService.addOrUpdateRecord(record);
                 LOG.info("保存游戏记录: {}", record);
             }
         }
@@ -240,10 +240,10 @@ public class NewGameLogFileAnalysisTask extends Task<List<GameTime>> {
      * @date:   2025/2/21
      */
     private void saveGameTimes(List<GameTime> gameTimes) {
-        GameTimeDao dao = AppInjector.getInstance(GameTimeDao.class);
+        GameTimeService gameTimeService = AppInjector.getInstance(GameTimeService.class);
         for (GameTime gameTime : gameTimes) {
             if (gameTime.getStartTime() != null && gameTime.getEndTime() != null) {
-                saveGameTime(gameTime, dao);
+                saveGameTime(gameTime, gameTimeService);
             }
         }
     }
@@ -255,7 +255,7 @@ public class NewGameLogFileAnalysisTask extends Task<List<GameTime>> {
      * @return  void
      * @date:   2025/2/21
      */
-    private void saveGameTime(GameTime gameTime, GameTimeDao dao) {
+    private void saveGameTime(GameTime gameTime, GameTimeService gameTimeService) {
         long startTime = gameTime.getStartTime();
         long endTime = gameTime.getEndTime();
         long duration = endTime - startTime;
@@ -264,9 +264,9 @@ public class NewGameLogFileAnalysisTask extends Task<List<GameTime>> {
         LocalDate endDate = toLocalDate(endTime);
 
         if (startDate.isBefore(endDate)) {
-            saveCrossDayGameTime(gameTime, startTime, endTime, duration, dao, startDate);
-        } else {
-            saveSingleDayGameTime(gameTime, startTime, endTime, duration, dao, endDate);
+saveCrossDayGameTime(gameTime, startTime, endTime, duration, gameTimeService, startDate);
+            } else {
+                saveSingleDayGameTime(gameTime, startTime, endTime, duration, gameTimeService, endDate);
         }
     }
 
@@ -282,18 +282,18 @@ public class NewGameLogFileAnalysisTask extends Task<List<GameTime>> {
      * @date:   2025/2/21
      */
     private void saveCrossDayGameTime(GameTime gameTime, long startTime, long endTime, long duration,
-                                      GameTimeDao dao, LocalDate startDate) {
+                                      GameTimeService gameTimeService, LocalDate startDate) {
         LocalDateTime startDateTime = toLocalDateTime(startTime);
         LocalDateTime endOfDay = startDate.plusDays(1).atStartOfDay();
         long millisUntilEndOfDay = ChronoUnit.MILLIS.between(startDateTime, endOfDay);
 
         GameTime yesterdayGameTime = createGameTime(gameTime, startTime, millisUntilEndOfDay, startDate);
-        dao.addTime(yesterdayGameTime);
+        gameTimeService.addTime(yesterdayGameTime);
         LOG.info("保存跨天游玩时长 (yesterday): {}", yesterdayGameTime);
 
         long todayMillis = duration - millisUntilEndOfDay;
         GameTime todayGameTime = createGameTime(gameTime, endTime - todayMillis, todayMillis, startDate.plusDays(1));
-        dao.addTime(todayGameTime);
+        gameTimeService.addTime(todayGameTime);
         LOG.info("保存跨天游玩时长 (today): {}", todayGameTime);
     }
 
@@ -309,9 +309,9 @@ public class NewGameLogFileAnalysisTask extends Task<List<GameTime>> {
      * @date:   2025/2/21
      */
     private void saveSingleDayGameTime(GameTime gameTime, long startTime, long endTime, long duration,
-                                       GameTimeDao dao, LocalDate date) {
+                                       GameTimeService gameTimeService, LocalDate date) {
         GameTime singleDayGameTime = createGameTime(gameTime, startTime, duration, date);
-        dao.addTime(singleDayGameTime);
+        gameTimeService.addTime(singleDayGameTime);
         LOG.info("保存单天游玩时长: {}", singleDayGameTime);
     }
 

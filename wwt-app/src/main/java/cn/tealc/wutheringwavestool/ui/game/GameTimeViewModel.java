@@ -2,8 +2,8 @@ package cn.tealc.wutheringwavestool.ui.game;
 
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.dao.GameTimeDao;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.GameTimeService;
+import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.service.ConfigService;
@@ -44,14 +44,14 @@ public class GameTimeViewModel extends BaseViewModel {
     private final SimpleBooleanProperty empty = new SimpleBooleanProperty(false);
 
     @Inject
-    private GameTimeDao gameTimeDao;
+    private GameTimeService gameTimeService;
     @Inject
-    private UserInfoDao userInfoDao;
+    private UserInfoService userInfoService;
     @Inject
     private ConfigService configService;
 
     public void initialize() {
-        List<String> allRoleId = gameTimeDao.getAllRoleId();
+        List<String> allRoleId = gameTimeService.getAllRoleIds();
         if (allRoleId == null || allRoleId.isEmpty()) {
             empty.set(true);
             return;
@@ -65,7 +65,7 @@ public class GameTimeViewModel extends BaseViewModel {
                 roleId = optional.get();
             }
         } else {
-            UserInfo main = userInfoDao.getMain();
+            UserInfo main = userInfoService.getMainUser();
             if (main != null) {
                 roleId = main.getRoleId();
             }
@@ -101,13 +101,13 @@ public class GameTimeViewModel extends BaseViewModel {
     public void freshWithAccount() {
         chartData.clear();
         //统计所有账号全部时长
-        List<GameTime> gameTimeList = gameTimeDao.getAllTime();
+        List<GameTime> gameTimeList = gameTimeService.getAllTimes();
         Map<String, List<GameTime>> allTimeMap = getMap(gameTimeList);
         double totalTime = sunTime(allTimeMap);
         allTotalTimeText.set(String.format("%.2f", totalTime));
 
         String roleId = userInfoList.get(userIndex.get());
-        List<GameTime> timeListByRoleId = gameTimeDao.getTimeListByRoleId(roleId);
+        List<GameTime> timeListByRoleId = gameTimeService.getTimesByRoleId(roleId);
         Map<String, List<GameTime>> mainMap = getMap(timeListByRoleId);
 
         currentDayText.set(String.format(LanguageManager.getString("ui.game_time.account.days"), mainMap.keySet().size()));
@@ -120,7 +120,7 @@ public class GameTimeViewModel extends BaseViewModel {
         currentTotalTimeText.set(String.format("%.2f", currentTotalTime));
 
 
-        UserInfo userInfo = userInfoDao.getUserByRoleId(roleId);
+        UserInfo userInfo = userInfoService.getUserByRoleId(roleId);
         if (userInfo != null) {
             currentUserName.set(userInfo.getRoleName());
         } else {
@@ -136,7 +136,7 @@ public class GameTimeViewModel extends BaseViewModel {
 
     public void refreshTableData() {
         String roleId = userInfoList.get(userIndex.get());
-        List<GameTime> list = gameTimeDao.getTimeListByRoleId(roleId);
+        List<GameTime> list = gameTimeService.getTimesByRoleId(roleId);
         list.sort((a, b) -> {
             long t1 = a.getStartTime() != null ? a.getStartTime() : 0;
             long t2 = b.getStartTime() != null ? b.getStartTime() : 0;
@@ -147,20 +147,20 @@ public class GameTimeViewModel extends BaseViewModel {
 
     public void addRecord(GameTime record) {
         record.setRoleId(userInfoList.get(userIndex.get()));
-        gameTimeDao.addTime(record);
+        gameTimeService.addTime(record);
         refreshTableData();
         freshWithAccount();
     }
 
     public void updateRecord(GameTime record) {
-        gameTimeDao.updateTime(record);
+        gameTimeService.updateTime(record);
         refreshTableData();
         freshWithAccount();
     }
 
     public void deleteRecord(GameTime record) {
         if (record.getId() != null) {
-            gameTimeDao.deleteTimeById(record.getId());
+            gameTimeService.deleteTimeById(record.getId());
             refreshTableData();
             freshWithAccount();
         }
@@ -258,7 +258,7 @@ public class GameTimeViewModel extends BaseViewModel {
         LocalDate localDate = LocalDate.now();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         String date = dateTimeFormatter.format(localDate);
-        List<GameTime> list = gameTimeDao.getTimeListByDataAndRoleId(date, roleId);
+        List<GameTime> list = gameTimeService.getTimeListByDataAndRoleId(date, roleId);
         if (list != null) {
             long sum = list.stream().mapToLong(GameTime::getDuration).sum();
             int hour = (int) (sum / (1000 * 60 * 60));

@@ -1,13 +1,11 @@
 package cn.tealc.wutheringwavestool.ui.game;
 
 import cn.tealc.wutheringwavestool.base.Config;
-import cn.tealc.wutheringwavestool.dao.GameRecordDao;
-import cn.tealc.wutheringwavestool.dao.GameTimeDao;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.game.GameRecord;
 import cn.tealc.wutheringwavestool.service.ConfigService;
 import cn.tealc.wutheringwavestool.service.GameRecordService;
+import cn.tealc.wutheringwavestool.service.UserInfoService;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
@@ -52,16 +50,14 @@ public class GameRecordViewModel extends BaseViewModel {
     private final SimpleIntegerProperty transfer = new SimpleIntegerProperty();
 
     @Inject
-    private GameRecordDao gameRecordDao;
-    @Inject
-    private UserInfoDao userInfoDao;
-    @Inject
     private GameRecordService gameRecordService;
+    @Inject
+    private UserInfoService userInfoService;
     @Inject
     private ConfigService configService;
 
     public void initialize() {
-        List<String> roleIds = gameRecordDao.getAllRoleId();
+        List<String> roleIds = gameRecordService.getAllRoleIds();
         if (roleIds == null || roleIds.isEmpty())
             return;
         roleIdList.addAll(roleIds);
@@ -73,7 +69,7 @@ public class GameRecordViewModel extends BaseViewModel {
                 roleId = optional.get();
             }
         } else {
-            UserInfo main = userInfoDao.getMain();
+            UserInfo main = userInfoService.getMainUser();
             if (main != null) {
                 roleId = main.getRoleId();
             }
@@ -99,9 +95,9 @@ public class GameRecordViewModel extends BaseViewModel {
         roleIdIndex.set(index);
         String today = getToday();
         String roleId = roleIdList.get(getRoleIdIndex());
-        List<GameRecord> list = gameRecordDao.getRecordListByRoleIdAndDate(roleId,today);
+        List<GameRecord> list = gameRecordService.getRecordsByRoleIdAndDate(roleId, today);
         updateTodayData(list);
-        List<GameRecord> allRecordList = gameRecordDao.getRecordListByRoleId(roleId);
+        List<GameRecord> allRecordList = gameRecordService.getRecordsByRoleId(roleId);
         updateTotalData(allRecordList);
     }
 

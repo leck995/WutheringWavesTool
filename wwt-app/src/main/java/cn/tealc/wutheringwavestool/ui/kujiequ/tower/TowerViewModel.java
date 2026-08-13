@@ -1,14 +1,13 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.dao.GameTowerDataDao;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.TowerDataService;
+import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.kuro.kujiequ.model.roleData.Role;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import cn.tealc.wutheringwavestool.model.tower.TowerData;
 import com.kuro.kujiequ.model.towerData.*;
-import cn.tealc.wutheringwavestool.service.TowerDataService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
 import com.kuro.kujiequ.KujiequManager;
@@ -45,20 +44,18 @@ public class TowerViewModel extends BaseViewModel {
     private final Map<Integer,Role> roleMap = new HashMap<>();
 
     @Inject
-    private UserInfoDao userInfoDao;
-    @Inject
-    private GameTowerDataDao gameTowerDataDao;
-    @Inject
-    private KujiequManager kujiequManager;
+    private UserInfoService userInfoService;
     @Inject
     private TowerDataService towerDataService;
+    @Inject
+    private KujiequManager kujiequManager;
 
     public TowerViewModel() {
 
     }
 
     public void initialize(){
-        userInfo = userInfoDao.getMain();
+        userInfo = userInfoService.getMainUser();
         if (userInfo != null) {
             initData();
             initHistory();
@@ -66,7 +63,7 @@ public class TowerViewModel extends BaseViewModel {
     }
 
     public void refresh() {
-        userInfo = userInfoDao.getMain();
+        userInfo = userInfoService.getMainUser();
         if (userInfo != null) {
             initData();
         }
@@ -132,7 +129,7 @@ public class TowerViewModel extends BaseViewModel {
 
 
     private void initHistory(){
-        List<Long> endTimeList = gameTowerDataDao.getEndTimeListByRoleId(userInfo.getRoleId());
+        List<Long> endTimeList = towerDataService.getEndTimeListByRoleId(userInfo.getRoleId());
         SimpleDateFormat endFormat = new SimpleDateFormat("yyyy.MM.dd");
         DateTimeFormatter startFormat = DateTimeFormatter.ofPattern("yyyy.MM.dd");
         // 定义一个截止日期
@@ -160,7 +157,7 @@ public class TowerViewModel extends BaseViewModel {
 
     public void changeHistory(long endTime){
         title.set("深境区");
-        Set<TowerData> list = gameTowerDataDao.getListByRoleIdAndEndTime(userInfo.getRoleId(),endTime);
+        Set<TowerData> list = towerDataService.getRecordsByRoleIdAndEndTime(userInfo.getRoleId(),endTime);
 
         Map<String,TowerArea> towerAreaMap = new LinkedHashMap<>();
         for (TowerData data : list) {

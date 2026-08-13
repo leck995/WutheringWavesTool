@@ -1,6 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.wutheringwavestool.service.WebKujiequManager;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
@@ -12,7 +12,7 @@ public class TowerGroupViewModel extends BaseViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(TowerGroupViewModel.class);
 
     @Inject
-    private UserInfoDao userInfoDao;
+    private UserInfoService userInfoService;
 
     @Inject
     private WebKujiequManager webKujiequManager;
@@ -20,7 +20,7 @@ public class TowerGroupViewModel extends BaseViewModel {
     private UserInfo userInfo;
 
     public void init() {
-        userInfo = userInfoDao.getMain();
+        userInfo = userInfoService.getMainUser();
         if (userInfo == null) {
             publish("EMPTY");
         }

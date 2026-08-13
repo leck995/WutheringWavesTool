@@ -2,7 +2,7 @@ package cn.tealc.wutheringwavestool.ui.system;
 
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.*;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.wutheringwavestool.model.AnnouncementItem;
 import cn.tealc.wutheringwavestool.model.RedemptionCodeItem;
 import cn.tealc.wutheringwavestool.model.SourceType;
@@ -55,7 +55,7 @@ public class MainViewModel extends BaseViewModel {
     private static final Logger LOG = LoggerFactory.getLogger(MainViewModel.class);
 
     @Inject
-    private UserInfoDao userInfoDao;
+    private UserInfoService userInfoService;
 
     @Inject
     private ObjectMapper objectMapper;
@@ -247,7 +247,7 @@ public class MainViewModel extends BaseViewModel {
         if (!Config.setting().isNoKuJieQu()) {
             Thread.startVirtualThread(()->{
                 //获取深塔刷新时间，同时更新深塔历史记录
-                List<UserInfo> users = userInfoDao.getAll();
+                List<UserInfo> users = userInfoService.getAllUsers();
                 for (int i = 0; i < users.size(); i++) {
                     syncSlash(users.get(i));
                     syncTower(users.get(i));

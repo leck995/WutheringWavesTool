@@ -1,10 +1,10 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.tower;
 
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.dao.GameNewTowerDao;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
 import cn.tealc.wutheringwavestool.model.tower.SlashDataForDB;
 import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.wutheringwavestool.service.GameNewTowerService;
+import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -34,9 +34,9 @@ public class NewTowerViewModel extends BaseViewModel {
     @Inject
     private ObjectMapper objectMapper;
     @Inject
-    private UserInfoDao userInfoDao;
+    private UserInfoService userInfoService;
     @Inject
-    private GameNewTowerDao gameNewTowerDao;
+    private GameNewTowerService gameNewTowerService;
     @Inject
     private KujiequManager kujiequManager;
 
@@ -56,13 +56,13 @@ public class NewTowerViewModel extends BaseViewModel {
     private SimpleBooleanProperty isUnLock = new SimpleBooleanProperty(false);
 
     public void initialize() {
-        userInfo = userInfoDao.getMain();
+        userInfo = userInfoService.getMainUser();
         loadData();
         initHistory();
     }
 
     public void refresh() {
-        userInfo = userInfoDao.getMain();
+        userInfo = userInfoService.getMainUser();
         loadData();
     }
 
@@ -126,7 +126,7 @@ public class NewTowerViewModel extends BaseViewModel {
 
     private void initHistory() {
         if (userInfo != null) {
-            List<Long> endTimeList = gameNewTowerDao.getEndTimesByRoleId(userInfo.getRoleId());
+            List<Long> endTimeList = gameNewTowerService.getEndTimesByRoleId(userInfo.getRoleId());
             endTimeList.forEach(endTime -> {
                 Date date = new Date(endTime);
                 String endDay = endFormat.format(date);
@@ -164,7 +164,7 @@ public class NewTowerViewModel extends BaseViewModel {
     }
 
     public void changHistory(long timestamp) {
-        Optional<SlashDataForDB> data = gameNewTowerDao.getByRoleIdAndEndTime(userInfo.getRoleId(), timestamp);
+        Optional<SlashDataForDB> data = gameNewTowerService.getByRoleIdAndEndTime(userInfo.getRoleId(), timestamp);
         data.ifPresent(d -> {
             try {
                 List<NewTowerModeDetail> list = objectMapper.readValue(d.getData(),

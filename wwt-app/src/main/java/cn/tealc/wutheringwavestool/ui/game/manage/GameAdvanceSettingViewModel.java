@@ -3,7 +3,7 @@ package cn.tealc.wutheringwavestool.ui.game.manage;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.dao.GameSettingDao;
+import cn.tealc.wutheringwavestool.service.GameSettingService;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
@@ -24,11 +24,11 @@ import java.io.File;
  */
 public class GameAdvanceSettingViewModel implements ViewModel {
     private final SimpleStringProperty fps = new SimpleStringProperty();
+    private final GameSettingService gameSettingService = new GameSettingService();
 
     public GameAdvanceSettingViewModel() {
         if (hasDbFile()) {
-            GameSettingDao gameSettingDao = new GameSettingDao();
-            Pair<String, String> customFrameRate = gameSettingDao.getSettingValueByKey("CustomFrameRate");
+            Pair<String, String> customFrameRate = gameSettingService.getSettingValueByKey("CustomFrameRate");
             if (customFrameRate != null) {
                 fps.set(customFrameRate.getValue());
             }
@@ -46,8 +46,7 @@ public class GameAdvanceSettingViewModel implements ViewModel {
     public void setFps(String value) {
         boolean exist = hasDbFile();
         if (exist) {
-            GameSettingDao gameSettingDao = new GameSettingDao();
-            boolean customFrameRate = gameSettingDao.updateSettingValueByKey("CustomFrameRate", value);
+            boolean customFrameRate = gameSettingService.updateSettingValueByKey("CustomFrameRate", value);
             if (!customFrameRate) {
                 MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,MessageInfo.error(LanguageManager.getString("ui.game_manager.advance.fps.message01")));
             }

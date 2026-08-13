@@ -1,7 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.calculator;
 
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.dao.UserInfoDao;
+import cn.tealc.wutheringwavestool.service.UserInfoService;
 import cn.tealc.wutheringwavestool.service.WebKujiequManager;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import com.kuro.kujiequ.KujiequManager;
@@ -29,7 +29,7 @@ public class CalculatorViewModel extends BaseViewModel {
     private ObservableList<RoleForCalculator> roleList = FXCollections.observableArrayList();
     private ObservableList<WeaponForCalculator> weaponList = FXCollections.observableArrayList();
     @Inject
-    private UserInfoDao userInfoDao;
+    private UserInfoService userInfoService;
 
     @Inject
     private WebKujiequManager webKujiequManager;
@@ -44,7 +44,7 @@ public class CalculatorViewModel extends BaseViewModel {
     }
 
     public void init(){
-        userInfo = userInfoDao.getMain();
+        userInfo = userInfoService.getMainUser();
         if (userInfo != null){
             //刷新缓存数据后再获取
             Thread.startVirtualThread(() -> {
