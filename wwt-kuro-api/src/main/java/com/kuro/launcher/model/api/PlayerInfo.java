@@ -1,21 +1,14 @@
 package com.kuro.launcher.model.api;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PlayerInfo {
-    @JsonProperty("RoleId")
     private String roleId;
-    @JsonProperty("RoleName")
     private String roleName;
-    @JsonProperty("Level")
     private int level;
-    @JsonProperty("Sex")
     private int sex;
-    @JsonProperty("HeadPhoto")
     private String headPhoto;
-    @JsonProperty("Region")
     private String region;
 
     public String getRoleId() {
