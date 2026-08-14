@@ -118,6 +118,27 @@ public class ResUpdateModule {
         updateFlow.exec(stateInfo, updateInfo);
     }
 
+    /**
+     * 用显式给定的状态执行更新，不依赖内部缓存。
+     * 与 {@link #update(UpdateFlow.ProgressCallback, UpdateFlow.CompleteCallback)} 的区别：
+     * 直接使用调用方传入的 state/updateInfo，避免因缓存过期而走“无更新直接成功”的空转分支。
+     */
+    public void update(ResStateInfo stateInfo, UpdateInfo updateInfo,
+            UpdateFlow.ProgressCallback updateProgressCallback,
+            UpdateFlow.CompleteCallback updateCompleted) {
+        if (updateFlow == null) {
+            updateFlow = new UpdateFlow(configManager);
+        }
+        updateFlow.setProgressCallback(updateProgressCallback);
+        updateFlow.setCompleteCallback(updateResult -> {
+            updateCompleted.onComplete(updateResult);
+            if (updateResult.success) {
+                updateFlow = null;
+            }
+        });
+        updateFlow.exec(stateInfo, updateInfo);
+    }
+
     public void pause() {
         if (updateFlow != null) {
             updateFlow.pause();

@@ -11,6 +11,7 @@ import com.kr.launcher.flow.UpdateFlow;
 import com.kr.launcher.model.CheckUpdateResult;
 import com.kr.launcher.model.LauncherConfig;
 import com.kr.launcher.model.ResStateInfo;
+import com.kr.launcher.model.UpdateInfo;
 import com.kr.launcher.model.UpdateResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,8 +90,9 @@ public class GameUpdateService {
         final CheckUpdateResult[] holder = new CheckUpdateResult[1];
         updateModule.checkUpdate(result -> holder[0] = result);
         CheckUpdateResult result = holder[0];
-        if (result.succ && result.stateInfo != null) {
-            // 同步更新已安装版本
+        // 仅当确实已是最新时才把版本同步为“已安装版本”，避免“检查即显示已更新”的误导。
+        if (result.succ && result.stateInfo != null
+                && result.stateInfo.state == ResStateInfo.STATE_UP_TO_DATE) {
             syncInstalledVersion(result.stateInfo);
         }
         return result;
@@ -107,16 +109,17 @@ public class GameUpdateService {
         });
     }
 
-    /** 可使用官方管线的简易替代：仅运行当前状态对应的更新流程。 */
+    /** 使用给定检查结果启动更新（真正把状态注入执行，不依赖模块过期缓存）。 */
     public void runUpdate(CheckUpdateResult checkResult,
             UpdateFlow.ProgressCallback progress, UpdateFlow.CompleteCallback complete) {
         ensureInit();
         ResStateInfo stateInfo = checkResult.stateInfo;
-        if (stateInfo == null) {
-            complete.onComplete(failResult("更新状态为空"));
+        UpdateInfo updateInfo = checkResult.updateInfo;
+        if (stateInfo == null || updateInfo == null) {
+            complete.onComplete(failResult("更新状态或更新信息为空"));
             return;
         }
-        updateModule.update(progress, result -> {
+        updateModule.update(stateInfo, updateInfo, progress, result -> {
             if (result.success) {
                 syncInstalledVersionAfterUpdate();
             }

@@ -142,6 +142,7 @@ public class GameUpdateViewModel extends BaseViewModel implements SceneLifecycle
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() {
+                final boolean[] successHolder = {false};
                 updateService.runUpdate(checkResult,
                         (state, doneSize, totalSize, doneCount, totalCount) -> {
                             long pct = totalSize > 0
@@ -149,9 +150,10 @@ public class GameUpdateViewModel extends BaseViewModel implements SceneLifecycle
                             updateProgress(pct, 100);
                             updateMessage("state=" + state + " " + pct + "%");
                         },
-                        result -> {
-                            // complete callback (updateService 内部已调用 syncInstalledVersion)
-                        });
+                        result -> successHolder[0] = result.success);
+                if (!successHolder[0]) {
+                    throw new IllegalStateException("更新失败");
+                }
                 return null;
             }
         };
@@ -176,6 +178,8 @@ public class GameUpdateViewModel extends BaseViewModel implements SceneLifecycle
         task.setOnFailed(e -> {
             busy.set(false);
             Throwable ex = task.getException();
+            // 保留“有更新”状态，便于用户重试
+            hasUpdate.set(true);
             status.set(LanguageManager.getString("ui.game_manager.update.fail")
                     + (ex != null && ex.getMessage() != null ? ": " + ex.getMessage() : ""));
         });
