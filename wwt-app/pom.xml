@@ -20,6 +20,11 @@
             <groupId>cn.tealc</groupId>
             <artifactId>wwt-kuro-api</artifactId>
         </dependency>
+        <!-- 游戏下载引擎模块 -->
+        <dependency>
+            <groupId>cn.tealc</groupId>
+            <artifactId>wwt-game-down-api</artifactId>
+        </dependency>
 
         <!-- JavaFX -->
         <dependency>

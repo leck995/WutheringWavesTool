@@ -35,6 +35,7 @@ public class GameManagerView implements FxmlView<GameManagerViewModel>, Initiali
 
     private Parent advanceChild;
     private Parent baseChild;
+    private Parent downloadChild;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -85,6 +86,22 @@ public class GameManagerView implements FxmlView<GameManagerViewModel>, Initiali
             if (toggleButton.isSelected()) {
                 createBaseChild();
                 Animations.slideInUp(baseChild, Duration.millis(300)).play();
+            } else {
+                toggleButton.setSelected(true);
+            }
+        }
+    }
+
+    @FXML
+    void toDownloadChild(ActionEvent event) {
+        if (event.getSource() instanceof ToggleButton toggleButton){
+            if (toggleButton.isSelected()) {
+                if (downloadChild == null) {
+                    ViewTuple<GameDownloadView, GameDownloadViewModel> viewTuple = FluentViewLoader.fxmlView(GameDownloadView.class).load();
+                    downloadChild = viewTuple.getView();
+                }
+                content.getChildren().setAll(downloadChild);
+                Animations.slideInUp(downloadChild, Duration.millis(300)).play();
             } else {
                 toggleButton.setSelected(true);
             }

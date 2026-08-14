@@ -36,6 +36,8 @@ open module cn.tealc.wutheringwavestool {
     requires org.jspecify;
     requires cn.tealc.wwt.kuro.api;
 
+    requires cn.tealc.download;
+
 
     exports cn.tealc.wutheringwavestool;
     exports cn.tealc.wutheringwavestool.model;

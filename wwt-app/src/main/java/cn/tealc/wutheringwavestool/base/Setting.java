@@ -167,6 +167,10 @@ public class Setting {
     public SimpleBooleanProperty autoStartGameProperty() { return game.autoStartGameProperty(); }
     public void setAutoStartGame(boolean autoStartGame) { game.setAutoStartGame(autoStartGame); }
 
+    public String getGameDownloadDir() { return game.getGameDownloadDir(); }
+    public SimpleStringProperty gameDownloadDirProperty() { return game.gameDownloadDirProperty(); }
+    public void setGameDownloadDir(String gameDownloadDir) { game.setGameDownloadDir(gameDownloadDir); }
+
     // ============ LauncherSetting delegate ============
     public boolean isUserAdvanceGameSettings() { return launcher.isUserAdvanceGameSettings(); }
     public SimpleBooleanProperty userAdvanceGameSettingsProperty() { return launcher.userAdvanceGameSettingsProperty(); }

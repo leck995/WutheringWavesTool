@@ -19,6 +19,7 @@ public class GameSetting {
     private SimpleBooleanProperty exitWhenGameOver = new SimpleBooleanProperty(false); //检测到游戏关闭自动关闭程序
     private SimpleBooleanProperty hideWhenGameStart = new SimpleBooleanProperty(false); //检测到游戏启动自动隐藏程序至托盘
     private SimpleBooleanProperty autoStartGame = new SimpleBooleanProperty(false); //手动启动程序时自动启动游戏
+    private SimpleStringProperty gameDownloadDir = new SimpleStringProperty(); //游戏下载保存目录（可自定义，留空则使用游戏根目录 WwtBackup）
 
     // ---------- gameRootDirSource ----------
     public SourceType getGameRootDirSource() { return gameRootDirSource.get(); }
@@ -59,4 +60,9 @@ public class GameSetting {
     public boolean isAutoStartGame() { return autoStartGame.get(); }
     public SimpleBooleanProperty autoStartGameProperty() { return autoStartGame; }
     public void setAutoStartGame(boolean autoStartGame) { this.autoStartGame.set(autoStartGame); }
+
+    // ---------- gameDownloadDir ----------
+    public String getGameDownloadDir() { return gameDownloadDir.get(); }
+    public SimpleStringProperty gameDownloadDirProperty() { return gameDownloadDir; }
+    public void setGameDownloadDir(String gameDownloadDir) { this.gameDownloadDir.set(gameDownloadDir); }
 }

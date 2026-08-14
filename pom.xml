@@ -12,6 +12,7 @@
 
     <modules>
         <module>wwt-kuro-api</module>
+        <module>wwt-game-down-api</module>
         <module>wwt-app</module>
     </modules>
 
@@ -31,6 +32,11 @@
             <dependency>
                 <groupId>cn.tealc</groupId>
                 <artifactId>wwt-kuro-api</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>cn.tealc</groupId>
+                <artifactId>wwt-game-down-api</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
