@@ -171,6 +171,10 @@ public class Setting {
     public SimpleStringProperty gameDownloadDirProperty() { return game.gameDownloadDirProperty(); }
     public void setGameDownloadDir(String gameDownloadDir) { game.setGameDownloadDir(gameDownloadDir); }
 
+    public String getGameInstalledVersion() { return game.getGameInstalledVersion(); }
+    public SimpleStringProperty gameInstalledVersionProperty() { return game.gameInstalledVersionProperty(); }
+    public void setGameInstalledVersion(String gameInstalledVersion) { game.setGameInstalledVersion(gameInstalledVersion); }
+
     // ============ LauncherSetting delegate ============
     public boolean isUserAdvanceGameSettings() { return launcher.isUserAdvanceGameSettings(); }
     public SimpleBooleanProperty userAdvanceGameSettingsProperty() { return launcher.userAdvanceGameSettingsProperty(); }

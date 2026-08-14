@@ -1,0 +1,12 @@
+.game-update-view .title-3 {
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+}
+
+.game-update-view .title-4 {
+    -fx-font-weight: bold;
+}
+
+.game-update-view .text-subtle {
+    -fx-text-fill: -color-fg-subtle;
+}

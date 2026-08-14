@@ -20,6 +20,7 @@ public class GameSetting {
     private SimpleBooleanProperty hideWhenGameStart = new SimpleBooleanProperty(false); //检测到游戏启动自动隐藏程序至托盘
     private SimpleBooleanProperty autoStartGame = new SimpleBooleanProperty(false); //手动启动程序时自动启动游戏
     private SimpleStringProperty gameDownloadDir = new SimpleStringProperty(); //游戏下载保存目录（可自定义，留空则使用游戏根目录 WwtBackup）
+    private SimpleStringProperty gameInstalledVersion = new SimpleStringProperty(); //已安装的游戏版本号（用于更新检查）
 
     // ---------- gameRootDirSource ----------
     public SourceType getGameRootDirSource() { return gameRootDirSource.get(); }
@@ -65,4 +66,9 @@ public class GameSetting {
     public String getGameDownloadDir() { return gameDownloadDir.get(); }
     public SimpleStringProperty gameDownloadDirProperty() { return gameDownloadDir; }
     public void setGameDownloadDir(String gameDownloadDir) { this.gameDownloadDir.set(gameDownloadDir); }
+
+    // ---------- gameInstalledVersion ----------
+    public String getGameInstalledVersion() { return gameInstalledVersion.get(); }
+    public SimpleStringProperty gameInstalledVersionProperty() { return gameInstalledVersion; }
+    public void setGameInstalledVersion(String gameInstalledVersion) { this.gameInstalledVersion.set(gameInstalledVersion); }
 }

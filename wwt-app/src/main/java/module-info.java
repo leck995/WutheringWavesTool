@@ -37,6 +37,7 @@ open module cn.tealc.wutheringwavestool {
     requires cn.tealc.wwt.kuro.api;
 
     requires cn.tealc.download;
+    requires com.google.gson;
 
 
     exports cn.tealc.wutheringwavestool;

@@ -38,6 +38,11 @@
                               <Pane prefHeight="200.0" prefWidth="200.0" />
                            </graphic>
                         </ToggleButton>
+                        <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toUpdateChild" styleClass="child-select" text="%ui.game_manager.base.tab.title04" toggleGroup="$childSelectedToggle">
+                           <graphic>
+                              <Pane prefHeight="200.0" prefWidth="200.0" />
+                           </graphic>
+                        </ToggleButton>
                      </children>
                   </HBox>
                </children>

@@ -36,5 +36,6 @@ public class AppModule extends AbstractModule {
         bind(GameSettingService.class).in(Singleton.class);
         bind(GameRoleDataService.class).in(Singleton.class);
         bind(GameDownloadService.class).in(Singleton.class);
+        bind(GameUpdateService.class).in(Singleton.class);
     }
 }
