@@ -196,6 +196,38 @@ public class GameUpdateService {
         }
     }
 
+    // ==================== Repair ====================
+
+    /**
+     * 校验并修复游戏资源（同步阻塞）：走官方 RepairFlow 全量 MD5 校验，
+     * 校损坏/缺失文件并下载修复到游戏目录。
+     * 注意：RepairFlow 使用模块内部缓存的 updateInfo（由一次 checkUpdate/checkLocalState
+     * 填充），故执行前需先成功检查更新。
+     */
+    public void repair(com.kr.launcher.flow.RepairFlow.ProgressCallback progress,
+            com.kr.launcher.flow.RepairFlow.CompleteCallback complete) {
+        ensureInit();
+        updateModule.repair(progress, complete);
+    }
+
+    public void pauseRepair() {
+        if (updateModule != null) {
+            updateModule.pauseRepair();
+        }
+    }
+
+    public void resumeRepair() {
+        if (updateModule != null) {
+            updateModule.resumeRepair();
+        }
+    }
+
+    public void stopRepair() {
+        if (updateModule != null) {
+            updateModule.stopRepair();
+        }
+    }
+
     /** 把服务器/管线判定版本同步到已安装版本字段。 */
     private void syncInstalledVersion(ResStateInfo stateInfo) {
         if (stateInfo != null && stateInfo.newVersion != null && !stateInfo.newVersion.isEmpty()) {

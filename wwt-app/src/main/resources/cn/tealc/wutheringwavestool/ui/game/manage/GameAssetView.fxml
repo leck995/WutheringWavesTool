@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import org.kordamp.ikonli.javafx.FontIcon?>
+
+<StackPane prefHeight="600.0" prefWidth="1000.0" styleClass="game-asset-view" stylesheets="@../../../css/game/manage/GameAsset.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.game.manage.GameAssetView">
+   <children>
+      <VBox maxWidth="820.0" spacing="12.0" alignment="TOP_CENTER">
+         <children>
+            <!-- 标题 + 状态 -->
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <Label styleClass="title-3" text="%ui.game_manager.asset.title" />
+                  <Separator orientation="VERTICAL" />
+                  <Label fx:id="statusLabel" styleClass="text-subtle" text="就绪" />
+               </children>
+            </HBox>
+
+            <!-- 版本行 -->
+            <HBox alignment="CENTER" spacing="24.0">
+               <children>
+                  <Label styleClass="title-4" text="%ui.game_manager.asset.current" />
+                  <Label fx:id="currentVersionLabel" styleClass="text-subtle" text="-" />
+                  <Label styleClass="title-4" text="%ui.game_manager.asset.latest" />
+                  <Label fx:id="latestVersionLabel" styleClass="text-subtle" text="-" />
+               </children>
+            </HBox>
+
+            <!-- 下载目录（未安装时全量下载落点） -->
+            <HBox alignment="CENTER" spacing="8.0">
+               <children>
+                  <Label styleClass="title-4" text="%ui.game_manager.asset.dir" />
+                  <TextField fx:id="downloadDirField" prefWidth="420.0" promptText="%ui.game_manager.asset.dir_tip" />
+                  <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#chooseDownloadDir">
+                     <graphic>
+                        <FontIcon iconLiteral="mdoal-folder" />
+                     </graphic>
+                  </Button>
+               </children>
+            </HBox>
+
+            <!-- 主进度条 -->
+            <VBox spacing="4.0">
+               <children>
+                  <ProgressBar fx:id="progressBar" maxWidth="740.0" progress="0.0" />
+                  <Label fx:id="progressTextLabel" styleClass="text-subtle" text="0%" />
+                  <Label fx:id="tipLabel" styleClass="text-tip" text="" wrapText="true" />
+               </children>
+            </VBox>
+
+            <!-- 主操作按钮（按安装态显隐） -->
+            <HBox alignment="CENTER" spacing="10.0">
+               <children>
+                  <Button fx:id="downloadBtn" styleClass="button-primary" mnemonicParsing="false" onAction="#download" text="%ui.game_manager.asset.download" />
+                  <Button fx:id="updateBtn" mnemonicParsing="false" onAction="#update" text="%ui.game_manager.asset.update" />
+                  <Button fx:id="repairBtn" mnemonicParsing="false" onAction="#repair" text="%ui.game_manager.asset.repair" />
+                  <Button fx:id="preDownloadBtn" mnemonicParsing="false" onAction="#preDownload" text="%ui.game_manager.asset.predownload" />
+               </children>
+            </HBox>
+
+            <!-- 暂停/继续/停止 -->
+            <HBox alignment="CENTER" spacing="10.0">
+               <children>
+                  <Button fx:id="pauseBtn" mnemonicParsing="false" onAction="#pause" text="%ui.game_manager.download.pause" />
+                  <Button fx:id="resumeBtn" mnemonicParsing="false" onAction="#resume" text="%ui.game_manager.download.resume" />
+                  <Button fx:id="stopBtn" mnemonicParsing="false" onAction="#stop" text="%ui.game_manager.download.stop" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+   </children>
+   <padding>
+      <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
+   </padding>
+</StackPane>

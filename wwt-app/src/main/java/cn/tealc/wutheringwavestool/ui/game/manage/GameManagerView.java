@@ -37,6 +37,7 @@ public class GameManagerView implements FxmlView<GameManagerViewModel>, Initiali
     private Parent baseChild;
     private Parent downloadChild;
     private Parent updateChild;
+    private Parent assetChild;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -119,6 +120,22 @@ public class GameManagerView implements FxmlView<GameManagerViewModel>, Initiali
                 }
                 content.getChildren().setAll(updateChild);
                 Animations.slideInUp(updateChild, Duration.millis(300)).play();
+            } else {
+                toggleButton.setSelected(true);
+            }
+        }
+    }
+
+    @FXML
+    void toAssetChild(ActionEvent event) {
+        if (event.getSource() instanceof ToggleButton toggleButton){
+            if (toggleButton.isSelected()) {
+                if (assetChild == null) {
+                    ViewTuple<GameAssetView, GameAssetViewModel> viewTuple = FluentViewLoader.fxmlView(GameAssetView.class).load();
+                    assetChild = viewTuple.getView();
+                }
+                content.getChildren().setAll(assetChild);
+                Animations.slideInUp(assetChild, Duration.millis(300)).play();
             } else {
                 toggleButton.setSelected(true);
             }
