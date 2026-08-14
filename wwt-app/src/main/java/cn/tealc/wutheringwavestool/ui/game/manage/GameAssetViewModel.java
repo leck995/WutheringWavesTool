@@ -80,6 +80,9 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     /** 当前正在运行的 JavaFX Task，用于 stop() 时取消以解除 latch 阻塞。 */
     private Task<?> activeTask;
 
+    /** 防止 onViewAdded 被 mvvmfx 多次触发导致重复初始化/检查更新。 */
+    private boolean initialized = false;
+
     @Override
     public void onViewAdded() {
         sourceType = Config.setting().gameRootDirSourceProperty().get();
@@ -87,6 +90,11 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             sourceType = SourceType.DEFAULT;
         }
         downloadDir.set(defaultDownloadDir());
+        if (initialized) {
+            // 视图可能被 mvvmfx 多次 add，避免重复初始化/重复检查更新
+            return;
+        }
+        initialized = true;
         refreshInstalledState();
     }
 
@@ -476,11 +484,21 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         status.set(doneText);
     }
 
+    /** 更新进度（线程安全：底层流程可能在非 FX 线程回调进度，包 runLater 收敛）。 */
     private void updateProgressByData(long done, long total) {
-        if (total > 0) {
-            double p = Math.min(1.0, Math.max(0.0, (double) done / total));
+        if (total <= 0) {
+            return;
+        }
+        double p = Math.min(1.0, Math.max(0.0, (double) done / total));
+        String text = String.format("%.1f%%", p * 100);
+        if (Platform.isFxApplicationThread()) {
             progress.set(p);
-            progressText.set(String.format("%.1f%%", p * 100));
+            progressText.set(text);
+        } else {
+            Platform.runLater(() -> {
+                progress.set(p);
+                progressText.set(text);
+            });
         }
     }
 
