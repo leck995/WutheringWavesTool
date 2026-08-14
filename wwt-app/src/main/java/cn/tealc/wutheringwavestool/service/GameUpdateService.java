@@ -172,6 +172,25 @@ public class GameUpdateService {
         }
     }
 
+    /**
+     * 获取当前已安装的游戏版本。
+     * 优先读取管线权威的 {@code <gameDir>/launcherDownloadConfig.json}，
+     * 读不到（文件缺失或未初始化）时回退到 settings.json 缓存值。
+     */
+    public String getInstalledVersion() {
+        try {
+            ensureInit();
+            var localConfig = configManager.getDownloadConfig();
+            if (localConfig != null && localConfig.version != null && !localConfig.version.isEmpty()) {
+                return localConfig.version;
+            }
+        } catch (Exception e) {
+            LOG.debug("读取 launcherDownloadConfig.json 版本失败，回退 settings", e);
+        }
+        String cached = Config.setting().getGameInstalledVersion();
+        return cached != null ? cached : "";
+    }
+
     public ResourceConfigManager getConfigManager() {
         return configManager;
     }

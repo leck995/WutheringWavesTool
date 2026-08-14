@@ -1,6 +1,5 @@
 package cn.tealc.wutheringwavestool.ui.game.manage;
 
-import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.service.GameUpdateService;
 import cn.tealc.wutheringwavestool.service.TaskManageService;
@@ -48,7 +47,7 @@ public class GameUpdateViewModel extends BaseViewModel implements SceneLifecycle
     }
 
     private void init() {
-        String installed = Config.setting().getGameInstalledVersion();
+        String installed = updateService.getInstalledVersion();
         if (installed != null && !installed.isEmpty()) {
             currentVersion.set(installed);
         }
@@ -168,8 +167,8 @@ public class GameUpdateViewModel extends BaseViewModel implements SceneLifecycle
             busy.set(false);
             progressText.set("100%");
             status.set(LanguageManager.getString("ui.game_manager.update.done"));
-            // 更新本地已安装版本显示
-            String v = Config.setting().getGameInstalledVersion();
+            // 更新本地已安装版本显示（读权威配置文件）
+            String v = updateService.getInstalledVersion();
             if (v != null && !v.isEmpty()) {
                 currentVersion.set(v);
             }
