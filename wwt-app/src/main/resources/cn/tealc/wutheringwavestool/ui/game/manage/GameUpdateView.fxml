@@ -58,6 +58,17 @@
                   <Button fx:id="stopBtn" mnemonicParsing="false" onAction="#stop" text="%ui.game_manager.download.stop" />
                </children>
             </HBox>
+
+            <!-- 预下载（仅服务器开启预下载时可见） -->
+            <HBox alignment="CENTER" spacing="8.0">
+               <children>
+                  <Button fx:id="preDownloadBtn" mnemonicParsing="false" onAction="#preDownload" text="%ui.game_manager.update.predownload.start" />
+                  <Button mnemonicParsing="false" onAction="#pausePreDownload" text="%ui.game_manager.download.pause" />
+                  <Button mnemonicParsing="false" onAction="#resumePreDownload" text="%ui.game_manager.download.resume" />
+                  <Button mnemonicParsing="false" onAction="#stopPreDownload" text="%ui.game_manager.download.stop" />
+                  <Label fx:id="preDownloadSizeLabel" styleClass="text-subtle" text="" />
+               </children>
+            </HBox>
          </children>
       </VBox>
    </children>

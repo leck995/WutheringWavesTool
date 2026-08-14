@@ -39,6 +39,11 @@ public class GameUpdateViewModel extends BaseViewModel implements SceneLifecycle
     private final StringProperty stateDesc = new SimpleStringProperty("");
     private final BooleanProperty busy = new SimpleBooleanProperty(false);
 
+    private final BooleanProperty preDownloadVisible = new SimpleBooleanProperty(false);
+    private final BooleanProperty preDownloadComplete = new SimpleBooleanProperty(false);
+    private final StringProperty preDownloadSizeText = new SimpleStringProperty("");
+    private final BooleanProperty preDownloadBusy = new SimpleBooleanProperty(false);
+
     private CheckUpdateResult checkResult;
 
     @Override
@@ -120,6 +125,90 @@ public class GameUpdateViewModel extends BaseViewModel implements SceneLifecycle
             }
         }
         this.checkResult = result;
+        refreshPreDownloadState();
+    }
+
+    /** 根据 checkResult 刷新预下载按钮显隐 / 大小 / 完成态。 */
+    private void refreshPreDownloadState() {
+        boolean available = updateService.isPreDownloadAvailable(checkResult);
+        boolean done = checkResult != null && checkResult.stateInfo != null
+                && checkResult.stateInfo.preDownloadComplete;
+        preDownloadVisible.set(available && !done);
+        preDownloadComplete.set(done);
+        long size = updateService.preDownloadSize(checkResult);
+        if (size > 0) {
+            preDownloadSizeText.set(formatSize(size));
+        } else {
+            preDownloadSizeText.set("");
+        }
+    }
+
+    /** 开始预下载（后台任务，复用主进度条）。 */
+    public void preDownload() {
+        if (preDownloadBusy.get() || busy.get()) {
+            return;
+        }
+        if (checkResult == null) {
+            NotificationManager.message(MessageInfo.warning(LanguageManager.getString("ui.game_manager.update.check_first")));
+            return;
+        }
+        preDownloadBusy.set(true);
+        progress.set(0);
+        progressText.set("0%");
+        status.set(LanguageManager.getString("ui.game_manager.update.predownload.start"));
+        Task<Void> task = new Task<>() {
+            @Override
+            protected Void call() {
+                final boolean[] successHolder = {false};
+                updateService.preDownload(
+                        (state, progressInfo) -> {
+                            if (progressInfo.totalSize > 0) {
+                                updateProgress(progressInfo.completedSize, progressInfo.totalSize);
+                            }
+                            updateMessage("预下载 " + progressInfo.progressPercentage + "%");
+                        },
+                        result -> successHolder[0] = result.success);
+                if (!successHolder[0]) {
+                    throw new IllegalStateException("预下载失败");
+                }
+                return null;
+            }
+        };
+        task.progressProperty().addListener((obs, o, n) -> Platform.runLater(() -> {
+            double p = n.doubleValue();
+            progress.set(p);
+            progressText.set(String.format("%.1f%%", p * 100));
+        }));
+        task.messageProperty().addListener((obs, o, n) -> Platform.runLater(() ->
+                status.set(n != null ? n : "预下载中")));
+        task.setOnSucceeded(e -> {
+            preDownloadBusy.set(false);
+            progressText.set("100%");
+            preDownloadComplete.set(true);
+            preDownloadVisible.set(false);
+            status.set(LanguageManager.getString("ui.game_manager.update.predownload.done"));
+            NotificationManager.message(MessageInfo.success(
+                    LanguageManager.getString("ui.game_manager.update.predownload.done")));
+        });
+        task.setOnFailed(e -> {
+            preDownloadBusy.set(false);
+            Throwable ex = task.getException();
+            status.set(LanguageManager.getString("ui.game_manager.update.fail")
+                    + (ex != null && ex.getMessage() != null ? ": " + ex.getMessage() : ""));
+        });
+        taskManageService.execute(task);
+    }
+
+    public void pausePreDownload() {
+        updateService.pausePreDownload();
+    }
+
+    public void resumePreDownload() {
+        updateService.resumePreDownload();
+    }
+
+    public void stopPreDownload() {
+        updateService.stopPreDownload();
     }
 
     /** 开始更新（后台任务）。 */
@@ -268,6 +357,45 @@ public class GameUpdateViewModel extends BaseViewModel implements SceneLifecycle
 
     public BooleanProperty busyProperty() {
         return busy;
+    }
+
+    public boolean isPreDownloadVisible() {
+        return preDownloadVisible.get();
+    }
+
+    public BooleanProperty preDownloadVisibleProperty() {
+        return preDownloadVisible;
+    }
+
+    public boolean isPreDownloadComplete() {
+        return preDownloadComplete.get();
+    }
+
+    public BooleanProperty preDownloadCompleteProperty() {
+        return preDownloadComplete;
+    }
+
+    public String getPreDownloadSizeText() {
+        return preDownloadSizeText.get();
+    }
+
+    public StringProperty preDownloadSizeTextProperty() {
+        return preDownloadSizeText;
+    }
+
+    public boolean isPreDownloadBusy() {
+        return preDownloadBusy.get();
+    }
+
+    public BooleanProperty preDownloadBusyProperty() {
+        return preDownloadBusy;
+    }
+
+    private static String formatSize(long bytes) {
+        if (bytes < 1024) return bytes + " B";
+        if (bytes < 1024 * 1024) return String.format("%.1f KB", bytes / 1024.0);
+        if (bytes < 1024 * 1024 * 1024) return String.format("%.1f MB", bytes / (1024.0 * 1024));
+        return String.format("%.1f GB", bytes / (1024.0 * 1024 * 1024));
     }
 
     @Override

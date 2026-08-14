@@ -145,6 +145,57 @@ public class GameUpdateService {
         }
     }
 
+    // ==================== Pre-download ====================
+
+    /**
+     * 当前检查结果是否可预下载：服务器启用预下载通道、尚未完成、且存在预下载清单。
+     */
+    public boolean isPreDownloadAvailable(CheckUpdateResult checkResult) {
+        if (checkResult == null || checkResult.stateInfo == null) {
+            return false;
+        }
+        return checkResult.stateInfo.enablePreDownload
+                && !checkResult.stateInfo.preDownloadComplete
+                && checkResult.predownloadUpdateInfo != null;
+    }
+
+    /** 预下载包大小（字节）；不可用时返回 0。 */
+    public long preDownloadSize(CheckUpdateResult checkResult) {
+        if (checkResult == null || checkResult.stateInfo == null) {
+            return 0;
+        }
+        return checkResult.stateInfo.preDownloadSize;
+    }
+
+    /**
+     * 启动预下载（同步阻塞）：下载到 {@code <gameDir>/launcherDownload/{newVersion}/}，
+     * 不应用到游戏目录。成功时不写已安装版本（避免误报“已更新”）。
+     */
+    public void preDownload(
+            com.kr.launcher.flow.PredownloadFlow.ProgressCallback progress,
+            com.kr.launcher.flow.PredownloadFlow.CompleteCallback complete) {
+        ensureInit();
+        updateModule.preDownload(progress, complete);
+    }
+
+    public void pausePreDownload() {
+        if (updateModule != null) {
+            updateModule.pausePreDownload();
+        }
+    }
+
+    public void resumePreDownload() {
+        if (updateModule != null) {
+            updateModule.resumePreDownload();
+        }
+    }
+
+    public void stopPreDownload() {
+        if (updateModule != null) {
+            updateModule.stopPreDownload();
+        }
+    }
+
     /** 把服务器/管线判定版本同步到已安装版本字段。 */
     private void syncInstalledVersion(ResStateInfo stateInfo) {
         if (stateInfo != null && stateInfo.newVersion != null && !stateInfo.newVersion.isEmpty()) {

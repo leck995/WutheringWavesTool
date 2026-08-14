@@ -39,6 +39,10 @@ public class GameUpdateView implements FxmlView<GameUpdateViewModel>, Initializa
     private Button resumeBtn;
     @FXML
     private Button stopBtn;
+    @FXML
+    private Button preDownloadBtn;
+    @FXML
+    private Label preDownloadSizeLabel;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -50,6 +54,15 @@ public class GameUpdateView implements FxmlView<GameUpdateViewModel>, Initializa
         statusLabel.textProperty().bind(viewModel.statusProperty());
         progressBar.progressProperty().bind(viewModel.progressProperty());
         progressTextLabel.textProperty().bind(viewModel.progressTextProperty());
+
+        // 预下载控件：仅当存在未完成的预下载时可见
+        preDownloadBtn.visibleProperty().bind(
+                viewModel.preDownloadVisibleProperty()
+                        .and(viewModel.preDownloadBusyProperty().not()));
+        preDownloadBtn.managedProperty().bind(
+                viewModel.preDownloadVisibleProperty()
+                        .and(viewModel.preDownloadBusyProperty().not()));
+        preDownloadSizeLabel.textProperty().bind(viewModel.preDownloadSizeTextProperty());
 
         // 忙时禁用操作按钮，但保留停止可用
         updateBtn.disableProperty().bind(viewModel.hasUpdateProperty().not()
@@ -83,5 +96,25 @@ public class GameUpdateView implements FxmlView<GameUpdateViewModel>, Initializa
     @FXML
     void stop(ActionEvent event) {
         viewModel.stop();
+    }
+
+    @FXML
+    void preDownload(ActionEvent event) {
+        viewModel.preDownload();
+    }
+
+    @FXML
+    void pausePreDownload(ActionEvent event) {
+        viewModel.pausePreDownload();
+    }
+
+    @FXML
+    void resumePreDownload(ActionEvent event) {
+        viewModel.resumePreDownload();
+    }
+
+    @FXML
+    void stopPreDownload(ActionEvent event) {
+        viewModel.stopPreDownload();
     }
 }
