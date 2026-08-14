@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * 统一「游戏资源管理」ViewModel：全量下载 + 增量更新 + 预下载 + 校验修复合一。
@@ -76,6 +76,9 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     /** 当前活动操作类型：download / update / predownload / repair */
     private String activeOp = "";
+
+    /** 当前正在运行的 JavaFX Task，用于 stop() 时取消以解除 latch 阻塞。 */
+    private Task<?> activeTask;
 
     @Override
     public void onViewAdded() {
@@ -201,11 +204,17 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             }
         };
         task.setOnFailed(e -> {
+            if (task.isCancelled()) {
+                endOperating(LanguageManager.getString("ui.game_manager.asset.stopped"));
+                return;
+            }
             endOperating(LanguageManager.getString("ui.game_manager.asset.fail"));
         });
         task.setOnSucceeded(e -> {
             endOperating(LanguageManager.getString("ui.game_manager.asset.done"));
         });
+        task.setOnCancelled(e -> endOperating(LanguageManager.getString("ui.game_manager.asset.stopped")));
+        activeTask = task;
         taskManageService.execute(task);
     }
 
@@ -239,19 +248,27 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             return;
         }
         setOperating("update", LanguageManager.getString("ui.game_manager.asset.updating"));
-        AtomicReference<UpdateResult> holder = new AtomicReference<>();
         Task<Void> task = new Task<>() {
             @Override
-            protected Void call() {
+            protected Void call() throws Exception {
+                CountDownLatch latch = new CountDownLatch(1);
+                UpdateResult[] resultHolder = new UpdateResult[1];
                 updateService.runUpdate(checkResult,
                         (state, doneSize, totalSize, doneCount, totalCount) -> {
                             updateProgressByData(doneSize, totalSize);
                             updateMessage("更新 " + percent(doneSize, totalSize));
                         },
-                        result -> holder.set(result));
-                UpdateResult r = holder.get();
+                        r -> {
+                            resultHolder[0] = r;
+                            latch.countDown();
+                        });
+                latch.await();
+                UpdateResult r = resultHolder[0];
                 if (r != null && !r.success) {
                     throw new IllegalStateException(r.errorMessage != null ? r.errorMessage : "更新失败");
+                }
+                if (r == null) {
+                    throw new IllegalStateException("更新未返回结果");
                 }
                 return null;
             }
@@ -264,11 +281,17 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             }
             showUpdate.set(false);
         });
+        task.setOnCancelled(e -> endOperating(LanguageManager.getString("ui.game_manager.asset.stopped")));
         task.setOnFailed(e -> {
             Throwable ex = task.getException();
+            if (task.isCancelled()) {
+                endOperating(LanguageManager.getString("ui.game_manager.asset.stopped"));
+                return;
+            }
             endOperating(LanguageManager.getString("ui.game_manager.asset.update_fail")
                     + (ex != null && ex.getMessage() != null ? ": " + ex.getMessage() : ""));
         });
+        activeTask = task;
         taskManageService.execute(task);
     }
 
@@ -282,30 +305,61 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             return;
         }
         setOperating("repair", LanguageManager.getString("ui.game_manager.asset.repairing"));
-        AtomicReference<UpdateResult> holder = new AtomicReference<>();
         Task<Void> task = new Task<>() {
             @Override
-            protected Void call() {
+            protected Void call() throws Exception {
+                // RepairFlow 内部 CheckFileTask 等可能异步回完成回调，
+                // 必须用 CountDownLatch 阻塞等待真正完成，否则 call() 会提前返回误报“完成”。
+                CountDownLatch latch = new CountDownLatch(1);
+                UpdateResult[] resultHolder = new UpdateResult[1];
                 updateService.repair(
                         (state, progressInfo) -> {
                             updateProgressByData(progressInfo.completedSize, progressInfo.totalSize);
-                            updateMessage("校验 " + percent(progressInfo.completedSize, progressInfo.totalSize));
+                            updateMessage(repairStateText(state, progressInfo));
                         },
-                        holder::set);
-                UpdateResult r = holder.get();
+                        r -> {
+                            resultHolder[0] = r;
+                            latch.countDown();
+                        });
+                latch.await();
+                UpdateResult r = resultHolder[0];
                 if (r != null && !r.success) {
                     throw new IllegalStateException(r.errorMessage != null ? r.errorMessage : "校验修复失败");
+                }
+                if (r == null) {
+                    throw new IllegalStateException("校验修复未返回结果");
                 }
                 return null;
             }
         };
         task.setOnSucceeded(e -> endOperating(LanguageManager.getString("ui.game_manager.asset.repair_done")));
+        task.setOnCancelled(e -> endOperating(LanguageManager.getString("ui.game_manager.asset.stopped")));
         task.setOnFailed(e -> {
             Throwable ex = task.getException();
+            if (task.isCancelled()) {
+                endOperating(LanguageManager.getString("ui.game_manager.asset.stopped"));
+                return;
+            }
             endOperating(LanguageManager.getString("ui.game_manager.asset.repair_fail")
                     + (ex != null && ex.getMessage() != null ? ": " + ex.getMessage() : ""));
         });
+        activeTask = task;
         taskManageService.execute(task);
+    }
+
+    /** 将 RepairFlow 的阶段码(state)映射为中文阶段名。 */
+    private static String repairStateText(int state, com.kr.launcher.model.UpdateProgressInfo info) {
+        String pct = info != null && info.totalSize > 0
+                ? String.format("%.1f%%", info.completedSize * 100.0 / info.totalSize)
+                : "0%";
+        String stage = switch (state) {
+            case 0 -> "校验 MD5";
+            case 1 -> "重新下载";
+            case 5 -> "移动文件";
+            case 9 -> "复校 MD5";
+            default -> "校验";
+        };
+        return stage + " " + pct;
     }
 
     /** 预下载。 */
@@ -318,19 +372,27 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             return;
         }
         setOperating("predownload", LanguageManager.getString("ui.game_manager.asset.predownloading"));
-        AtomicReference<UpdateResult> holder = new AtomicReference<>();
         Task<Void> task = new Task<>() {
             @Override
-            protected Void call() {
+            protected Void call() throws Exception {
+                CountDownLatch latch = new CountDownLatch(1);
+                UpdateResult[] resultHolder = new UpdateResult[1];
                 updateService.preDownload(
                         (state, progressInfo) -> {
                             updateProgressByData(progressInfo.completedSize, progressInfo.totalSize);
                             updateMessage("预下载 " + percent(progressInfo.completedSize, progressInfo.totalSize));
                         },
-                        holder::set);
-                UpdateResult r = holder.get();
+                        r -> {
+                            resultHolder[0] = r;
+                            latch.countDown();
+                        });
+                latch.await();
+                UpdateResult r = resultHolder[0];
                 if (r != null && !r.success) {
                     throw new IllegalStateException(r.errorMessage != null ? r.errorMessage : "预下载失败");
+                }
+                if (r == null) {
+                    throw new IllegalStateException("预下载未返回结果");
                 }
                 return null;
             }
@@ -339,11 +401,17 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             endOperating(LanguageManager.getString("ui.game_manager.asset.predownload_done"));
             showPreDownload.set(false);
         });
+        task.setOnCancelled(e -> endOperating(LanguageManager.getString("ui.game_manager.asset.stopped")));
         task.setOnFailed(e -> {
             Throwable ex = task.getException();
+            if (task.isCancelled()) {
+                endOperating(LanguageManager.getString("ui.game_manager.asset.stopped"));
+                return;
+            }
             endOperating(LanguageManager.getString("ui.game_manager.asset.fail")
                     + (ex != null && ex.getMessage() != null ? ": " + ex.getMessage() : ""));
         });
+        activeTask = task;
         taskManageService.execute(task);
     }
 
@@ -368,11 +436,16 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     }
 
     public void stop() {
+        // 先转发到底层流程（更新/预下载/修复），尽量中止下载
         switch (activeOp) {
             case "update" -> updateService.stop();
             case "predownload" -> updateService.stopPreDownload();
             case "repair" -> updateService.stopRepair();
-            default -> { }
+            default -> { /* 全量下载直接取消 Task */ }
+        }
+        // 取消 JavaFX Task，中断 latch.await()，使后台线程退出
+        if (activeTask != null) {
+            activeTask.cancel(true);
         }
         endOperating(LanguageManager.getString("ui.game_manager.asset.stopped"));
     }
