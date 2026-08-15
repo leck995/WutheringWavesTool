@@ -19,7 +19,7 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <junit.version>5.10.0</junit.version>
-        <javafx.version>25</javafx.version>
+        <javafx.version>26.0.2</javafx.version>
         <ikonli.version>12.3.1</ikonli.version>
         <jackson.version>2.16.0</jackson.version>
         <slf4j.version>2.1.0-alpha1</slf4j.version>

@@ -147,7 +147,7 @@ public class UpdateView implements FxmlView<UpdateViewModel>, Initializable {
         systemBox.getStyleClass().add("system-func");
         HBox trailingBox = new HBox(systemBox);
         trailingBox.getStyleClass().add("trailing");
-        headerbar.setTrailing(trailingBox);
+        headerbar.setRight(trailingBox);
         HBox.setHgrow(headerbar, Priority.ALWAYS);
         titlebar.getChildren().clear();
         titlebar.getChildren().add(headerbar);

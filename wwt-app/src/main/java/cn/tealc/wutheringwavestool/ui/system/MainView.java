@@ -214,7 +214,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         HBox leadingBox = new HBox();
         leadingBox.getChildren().addAll(titleLabel);
         leadingBox.getStyleClass().add("leading");
-        headerbar.setLeading(leadingBox);
+        headerbar.setLeft(leadingBox);
 
         // 下载进度按钮
         createDownloadProgressButton();
@@ -233,7 +233,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         systemBox.getStyleClass().add("system-func");
         HBox trailingBox = new HBox(downloadBtn, systemBox);
         trailingBox.getStyleClass().add("trailing");
-        headerbar.setTrailing(trailingBox);
+        headerbar.setRight(trailingBox);
 
 
 

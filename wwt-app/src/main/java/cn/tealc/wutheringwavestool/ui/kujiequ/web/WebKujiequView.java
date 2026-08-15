@@ -112,8 +112,8 @@ public final class WebKujiequView {
 
         HeaderBar headerBar = new HeaderBar();
         headerBar.getStyleClass().addAll("headbar", "webkujiequ-header");
-        headerBar.setLeading(leadingBox);
-        headerBar.setTrailing(trailingBox);
+        headerBar.setLeft(leadingBox);
+        headerBar.setRight(trailingBox);
         HBox.setHgrow(headerBar, Priority.ALWAYS);
 
         webHost = new StackPane(shell.getWebView());
