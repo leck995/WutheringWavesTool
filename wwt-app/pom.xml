@@ -23,7 +23,7 @@
         <!-- 游戏下载引擎模块 -->
         <dependency>
             <groupId>cn.tealc</groupId>
-            <artifactId>wwt-game-down-api</artifactId>
+            <artifactId>wwt-game-resource-core</artifactId>
         </dependency>
 
         <!-- JavaFX -->
@@ -79,12 +79,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-        </dependency>
-
-        <!-- 游戏更新管线（com.kr.launcher.*）使用 Gson 解析清单/配置 -->
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
         </dependency>
 
         <!--有需要，可前往https://github.com/leck995/Teafx下载-->

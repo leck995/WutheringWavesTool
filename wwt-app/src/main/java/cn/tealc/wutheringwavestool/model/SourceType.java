@@ -1,6 +1,6 @@
 package cn.tealc.wutheringwavestool.model;
 
-import cn.tealc.download.GameDownloadSource;
+import cn.tealc.wwt.game.resource.GameDownloadSource;
 
 public enum SourceType {
     DEFAULT,

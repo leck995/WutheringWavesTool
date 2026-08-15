@@ -1,10 +1,10 @@
 package cn.tealc.wutheringwavestool.ui.game.manage;
 
-import cn.tealc.download.DownloadManager;
-import cn.tealc.download.GameResourceDownloadService;
-import cn.tealc.download.model.DownloadState;
-import cn.tealc.download.model.game.FileInfo;
-import cn.tealc.download.model.launcher.UpdateData;
+import cn.tealc.wwt.game.resource.DownloadManager;
+import cn.tealc.wwt.game.resource.GameResourceDownloadService;
+import cn.tealc.wwt.game.resource.model.DownloadState;
+import cn.tealc.wwt.game.resource.model.game.FileInfo;
+import cn.tealc.wwt.game.resource.model.launcher.UpdateData;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.SourceType;

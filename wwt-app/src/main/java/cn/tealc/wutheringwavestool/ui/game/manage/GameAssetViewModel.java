@@ -1,10 +1,10 @@
 package cn.tealc.wutheringwavestool.ui.game.manage;
 
-import cn.tealc.download.DownloadManager;
-import cn.tealc.download.GameResourceDownloadService;
-import cn.tealc.download.model.DownloadState;
-import cn.tealc.download.model.game.FileInfo;
-import cn.tealc.download.model.launcher.UpdateData;
+import cn.tealc.wwt.game.resource.DownloadManager;
+import cn.tealc.wwt.game.resource.GameResourceDownloadService;
+import cn.tealc.wwt.game.resource.model.DownloadState;
+import cn.tealc.wwt.game.resource.model.game.FileInfo;
+import cn.tealc.wwt.game.resource.model.launcher.UpdateData;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
@@ -15,10 +15,10 @@ import cn.tealc.wutheringwavestool.service.TaskManageService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
+import cn.tealc.wwt.game.resource.model.ResourceCheckResult;
+import cn.tealc.wwt.game.resource.model.ResourceCheckState;
+import cn.tealc.wwt.game.resource.model.ResourceOperationResult;
 import com.google.inject.Inject;
-import com.kr.launcher.model.CheckUpdateResult;
-import com.kr.launcher.model.ResStateInfo;
-import com.kr.launcher.model.UpdateResult;
 import de.saxsys.mvvmfx.SceneLifecycle;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
@@ -103,7 +103,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     private final StringProperty tip = new SimpleStringProperty("");
     private final StringProperty downloadDir = new SimpleStringProperty();
 
-    private CheckUpdateResult checkResult;
+    private ResourceCheckResult checkResult;
     private SourceType sourceType = SourceType.DEFAULT;
 
     private long operationSequence;
@@ -114,7 +114,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     private long checkSequence;
     private long activeCheckId = NO_OPERATION;
-    private Task<CheckUpdateResult> checkTask;
+    private Task<ResourceCheckResult> checkTask;
     private boolean coordinatorListenersAttached;
     private final ChangeListener<GameResourceUpdateCoordinator.UpdateState> coordinatorStateListener =
             (observable, oldState, newState) -> syncResourceUpdateState(newState);
@@ -229,9 +229,9 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         activeCheckId = checkId;
         status.set(LanguageManager.getString("ui.game_manager.asset.checking"));
 
-        Task<CheckUpdateResult> task = new Task<>() {
+        Task<ResourceCheckResult> task = new Task<>() {
             @Override
-            protected CheckUpdateResult call() {
+            protected ResourceCheckResult call() {
                 return updateService.checkUpdate();
             }
         };
@@ -259,7 +259,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         taskManageService.execute(task);
     }
 
-    private boolean finishCheck(long checkId, Task<CheckUpdateResult> task) {
+    private boolean finishCheck(long checkId, Task<ResourceCheckResult> task) {
         if (activeCheckId != checkId || checkTask != task) {
             return false;
         }
@@ -270,38 +270,31 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     private void cancelCheckTask() {
         activeCheckId = NO_OPERATION;
-        Task<CheckUpdateResult> task = checkTask;
+        Task<ResourceCheckResult> task = checkTask;
         checkTask = null;
         if (task != null) {
             task.cancel(true);
         }
     }
 
-    private boolean handleCheckResult(CheckUpdateResult result) {
-        if (result == null || !result.succ || result.stateInfo == null) {
+    private boolean handleCheckResult(ResourceCheckResult result) {
+        if (result == null || !result.isSuccessful()) {
             clearCheckResult();
             return false;
         }
 
         checkResult = result;
-        ResStateInfo state = result.stateInfo;
-        latestVersion.set(hasText(state.newVersion) ? state.newVersion : "-");
-        if (hasText(state.usingVersion)) {
-            currentVersion.set(state.usingVersion);
+        latestVersion.set(hasText(result.latestVersion()) ? result.latestVersion() : "-");
+        if (hasText(result.installedVersion())) {
+            currentVersion.set(result.installedVersion());
         }
 
-        boolean needsUpdate = switch (state.state) {
-            case ResStateInfo.STATE_NEED_DOWNLOAD,
-                 ResStateInfo.STATE_DOWNLOADING,
-                 ResStateInfo.STATE_PRE_DOWNLOAD,
-                 ResStateInfo.STATE_REPAIRING -> true;
-            default -> false;
-        };
-        boolean hasUpdateInfo = result.updateInfo != null;
-        showRepair.set(hasUpdateInfo);
-        showPreDownload.set(hasUpdateInfo && updateService.isPreDownloadAvailable(result));
+        boolean needsUpdate = result.isUpdateAvailable()
+                || result.state() == ResourceCheckState.REPAIR_REQUIRED;
+        showRepair.set(result.isRepairAvailable());
+        showPreDownload.set(result.hasUpdatePlan() && updateService.isPreDownloadAvailable(result));
         tip.set(needsUpdate
-                ? LanguageManager.getString("ui.game_manager.asset.tip_update") + "  " + state.newVersion
+                ? LanguageManager.getString("ui.game_manager.asset.tip_update") + "  " + result.latestVersion()
                 : LanguageManager.getString("ui.game_manager.asset.tip_up_to_date"));
         return true;
     }
@@ -504,7 +497,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         if (operating.get()) {
             return;
         }
-        if (checkResult == null || checkResult.updateInfo == null) {
+        if (checkResult == null || !checkResult.isRepairAvailable()) {
             warnCheckFirst();
             return;
         }
@@ -516,11 +509,10 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             @Override
             protected Void call() throws Exception {
                 awaitUpdateResult(
-                        completion -> updateService.repair(
-                                (state, info) -> {
-                                    if (info != null) {
-                                        updateProgressByData(operationId, info.completedSize, info.totalSize);
-                                    }
+                        completion -> updateService.repair(checkResult,
+                                progressInfo -> {
+                                    updateProgressByData(operationId, progressInfo.completedBytes(),
+                                            progressInfo.totalBytes());
                                 },
                                 value -> completion.accept(value)),
                         "校验修复未返回结果",
@@ -541,8 +533,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         if (operating.get()) {
             return;
         }
-        CheckUpdateResult result = checkResult;
-        if (result == null || result.updateInfo == null || !updateService.isPreDownloadAvailable(result)) {
+        ResourceCheckResult result = checkResult;
+        if (result == null || !result.hasUpdatePlan() || !updateService.isPreDownloadAvailable(result)) {
             warnCheckFirst();
             return;
         }
@@ -554,11 +546,10 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             @Override
             protected Void call() throws Exception {
                 awaitUpdateResult(
-                        completion -> updateService.preDownload(
-                                (state, info) -> {
-                                    if (info != null) {
-                                        updateProgressByData(operationId, info.completedSize, info.totalSize);
-                                    }
+                        completion -> updateService.preDownload(result,
+                                progressInfo -> {
+                                    updateProgressByData(operationId, progressInfo.completedBytes(),
+                                            progressInfo.totalBytes());
                                 },
                                 value -> completion.accept(value)),
                         "预下载未返回结果",
@@ -728,24 +719,24 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     }
 
     private static void awaitUpdateResult(
-            Consumer<Consumer<UpdateResult>> starter,
+            Consumer<Consumer<ResourceOperationResult>> starter,
             String missingResultMessage,
             String defaultFailureMessage) throws InterruptedException {
         CountDownLatch latch = new CountDownLatch(1);
-        AtomicReference<UpdateResult> resultHolder = new AtomicReference<>();
+        AtomicReference<ResourceOperationResult> resultHolder = new AtomicReference<>();
         starter.accept(result -> {
             resultHolder.set(result);
             latch.countDown();
         });
         latch.await();
 
-        UpdateResult result = resultHolder.get();
+        ResourceOperationResult result = resultHolder.get();
         if (result == null) {
             throw new IllegalStateException(missingResultMessage);
         }
-        if (!result.success) {
-            throw new IllegalStateException(hasText(result.errorMessage)
-                    ? result.errorMessage
+        if (!result.successful()) {
+            throw new IllegalStateException(hasText(result.errorMessage())
+                    ? result.errorMessage()
                     : defaultFailureMessage);
         }
     }

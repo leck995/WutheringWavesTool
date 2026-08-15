@@ -7,9 +7,9 @@ import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.wwt.game.resource.model.ResourceCheckResult;
+import cn.tealc.wwt.game.resource.model.ResourceCheckState;
 import com.google.inject.Inject;
-import com.kr.launcher.model.CheckUpdateResult;
-import com.kr.launcher.model.ResStateInfo;
 import de.saxsys.mvvmfx.SceneLifecycle;
 import javafx.application.Platform;
 import javafx.beans.property.*;
@@ -44,7 +44,7 @@ public class GameUpdateViewModel extends BaseViewModel implements SceneLifecycle
     private final StringProperty preDownloadSizeText = new SimpleStringProperty("");
     private final BooleanProperty preDownloadBusy = new SimpleBooleanProperty(false);
 
-    private CheckUpdateResult checkResult;
+    private ResourceCheckResult checkResult;
 
     @Override
     public void onViewAdded() {
@@ -65,14 +65,14 @@ public class GameUpdateViewModel extends BaseViewModel implements SceneLifecycle
         }
         busy.set(true);
         status.set(LanguageManager.getString("ui.game_manager.update.checking"));
-        Task<CheckUpdateResult> task = new Task<>() {
+        Task<ResourceCheckResult> task = new Task<>() {
             @Override
-            protected CheckUpdateResult call() {
+            protected ResourceCheckResult call() {
                 return updateService.checkUpdate();
             }
         };
         task.setOnSucceeded(e -> {
-            CheckUpdateResult result = task.getValue();
+            ResourceCheckResult result = task.getValue();
             handleCheckResult(result);
             busy.set(false);
         });
@@ -86,42 +86,40 @@ public class GameUpdateViewModel extends BaseViewModel implements SceneLifecycle
         taskManageService.execute(task);
     }
 
-    private void handleCheckResult(CheckUpdateResult result) {
-        if (result == null || !result.succ || result.stateInfo == null) {
+    private void handleCheckResult(ResourceCheckResult result) {
+        if (result == null || !result.isSuccessful()) {
             if (result != null) {
                 latestVersion.set("-");
                 hasUpdate.set(false);
-                stateDesc.set(result.errorMessage != null ? result.errorMessage : "检查失败");
+                stateDesc.set(result.errorMessage());
                 status.set(LanguageManager.getString("ui.game_manager.update.check_fail"));
             }
             return;
         }
-        ResStateInfo state = result.stateInfo;
-        if (state.usingVersion != null && !state.usingVersion.isEmpty()) {
-            currentVersion.set(state.usingVersion);
+        if (!result.installedVersion().isEmpty()) {
+            currentVersion.set(result.installedVersion());
         }
-        latestVersion.set(state.newVersion != null ? state.newVersion : "-");
-        switch (state.state) {
-            case ResStateInfo.STATE_UP_TO_DATE -> {
+        latestVersion.set(result.latestVersion().isEmpty() ? "-" : result.latestVersion());
+        switch (result.state()) {
+            case UP_TO_DATE -> {
                 hasUpdate.set(false);
                 stateDesc.set(LanguageManager.getString("ui.game_manager.update.up_to_date"));
                 status.set(LanguageManager.getString("ui.game_manager.update.up_to_date"));
             }
-            case ResStateInfo.STATE_NEED_DOWNLOAD, ResStateInfo.STATE_DOWNLOADING,
-                 ResStateInfo.STATE_PRE_DOWNLOAD -> {
+            case UPDATE_AVAILABLE, PRE_DOWNLOAD_AVAILABLE -> {
                 hasUpdate.set(true);
                 stateDesc.set(LanguageManager.getString("ui.game_manager.update.need_update")
-                        + (state.newVersion != null ? " -> " + state.newVersion : ""));
+                        + (!result.latestVersion().isEmpty() ? " -> " + result.latestVersion() : ""));
                 status.set(LanguageManager.getString("ui.game_manager.update.ready"));
             }
-            case ResStateInfo.STATE_REPAIRING -> {
+            case REPAIR_REQUIRED -> {
                 hasUpdate.set(true);
                 stateDesc.set(LanguageManager.getString("ui.game_manager.update.repair"));
                 status.set(LanguageManager.getString("ui.game_manager.update.ready"));
             }
             default -> {
                 hasUpdate.set(false);
-                stateDesc.set("更新状态: " + state.state);
+                stateDesc.set("更新状态: " + result.state());
             }
         }
         this.checkResult = result;
@@ -131,8 +129,7 @@ public class GameUpdateViewModel extends BaseViewModel implements SceneLifecycle
     /** 根据 checkResult 刷新预下载按钮显隐 / 大小 / 完成态。 */
     private void refreshPreDownloadState() {
         boolean available = updateService.isPreDownloadAvailable(checkResult);
-        boolean done = checkResult != null && checkResult.stateInfo != null
-                && checkResult.stateInfo.preDownloadComplete;
+        boolean done = checkResult != null && checkResult.isPreDownloadComplete();
         //preDownloadVisible.set(available && !done);
         preDownloadVisible.set(true);
         preDownloadComplete.set(done);
@@ -161,14 +158,16 @@ public class GameUpdateViewModel extends BaseViewModel implements SceneLifecycle
             @Override
             protected Void call() {
                 final boolean[] successHolder = {false};
-                updateService.preDownload(
-                        (state, progressInfo) -> {
-                            if (progressInfo.totalSize > 0) {
-                                updateProgress(progressInfo.completedSize, progressInfo.totalSize);
+                updateService.preDownload(checkResult,
+                        progressInfo -> {
+                            if (progressInfo.totalBytes() > 0) {
+                                updateProgress(progressInfo.completedBytes(), progressInfo.totalBytes());
                             }
-                            updateMessage("预下载 " + progressInfo.progressPercentage + "%");
+                            long percent = progressInfo.fraction() >= 0
+                                    ? Math.round(progressInfo.fraction() * 100) : 0;
+                            updateMessage("预下载 " + percent + "%");
                         },
-                        result -> successHolder[0] = result.success);
+                        result -> successHolder[0] = result.successful());
                 if (!successHolder[0]) {
                     throw new IllegalStateException("预下载失败");
                 }
@@ -217,7 +216,7 @@ public class GameUpdateViewModel extends BaseViewModel implements SceneLifecycle
         if (busy.get()) {
             return;
         }
-        if (checkResult == null || checkResult.updateInfo == null) {
+        if (checkResult == null || !checkResult.hasUpdatePlan()) {
             NotificationManager.message(MessageInfo.warning(LanguageManager.getString("ui.game_manager.update.check_first")));
             return;
         }
@@ -233,13 +232,14 @@ public class GameUpdateViewModel extends BaseViewModel implements SceneLifecycle
             protected Void call() {
                 final boolean[] successHolder = {false};
                 updateService.runUpdate(checkResult,
-                        (state, doneSize, totalSize, doneCount, totalCount) -> {
-                            long pct = totalSize > 0
-                                    ? (long) (doneSize * 100.0 / totalSize) : 0;
+                        progressInfo -> {
+                            long pct = progressInfo.totalBytes() > 0
+                                    ? (long) (progressInfo.completedBytes() * 100.0
+                                    / progressInfo.totalBytes()) : 0;
                             updateProgress(pct, 100);
-                            updateMessage("state=" + state + " " + pct + "%");
+                            updateMessage("state=" + progressInfo.nativeState() + " " + pct + "%");
                         },
-                        result -> successHolder[0] = result.success);
+                        result -> successHolder[0] = result.successful());
                 if (!successHolder[0]) {
                     throw new IllegalStateException("更新失败");
                 }

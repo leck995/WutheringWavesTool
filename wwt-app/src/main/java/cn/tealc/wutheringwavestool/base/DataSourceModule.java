@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.base;
 
-import cn.tealc.download.GameResourceDownloadService;
+import cn.tealc.wwt.game.resource.GameResourceDownloadService;
+import cn.tealc.wwt.game.resource.GameResourceInstallService;
 import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
@@ -113,5 +114,12 @@ public class DataSourceModule extends AbstractModule {
     GameResourceDownloadService provideGameResourceDownloadService(
             HttpClient httpClient, ObjectMapper objectMapper) {
         return new GameResourceDownloadService(httpClient, objectMapper);
+    }
+
+    @Provides
+    @Singleton
+    GameResourceInstallService provideGameResourceInstallService(
+            GameResourceDownloadService downloadService, ObjectMapper objectMapper) {
+        return new GameResourceInstallService(downloadService, objectMapper);
     }
 }
