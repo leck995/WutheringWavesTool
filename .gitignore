@@ -38,6 +38,7 @@ build/
 
 ### Local workspace cleanup ###
 /backup/
+/.zcode/
 
 ### Local runtime / data ###
 /settings.json
