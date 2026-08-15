@@ -35,9 +35,9 @@ public class GameManagerView implements FxmlView<GameManagerViewModel>, Initiali
 
     private Parent advanceChild;
     private Parent baseChild;
-    private Parent downloadChild;
-    private Parent updateChild;
     private Parent assetChild;
+    @FXML
+    private ToggleButton assetTab;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -59,6 +59,11 @@ public class GameManagerView implements FxmlView<GameManagerViewModel>, Initiali
         NotificationManager.subscribe(NotificationKey.GAME_MANAGE_TO_CHOOSE,((s, objects) -> {
             createDirChooseView();
             headerPane.setDisable(true);
+        }));
+
+        NotificationManager.subscribe(NotificationKey.GAME_MANAGER_TO_ASSET,((s, objects) -> {
+            createAssetChild();
+            assetTab.setSelected(true);
         }));
 
     }
@@ -95,46 +100,10 @@ public class GameManagerView implements FxmlView<GameManagerViewModel>, Initiali
     }
 
     @FXML
-    void toDownloadChild(ActionEvent event) {
-        if (event.getSource() instanceof ToggleButton toggleButton){
-            if (toggleButton.isSelected()) {
-                if (downloadChild == null) {
-                    ViewTuple<GameDownloadView, GameDownloadViewModel> viewTuple = FluentViewLoader.fxmlView(GameDownloadView.class).load();
-                    downloadChild = viewTuple.getView();
-                }
-                content.getChildren().setAll(downloadChild);
-                Animations.slideInUp(downloadChild, Duration.millis(300)).play();
-            } else {
-                toggleButton.setSelected(true);
-            }
-        }
-    }
-
-    @FXML
-    void toUpdateChild(ActionEvent event) {
-        if (event.getSource() instanceof ToggleButton toggleButton){
-            if (toggleButton.isSelected()) {
-                if (updateChild == null) {
-                    ViewTuple<GameUpdateView, GameUpdateViewModel> viewTuple = FluentViewLoader.fxmlView(GameUpdateView.class).load();
-                    updateChild = viewTuple.getView();
-                }
-                content.getChildren().setAll(updateChild);
-                Animations.slideInUp(updateChild, Duration.millis(300)).play();
-            } else {
-                toggleButton.setSelected(true);
-            }
-        }
-    }
-
-    @FXML
     void toAssetChild(ActionEvent event) {
         if (event.getSource() instanceof ToggleButton toggleButton){
             if (toggleButton.isSelected()) {
-                if (assetChild == null) {
-                    ViewTuple<GameAssetView, GameAssetViewModel> viewTuple = FluentViewLoader.fxmlView(GameAssetView.class).load();
-                    assetChild = viewTuple.getView();
-                }
-                content.getChildren().setAll(assetChild);
+                createAssetChild();
                 Animations.slideInUp(assetChild, Duration.millis(300)).play();
             } else {
                 toggleButton.setSelected(true);
@@ -149,6 +118,15 @@ public class GameManagerView implements FxmlView<GameManagerViewModel>, Initiali
         }
         content.getChildren().setAll(baseChild);
         baseChild.toFront();
+    }
+
+    private void createAssetChild() {
+        if (assetChild == null) {
+            ViewTuple<GameAssetView, GameAssetViewModel> viewTuple = FluentViewLoader.fxmlView(GameAssetView.class).load();
+            assetChild = viewTuple.getView();
+        }
+        content.getChildren().setAll(assetChild);
+        assetChild.toFront();
     }
 
     private void createDirChooseView() {

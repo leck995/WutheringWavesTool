@@ -4,7 +4,6 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.teafx.utils.message.MessageInfo;
-import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.*;
 import javafx.event.ActionEvent;
@@ -13,7 +12,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.stage.DirectoryChooser;
 
@@ -27,8 +25,6 @@ public class GameDirChooseView implements FxmlView<GameDirChooseViewModel>, Init
     @FXML
     private StackPane content;
     @FXML
-    private StackPane downloadChild;
-    @FXML
     private StackPane localDirChild;
 
     @FXML
@@ -37,25 +33,9 @@ public class GameDirChooseView implements FxmlView<GameDirChooseViewModel>, Init
     private TextField localDirField;
 
     @FXML
-    private StackPane gameStartAppGroup;
-
-    @FXML
-    private TextField installDirField;
-
-    @FXML
-    private HBox serverPane;
-
-    @FXML
-    private ToggleGroup serverTypeInstallToggleGroup;
-
-    @FXML
     private ToggleGroup serverTypeToggleGroup;
     @FXML
     private Button finishLocalBtn;
-    @FXML
-    private Button startDownloadBtn;
-
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         initLocal();
@@ -99,10 +79,8 @@ public class GameDirChooseView implements FxmlView<GameDirChooseViewModel>, Init
         selectedChild.setVisible(true);
     }
     @FXML
-    void toDownloadChild(ActionEvent event) {
-      /*  content.getChildren().forEach(node -> node.setVisible(false));
-        downloadChild.setVisible(true);*/
-        NotificationManager.message(MessageInfo.warning("该功能尚在开发中，无法使用。"));
+    void toAssetManagement(ActionEvent event) {
+        NotificationManager.publish(NotificationKey.GAME_MANAGER_TO_ASSET);
     }
 
     @FXML
@@ -131,30 +109,6 @@ public class GameDirChooseView implements FxmlView<GameDirChooseViewModel>, Init
             NotificationManager.message(MessageInfo.warning(LanguageManager.getString("ui.game_manager.message01")));
         }
     }
-
-
-
-
-    @FXML
-    void setInstallDir(ActionEvent event) {
-        DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setTitle(LanguageManager.getString("ui.setting.file.game_dir.title"));
-        File file = directoryChooser.showDialog(content.getScene().getWindow());
-        if (file != null) {
-
-        }
-    }
-
-    @FXML
-    void startDownload(ActionEvent event) {
-
-    }
-
-
-
-
-
-
 
 
 

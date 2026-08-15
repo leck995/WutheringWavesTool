@@ -30,6 +30,7 @@ public class NotificationKey {
 
     public static final String GAME_MANAGER_TO_BASE="GAME_MANAGE_TO_BASE"; // 通知GameManagerView显示GameBaseSettingView
     public static final String GAME_MANAGE_TO_CHOOSE="GAME_MANAGE_TO_CHOOSE"; // 通知GameManagerView显示GameDirChooseView
+    public static final String GAME_MANAGER_TO_ASSET="GAME_MANAGER_TO_ASSET"; // 通知GameManagerView显示GameAssetView
 
 
 

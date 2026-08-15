@@ -162,7 +162,7 @@
                                                         mnemonicParsing="false" onAction="#pause"
                                                         styleClass="flat,asset-control-button">
                                                    <tooltip>
-                                                      <Tooltip text="%ui.game_manager.download.pause" />
+                                                      <Tooltip text="%ui.game_manager.asset.pause" />
                                                    </tooltip>
                                                    <graphic>
                                                       <FontIcon iconLiteral="mdomz-pause" iconSize="19" />
@@ -172,7 +172,7 @@
                                                         mnemonicParsing="false" onAction="#resume"
                                                         styleClass="flat,asset-control-button">
                                                    <tooltip>
-                                                      <Tooltip text="%ui.game_manager.download.resume" />
+                                                      <Tooltip text="%ui.game_manager.asset.resume" />
                                                    </tooltip>
                                                    <graphic>
                                                       <FontIcon iconLiteral="mdomz-play_arrow" iconSize="21" />
@@ -183,7 +183,7 @@
                                           <Button fx:id="stopBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
                                                   onAction="#stop" styleClass="flat,danger,asset-control-button">
                                              <tooltip>
-                                                <Tooltip text="%ui.game_manager.download.stop" />
+                                                <Tooltip text="%ui.game_manager.asset.stop" />
                                              </tooltip>
                                              <graphic>
                                                 <FontIcon iconLiteral="mdomz-stop" iconSize="19" />

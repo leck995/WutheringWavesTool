@@ -22,46 +22,7 @@
                         <HBox spacing="20.0">
                            <children>
                               <Button mnemonicParsing="false" onAction="#toLocalChild" styleClass="accent" text="已下载？设置安装游戏目录" />
-                              <Button mnemonicParsing="false" onAction="#toDownloadChild" styleClass="danger" text="未下载？下载新游戏" />
-                           </children>
-                        </HBox>
-                     </children>
-                  </VBox>
-               </children>
-            </StackPane>
-            <StackPane fx:id="downloadChild" layoutX="10.0" layoutY="10.0" visible="false">
-               <children>
-                  <VBox alignment="CENTER" fillWidth="false" maxHeight="400.0" maxWidth="400.0" prefHeight="200.0" prefWidth="100.0" spacing="20.0" StackPane.alignment="CENTER">
-                     <children>
-                        <Label layoutX="147.0" layoutY="119.0" styleClass="title-3" text="设置下载安装目录" />
-                        <Label styleClass="title-4" text="选取安装目录" />
-                        <StackPane maxWidth="350.0" styleClass="input-group">
-                           <children>
-                              <TextField fx:id="installDirField" editable="false" prefWidth="400.0" />
-                              <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setInstallDir" StackPane.alignment="CENTER_RIGHT">
-                                 <graphic>
-                                    <FontIcon iconLiteral="mdoal-folder" />
-                                 </graphic>
-                              </Button>
-                           </children>
-                        </StackPane>
-                        <Label styleClass="title-4" text="选取下载的区服" />
-                        <HBox>
-                           <children>
-                              <RadioButton accessibleText="default" mnemonicParsing="false" text="官服默认">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="serverTypeInstallToggleGroup" />
-                                 </toggleGroup>
-                              </RadioButton>
-                              <RadioButton accessibleText="bilibili" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="BILIBILI" toggleGroup="$serverTypeInstallToggleGroup" />
-                              <RadioButton accessibleText="wegame" layoutX="91.0" layoutY="10.0" mnemonicParsing="false" text="WeGame" toggleGroup="$serverTypeInstallToggleGroup" />
-                              <RadioButton accessibleText="global" layoutX="172.0" layoutY="10.0" mnemonicParsing="false" text="国际服" toggleGroup="$serverTypeInstallToggleGroup" />
-                           </children>
-                        </HBox>
-                        <HBox onDragDetected="#startDownload" spacing="20.0">
-                           <children>
-                              <Button fx:id="startDownloadBtn" disable="true" mnemonicParsing="false" onAction="#startDownload" prefWidth="100.0" styleClass="danger" text="下载" />
-                              <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#backToSelectedChild" prefWidth="100.0" text="返回" />
+                              <Button mnemonicParsing="false" onAction="#toAssetManagement" styleClass="danger" text="未下载？下载新游戏" />
                            </children>
                         </HBox>
                      </children>
@@ -74,7 +35,7 @@
                      <children>
                         <Label styleClass="title-3" text="设置本地安装目录" />
                         <Label styleClass="title-4" text="选取安装目录" />
-                        <StackPane fx:id="gameStartAppGroup" maxWidth="350.0" styleClass="input-group">
+                        <StackPane maxWidth="350.0" styleClass="input-group">
                            <children>
                               <TextField fx:id="localDirField" editable="false" prefWidth="400.0" />
                               <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#setLocalDir" StackPane.alignment="CENTER_RIGHT">
@@ -85,7 +46,7 @@
                            </children>
                         </StackPane>
                         <Label layoutX="158.0" layoutY="146.0" styleClass="title-4" text="选取区服" />
-                        <HBox fx:id="serverPane">
+                        <HBox>
                            <children>
                               <RadioButton accessibleText="default" mnemonicParsing="false" text="官服默认">
                                  <toggleGroup>
