@@ -1,11 +1,11 @@
 package cn.tealc.wutheringwavestool.base;
 
+import cn.tealc.download.GameResourceDownloadService;
 import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.Singleton;
-import com.kuro.game.GameManager;
 import com.kuro.kujiequ.KujiequApiContext;
 import com.kuro.kujiequ.KujiequManager;
 import com.kuro.launcher.LauncherManager;
@@ -110,7 +110,8 @@ public class DataSourceModule extends AbstractModule {
 
     @Provides
     @Singleton
-    GameManager provideGameManager(HttpClient httpClient, ObjectMapper objectMapper) {
-        return new GameManager(httpClient, objectMapper);
+    GameResourceDownloadService provideGameResourceDownloadService(
+            HttpClient httpClient, ObjectMapper objectMapper) {
+        return new GameResourceDownloadService(httpClient, objectMapper);
     }
 }

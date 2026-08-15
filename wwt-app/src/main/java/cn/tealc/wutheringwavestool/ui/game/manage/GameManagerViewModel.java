@@ -4,21 +4,12 @@ import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
-import com.google.inject.Inject;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.model.ui.ServerData;
-import cn.tealc.wutheringwavestool.thread.game.DownloadGameTask;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kuro.game.model.game.FileInfo;
-import com.kuro.game.model.game.GameResourceList;
-import com.kuro.game.model.launcher.item.CdnData;
-import com.kuro.game.model.launcher.LauncherResource;
 import de.saxsys.mvvmfx.MvvmFX;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -27,12 +18,6 @@ import javafx.collections.ObservableList;
 import javafx.util.Duration;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.http.HttpClient;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * @description:
@@ -40,12 +25,6 @@ import java.util.concurrent.Executors;
  * @create: 2025-02-10 19:18
  */
 public class GameManagerViewModel extends BaseViewModel {
-
-    @Inject
-    private ObjectMapper objectMapper;
-
-    @Inject
-    private HttpClient httpClient;
 
     private final ObservableList<ServerData> serverList = FXCollections.observableArrayList();
 
@@ -152,49 +131,6 @@ public class GameManagerViewModel extends BaseViewModel {
                 setGameRootDirSource(SourceType.GLOBAL);
             }
         }
-    }
-
-
-
-
-    public void download(){
-        try {
-            LauncherResource launcherResource = objectMapper.readValue(new File("response-bili.json"), LauncherResource.class);
-           // System.out.println(launcherResource.getDownloadResource().);
-            GameResourceList resource = objectMapper.readValue(new File("resources-bili.json"), GameResourceList.class);
-
-            List<FileInfo> fileList = resource.getResource().stream().filter(fileInfo -> fileInfo.getDest().startsWith("/Client/Binaries/Win64/ThirdParty/")).toList();
-
-            long sum = fileList.stream().mapToLong(FileInfo::getSize).sum();
-            System.out.println("size:" + sum);
-            List<CdnData> cdnList = launcherResource.getUpdateData().getCdnList();
-            cdnList.sort(Comparator.comparingInt(CdnData::getPing));
-            String host = cdnList.getFirst().getUrl() + launcherResource.getUpdateData().getResourcesBasePath();
-
-
-            File gameDir = new File("C:\\Leck\\Game\\Wuthering Waves\\Wuthering Waves Game");
-
-            if (gameDir != null) {
-
-                try (ExecutorService pool = Executors.newFixedThreadPool(8)) {
-                    for (FileInfo fileInfo : fileList) {
-                        DownloadGameTask task = new DownloadGameTask(httpClient, gameDir.getAbsolutePath(), host, fileInfo);
-                        task.setOnSucceeded(workerStateEvent -> System.out.println("Download completed" + fileInfo.getDest()));
-                        task.setOnFailed(workerStateEvent -> System.err.println("Download failed: " + fileInfo.getDest()));
-                        pool.submit(task);
-                    }
-                }
-            }
-        } catch (StreamReadException e) {
-            throw new RuntimeException(e);
-        } catch (DatabindException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-
-
     }
 
 

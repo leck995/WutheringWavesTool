@@ -1,17 +1,12 @@
-package com.kuro.game.model.game;
+package cn.tealc.download.model.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-/**
- * @description: 文件下载分块信息
- * @author: Leck
- * @create: 2025-06-20 10:36
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class ChunkInfo {
-    private long start;//开始位置
-    private long end;//结束位置
-    private String md5;//md5
+public final class ChunkInfo {
+    private long start;
+    private long end;
+    private String md5;
 
     public long getStart() {
         return start;

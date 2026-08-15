@@ -1,17 +1,12 @@
-package com.kuro.game.model.game;
+package cn.tealc.download.model.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
 
-/**
- * @description: 游戏资源文件信息
- * @author: Leck
- * @create: 2025-02-10 16:12
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class FileInfo {
-    private String dest; //文件的下载地址，以及保存地址
+public final class FileInfo {
+    private String dest;
     private String md5;
     private Long size;
     private List<ChunkInfo> chunkInfos;

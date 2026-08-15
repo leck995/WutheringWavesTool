@@ -3,31 +3,24 @@ package cn.tealc.wutheringwavestool.ui.system.home;
 import cn.tealc.wutheringwavestool.WwtApp;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.service.GameDownloadService;
+import cn.tealc.wutheringwavestool.service.GameResourceUpdateCoordinator;
 import cn.tealc.wutheringwavestool.service.GameTimeService;
-import cn.tealc.wutheringwavestool.service.TaskManageService;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
-import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.teafx.utils.message.MessageInfo;
-import cn.tealc.teafx.utils.message.MessageType;
-import cn.tealc.wutheringwavestool.thread.SignTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.google.inject.Inject;
-import com.kr.launcher.config.LauncherDownloadConfigHelper;
-import com.kr.launcher.config.ResourceConfigManager;
-import com.kr.launcher.model.LauncherDownloadConfig;
-import com.kuro.kujiequ.model.roleData.user.RoleInfo;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.SceneLifecycle;
 import javafx.animation.PauseTransition;
-import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.concurrent.Task;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,40 +43,15 @@ import java.util.stream.Stream;
 public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     private static final Logger LOG = LoggerFactory.getLogger(HomeViewModel.class);
 
-    public enum ResourceUpdateState {
-        HIDDEN,
-        CHECKING,
-        UP_TO_DATE,
-        UPDATE_AVAILABLE,
-        FAILED
-    }
-
     @Inject
     private GameTimeService gameTimeService;
     @Inject
-    private GameDownloadService gameDownloadService;
-    @Inject
-    private TaskManageService taskManageService;
+    private GameResourceUpdateCoordinator resourceUpdateCoordinator;
     private SimpleStringProperty gameTimeText = new SimpleStringProperty();
     private SimpleStringProperty gameTimeTipText = new SimpleStringProperty();
     private SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
-    private final SimpleObjectProperty<ResourceUpdateState> resourceUpdateState =
-            new SimpleObjectProperty<>(ResourceUpdateState.HIDDEN);
-    private final SimpleBooleanProperty resourceStatusVisible = new SimpleBooleanProperty(false);
-    private final SimpleBooleanProperty resourceRetryVisible = new SimpleBooleanProperty(false);
-    private final SimpleStringProperty resourceStatusText = new SimpleStringProperty();
-    private final SimpleStringProperty resourceVersionText = new SimpleStringProperty();
-    private final SimpleStringProperty updateActionText = new SimpleStringProperty();
-    private Task<ResourceVersionCheck> resourceCheckTask;
-
-    private record ResourceVersionCheck(String currentVersion, String latestVersion) {
-        boolean updateAvailable() {
-            return !currentVersion.equalsIgnoreCase(latestVersion);
-        }
-    }
 
     public void initialize() {
-        updateActionText.set(LanguageManager.getString("ui.home.button.start_update"));
         updateGameTime(GameAppListener.getInstance().getDuration());
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_GAME_TIME_UPDATE, (s, objects) -> {
             if (objects.length > 0) {
@@ -106,123 +74,12 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
 
     @Override
     public void onViewRemoved() {
-        Task<ResourceVersionCheck> task = resourceCheckTask;
-        resourceCheckTask = null;
-        if (task != null) {
-            task.cancel(true);
-        }
+        // 更新任务由全局协调器持有，离开首页后继续执行。
     }
 
     /** 首页创建后后台检查远端资源版本，不阻塞页面和游戏启动。 */
     public void checkGameResourceUpdate() {
-        if (resourceCheckTask != null) {
-            return;
-        }
-        if (GameResourcesManager.getGameExeBase() == null) {
-            setResourceUpdateState(ResourceUpdateState.HIDDEN);
-            return;
-        }
-
-        setResourceUpdateState(ResourceUpdateState.CHECKING);
-        resourceStatusText.set(LanguageManager.getString("ui.home.resource.checking"));
-        resourceVersionText.set(LanguageManager.getString("ui.home.resource.checking_detail"));
-        updateActionText.set(LanguageManager.getString("ui.home.button.start_update"));
-
-        SourceType configuredSource = Config.setting().getGameRootDirSource();
-        SourceType source = configuredSource != null ? configuredSource : SourceType.DEFAULT;
-        Task<ResourceVersionCheck> task = new Task<>() {
-            @Override
-            protected ResourceVersionCheck call() {
-                updateTitle(LanguageManager.getString("ui.home.resource.task"));
-                var response = gameDownloadService.getLauncherResource(source);
-                if (response == null || response.getCode() != 200 || response.getData() == null
-                        || response.getData().getUpdateData() == null) {
-                    throw new IllegalStateException("获取游戏资源版本失败");
-                }
-                String latestVersion = response.getData().getUpdateData().getVersion();
-                String currentVersion = readInstalledVersion();
-                if (!hasText(latestVersion)) {
-                    throw new IllegalStateException("远端游戏资源版本为空");
-                }
-                if (!hasText(currentVersion)) {
-                    throw new IllegalStateException("无法读取本地游戏资源版本");
-                }
-                return new ResourceVersionCheck(currentVersion, latestVersion);
-            }
-        };
-        resourceCheckTask = task;
-        task.setOnSucceeded(event -> {
-            if (!finishResourceCheck(task)) {
-                return;
-            }
-            applyResourceVersionCheck(task.getValue());
-        });
-        task.setOnFailed(event -> {
-            if (!finishResourceCheck(task)) {
-                return;
-            }
-            LOG.warn("首页检查游戏资源更新失败", task.getException());
-            showResourceCheckFailure();
-        });
-        task.setOnCancelled(event -> finishResourceCheck(task));
-        taskManageService.execute(task);
-    }
-
-    private boolean finishResourceCheck(Task<ResourceVersionCheck> task) {
-        if (resourceCheckTask != task) {
-            return false;
-        }
-        resourceCheckTask = null;
-        return true;
-    }
-
-    private void applyResourceVersionCheck(ResourceVersionCheck check) {
-        if (check.updateAvailable()) {
-            setResourceUpdateState(ResourceUpdateState.UPDATE_AVAILABLE);
-            resourceStatusText.set(LanguageManager.getString("ui.home.resource.update_available"));
-            resourceVersionText.set(String.format(
-                    LanguageManager.getString("ui.home.resource.version_diff"),
-                    check.currentVersion(), check.latestVersion()));
-            updateActionText.set(String.format(
-                    LanguageManager.getString("ui.home.button.update_to"), check.latestVersion()));
-        } else {
-            setResourceUpdateState(ResourceUpdateState.UP_TO_DATE);
-            resourceStatusText.set(LanguageManager.getString("ui.home.resource.up_to_date"));
-            resourceVersionText.set(String.format(
-                    LanguageManager.getString("ui.home.resource.current_version"),
-                    check.currentVersion()));
-            updateActionText.set(LanguageManager.getString("ui.home.button.start_update"));
-        }
-    }
-
-    private void showResourceCheckFailure() {
-        setResourceUpdateState(ResourceUpdateState.FAILED);
-        resourceStatusText.set(LanguageManager.getString("ui.home.resource.check_failed"));
-        resourceVersionText.set(LanguageManager.getString("ui.home.resource.check_failed_detail"));
-        updateActionText.set(LanguageManager.getString("ui.home.button.start_update"));
-    }
-
-    private void setResourceUpdateState(ResourceUpdateState state) {
-        resourceUpdateState.set(state);
-        resourceStatusVisible.set(state != ResourceUpdateState.HIDDEN);
-        resourceRetryVisible.set(state == ResourceUpdateState.FAILED);
-    }
-
-    private String readInstalledVersion() {
-        File gameDir = GameResourcesManager.getGameDir();
-        if (gameDir != null) {
-            File configFile = new File(gameDir, ResourceConfigManager.LAUNCHER_DOWNLOAD_CONFIG);
-            LauncherDownloadConfig localConfig = LauncherDownloadConfigHelper.get(configFile.getAbsolutePath());
-            if (localConfig != null && hasText(localConfig.version)) {
-                return localConfig.version;
-            }
-        }
-        String cachedVersion = Config.setting().getGameInstalledVersion();
-        return hasText(cachedVersion) ? cachedVersion : "";
-    }
-
-    private static boolean hasText(String value) {
-        return value != null && !value.isBlank();
+        resourceUpdateCoordinator.checkForUpdates();
     }
 
 
@@ -274,58 +131,24 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
 
 
     public void startUpdate() {
-        if (Config.setting().getGameRootDirSource() == SourceType.WE_GAME) {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,
-                    MessageInfo.warning(LanguageManager.getString("ui.home.message.type02")), false);
-            return;
-        }
-        String dir = Config.setting().getGameRootDir();
-        if (dir == null) {
-            warnLauncherNotFound(null);
-            return;
-        }
-
-        // 优先使用自定义更新器
-        String updaterPath = Config.setting().getGameOfficialLauncherDir();
-        if (updaterPath != null && !updaterPath.isEmpty()) {
-            File updater = new File(updaterPath);
-            if (updater.exists()) {
-                try {
-                    launchExe(updater);
-                } catch (IOException e) {
-                    LOG.warn("启动自定义更新器失败: {}", e.getMessage());
-                }
-            }
-            return;
-        }
-
-        // 回退到安装目录下的 launcher.exe
-        File gameDir = GameResourcesManager.getGameDir();
-        if (gameDir != null) {
-            File exe = new File(gameDir.getParentFile(), "launcher.exe");
-            if (exe.exists()) {
-                try {
-                    launchExe(exe);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                warnLauncherNotFound(exe.getPath());
-            }
-        } else {
-            warnLauncherNotFound(null);
-        }
+        resourceUpdateCoordinator.startUpdate();
     }
 
-    private void warnLauncherNotFound(String path) {
-        String msg = path != null
-                ? String.format(LanguageManager.getString("ui.home.message.type08"), path)
-                : LanguageManager.getString("ui.home.message.type08");
-        MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE, MessageInfo.warning(msg), false);
+    public void retryResourceUpdate() {
+        resourceUpdateCoordinator.retry();
     }
 
+    public void pauseResourceUpdate() {
+        resourceUpdateCoordinator.pause();
+    }
 
+    public void resumeResourceUpdate() {
+        resourceUpdateCoordinator.resume();
+    }
 
+    public void cancelResourceUpdate() {
+        resourceUpdateCoordinator.cancel();
+    }
     /**
      * 签到并启动鸣潮
      */
@@ -468,13 +291,6 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     }
 
 
-    private void launchExe(File exe) throws IOException {
-        ProcessBuilder pb = new ProcessBuilder(exe.getAbsolutePath());
-        pb.redirectOutput(ProcessBuilder.Redirect.DISCARD);
-        pb.redirectError(ProcessBuilder.Redirect.DISCARD);
-        pb.start();
-    }
-
     /**
      * @return void
      * @description: 删除游戏日志，用于保证每次启动日志都是最新的，不重复的
@@ -524,27 +340,55 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
         return startGameBtnDisabled;
     }
 
-    public SimpleObjectProperty<ResourceUpdateState> resourceUpdateStateProperty() {
-        return resourceUpdateState;
+    public ReadOnlyObjectProperty<GameResourceUpdateCoordinator.UpdateState> resourceUpdateStateProperty() {
+        return resourceUpdateCoordinator.stateProperty();
     }
 
-    public SimpleBooleanProperty resourceStatusVisibleProperty() {
-        return resourceStatusVisible;
+    public ReadOnlyBooleanProperty resourceStatusVisibleProperty() {
+        return resourceUpdateCoordinator.statusVisibleProperty();
     }
 
-    public SimpleBooleanProperty resourceRetryVisibleProperty() {
-        return resourceRetryVisible;
+    public ReadOnlyBooleanProperty resourceRetryVisibleProperty() {
+        return resourceUpdateCoordinator.retryVisibleProperty();
     }
 
-    public SimpleStringProperty resourceStatusTextProperty() {
-        return resourceStatusText;
+    public ReadOnlyStringProperty resourceStatusTextProperty() {
+        return resourceUpdateCoordinator.statusTextProperty();
     }
 
-    public SimpleStringProperty resourceVersionTextProperty() {
-        return resourceVersionText;
+    public ReadOnlyStringProperty resourceVersionTextProperty() {
+        return resourceUpdateCoordinator.detailTextProperty();
     }
 
-    public SimpleStringProperty updateActionTextProperty() {
-        return updateActionText;
+    public ReadOnlyStringProperty updateActionTextProperty() {
+        return resourceUpdateCoordinator.actionTextProperty();
+    }
+
+    public ReadOnlyBooleanProperty updateActionVisibleProperty() {
+        return resourceUpdateCoordinator.updateActionVisibleProperty();
+    }
+
+    public ReadOnlyDoubleProperty resourceProgressProperty() {
+        return resourceUpdateCoordinator.progressProperty();
+    }
+
+    public ReadOnlyStringProperty resourceProgressTextProperty() {
+        return resourceUpdateCoordinator.progressTextProperty();
+    }
+
+    public ReadOnlyBooleanProperty resourceProgressVisibleProperty() {
+        return resourceUpdateCoordinator.progressVisibleProperty();
+    }
+
+    public ReadOnlyBooleanProperty resourcePauseVisibleProperty() {
+        return resourceUpdateCoordinator.pauseVisibleProperty();
+    }
+
+    public ReadOnlyBooleanProperty resourceResumeVisibleProperty() {
+        return resourceUpdateCoordinator.resumeVisibleProperty();
+    }
+
+    public ReadOnlyBooleanProperty resourceCancelVisibleProperty() {
+        return resourceUpdateCoordinator.cancelVisibleProperty();
     }
 }

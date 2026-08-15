@@ -88,9 +88,11 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         bindVisibility(repairBtn, viewModel.showRepairProperty());
         bindVisibility(preDownloadBtn, viewModel.showPreDownloadProperty());
         bindVisibility(directorySection, viewModel.showDownloadProperty());
-        bindVisibility(operationControls, viewModel.operatingProperty());
+        bindVisibility(operationControls, viewModel.operatingProperty().and(
+                viewModel.pauseAvailableProperty().or(viewModel.stopAvailableProperty())));
         bindVisibility(pauseSeparator, viewModel.pauseAvailableProperty());
         bindVisibility(pauseControls, viewModel.pauseAvailableProperty());
+        bindVisibility(stopBtn, viewModel.stopAvailableProperty());
         bindVisibility(pauseBtn, Bindings.equal(
                 viewModel.operationStateProperty(), GameAssetViewModel.OperationState.RUNNING)
                 .and(viewModel.pauseAvailableProperty()));

@@ -195,6 +195,10 @@ public class GameAppListener implements WinUser.WinEventProc{
         return 0;
     }
 
+    public boolean isRunning() {
+        return start && game != null && gameIsAlive();
+    }
+
     public boolean isStartFromApp() {
         return startFromApp;
     }

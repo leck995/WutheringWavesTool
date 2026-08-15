@@ -7,6 +7,7 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
+import cn.tealc.wutheringwavestool.service.GameResourceUpdateCoordinator.UpdateState;
 import cn.tealc.wutheringwavestool.ui.item.HeaderImageSelectView;
 import cn.tealc.wutheringwavestool.ui.item.PlayTimeAlertItemView;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
@@ -17,6 +18,7 @@ import de.saxsys.mvvmfx.*;
 import javafx.animation.RotateTransition;
 import javafx.animation.Interpolator;
 import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -52,6 +54,8 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     private static final PseudoClass UP_TO_DATE = PseudoClass.getPseudoClass("up-to-date");
     private static final PseudoClass UPDATE_AVAILABLE = PseudoClass.getPseudoClass("update-available");
     private static final PseudoClass CHECK_FAILED = PseudoClass.getPseudoClass("check-failed");
+    private static final PseudoClass OPERATING = PseudoClass.getPseudoClass("operating");
+    private static final PseudoClass PAUSED = PseudoClass.getPseudoClass("paused");
 
     @InjectViewModel
     private HomeViewModel viewModel;
@@ -70,7 +74,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @FXML
     private Button startUpdateBtn;
     @FXML
-    private HBox resourceStatusPane;
+    private VBox resourceStatusPane;
     @FXML
     private Label resourceStatusLabel;
     @FXML
@@ -79,6 +83,18 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     private FontIcon resourceStatusIcon;
     @FXML
     private Button resourceRetryBtn;
+    @FXML
+    private VBox resourceProgressPane;
+    @FXML
+    private ProgressBar resourceProgressBar;
+    @FXML
+    private Label resourceProgressLabel;
+    @FXML
+    private Button resourcePauseBtn;
+    @FXML
+    private Button resourceResumeBtn;
+    @FXML
+    private Button resourceCancelBtn;
 
     private RotateTransition resourceCheckRotation;
 
@@ -87,14 +103,21 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        startGameBtn.disableProperty().bind(viewModel.startGameBtnDisabledProperty());
+        startGameBtn.disableProperty().bind(viewModel.startGameBtnDisabledProperty().or(
+                Bindings.equal(viewModel.resourceUpdateStateProperty(),
+                        UpdateState.APPLYING)));
         startUpdateBtn.textProperty().bind(viewModel.updateActionTextProperty());
+        bindVisibility(startUpdateBtn, viewModel.updateActionVisibleProperty());
         resourceStatusLabel.textProperty().bind(viewModel.resourceStatusTextProperty());
         resourceVersionLabel.textProperty().bind(viewModel.resourceVersionTextProperty());
-        resourceStatusPane.visibleProperty().bind(viewModel.resourceStatusVisibleProperty());
-        resourceStatusPane.managedProperty().bind(viewModel.resourceStatusVisibleProperty());
-        resourceRetryBtn.visibleProperty().bind(viewModel.resourceRetryVisibleProperty());
-        resourceRetryBtn.managedProperty().bind(viewModel.resourceRetryVisibleProperty());
+        bindVisibility(resourceStatusPane, viewModel.resourceStatusVisibleProperty());
+        bindVisibility(resourceRetryBtn, viewModel.resourceRetryVisibleProperty());
+        bindVisibility(resourceProgressPane, viewModel.resourceProgressVisibleProperty());
+        bindVisibility(resourcePauseBtn, viewModel.resourcePauseVisibleProperty());
+        bindVisibility(resourceResumeBtn, viewModel.resourceResumeVisibleProperty());
+        bindVisibility(resourceCancelBtn, viewModel.resourceCancelVisibleProperty());
+        resourceProgressBar.progressProperty().bind(viewModel.resourceProgressProperty());
+        resourceProgressLabel.textProperty().bind(viewModel.resourceProgressTextProperty());
 
         resourceCheckRotation = new RotateTransition(Duration.seconds(1.2), resourceStatusIcon);
         resourceCheckRotation.setByAngle(360);
@@ -125,16 +148,26 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         setChangeBgEnable();
     }
 
-    private void updateResourceStatusStyle(HomeViewModel.ResourceUpdateState state) {
-        boolean checking = state == HomeViewModel.ResourceUpdateState.CHECKING;
-        boolean upToDate = state == HomeViewModel.ResourceUpdateState.UP_TO_DATE;
-        boolean updateAvailable = state == HomeViewModel.ResourceUpdateState.UPDATE_AVAILABLE;
-        boolean failed = state == HomeViewModel.ResourceUpdateState.FAILED;
+    private void bindVisibility(Node node, javafx.beans.value.ObservableBooleanValue visible) {
+        node.visibleProperty().bind(visible);
+        node.managedProperty().bind(visible);
+    }
+
+    private void updateResourceStatusStyle(UpdateState state) {
+        boolean checking = state == UpdateState.CHECKING || state == UpdateState.PREPARING;
+        boolean upToDate = state == UpdateState.UP_TO_DATE || state == UpdateState.COMPLETED;
+        boolean updateAvailable = state == UpdateState.UPDATE_AVAILABLE;
+        boolean failed = state == UpdateState.FAILED || state == UpdateState.CANCELED;
+        boolean operating = state == UpdateState.PREPARING || state == UpdateState.DOWNLOADING
+                || state == UpdateState.APPLYING;
+        boolean paused = state == UpdateState.PAUSED;
 
         resourceStatusPane.pseudoClassStateChanged(CHECKING, checking);
         resourceStatusPane.pseudoClassStateChanged(UP_TO_DATE, upToDate);
         resourceStatusPane.pseudoClassStateChanged(UPDATE_AVAILABLE, updateAvailable);
         resourceStatusPane.pseudoClassStateChanged(CHECK_FAILED, failed);
+        resourceStatusPane.pseudoClassStateChanged(OPERATING, operating);
+        resourceStatusPane.pseudoClassStateChanged(PAUSED, paused);
         startUpdateBtn.pseudoClassStateChanged(UPDATE_AVAILABLE, updateAvailable);
 
         if (checking) {
@@ -146,7 +179,11 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
             resourceStatusIcon.setIconLiteral(switch (state) {
                 case UP_TO_DATE -> "mdoal-check_circle";
                 case UPDATE_AVAILABLE -> "mdomz-system_update_alt";
-                case FAILED -> "mdoal-error_outline";
+                case DOWNLOADING -> "mdoal-cloud_download";
+                case PAUSED -> "mdomz-pause";
+                case APPLYING -> "mdoal-build";
+                case COMPLETED -> "mdoal-check_circle";
+                case FAILED, CANCELED -> "mdoal-error_outline";
                 default -> "mdomz-sync";
             });
         }
@@ -191,7 +228,22 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
     @FXML
     void retryResourceUpdateCheck(ActionEvent event) {
-        viewModel.checkGameResourceUpdate();
+        viewModel.retryResourceUpdate();
+    }
+
+    @FXML
+    void pauseResourceUpdate(ActionEvent event) {
+        viewModel.pauseResourceUpdate();
+    }
+
+    @FXML
+    void resumeResourceUpdate(ActionEvent event) {
+        viewModel.resumeResourceUpdate();
+    }
+
+    @FXML
+    void cancelResourceUpdate(ActionEvent event) {
+        viewModel.cancelResourceUpdate();
     }
 
 

@@ -1,16 +1,11 @@
-package com.kuro.game.model.game;
+package cn.tealc.download.model.game;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.List;
 
-/**
- * @description:
- * @author: Leck
- * @create: 2025-02-10 16:16
- */
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class GameResourceList {
+public final class GameResourceList {
     private List<FileInfo> resource;
 
     public List<FileInfo> getResource() {

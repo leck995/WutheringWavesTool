@@ -183,11 +183,62 @@
     -fx-icon-color: -color-danger-fg;
 }
 
-.home .right .resource-retry-button {
+.home .right .resource-status:operating {
+    -fx-border-color: -color-accent-muted;
+}
+
+.home .right .resource-status:paused {
+    -fx-border-color: -color-warning-muted;
+}
+
+.home .right .resource-status:paused .resource-status-icon-box {
+    -fx-background-color: -color-warning-subtle;
+}
+
+.home .right .resource-status:paused .resource-status-icon {
+    -fx-icon-color: -color-warning-fg;
+}
+
+.home .right .resource-progress-pane {
+    -fx-padding: 0.15em 0 0 2.9em;
+}
+
+.home .right .resource-progress-bar {
+    -fx-min-height: 7px;
+    -fx-pref-height: 7px;
+    -fx-max-height: 7px;
+}
+
+.home .right .resource-progress-bar > .track {
+    -fx-background-color: -color-bg-inset;
+    -fx-background-insets: 0;
+    -fx-background-radius: 4px;
+}
+
+.home .right .resource-progress-bar > .bar {
+    -fx-background-color: -color-accent-emphasis;
+    -fx-background-insets: 0;
+    -fx-background-radius: 4px;
+    -fx-padding: 3.5px;
+}
+
+.home .right .resource-status:paused .resource-progress-bar > .bar {
+    -fx-background-color: -color-warning-emphasis;
+}
+
+.home .right .resource-progress-text {
+    -fx-font-size: 0.8571em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-muted;
+}
+
+.home .right .resource-control-button {
     -fx-min-width: 2.25em;
     -fx-pref-width: 2.25em;
+    -fx-max-width: 2.25em;
     -fx-min-height: 2.25em;
     -fx-pref-height: 2.25em;
+    -fx-max-height: 2.25em;
     -fx-padding: 0;
 }
 

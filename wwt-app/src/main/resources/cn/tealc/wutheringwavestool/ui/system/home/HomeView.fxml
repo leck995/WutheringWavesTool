@@ -7,9 +7,11 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
@@ -19,35 +21,78 @@
       <VBox alignment="TOP_RIGHT" spacing="8.0" styleClass="right" BorderPane.alignment="CENTER">
          <children>
             <VBox fx:id="roleBoardGroup" alignment="TOP_RIGHT" spacing="8.0" />
-            <HBox fx:id="resourceStatusPane" alignment="CENTER_LEFT" spacing="10.0"
-                  styleClass="resource-status">
+            <VBox fx:id="resourceStatusPane" spacing="9.0" styleClass="resource-status">
                <children>
-                  <StackPane minHeight="34.0" minWidth="34.0" prefHeight="34.0" prefWidth="34.0"
-                             styleClass="resource-status-icon-box">
+                  <HBox alignment="CENTER_LEFT" spacing="10.0">
                      <children>
-                        <FontIcon fx:id="resourceStatusIcon" iconLiteral="mdomz-sync" iconSize="19"
-                                  styleClass="resource-status-icon" />
+                        <StackPane minHeight="34.0" minWidth="34.0" prefHeight="34.0" prefWidth="34.0"
+                                   styleClass="resource-status-icon-box">
+                           <children>
+                              <FontIcon fx:id="resourceStatusIcon" iconLiteral="mdomz-sync" iconSize="19"
+                                        styleClass="resource-status-icon" />
+                           </children>
+                        </StackPane>
+                        <VBox minWidth="0.0" spacing="2.0" HBox.hgrow="ALWAYS">
+                           <children>
+                              <Label fx:id="resourceStatusLabel" maxWidth="1.7976931348623157E308"
+                                     styleClass="resource-status-title" textOverrun="ELLIPSIS" />
+                              <Label fx:id="resourceVersionLabel" maxWidth="1.7976931348623157E308"
+                                     styleClass="resource-status-detail" textOverrun="ELLIPSIS" />
+                           </children>
+                        </VBox>
+                        <Button fx:id="resourceRetryBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
+                                onAction="#retryResourceUpdateCheck" styleClass="flat,resource-control-button">
+                           <tooltip>
+                              <Tooltip text="%ui.home.resource.retry" />
+                           </tooltip>
+                           <graphic>
+                              <FontIcon iconLiteral="mdomz-refresh" iconSize="18" />
+                           </graphic>
+                        </Button>
                      </children>
-                  </StackPane>
-                  <VBox minWidth="0.0" spacing="2.0" HBox.hgrow="ALWAYS">
+                  </HBox>
+                  <VBox fx:id="resourceProgressPane" spacing="7.0" styleClass="resource-progress-pane">
                      <children>
-                        <Label fx:id="resourceStatusLabel" maxWidth="1.7976931348623157E308"
-                               styleClass="resource-status-title" textOverrun="ELLIPSIS" />
-                        <Label fx:id="resourceVersionLabel" maxWidth="1.7976931348623157E308"
-                               styleClass="resource-status-detail" textOverrun="ELLIPSIS" />
+                        <ProgressBar fx:id="resourceProgressBar" maxWidth="1.7976931348623157E308"
+                                     progress="0.0" styleClass="resource-progress-bar" />
+                        <HBox alignment="CENTER_LEFT" minHeight="30.0" spacing="4.0">
+                           <children>
+                              <Label fx:id="resourceProgressLabel" minWidth="52.0" styleClass="resource-progress-text"
+                                     text="0%" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <Button fx:id="resourcePauseBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
+                                      onAction="#pauseResourceUpdate" styleClass="flat,resource-control-button">
+                                 <tooltip>
+                                    <Tooltip text="%ui.home.resource.pause" />
+                                 </tooltip>
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdomz-pause" iconSize="18" />
+                                 </graphic>
+                              </Button>
+                              <Button fx:id="resourceResumeBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
+                                      onAction="#resumeResourceUpdate" styleClass="flat,resource-control-button">
+                                 <tooltip>
+                                    <Tooltip text="%ui.home.resource.resume" />
+                                 </tooltip>
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdomz-play_arrow" iconSize="20" />
+                                 </graphic>
+                              </Button>
+                              <Button fx:id="resourceCancelBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
+                                      onAction="#cancelResourceUpdate" styleClass="flat,danger,resource-control-button">
+                                 <tooltip>
+                                    <Tooltip text="%ui.home.resource.cancel" />
+                                 </tooltip>
+                                 <graphic>
+                                    <FontIcon iconLiteral="mdomz-stop" iconSize="18" />
+                                 </graphic>
+                              </Button>
+                           </children>
+                        </HBox>
                      </children>
                   </VBox>
-                  <Button fx:id="resourceRetryBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
-                          onAction="#retryResourceUpdateCheck" styleClass="flat,resource-retry-button">
-                     <tooltip>
-                        <Tooltip text="%ui.home.resource.retry" />
-                     </tooltip>
-                     <graphic>
-                        <FontIcon iconLiteral="mdomz-refresh" iconSize="18" />
-                     </graphic>
-                  </Button>
                </children>
-            </HBox>
+            </VBox>
          </children>
       </VBox>
    </right>
