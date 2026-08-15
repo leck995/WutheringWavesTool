@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.game.manage;
 
 import cn.tealc.wutheringwavestool.util.LanguageManager;
+import cn.tealc.wutheringwavestool.model.SourceType;
 import de.saxsys.mvvmfx.*;
 import javafx.beans.binding.Bindings;
 import javafx.css.PseudoClass;
@@ -49,6 +50,14 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     @FXML
     private TextField downloadDirField;
     @FXML
+    private RadioButton mainlandSourceRadio;
+    @FXML
+    private RadioButton bilibiliSourceRadio;
+    @FXML
+    private RadioButton globalSourceRadio;
+    @FXML
+    private ToggleGroup downloadSourceToggle;
+    @FXML
     private ProgressBar progressBar;
     @FXML
     private Label progressTextLabel;
@@ -81,6 +90,14 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         progressTextLabel.textProperty().bind(viewModel.progressTextProperty());
         tipLabel.textProperty().bind(viewModel.tipProperty());
         downloadDirField.textProperty().bindBidirectional(viewModel.downloadDirProperty());
+        viewModel.downloadSourceProperty().addListener((observable, oldSource, newSource) ->
+                selectDownloadSource(newSource));
+        downloadSourceToggle.selectedToggleProperty().addListener((observable, oldToggle, newToggle) -> {
+            if (newToggle != null && newToggle.getUserData() instanceof String sourceName) {
+                viewModel.downloadSourceProperty().set(SourceType.valueOf(sourceName));
+            }
+        });
+        selectDownloadSource(viewModel.downloadSourceProperty().get());
 
         // 按钮显隐
         bindVisibility(downloadBtn, viewModel.showDownloadProperty());
@@ -105,6 +122,9 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         updateBtn.disableProperty().bind(viewModel.operatingProperty());
         repairBtn.disableProperty().bind(viewModel.operatingProperty());
         preDownloadBtn.disableProperty().bind(viewModel.operatingProperty());
+        mainlandSourceRadio.disableProperty().bind(viewModel.operatingProperty());
+        bilibiliSourceRadio.disableProperty().bind(viewModel.operatingProperty());
+        globalSourceRadio.disableProperty().bind(viewModel.operatingProperty());
         downloadDirField.disableProperty().bind(viewModel.operatingProperty());
         chooseDirBtn.disableProperty().bind(viewModel.operatingProperty());
         pauseBtn.disableProperty().bind(Bindings.notEqual(
@@ -126,6 +146,17 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     private void bindVisibility(Node node, javafx.beans.value.ObservableBooleanValue visible) {
         node.visibleProperty().bind(visible);
         node.managedProperty().bind(visible);
+    }
+
+    private void selectDownloadSource(SourceType source) {
+        RadioButton radio = switch (source) {
+            case BILIBILI -> bilibiliSourceRadio;
+            case GLOBAL -> globalSourceRadio;
+            case DEFAULT, WE_GAME -> mainlandSourceRadio;
+        };
+        if (downloadSourceToggle.getSelectedToggle() != radio) {
+            downloadSourceToggle.selectToggle(radio);
+        }
     }
 
     private void updateOperationStateStyle(GameAssetViewModel.OperationState state) {

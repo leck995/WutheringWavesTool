@@ -4,10 +4,12 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -77,25 +79,51 @@
                            </children>
                         </HBox>
 
-                        <VBox fx:id="directorySection" spacing="9.0" styleClass="asset-section">
+                        <VBox fx:id="directorySection" spacing="12.0" styleClass="asset-section">
                            <children>
-                              <Label styleClass="section-title" text="%ui.game_manager.asset.dir" />
-                              <HBox alignment="CENTER_LEFT" spacing="8.0">
+                              <Label styleClass="asset-section-title" text="%ui.game_manager.asset.download_config" />
+                              <VBox spacing="9.0">
                                  <children>
-                                    <TextField fx:id="downloadDirField" maxWidth="1.7976931348623157E308"
-                                               promptText="%ui.game_manager.asset.dir_tip"
-                                               styleClass="asset-path-field" HBox.hgrow="ALWAYS" />
-                                    <Button fx:id="chooseDirBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
-                                            onAction="#chooseDownloadDir" styleClass="flat,asset-icon-button">
-                                       <tooltip>
-                                          <Tooltip text="%ui.game_manager.asset.dir" />
-                                       </tooltip>
-                                       <graphic>
-                                          <FontIcon iconLiteral="mdoal-folder_open" iconSize="19" />
-                                       </graphic>
-                                    </Button>
+                                    <Label styleClass="asset-form-label" text="%ui.game_manager.asset.server" />
+                                    <HBox spacing="15.0">
+                                       <children>
+                                          <RadioButton fx:id="mainlandSourceRadio" mnemonicParsing="false"
+                                                       styleClass="download-source-radio"
+                                                       text="%ui.game_manager.asset.server_mainland" userData="DEFAULT">
+                                             <toggleGroup>
+                                                <ToggleGroup fx:id="downloadSourceToggle" />
+                                             </toggleGroup>
+                                          </RadioButton>
+                                          <RadioButton fx:id="bilibiliSourceRadio" mnemonicParsing="false"
+                                                       styleClass="download-source-radio"
+                                                       text="%ui.game_manager.asset.server_bilibili"
+                                                       toggleGroup="$downloadSourceToggle" userData="BILIBILI" />
+                                          <RadioButton fx:id="globalSourceRadio" mnemonicParsing="false"
+                                                       styleClass="download-source-radio"
+                                                       text="%ui.game_manager.asset.server_global"
+                                                       toggleGroup="$downloadSourceToggle" userData="GLOBAL" />
+                                       </children>
+                                    </HBox>
+                                    <Label styleClass="asset-form-label" text="%ui.game_manager.asset.dir" />
+                                    <StackPane maxWidth="560.0" styleClass="input-group">
+                                       <children>
+                                          <TextField fx:id="downloadDirField" maxWidth="1.7976931348623157E308"
+                                                     promptText="%ui.game_manager.asset.dir_tip"
+                                                     styleClass="asset-path-field" />
+                                          <Button fx:id="chooseDirBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
+                                                  onAction="#chooseDownloadDir" styleClass="flat,asset-icon-button"
+                                                  StackPane.alignment="CENTER_RIGHT">
+                                             <tooltip>
+                                                <Tooltip text="%ui.game_manager.asset.dir" />
+                                             </tooltip>
+                                             <graphic>
+                                                <FontIcon iconLiteral="mdoal-folder_open" iconSize="19" />
+                                             </graphic>
+                                          </Button>
+                                       </children>
+                                    </StackPane>
                                  </children>
-                              </HBox>
+                              </VBox>
                            </children>
                         </VBox>
 
@@ -103,7 +131,7 @@
                            <children>
                               <HBox alignment="CENTER_LEFT">
                                  <children>
-                                    <Label styleClass="section-title" text="%ui.game_manager.asset.progress" />
+                                    <Label styleClass="asset-section-title" text="%ui.game_manager.asset.progress" />
                                     <Region HBox.hgrow="ALWAYS" />
                                     <Label fx:id="progressTextLabel" alignment="CENTER_RIGHT" minWidth="58.0"
                                            styleClass="progress-percent" text="0%" />
@@ -118,7 +146,7 @@
 
                         <VBox spacing="11.0" styleClass="action-section">
                            <children>
-                              <Label styleClass="section-title" text="%ui.game_manager.asset.actions" />
+                              <Label styleClass="asset-section-title" text="%ui.game_manager.asset.actions" />
                               <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="action-row">
                                  <children>
                                     <Button fx:id="downloadBtn" contentDisplay="LEFT" graphicTextGap="8.0"

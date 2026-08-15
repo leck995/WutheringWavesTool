@@ -12,6 +12,7 @@
 
 .game-asset-view .asset-content {
     -fx-fill-width: true;
+    -fx-max-width: 760px;
 }
 
 .game-asset-view .asset-title {
@@ -68,16 +69,13 @@
 }
 
 .game-asset-view .version-overview {
-    -fx-padding: 18px 20px;
-    -fx-background-color: -color-bg-subtle;
-    -fx-background-radius: 8px;
-    -fx-border-color: -color-border-muted;
-    -fx-border-radius: 8px;
+    -fx-padding: 8px 0 18px 0;
+    -fx-border-color: transparent transparent -color-border-muted transparent;
+    -fx-border-width: 0 0 1px 0;
 }
 
 .game-asset-view .overview-icon-box {
-    -fx-background-color: -color-accent-subtle;
-    -fx-background-radius: 7px;
+    -fx-background-color: transparent;
 }
 
 .game-asset-view .overview-icon {
@@ -109,15 +107,45 @@
 
 .game-asset-view .asset-section,
 .game-asset-view .action-section {
-    -fx-padding: 17px 0 0 0;
+    -fx-padding: 16px 0 0 0;
     -fx-border-color: -color-border-muted;
     -fx-border-width: 1px 0 0 0;
 }
 
-.game-asset-view .section-title {
-    -fx-font-size: 0.95em;
+.game-asset-view .asset-section-title {
+    -fx-font-size: 1.2em;
     -fx-font-weight: bold;
     -fx-text-fill: -color-fg-default;
+}
+
+.game-asset-view .asset-form-label {
+    -fx-font-size: 1.05em;
+    -fx-font-weight: normal;
+    -fx-text-fill: -color-fg-default;
+}
+
+.game-asset-view .download-source-radio {
+    -fx-background-color: transparent;
+}
+
+.game-asset-view .input-group {
+    -fx-background-radius: 20px;
+    -fx-padding: 5px 10px;
+    -fx-background-color: -color-bg-default-60;
+}
+
+.game-asset-view .input-group:hover {
+    -fx-background-color: -color-bg-default-90;
+}
+
+.game-asset-view .input-group > .text-field {
+    -fx-background-color: transparent;
+    -fx-padding: 0 40px 0 0;
+}
+
+.game-asset-view .input-group > .button {
+    -fx-background-color: transparent;
+    -fx-padding: 5px;
 }
 
 .game-asset-view .asset-path-field {

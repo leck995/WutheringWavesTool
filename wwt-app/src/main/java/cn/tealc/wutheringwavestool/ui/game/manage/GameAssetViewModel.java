@@ -23,10 +23,12 @@ import de.saxsys.mvvmfx.SceneLifecycle;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
@@ -102,9 +104,11 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     private final StringProperty progressText = new SimpleStringProperty("0%");
     private final StringProperty tip = new SimpleStringProperty("");
     private final StringProperty downloadDir = new SimpleStringProperty();
+    private final ObjectProperty<SourceType> downloadSource =
+            new SimpleObjectProperty<>(SourceType.DEFAULT);
 
     private ResourceCheckResult checkResult;
-    private SourceType sourceType = SourceType.DEFAULT;
+    private boolean downloadSourceInitialized;
 
     private long operationSequence;
     private volatile long activeOperationId = NO_OPERATION;
@@ -137,6 +141,20 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                 }
             };
 
+    public GameAssetViewModel() {
+        downloadSource.addListener((observable, oldSource, newSource) -> {
+            SourceType normalizedSource = normalizeDownloadSource(newSource);
+            if (newSource != normalizedSource) {
+                downloadSource.set(normalizedSource);
+                return;
+            }
+            if (downloadSourceInitialized && GameResourcesManager.getGameExeBase() == null) {
+                Config.setting().setGameRootDirSource(normalizedSource);
+                Config.setting().save();
+            }
+        });
+    }
+
     public void initialize() {
         syncResourceUpdateState(resourceUpdateCoordinator.stateProperty().get());
     }
@@ -146,7 +164,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         attachCoordinatorListeners();
         syncResourceUpdateState(resourceUpdateCoordinator.stateProperty().get());
         SourceType configuredSource = Config.setting().gameRootDirSourceProperty().get();
-        sourceType = configuredSource != null ? configuredSource : SourceType.DEFAULT;
+        downloadSource.set(normalizeDownloadSource(configuredSource));
+        downloadSourceInitialized = true;
         if (downloadDir.get() == null || downloadDir.get().isBlank()) {
             downloadDir.set(defaultDownloadDir());
         }
@@ -216,7 +235,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         if (gameDir == null) {
             return "";
         }
-        return new File(gameDir, "WwtBackup/" + sourceType.name().toLowerCase()).getAbsolutePath();
+        return new File(gameDir, "WwtBackup/" + downloadSource.get().name().toLowerCase()).getAbsolutePath();
     }
 
     /** 重新检查游戏版本；运行资源操作时忽略重复检查。 */
@@ -413,7 +432,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             return;
         }
 
-        SourceType selectedSource = sourceType;
+        SourceType selectedSource = downloadSource.get();
         long operationId = beginOperation(
                 OperationType.DOWNLOAD,
                 LanguageManager.getString("ui.game_manager.asset.downloading"));
@@ -786,6 +805,11 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         return value != null && !value.isBlank();
     }
 
+    private static SourceType normalizeDownloadSource(SourceType source) {
+        return source == SourceType.BILIBILI || source == SourceType.GLOBAL
+                ? source : SourceType.DEFAULT;
+    }
+
     public void setDownloadDir(String dir) {
         downloadDir.set(dir);
     }
@@ -848,6 +872,10 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     public StringProperty downloadDirProperty() {
         return downloadDir;
+    }
+
+    public ObjectProperty<SourceType> downloadSourceProperty() {
+        return downloadSource;
     }
 
     @Override
