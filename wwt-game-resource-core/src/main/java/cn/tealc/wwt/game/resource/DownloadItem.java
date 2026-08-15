@@ -164,6 +164,14 @@ public class DownloadItem {
             } else {
                 setState(DownloadState.FAILED, e.getMessage());
             }
+        } catch (RuntimeException e) {
+            if (stopFlag.get()) {
+                setState(DownloadState.CANCELED, null);
+            } else {
+                String message = e.getMessage() != null ? e.getMessage() : e.getClass().getSimpleName();
+                lastError = message;
+                setState(DownloadState.FAILED, "下载任务异常: " + message);
+            }
         }
         if (state == DownloadState.DOWNLOADING || state == DownloadState.WAITING) {
             setState(DownloadState.COMPLETE, null);

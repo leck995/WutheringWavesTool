@@ -12,12 +12,12 @@
 
 .game-asset-view .asset-content {
     -fx-fill-width: true;
-    -fx-max-width: 760px;
+    -fx-max-width: 1180px;
 }
 
 .game-asset-view .asset-title {
-    -fx-font-size: 1.65em;
-    -fx-font-weight: bold;
+    -fx-font-size: 1.5em;
+    -fx-font-weight: bolder;
     -fx-text-fill: -color-fg-default;
 }
 
@@ -206,6 +206,7 @@
     -fx-font-weight: bold;
 }
 
+
 .game-asset-view .operation-controls {
     -fx-min-height: 38px;
 }
@@ -217,4 +218,86 @@
 .game-asset-view .control-separator > .line {
     -fx-border-color: -color-border-default;
     -fx-border-width: 0 0 0 1px;
+}
+
+.game-asset-view .server-switch-column .radio-button {
+    -fx-background-color: transparent;
+}
+
+.game-asset-view .server-switch-status {
+    -fx-font-weight: bold;
+}
+.game-asset-view .asset-columns {
+    -fx-alignment: top-left;
+}
+
+.game-asset-view .asset-column {
+    -fx-background-color: -color-bg-default-40;
+    -fx-background-radius: 12px;
+    -fx-border-color: -color-border-muted;
+    -fx-border-radius: 12px;
+    -fx-border-width: 1px;
+    -fx-padding: 18px;
+}
+
+.game-asset-view .download-column .asset-section,
+.game-asset-view .download-column .action-section {
+    -fx-padding: 0 0 16px 0;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.game-asset-view .download-column .action-section {
+    -fx-padding: 16px 0 0 0;
+    -fx-border-width: 0;
+}
+
+.game-asset-view .server-switch-column .server-switch-radios {
+    -fx-padding: 4px 0;
+}
+
+.game-asset-view .server-switch-actions {
+    -fx-padding: 6px 0 0 0;
+}
+
+.game-asset-view .server-cache-row {
+    -fx-padding: 8px;
+    -fx-background-color: -color-bg-default-60;
+    -fx-background-radius: 8px;
+}
+
+.game-asset-view .server-cache-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+}
+
+.game-asset-view .server-switch-icon-button {
+    -fx-min-width: 32px;
+    -fx-pref-width: 32px;
+    -fx-max-width: 32px;
+    -fx-min-height: 32px;
+    -fx-pref-height: 32px;
+    -fx-max-height: 32px;
+    -fx-padding: 0;
+}
+
+.game-asset-view .server-switch-icon-button:hover {
+    -fx-background-color: -color-bg-default-90;
+}
+
+.game-asset-view .server-switch-icon-button .ikonli-font-icon {
+    -fx-icon-color: -color-accent-fg;
+    -fx-fill: -color-accent-fg;
+}
+
+.game-asset-view .danger-action .ikonli-font-icon {
+    -fx-icon-color: -color-danger-fg;
+    -fx-fill: -color-danger-fg;
+}
+
+.game-asset-view .server-switch-column .text-tip {
+    -fx-wrap-text: true;
+}
+
+.game-asset-view .danger-action {
+    -fx-text-fill: -color-danger-fg;
 }

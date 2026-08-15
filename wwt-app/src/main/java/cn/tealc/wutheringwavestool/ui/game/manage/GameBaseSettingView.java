@@ -4,7 +4,6 @@ import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.*;
@@ -14,7 +13,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.kordamp.ikonli.javafx.FontIcon;
 import org.kordamp.ikonli.material2.Material2AL;
@@ -29,7 +27,7 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
     @FXML
     private TextField gameDirField;
     @FXML
-    private ToggleGroup gameSourceTypeToggleGroup;
+    private Label currentServerLabel;
     @FXML
     private TextField gameStartAppField;
     @FXML
@@ -38,14 +36,6 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
     private RadioButton gameStartAppRadioDefault;
     @FXML
     private ToggleGroup gameStartAppType;
-    @FXML
-    private RadioButton sourceTypeBtn01;
-    @FXML
-    private RadioButton sourceTypeBtn02;
-    @FXML
-    private RadioButton sourceTypeBtn03;
-    @FXML
-    private RadioButton sourceTypeBtn04;
     @FXML
     private TextField gameOfficialLauncherDirField;
     @FXML
@@ -65,35 +55,8 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
     private void initGameAsset(){
         gameDirField.setEditable(false);
         gameDirField.textProperty().bindBidirectional(viewModel.gameDirProperty());
+        currentServerLabel.textProperty().bind(viewModel.currentServerProperty());
 
-        sourceTypeBtn01.disableProperty().bind(viewModel.sourceTypeDisabled01Property());
-        sourceTypeBtn02.disableProperty().bind(viewModel.sourceTypeDisabled02Property());
-        sourceTypeBtn03.disableProperty().bind(viewModel.sourceTypeDisabled03Property());
-        sourceTypeBtn04.disableProperty().bind(viewModel.sourceTypeDisabled04Property());
-
-
-        viewModel.gameSourceTypeProperty().addListener((observable, oldValue, newValue) -> {
-            updateSelectedSourceType(newValue);
-        });
-        updateSelectedSourceType(viewModel.getGameSourceType());
-
-/*        gameSourceTypeToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == gameSourceTypeToggleGroup.getToggles().get(0)) {
-                //viewModel.setLocalSourceType(SourceType.DEFAULT);
-                boolean success = viewModel.changeServer(SourceType.DEFAULT);
-                if (success) {
-                    gameStartAppField.setDisable(false);
-                }
-
-
-            }else if(newValue == gameSourceTypeToggleGroup.getToggles().get(1)) {
-                //viewModel.setLocalSourceType(SourceType.BILIBILI);
-            }else if(newValue == gameSourceTypeToggleGroup.getToggles().get(2)) {
-                //viewModel.setLocalSourceType(SourceType.WE_GAME);
-            }else if(newValue == gameSourceTypeToggleGroup.getToggles().get(3)) {
-                //viewModel.setLocalSourceType(SourceType.GLOBAL);
-            }
-        });*/
         gameStartAppField.textProperty().bindBidirectional(viewModel.gameAppStartPathProperty());
         gameStartAppGroup.disableProperty().bind(gameStartAppType.selectedToggleProperty().isEqualTo(gameStartAppRadioDefault));
 
@@ -124,25 +87,6 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
             gameDxToggleGroup.selectToggle(gameDxToggleGroup.getToggles().getLast());
         }
     }
-
-
-
-
-
-    private void updateSelectedSourceType(SourceType sourceType) {
-        if (sourceType  == SourceType.DEFAULT) {
-            gameSourceTypeToggleGroup.selectToggle(gameSourceTypeToggleGroup.getToggles().get(0));
-        }
-        else if (sourceType  == SourceType.BILIBILI) {
-            gameSourceTypeToggleGroup.selectToggle(gameSourceTypeToggleGroup.getToggles().get(1));
-        }
-        else if (sourceType  == SourceType.WE_GAME) {
-            gameSourceTypeToggleGroup.selectToggle(gameSourceTypeToggleGroup.getToggles().get(2));
-        } else if(sourceType  == SourceType.GLOBAL) {
-            gameSourceTypeToggleGroup.selectToggle(gameSourceTypeToggleGroup.getToggles().get(3));
-        }
-    }
-
 
     @FXML
     void setGameUpdaterApp(ActionEvent event) {
@@ -187,26 +131,6 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
 
         NotificationManager.publish(NotificationKey.GAME_MANAGE_TO_CHOOSE);
     }
-
-    @FXML
-    void setSelectedGameType(ActionEvent event) {
-/*        Object source = event.getSource();
-        if (source instanceof RadioButton button) {
-            switch (button.getAccessibleText()) {
-                case "default"-> {
-                    viewModel.setGameRootDirSource(SourceType.DEFAULT);
-                }
-                case "wegame" -> {
-                    viewModel.setGameRootDirSource(SourceType.WE_GAME);
-                    NotificationManager.message(new MessageInfo(MessageType.WARNING,"WeGame暂时无法直接启动，需要替换文件，具体请前往设置加群获取教程", Duration.seconds(5)));
-                }
-                case "global" -> {
-                    viewModel.setGameRootDirSource(SourceType.GLOBAL);
-                }
-            }
-        }*/
-    }
-
     @FXML
     void setAppPathModel(ActionEvent event) {
         Object source = event.getSource();
@@ -246,26 +170,6 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
     }
 
 
-/*    void setSelectedGameType(ActionEvent event) {
-        Button cancelBtn = ButtonBuilder.create().title("取消")
-                .cancel().build();
-        Button okBtn = ButtonBuilder.create().title("确定")
-                .styleClass(Styles.DANGER)
-                .ok()
-                .action(actionEvent -> {
-                    Object source = event.getSource();
-                    if (source instanceof RadioButton button) {
-
-                    }
-                    cancelBtn.fire();
-                }).build();
-        JFXDialogLayout layout = DialogBuilder.create()
-                .title("提示")
-                .message("请确认选取的区服正确，错误的区服将会影响游戏的正确更新")
-                .buttons(okBtn, cancelBtn)
-                .build();
-        NotificationManager.dialog(layout);
-    }*/
 
     class ParamListCell extends ListCell<String>{
         private final Button btn;

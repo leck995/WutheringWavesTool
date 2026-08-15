@@ -3,6 +3,7 @@ package cn.tealc.wwt.game.resource;
 import cn.tealc.wwt.game.resource.model.DownloadInfo;
 import cn.tealc.wwt.game.resource.model.DownloadState;
 import cn.tealc.wwt.game.resource.util.FileUtils;
+import cn.tealc.wwt.game.resource.util.UrlUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,13 +183,13 @@ public class DownloadManager {
      * 为某文件按各 CDN 基址生成候选 URL 列表（首个即主 URL）。
      * 基址列表为空时退化为使用 info.url() 本身。
      */
-    private List<String> resolveUrlsByBase(DownloadInfo info, List<String> bases) {
+    static List<String> resolveUrlsByBase(DownloadInfo info, List<String> bases) {
         if (bases == null || bases.isEmpty()) {
             return List.of(info.url());
         }
         List<String> urls = new ArrayList<>();
         for (String base : bases) {
-            urls.add(base + info.url());
+            urls.add(UrlUtils.join(base, info.url()));
         }
         return urls;
     }

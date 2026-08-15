@@ -21,7 +21,7 @@ import java.util.ResourceBundle;
 
 /**
  * 统一「游戏资源管理」视图：全量下载 + 增量更新 + 预下载 + 校验修复合一，
- * 单进度条。作为 GameManagerView 的第 5 个子 tab。
+ * 单进度条，作为 GameManagerView 的资源管理子 tab。
  */
 public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializable {
     private static final PseudoClass RUNNING_STATE = PseudoClass.getPseudoClass("running");
@@ -80,6 +80,28 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     private Button stopBtn;
     @FXML
     private Button chooseDirBtn;
+    @FXML
+    private ToggleGroup serverSwitchSourceToggle;
+    @FXML
+    private RadioButton serverSwitchMainlandRadio;
+    @FXML
+    private RadioButton serverSwitchBilibiliRadio;
+    @FXML
+    private Label serverSwitchStatusLabel;
+    @FXML
+    private Label serverSwitchDetailLabel;
+    @FXML
+    private ProgressBar serverSwitchProgress;
+    @FXML
+    private Button redownloadMainlandButton;
+    @FXML
+    private Button redownloadBilibiliButton;
+    @FXML
+    private Button deleteMainlandButton;
+    @FXML
+    private Button deleteBilibiliButton;
+
+    private boolean serverSwitchSourceInitialized;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -141,6 +163,78 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         viewModel.operationStateProperty().addListener((observable, oldState, newState) ->
                 updateOperationStateStyle(newState));
         updateOperationStateStyle(viewModel.operationStateProperty().get());
+        initServerSwitch();
+    }
+
+    private void initServerSwitch() {
+        serverSwitchStatusLabel.textProperty().bind(viewModel.serverSwitchStatusTextProperty());
+        serverSwitchDetailLabel.textProperty().bind(viewModel.serverSwitchDetailTextProperty());
+        serverSwitchProgress.progressProperty().bind(viewModel.serverSwitchProgressProperty());
+        redownloadMainlandButton.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
+        redownloadBilibiliButton.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
+        deleteMainlandButton.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
+        deleteBilibiliButton.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
+        serverSwitchMainlandRadio.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
+        serverSwitchBilibiliRadio.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
+        viewModel.serverSwitchOperatingProperty().addListener((observable, oldValue, running) -> {
+            if (!running) {
+                selectServerSource(viewModel.currentGameSourceProperty().get());
+            }
+        });
+
+        viewModel.currentGameSourceProperty().addListener((observable, oldSource, newSource) ->
+                selectServerSource(newSource));
+        serverSwitchSourceToggle.selectedToggleProperty().addListener((observable, oldToggle, newToggle) -> {
+            if (!serverSwitchSourceInitialized || newToggle == null
+                    || !(newToggle.getUserData() instanceof String sourceName)) {
+                return;
+            }
+            SourceType target = SourceType.valueOf(sourceName);
+            if (target != viewModel.currentGameSourceProperty().get()) {
+                confirmServerSwitch(target);
+            }
+        });
+        selectServerSource(viewModel.currentGameSourceProperty().get());
+        serverSwitchSourceInitialized = true;
+    }
+
+    private void selectServerSource(SourceType source) {
+        RadioButton target = source == SourceType.BILIBILI ? serverSwitchBilibiliRadio : serverSwitchMainlandRadio;
+        if (serverSwitchSourceToggle.getSelectedToggle() != target) {
+            serverSwitchSourceToggle.selectToggle(target);
+        }
+    }
+
+    private void confirmServerSwitch(SourceType target) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(LanguageManager.getString("ui.game_manager.base.server_switch"));
+        alert.setHeaderText(null);
+        alert.setContentText(LanguageManager.getString("ui.game_manager.base.server_switch.confirm"));
+        if (alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+            viewModel.changeServer(target);
+        } else {
+            selectServerSource(viewModel.currentGameSourceProperty().get());
+        }
+    }
+
+    private void confirmRedownload(SourceType source) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(LanguageManager.getString("ui.game_manager.base.server_switch"));
+        alert.setHeaderText(null);
+        alert.setContentText(LanguageManager.getString("ui.game_manager.base.server_switch.redownload_confirm"));
+        if (alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+            viewModel.redownloadServerFiles(source);
+        }
+    }
+
+    private void confirmDeleteCache(SourceType source) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(LanguageManager.getString("ui.game_manager.base.server_switch"));
+        alert.setHeaderText(null);
+        alert.setContentText(LanguageManager.getString("ui.game_manager.base.server_switch.delete_confirm"));
+        if (alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
+            viewModel.deleteServerCache(source);
+        }
     }
 
     private void bindVisibility(Node node, javafx.beans.value.ObservableBooleanValue visible) {
@@ -215,5 +309,25 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     @FXML
     void stop(ActionEvent event) {
         viewModel.stop();
+    }
+
+    @FXML
+    void redownloadMainlandFiles(ActionEvent event) {
+        confirmRedownload(SourceType.DEFAULT);
+    }
+
+    @FXML
+    void redownloadBilibiliFiles(ActionEvent event) {
+        confirmRedownload(SourceType.BILIBILI);
+    }
+
+    @FXML
+    void deleteMainlandCache(ActionEvent event) {
+        confirmDeleteCache(SourceType.DEFAULT);
+    }
+
+    @FXML
+    void deleteBilibiliCache(ActionEvent event) {
+        confirmDeleteCache(SourceType.BILIBILI);
     }
 }

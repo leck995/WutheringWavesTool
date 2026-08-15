@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.TextField?>
@@ -35,17 +36,10 @@
                                     </Button>
                                  </children>
                               </StackPane>
-                              <Label layoutX="10.0" layoutY="10.0" styleClass="title-4" text="%ui.game_manager.base.game_server" />
-                              <HBox spacing="15.0">
+                              <HBox alignment="CENTER_LEFT" spacing="8.0">
                                  <children>
-                                    <RadioButton fx:id="sourceTypeBtn01" accessibleText="default" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio01">
-                                       <toggleGroup>
-                                          <ToggleGroup fx:id="gameSourceTypeToggleGroup" />
-                                       </toggleGroup>
-                                    </RadioButton>
-                                    <RadioButton fx:id="sourceTypeBtn02" accessibleText="bilibili" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio04" toggleGroup="$gameSourceTypeToggleGroup" />
-                                    <RadioButton fx:id="sourceTypeBtn03" accessibleText="wegame" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio02" toggleGroup="$gameSourceTypeToggleGroup" />
-                                    <RadioButton fx:id="sourceTypeBtn04" accessibleText="global" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" onAction="#setSelectedGameType" text="%ui.setting.default.game_dir.radio03" toggleGroup="$gameSourceTypeToggleGroup" />
+                                    <Label styleClass="title-4" text="%ui.game_manager.base.game_server" />
+                                    <Label fx:id="currentServerLabel" styleClass="text-subtle" text="-" />
                                  </children>
                               </HBox>
                               <Label layoutX="10.0" layoutY="10.0" styleClass="title-4" text="%ui.setting.default.app_path" />
@@ -109,7 +103,6 @@
                         <Insets />
                      </HBox.margin>
                   </VBox>
-                  <VBox prefHeight="200.0" prefWidth="300.0" styleClass="right" />
                </children>
             </HBox>
          </content>

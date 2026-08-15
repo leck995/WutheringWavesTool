@@ -10,6 +10,7 @@ import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.service.GameResourceUpdateCoordinator;
+import cn.tealc.wutheringwavestool.service.GameServerSwitchCoordinator;
 import cn.tealc.wutheringwavestool.service.GameUpdateService;
 import cn.tealc.wutheringwavestool.service.TaskManageService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
@@ -24,8 +25,11 @@ import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -84,6 +88,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     private TaskManageService taskManageService;
     @Inject
     private GameResourceUpdateCoordinator resourceUpdateCoordinator;
+    @Inject
+    private GameServerSwitchCoordinator serverSwitchCoordinator;
 
     private final BooleanProperty operating = new SimpleBooleanProperty(false);
     private final BooleanProperty pauseAvailable = new SimpleBooleanProperty(false);
@@ -157,10 +163,56 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     public void initialize() {
         syncResourceUpdateState(resourceUpdateCoordinator.stateProperty().get());
+        serverSwitchCoordinator.refresh();
+    }
+
+    public boolean changeServer(SourceType source) {
+        if (source != SourceType.DEFAULT && source != SourceType.BILIBILI) {
+            return false;
+        }
+        serverSwitchCoordinator.switchTo(source);
+        return true;
+    }
+
+    public void redownloadServerFiles(SourceType source) {
+        if (source == SourceType.DEFAULT || source == SourceType.BILIBILI) {
+            serverSwitchCoordinator.redownloadRequiredFiles(source);
+        }
+    }
+
+    public void deleteServerCache(SourceType source) {
+        if (source == SourceType.DEFAULT || source == SourceType.BILIBILI) {
+            serverSwitchCoordinator.deleteCache(source);
+        }
+    }
+
+    public void refreshServerSwitchState() {
+        serverSwitchCoordinator.refresh();
+    }
+
+    public ReadOnlyObjectProperty<SourceType> currentGameSourceProperty() {
+        return Config.setting().gameRootDirSourceProperty();
+    }
+
+    public ReadOnlyBooleanProperty serverSwitchOperatingProperty() {
+        return serverSwitchCoordinator.operatingProperty();
+    }
+
+    public ReadOnlyDoubleProperty serverSwitchProgressProperty() {
+        return serverSwitchCoordinator.progressProperty();
+    }
+
+    public ReadOnlyStringProperty serverSwitchStatusTextProperty() {
+        return serverSwitchCoordinator.statusTextProperty();
+    }
+
+    public ReadOnlyStringProperty serverSwitchDetailTextProperty() {
+        return serverSwitchCoordinator.detailTextProperty();
     }
 
     @Override
     public void onViewAdded() {
+        serverSwitchCoordinator.refresh();
         attachCoordinatorListeners();
         syncResourceUpdateState(resourceUpdateCoordinator.stateProperty().get());
         SourceType configuredSource = Config.setting().gameRootDirSourceProperty().get();

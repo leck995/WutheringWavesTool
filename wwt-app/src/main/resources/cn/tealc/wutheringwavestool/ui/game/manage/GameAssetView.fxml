@@ -28,7 +28,7 @@
          <content>
             <StackPane alignment="TOP_CENTER">
                <children>
-                  <VBox maxWidth="920.0" spacing="20.0" styleClass="asset-content">
+                  <VBox maxWidth="1180.0" spacing="20.0" styleClass="asset-content">
                      <children>
                         <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="asset-header">
                            <children>
@@ -79,6 +79,11 @@
                            </children>
                         </HBox>
 
+                        <HBox alignment="TOP_LEFT" fillHeight="true" spacing="24.0" styleClass="asset-columns">
+                           <children>
+                              <VBox minWidth="0.0" prefWidth="560.0" spacing="16.0"
+                                    styleClass="asset-column,download-column" HBox.hgrow="ALWAYS">
+                                 <children>
                         <VBox fx:id="directorySection" spacing="12.0" styleClass="asset-section">
                            <children>
                               <Label styleClass="asset-section-title" text="%ui.game_manager.asset.download_config" />
@@ -165,9 +170,13 @@
                                     </Button>
                                     <Button fx:id="repairBtn" contentDisplay="LEFT" graphicTextGap="8.0"
                                             mnemonicParsing="false" onAction="#repair"
-                                            styleClass="button-outlined,asset-action" text="%ui.game_manager.asset.repair">
+                                            styleClass="rounded,button-outlined,asset-action"
+                                            text="%ui.game_manager.asset.repair">
+                                       <tooltip>
+                                          <Tooltip text="%ui.game_manager.asset.repair" />
+                                       </tooltip>
                                        <graphic>
-                                          <FontIcon iconLiteral="mdoal-build" iconSize="18" />
+                                          <FontIcon iconLiteral="mdoal-check_circle" iconSize="18" />
                                        </graphic>
                                     </Button>
                                     <Button fx:id="preDownloadBtn" contentDisplay="LEFT" graphicTextGap="8.0"
@@ -223,9 +232,99 @@
                               </HBox>
                            </children>
                         </VBox>
+
+                                 </children>
+                              </VBox>
+
+                              <VBox minWidth="300.0" prefWidth="360.0" spacing="14.0"
+                                    styleClass="asset-column,server-switch-column" HBox.hgrow="NEVER">
+                        <children>
+                           <Label styleClass="asset-section-title" text="%ui.game_manager.base.server_switch" />
+                           <Label styleClass="asset-form-label" text="%ui.game_manager.base.game_server" />
+                           <HBox spacing="15.0">
+                              <children>
+                                 <RadioButton fx:id="serverSwitchMainlandRadio" mnemonicParsing="false"
+                                              text="%ui.game_manager.base.server_switch.mainland" userData="DEFAULT">
+                                    <toggleGroup>
+                                       <ToggleGroup fx:id="serverSwitchSourceToggle" />
+                                    </toggleGroup>
+                                 </RadioButton>
+                                 <RadioButton fx:id="serverSwitchBilibiliRadio" mnemonicParsing="false"
+                                              text="%ui.game_manager.base.server_switch.bilibili" toggleGroup="$serverSwitchSourceToggle"
+                                              userData="BILIBILI" />
+                              </children>
+                           </HBox>
+                           <Label fx:id="serverSwitchStatusLabel" styleClass="server-switch-status" wrapText="true" />
+                           <Label fx:id="serverSwitchDetailLabel" styleClass="text-tip" wrapText="true" />
+                           <ProgressBar fx:id="serverSwitchProgress" maxWidth="1.7976931348623157E308"
+                                        progress="0.0" styleClass="asset-progress-bar" />
+                           <VBox spacing="8.0" styleClass="server-switch-actions">
+                              <children>
+                                 <Label styleClass="asset-form-label"
+                                        text="%ui.game_manager.base.server_switch.cache_management" />
+                                 <HBox alignment="CENTER_LEFT" spacing="8.0" styleClass="server-cache-row">
+                                    <children>
+                                       <Label styleClass="server-cache-label"
+                                              maxWidth="1.7976931348623157E308" text="%ui.game_manager.base.server_switch.mainland" HBox.hgrow="ALWAYS" />
+                                       <Button fx:id="redownloadMainlandButton" contentDisplay="GRAPHIC_ONLY"
+                                               mnemonicParsing="false" onAction="#redownloadMainlandFiles"
+                                               styleClass="flat,server-switch-icon-button">
+                                          <tooltip>
+                                             <Tooltip text="%ui.game_manager.base.server_switch.redownload_mainland" />
+                                          </tooltip>
+                                          <graphic>
+                                             <FontIcon iconLiteral="mdoal-cloud_download" iconSize="18" />
+                                          </graphic>
+                                       </Button>
+                                       <Button fx:id="deleteMainlandButton" contentDisplay="GRAPHIC_ONLY"
+                                               mnemonicParsing="false" onAction="#deleteMainlandCache"
+                                               styleClass="flat,server-switch-icon-button,danger-action">
+                                          <tooltip>
+                                             <Tooltip text="%ui.game_manager.base.server_switch.delete_mainland" />
+                                          </tooltip>
+                                          <graphic>
+                                             <FontIcon iconLiteral="mdral-delete_outline" iconSize="18" />
+                                          </graphic>
+                                       </Button>
+                                    </children>
+                                 </HBox>
+                                 <HBox alignment="CENTER_LEFT" spacing="8.0" styleClass="server-cache-row">
+                                    <children>
+                                       <Label styleClass="server-cache-label"
+                                              maxWidth="1.7976931348623157E308" text="%ui.game_manager.base.server_switch.bilibili" HBox.hgrow="ALWAYS" />
+                                       <Button fx:id="redownloadBilibiliButton" contentDisplay="GRAPHIC_ONLY"
+                                               mnemonicParsing="false" onAction="#redownloadBilibiliFiles"
+                                               styleClass="flat,server-switch-icon-button">
+                                          <tooltip>
+                                             <Tooltip text="%ui.game_manager.base.server_switch.redownload_bilibili" />
+                                          </tooltip>
+                                          <graphic>
+                                             <FontIcon iconLiteral="mdoal-cloud_download" iconSize="18" />
+                                          </graphic>
+                                       </Button>
+                                       <Button fx:id="deleteBilibiliButton" contentDisplay="GRAPHIC_ONLY"
+                                               mnemonicParsing="false" onAction="#deleteBilibiliCache"
+                                               styleClass="flat,server-switch-icon-button,danger-action">
+                                          <tooltip>
+                                             <Tooltip text="%ui.game_manager.base.server_switch.delete_bilibili" />
+                                          </tooltip>
+                                          <graphic>
+                                             <FontIcon iconLiteral="mdral-delete_outline" iconSize="18" />
+                                          </graphic>
+                                       </Button>
+                                    </children>
+                                 </HBox>
+                              </children>
+                           </VBox>
+                           <Label maxWidth="1.7976931348623157E308" styleClass="text-tip"
+                                  text="%ui.game_manager.base.server_switch.tip" wrapText="true" />
+                        </children>
+                              </VBox>
+                           </children>
+                        </HBox>
                      </children>
                      <padding>
-                        <Insets bottom="24.0" left="24.0" right="24.0" top="18.0" />
+                        <Insets />
                      </padding>
                   </VBox>
                </children>
