@@ -2,10 +2,16 @@ package cn.tealc.wutheringwavestool.ui.game.manage;
 
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.*;
+import javafx.beans.binding.Bindings;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
 
 import java.io.File;
@@ -17,9 +23,23 @@ import java.util.ResourceBundle;
  * 单进度条。作为 GameManagerView 的第 5 个子 tab。
  */
 public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializable {
+    private static final PseudoClass RUNNING_STATE = PseudoClass.getPseudoClass("running");
+    private static final PseudoClass PAUSED_STATE = PseudoClass.getPseudoClass("paused");
+    private static final PseudoClass STOPPING_STATE = PseudoClass.getPseudoClass("stopping");
+
     @InjectViewModel
     private GameAssetViewModel viewModel;
 
+    @FXML
+    private StackPane assetRoot;
+    @FXML
+    private VBox directorySection;
+    @FXML
+    private HBox operationControls;
+    @FXML
+    private Separator pauseSeparator;
+    @FXML
+    private StackPane pauseControls;
     @FXML
     private Label currentVersionLabel;
     @FXML
@@ -49,11 +69,11 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     private Button resumeBtn;
     @FXML
     private Button stopBtn;
+    @FXML
+    private Button chooseDirBtn;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        viewModel.onViewAdded();
-
         currentVersionLabel.textProperty().bind(viewModel.currentVersionProperty());
         latestVersionLabel.textProperty().bind(viewModel.latestVersionProperty());
         statusLabel.textProperty().bind(viewModel.statusProperty());
@@ -63,24 +83,53 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         downloadDirField.textProperty().bindBidirectional(viewModel.downloadDirProperty());
 
         // 按钮显隐
-        bindButton(downloadBtn, viewModel.showDownloadProperty());
-        bindButton(updateBtn, viewModel.showUpdateProperty());
-        bindButton(repairBtn, viewModel.showRepairProperty());
-        bindButton(preDownloadBtn, viewModel.showPreDownloadProperty());
+        bindVisibility(downloadBtn, viewModel.showDownloadProperty());
+        bindVisibility(updateBtn, viewModel.showUpdateProperty());
+        bindVisibility(repairBtn, viewModel.showRepairProperty());
+        bindVisibility(preDownloadBtn, viewModel.showPreDownloadProperty());
+        bindVisibility(directorySection, viewModel.showDownloadProperty());
+        bindVisibility(operationControls, viewModel.operatingProperty());
+        bindVisibility(pauseSeparator, viewModel.pauseAvailableProperty());
+        bindVisibility(pauseControls, viewModel.pauseAvailableProperty());
+        bindVisibility(pauseBtn, Bindings.equal(
+                viewModel.operationStateProperty(), GameAssetViewModel.OperationState.RUNNING)
+                .and(viewModel.pauseAvailableProperty()));
+        bindVisibility(resumeBtn, Bindings.equal(
+                viewModel.operationStateProperty(), GameAssetViewModel.OperationState.PAUSED)
+                .and(viewModel.pauseAvailableProperty()));
 
-        // 操作过程中禁用主操作按钮，暂停/继续/停止仅在有活动操作时可用
+        // 操作过程中禁用主操作按钮，各控制按钮仅在对应状态下可用
         downloadBtn.disableProperty().bind(viewModel.operatingProperty());
         updateBtn.disableProperty().bind(viewModel.operatingProperty());
         repairBtn.disableProperty().bind(viewModel.operatingProperty());
         preDownloadBtn.disableProperty().bind(viewModel.operatingProperty());
-        pauseBtn.disableProperty().bind(viewModel.operatingProperty().not());
-        resumeBtn.disableProperty().bind(viewModel.operatingProperty().not());
-        stopBtn.disableProperty().bind(viewModel.operatingProperty().not());
+        downloadDirField.disableProperty().bind(viewModel.operatingProperty());
+        chooseDirBtn.disableProperty().bind(viewModel.operatingProperty());
+        pauseBtn.disableProperty().bind(Bindings.notEqual(
+                viewModel.operationStateProperty(), GameAssetViewModel.OperationState.RUNNING)
+                .or(viewModel.pauseAvailableProperty().not()));
+        resumeBtn.disableProperty().bind(Bindings.notEqual(
+                viewModel.operationStateProperty(), GameAssetViewModel.OperationState.PAUSED)
+                .or(viewModel.pauseAvailableProperty().not()));
+        stopBtn.disableProperty().bind(
+                Bindings.equal(viewModel.operationStateProperty(), GameAssetViewModel.OperationState.IDLE)
+                        .or(Bindings.equal(
+                                viewModel.operationStateProperty(), GameAssetViewModel.OperationState.STOPPING)));
+
+        viewModel.operationStateProperty().addListener((observable, oldState, newState) ->
+                updateOperationStateStyle(newState));
+        updateOperationStateStyle(viewModel.operationStateProperty().get());
     }
 
-    private void bindButton(Button btn, javafx.beans.value.ObservableBooleanValue vis) {
-        btn.visibleProperty().bind(vis);
-        btn.managedProperty().bind(vis);
+    private void bindVisibility(Node node, javafx.beans.value.ObservableBooleanValue visible) {
+        node.visibleProperty().bind(visible);
+        node.managedProperty().bind(visible);
+    }
+
+    private void updateOperationStateStyle(GameAssetViewModel.OperationState state) {
+        assetRoot.pseudoClassStateChanged(RUNNING_STATE, state == GameAssetViewModel.OperationState.RUNNING);
+        assetRoot.pseudoClassStateChanged(PAUSED_STATE, state == GameAssetViewModel.OperationState.PAUSED);
+        assetRoot.pseudoClassStateChanged(STOPPING_STATE, state == GameAssetViewModel.OperationState.STOPPING);
     }
 
     @FXML
@@ -90,7 +139,7 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         String cwd = viewModel.downloadDirProperty().get();
         if (cwd != null && !cwd.isBlank()) {
             File f = new File(cwd);
-            if (f.exists()) {
+            if (f.isDirectory()) {
                 chooser.setInitialDirectory(f);
             }
         }

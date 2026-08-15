@@ -133,7 +133,8 @@ public class GameUpdateViewModel extends BaseViewModel implements SceneLifecycle
         boolean available = updateService.isPreDownloadAvailable(checkResult);
         boolean done = checkResult != null && checkResult.stateInfo != null
                 && checkResult.stateInfo.preDownloadComplete;
-        preDownloadVisible.set(available && !done);
+        //preDownloadVisible.set(available && !done);
+        preDownloadVisible.set(true);
         preDownloadComplete.set(done);
         long size = updateService.preDownloadSize(checkResult);
         if (size > 0) {

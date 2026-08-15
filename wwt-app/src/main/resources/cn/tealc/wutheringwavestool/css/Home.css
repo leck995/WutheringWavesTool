@@ -114,6 +114,83 @@
     -fx-icon-size: 1em; /* 22px */
 }
 
+.home .right .resource-status {
+    -fx-pref-width: 20em;
+    -fx-max-width: 20em;
+    -fx-min-height: 4.25em;
+    -fx-padding: 0.7em 0.85em;
+    -fx-background-color: -color-bg-default-90;
+    -fx-background-radius: 6px;
+    -fx-border-color: -color-border-muted;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1px;
+}
+
+.home .right .resource-status-icon-box {
+    -fx-background-color: -color-accent-subtle;
+    -fx-background-radius: 6px;
+}
+
+.home .right .resource-status-icon {
+    -fx-icon-color: -color-accent-fg;
+}
+
+.home .right .resource-status-title {
+    -fx-font-size: 1em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+}
+
+.home .right .resource-status-detail {
+    -fx-font-size: 0.8571em;
+    -fx-text-fill: -color-fg-muted;
+}
+
+.home .right .resource-status:up-to-date {
+    -fx-border-color: -color-success-muted;
+}
+
+.home .right .resource-status:up-to-date .resource-status-icon-box {
+    -fx-background-color: -color-success-subtle;
+}
+
+.home .right .resource-status:up-to-date .resource-status-icon {
+    -fx-icon-color: -color-success-fg;
+}
+
+.home .right .resource-status:update-available {
+    -fx-border-color: -color-warning-muted;
+    -fx-background-color: -color-warning-subtle;
+}
+
+.home .right .resource-status:update-available .resource-status-icon-box {
+    -fx-background-color: -color-bg-default-90;
+}
+
+.home .right .resource-status:update-available .resource-status-icon {
+    -fx-icon-color: -color-warning-fg;
+}
+
+.home .right .resource-status:check-failed {
+    -fx-border-color: -color-danger-muted;
+}
+
+.home .right .resource-status:check-failed .resource-status-icon-box {
+    -fx-background-color: -color-danger-subtle;
+}
+
+.home .right .resource-status:check-failed .resource-status-icon {
+    -fx-icon-color: -color-danger-fg;
+}
+
+.home .right .resource-retry-button {
+    -fx-min-width: 2.25em;
+    -fx-pref-width: 2.25em;
+    -fx-min-height: 2.25em;
+    -fx-pref-height: 2.25em;
+    -fx-padding: 0;
+}
+
 .home .bottom{
     -fx-pref-height: 4.0em;
     -fx-spacing: 8px;
@@ -152,4 +229,13 @@
 
 .home .refresh-btn:hover{
     -fx-background-color: -color-bg-default-90;
+}
+
+.home .button.func-btn:update-available {
+    -fx-background-color: -color-warning-emphasis;
+    -fx-text-fill: -color-bg-default;
+}
+
+.home .button.func-btn:update-available .ikonli-font-icon {
+    -fx-icon-color: -color-bg-default;
 }

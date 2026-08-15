@@ -3,7 +3,9 @@ package cn.tealc.wutheringwavestool.ui.system.home;
 import cn.tealc.wutheringwavestool.WwtApp;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.service.GameDownloadService;
 import cn.tealc.wutheringwavestool.service.GameTimeService;
+import cn.tealc.wutheringwavestool.service.TaskManageService;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
@@ -14,12 +16,18 @@ import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.google.inject.Inject;
+import com.kr.launcher.config.LauncherDownloadConfigHelper;
+import com.kr.launcher.config.ResourceConfigManager;
+import com.kr.launcher.model.LauncherDownloadConfig;
 import com.kuro.kujiequ.model.roleData.user.RoleInfo;
 import de.saxsys.mvvmfx.MvvmFX;
+import de.saxsys.mvvmfx.SceneLifecycle;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.concurrent.Task;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,15 +47,43 @@ import java.util.stream.Stream;
  * @author: Leck
  * @create: 2024-07-03 19:57
  */
-public class HomeViewModel extends BaseViewModel {
+public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     private static final Logger LOG = LoggerFactory.getLogger(HomeViewModel.class);
+
+    public enum ResourceUpdateState {
+        HIDDEN,
+        CHECKING,
+        UP_TO_DATE,
+        UPDATE_AVAILABLE,
+        FAILED
+    }
+
     @Inject
     private GameTimeService gameTimeService;
+    @Inject
+    private GameDownloadService gameDownloadService;
+    @Inject
+    private TaskManageService taskManageService;
     private SimpleStringProperty gameTimeText = new SimpleStringProperty();
     private SimpleStringProperty gameTimeTipText = new SimpleStringProperty();
     private SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
+    private final SimpleObjectProperty<ResourceUpdateState> resourceUpdateState =
+            new SimpleObjectProperty<>(ResourceUpdateState.HIDDEN);
+    private final SimpleBooleanProperty resourceStatusVisible = new SimpleBooleanProperty(false);
+    private final SimpleBooleanProperty resourceRetryVisible = new SimpleBooleanProperty(false);
+    private final SimpleStringProperty resourceStatusText = new SimpleStringProperty();
+    private final SimpleStringProperty resourceVersionText = new SimpleStringProperty();
+    private final SimpleStringProperty updateActionText = new SimpleStringProperty();
+    private Task<ResourceVersionCheck> resourceCheckTask;
+
+    private record ResourceVersionCheck(String currentVersion, String latestVersion) {
+        boolean updateAvailable() {
+            return !currentVersion.equalsIgnoreCase(latestVersion);
+        }
+    }
 
     public void initialize() {
+        updateActionText.set(LanguageManager.getString("ui.home.button.start_update"));
         updateGameTime(GameAppListener.getInstance().getDuration());
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_GAME_TIME_UPDATE, (s, objects) -> {
             if (objects.length > 0) {
@@ -61,6 +97,132 @@ public class HomeViewModel extends BaseViewModel {
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.HOME_AUTO_START_GAME, (s, objects) -> {
             startGame();
         });
+    }
+
+    @Override
+    public void onViewAdded() {
+        checkGameResourceUpdate();
+    }
+
+    @Override
+    public void onViewRemoved() {
+        Task<ResourceVersionCheck> task = resourceCheckTask;
+        resourceCheckTask = null;
+        if (task != null) {
+            task.cancel(true);
+        }
+    }
+
+    /** 首页创建后后台检查远端资源版本，不阻塞页面和游戏启动。 */
+    public void checkGameResourceUpdate() {
+        if (resourceCheckTask != null) {
+            return;
+        }
+        if (GameResourcesManager.getGameExeBase() == null) {
+            setResourceUpdateState(ResourceUpdateState.HIDDEN);
+            return;
+        }
+
+        setResourceUpdateState(ResourceUpdateState.CHECKING);
+        resourceStatusText.set(LanguageManager.getString("ui.home.resource.checking"));
+        resourceVersionText.set(LanguageManager.getString("ui.home.resource.checking_detail"));
+        updateActionText.set(LanguageManager.getString("ui.home.button.start_update"));
+
+        SourceType configuredSource = Config.setting().getGameRootDirSource();
+        SourceType source = configuredSource != null ? configuredSource : SourceType.DEFAULT;
+        Task<ResourceVersionCheck> task = new Task<>() {
+            @Override
+            protected ResourceVersionCheck call() {
+                updateTitle(LanguageManager.getString("ui.home.resource.task"));
+                var response = gameDownloadService.getLauncherResource(source);
+                if (response == null || response.getCode() != 200 || response.getData() == null
+                        || response.getData().getUpdateData() == null) {
+                    throw new IllegalStateException("获取游戏资源版本失败");
+                }
+                String latestVersion = response.getData().getUpdateData().getVersion();
+                String currentVersion = readInstalledVersion();
+                if (!hasText(latestVersion)) {
+                    throw new IllegalStateException("远端游戏资源版本为空");
+                }
+                if (!hasText(currentVersion)) {
+                    throw new IllegalStateException("无法读取本地游戏资源版本");
+                }
+                return new ResourceVersionCheck(currentVersion, latestVersion);
+            }
+        };
+        resourceCheckTask = task;
+        task.setOnSucceeded(event -> {
+            if (!finishResourceCheck(task)) {
+                return;
+            }
+            applyResourceVersionCheck(task.getValue());
+        });
+        task.setOnFailed(event -> {
+            if (!finishResourceCheck(task)) {
+                return;
+            }
+            LOG.warn("首页检查游戏资源更新失败", task.getException());
+            showResourceCheckFailure();
+        });
+        task.setOnCancelled(event -> finishResourceCheck(task));
+        taskManageService.execute(task);
+    }
+
+    private boolean finishResourceCheck(Task<ResourceVersionCheck> task) {
+        if (resourceCheckTask != task) {
+            return false;
+        }
+        resourceCheckTask = null;
+        return true;
+    }
+
+    private void applyResourceVersionCheck(ResourceVersionCheck check) {
+        if (check.updateAvailable()) {
+            setResourceUpdateState(ResourceUpdateState.UPDATE_AVAILABLE);
+            resourceStatusText.set(LanguageManager.getString("ui.home.resource.update_available"));
+            resourceVersionText.set(String.format(
+                    LanguageManager.getString("ui.home.resource.version_diff"),
+                    check.currentVersion(), check.latestVersion()));
+            updateActionText.set(String.format(
+                    LanguageManager.getString("ui.home.button.update_to"), check.latestVersion()));
+        } else {
+            setResourceUpdateState(ResourceUpdateState.UP_TO_DATE);
+            resourceStatusText.set(LanguageManager.getString("ui.home.resource.up_to_date"));
+            resourceVersionText.set(String.format(
+                    LanguageManager.getString("ui.home.resource.current_version"),
+                    check.currentVersion()));
+            updateActionText.set(LanguageManager.getString("ui.home.button.start_update"));
+        }
+    }
+
+    private void showResourceCheckFailure() {
+        setResourceUpdateState(ResourceUpdateState.FAILED);
+        resourceStatusText.set(LanguageManager.getString("ui.home.resource.check_failed"));
+        resourceVersionText.set(LanguageManager.getString("ui.home.resource.check_failed_detail"));
+        updateActionText.set(LanguageManager.getString("ui.home.button.start_update"));
+    }
+
+    private void setResourceUpdateState(ResourceUpdateState state) {
+        resourceUpdateState.set(state);
+        resourceStatusVisible.set(state != ResourceUpdateState.HIDDEN);
+        resourceRetryVisible.set(state == ResourceUpdateState.FAILED);
+    }
+
+    private String readInstalledVersion() {
+        File gameDir = GameResourcesManager.getGameDir();
+        if (gameDir != null) {
+            File configFile = new File(gameDir, ResourceConfigManager.LAUNCHER_DOWNLOAD_CONFIG);
+            LauncherDownloadConfig localConfig = LauncherDownloadConfigHelper.get(configFile.getAbsolutePath());
+            if (localConfig != null && hasText(localConfig.version)) {
+                return localConfig.version;
+            }
+        }
+        String cachedVersion = Config.setting().getGameInstalledVersion();
+        return hasText(cachedVersion) ? cachedVersion : "";
+    }
+
+    private static boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 
 
@@ -360,5 +522,29 @@ public class HomeViewModel extends BaseViewModel {
 
     public SimpleBooleanProperty startGameBtnDisabledProperty() {
         return startGameBtnDisabled;
+    }
+
+    public SimpleObjectProperty<ResourceUpdateState> resourceUpdateStateProperty() {
+        return resourceUpdateState;
+    }
+
+    public SimpleBooleanProperty resourceStatusVisibleProperty() {
+        return resourceStatusVisible;
+    }
+
+    public SimpleBooleanProperty resourceRetryVisibleProperty() {
+        return resourceRetryVisible;
+    }
+
+    public SimpleStringProperty resourceStatusTextProperty() {
+        return resourceStatusText;
+    }
+
+    public SimpleStringProperty resourceVersionTextProperty() {
+        return resourceVersionText;
+    }
+
+    public SimpleStringProperty updateActionTextProperty() {
+        return updateActionText;
     }
 }

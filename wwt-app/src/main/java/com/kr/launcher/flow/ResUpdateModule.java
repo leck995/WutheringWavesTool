@@ -198,7 +198,15 @@ public class ResUpdateModule {
         if (repairFlow == null) {
             repairFlow = new RepairFlow(configManager, this);
         }
-        repairFlow.exec(updateInfo, repairProgressCallback, repairCompleteCallback);
+        RepairFlow flow = repairFlow;
+        flow.exec(updateInfo, repairProgressCallback, updateResult -> {
+            // RepairFlow stores completed CheckFileTask/ResourcesDownloadTask instances;
+            // a completed flow cannot perform another full scan.
+            if (repairFlow == flow) {
+                repairFlow = null;
+            }
+            repairCompleteCallback.onComplete(updateResult);
+        });
     }
 
     public void pauseRepair() {
@@ -212,8 +220,10 @@ public class ResUpdateModule {
     }
 
     public void stopRepair() {
-        if (repairFlow != null)
+        if (repairFlow != null) {
             repairFlow.stop();
+            repairFlow = null;
+        }
     }
 
     // ==================== Resource Check ====================

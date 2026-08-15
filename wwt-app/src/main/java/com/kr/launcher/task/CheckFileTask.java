@@ -5,6 +5,7 @@ import com.kr.launcher.util.ExceptionUtils;
 import com.kr.launcher.util.ResourceHelper;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Verifies file MD5s against the index file using KRResourceHelper.
@@ -34,6 +35,8 @@ public class CheckFileTask {
     private long cacheTotalSize;
     private boolean cacheResult = true;
     private List<FileInfo> cacheFailFileInfos;
+    private final AtomicBoolean stopped = new AtomicBoolean();
+    private volatile Thread workerThread;
 
     public CheckFileTask(String baseDestPath,
             List<FileInfo> checkFileList,
@@ -52,6 +55,7 @@ public class CheckFileTask {
     }
 
     public void run() {
+        stopped.set(false);
         if (isFinished && cacheFailFileInfos != null) {
             progressCallback.onProgress(cacheTotalSize, cacheTotalSize);
             resultCallback.onResult(cacheResult, cacheFailFileInfos, 0);
@@ -67,21 +71,41 @@ public class CheckFileTask {
                         localFileList,
                         resourcesExcludePathList,
                         resourcesExcludeWhitePathList,
+                        stopped::get,
                         (completedSize, totalSize) -> {
+                            if (stopped.get()) {
+                                return;
+                            }
                             cacheTotalSize = totalSize;
                             progressCallback.onProgress(completedSize, totalSize);
                         },
                         (success, failFileInfos) -> {
+                            if (stopped.get()) {
+                                return;
+                            }
                             cacheResult = success;
                             cacheFailFileInfos = failFileInfos;
                             isFinished = true;
                             resultCallback.onResult(success, failFileInfos, 0);
                         });
             } catch (Exception e) {
-                resultCallback.onResult(false, new java.util.ArrayList<>(), ExceptionUtils.getHResult(e));
+                if (!stopped.get()) {
+                    resultCallback.onResult(false, new java.util.ArrayList<>(), ExceptionUtils.getHResult(e));
+                }
+            } finally {
+                workerThread = null;
             }
         }, "CheckFileTask");
         thread.setDaemon(true);
+        workerThread = thread;
         thread.start();
+    }
+
+    public void stop() {
+        stopped.set(true);
+        Thread thread = workerThread;
+        if (thread != null) {
+            thread.interrupt();
+        }
     }
 }

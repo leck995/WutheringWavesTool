@@ -1,23 +1,192 @@
-.game-asset-view .title-3 {
-    -fx-font-size: 1.2em;
-    -fx-font-weight: bold;
+.game-asset-view {
+    -fx-background-color: transparent;
 }
 
-.game-asset-view .title-4 {
-    -fx-font-weight: bold;
+.game-asset-view .asset-scroll,
+.game-asset-view .asset-scroll > .viewport,
+.game-asset-view .asset-scroll > .corner {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 0;
 }
 
-.game-asset-view .text-subtle {
-    -fx-text-fill: -color-fg-subtle;
+.game-asset-view .asset-content {
+    -fx-fill-width: true;
+}
+
+.game-asset-view .asset-title {
+    -fx-font-size: 1.65em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+}
+
+.game-asset-view .status-pill {
+    -fx-min-height: 32px;
+    -fx-padding: 6px 12px;
+    -fx-background-color: -color-bg-subtle;
+    -fx-background-radius: 16px;
+    -fx-border-color: -color-border-muted;
+    -fx-border-radius: 16px;
+}
+
+.game-asset-view .status-indicator {
+    -fx-background-color: -color-fg-subtle;
+    -fx-background-radius: 999px;
+}
+
+.game-asset-view .status-text {
+    -fx-font-size: 0.92em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-muted;
+}
+
+.game-asset-view:running .status-indicator,
+.game-asset-view:running .asset-progress-bar > .bar {
+    -fx-background-color: -color-accent-emphasis;
+}
+
+.game-asset-view:running .status-text {
+    -fx-text-fill: -color-accent-fg;
+}
+
+.game-asset-view:paused .status-indicator,
+.game-asset-view:paused .asset-progress-bar > .bar {
+    -fx-background-color: -color-warning-emphasis;
+}
+
+.game-asset-view:paused .status-text {
+    -fx-text-fill: -color-warning-fg;
+}
+
+.game-asset-view:stopping .status-indicator,
+.game-asset-view:stopping .asset-progress-bar > .bar {
+    -fx-background-color: -color-danger-emphasis;
+}
+
+.game-asset-view:stopping .status-text {
+    -fx-text-fill: -color-danger-fg;
+}
+
+.game-asset-view .version-overview {
+    -fx-padding: 18px 20px;
+    -fx-background-color: -color-bg-subtle;
+    -fx-background-radius: 8px;
+    -fx-border-color: -color-border-muted;
+    -fx-border-radius: 8px;
+}
+
+.game-asset-view .overview-icon-box {
+    -fx-background-color: -color-accent-subtle;
+    -fx-background-radius: 7px;
+}
+
+.game-asset-view .overview-icon {
+    -fx-icon-color: -color-accent-fg;
+    -fx-fill: -color-accent-fg;
+}
+
+.game-asset-view .version-item {
+    -fx-min-height: 52px;
+    -fx-alignment: center-left;
+}
+
+.game-asset-view .version-item-latest {
+    -fx-padding: 0 0 0 24px;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 0 0 0 1px;
+}
+
+.game-asset-view .version-caption {
+    -fx-font-size: 0.9em;
+    -fx-text-fill: -color-fg-muted;
+}
+
+.game-asset-view .version-value {
+    -fx-font-size: 1.45em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+}
+
+.game-asset-view .asset-section,
+.game-asset-view .action-section {
+    -fx-padding: 17px 0 0 0;
+    -fx-border-color: -color-border-muted;
+    -fx-border-width: 1px 0 0 0;
+}
+
+.game-asset-view .section-title {
+    -fx-font-size: 0.95em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+}
+
+.game-asset-view .asset-path-field {
+    -fx-pref-height: 38px;
+}
+
+.game-asset-view .asset-icon-button,
+.game-asset-view .asset-control-button {
+    -fx-min-width: 38px;
+    -fx-pref-width: 38px;
+    -fx-max-width: 38px;
+    -fx-min-height: 38px;
+    -fx-pref-height: 38px;
+    -fx-max-height: 38px;
+    -fx-padding: 0;
+    -fx-underline: false;
+}
+
+.game-asset-view .asset-icon-button:hover,
+.game-asset-view .asset-control-button:hover {
+    -fx-underline: false;
+}
+
+.game-asset-view .progress-percent {
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+}
+
+.game-asset-view .asset-progress-bar {
+    -fx-min-height: 9px;
+    -fx-pref-height: 9px;
+    -fx-max-height: 9px;
+}
+
+.game-asset-view .asset-progress-bar > .track {
+    -fx-background-color: -color-bg-inset;
+    -fx-background-insets: 0;
+    -fx-background-radius: 5px;
+    -fx-border-color: -color-border-muted;
+    -fx-border-radius: 5px;
+}
+
+.game-asset-view .asset-progress-bar > .bar {
+    -fx-background-color: -color-accent-emphasis;
+    -fx-background-insets: 1px;
+    -fx-background-radius: 4px;
+    -fx-padding: 4px;
 }
 
 .game-asset-view .text-tip {
+    -fx-font-size: 0.9em;
     -fx-text-fill: -color-fg-muted;
-    -fx-font-size: 0.92em;
 }
 
-.game-asset-view .button-primary {
-    -fx-background-color: -color-accent-fg;
-    -fx-text-fill: white;
+.game-asset-view .asset-action {
+    -fx-min-height: 38px;
+    -fx-padding: 8px 14px;
     -fx-font-weight: bold;
+}
+
+.game-asset-view .operation-controls {
+    -fx-min-height: 38px;
+}
+
+.game-asset-view .control-separator {
+    -fx-padding: 7px 8px 7px 2px;
+}
+
+.game-asset-view .control-separator > .line {
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 0 0 0 1px;
 }

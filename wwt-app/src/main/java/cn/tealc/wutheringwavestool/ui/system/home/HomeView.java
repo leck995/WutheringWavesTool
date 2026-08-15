@@ -15,7 +15,9 @@ import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;
 import javafx.animation.RotateTransition;
+import javafx.animation.Interpolator;
 import javafx.application.Platform;
+import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -29,6 +31,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.util.Duration;
+import org.kordamp.ikonli.javafx.FontIcon;
 
 import java.awt.*;
 import java.io.File;
@@ -45,6 +48,11 @@ import java.util.ResourceBundle;
  * @create: 2024-07-03 19:57
  */
 public class HomeView implements Initializable, FxmlView<HomeViewModel> {
+    private static final PseudoClass CHECKING = PseudoClass.getPseudoClass("checking");
+    private static final PseudoClass UP_TO_DATE = PseudoClass.getPseudoClass("up-to-date");
+    private static final PseudoClass UPDATE_AVAILABLE = PseudoClass.getPseudoClass("update-available");
+    private static final PseudoClass CHECK_FAILED = PseudoClass.getPseudoClass("check-failed");
+
     @InjectViewModel
     private HomeViewModel viewModel;
 
@@ -59,6 +67,20 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
 
     @FXML
     private Button startGameBtn;
+    @FXML
+    private Button startUpdateBtn;
+    @FXML
+    private HBox resourceStatusPane;
+    @FXML
+    private Label resourceStatusLabel;
+    @FXML
+    private Label resourceVersionLabel;
+    @FXML
+    private FontIcon resourceStatusIcon;
+    @FXML
+    private Button resourceRetryBtn;
+
+    private RotateTransition resourceCheckRotation;
 
 
 
@@ -66,6 +88,21 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         startGameBtn.disableProperty().bind(viewModel.startGameBtnDisabledProperty());
+        startUpdateBtn.textProperty().bind(viewModel.updateActionTextProperty());
+        resourceStatusLabel.textProperty().bind(viewModel.resourceStatusTextProperty());
+        resourceVersionLabel.textProperty().bind(viewModel.resourceVersionTextProperty());
+        resourceStatusPane.visibleProperty().bind(viewModel.resourceStatusVisibleProperty());
+        resourceStatusPane.managedProperty().bind(viewModel.resourceStatusVisibleProperty());
+        resourceRetryBtn.visibleProperty().bind(viewModel.resourceRetryVisibleProperty());
+        resourceRetryBtn.managedProperty().bind(viewModel.resourceRetryVisibleProperty());
+
+        resourceCheckRotation = new RotateTransition(Duration.seconds(1.2), resourceStatusIcon);
+        resourceCheckRotation.setByAngle(360);
+        resourceCheckRotation.setCycleCount(javafx.animation.Animation.INDEFINITE);
+        resourceCheckRotation.setInterpolator(Interpolator.LINEAR);
+        viewModel.resourceUpdateStateProperty().addListener((observable, oldState, newState) ->
+                updateResourceStatusStyle(newState));
+        updateResourceStatusStyle(viewModel.resourceUpdateStateProperty().get());
 
         Tooltip gameTimeTip = new Tooltip();
         gameTimeTip.textProperty().bind(viewModel.gameTimeTipTextProperty());
@@ -86,6 +123,33 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         }
 
         setChangeBgEnable();
+    }
+
+    private void updateResourceStatusStyle(HomeViewModel.ResourceUpdateState state) {
+        boolean checking = state == HomeViewModel.ResourceUpdateState.CHECKING;
+        boolean upToDate = state == HomeViewModel.ResourceUpdateState.UP_TO_DATE;
+        boolean updateAvailable = state == HomeViewModel.ResourceUpdateState.UPDATE_AVAILABLE;
+        boolean failed = state == HomeViewModel.ResourceUpdateState.FAILED;
+
+        resourceStatusPane.pseudoClassStateChanged(CHECKING, checking);
+        resourceStatusPane.pseudoClassStateChanged(UP_TO_DATE, upToDate);
+        resourceStatusPane.pseudoClassStateChanged(UPDATE_AVAILABLE, updateAvailable);
+        resourceStatusPane.pseudoClassStateChanged(CHECK_FAILED, failed);
+        startUpdateBtn.pseudoClassStateChanged(UPDATE_AVAILABLE, updateAvailable);
+
+        if (checking) {
+            resourceStatusIcon.setIconLiteral("mdomz-sync");
+            resourceCheckRotation.play();
+        } else {
+            resourceCheckRotation.stop();
+            resourceStatusIcon.setRotate(0);
+            resourceStatusIcon.setIconLiteral(switch (state) {
+                case UP_TO_DATE -> "mdoal-check_circle";
+                case UPDATE_AVAILABLE -> "mdomz-system_update_alt";
+                case FAILED -> "mdoal-error_outline";
+                default -> "mdomz-sync";
+            });
+        }
     }
 
 
@@ -123,6 +187,11 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @FXML
     void startUpdate(ActionEvent event) {
         viewModel.startUpdate();
+    }
+
+    @FXML
+    void retryResourceUpdateCheck(ActionEvent event) {
+        viewModel.checkGameResourceUpdate();
     }
 
 

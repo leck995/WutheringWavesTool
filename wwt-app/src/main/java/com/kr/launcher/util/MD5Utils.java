@@ -4,6 +4,7 @@ import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
+import java.util.function.BooleanSupplier;
 
 /**
  * MD5 utilities.
@@ -69,6 +70,15 @@ public class MD5Utils {
      * (uses BitConverter.ToString without ToLowerInvariant → uppercase).
      */
     public static String getFileMD5WithProgress(String filePath, ProgressCallback callback) {
+        return getFileMD5WithProgress(filePath, callback, () -> false);
+    }
+
+    /**
+     * Get file MD5 hash with progress reporting unless cancellation is requested.
+     * Returns {@code null} when cancelled or when the hash cannot be calculated.
+     */
+    public static String getFileMD5WithProgress(
+            String filePath, ProgressCallback callback, BooleanSupplier cancellationRequested) {
         File file = new File(filePath);
         long totalSize = file.length();
         try (InputStream is = new FileInputStream(file)) {
@@ -77,11 +87,17 @@ public class MD5Utils {
             long bytesRead = 0;
             int read;
             while ((read = is.read(buffer)) != -1) {
+                if (cancellationRequested.getAsBoolean()) {
+                    return null;
+                }
                 md.update(buffer, 0, read);
                 bytesRead += read;
                 if (callback != null) {
                     callback.onProgress(bytesRead, totalSize);
                 }
+            }
+            if (cancellationRequested.getAsBoolean()) {
+                return null;
             }
             return bytesToHexUpper(md.digest());
         } catch (Exception e) {

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.*;
+import java.util.function.BooleanSupplier;
 
 /**
  * Static utility methods for resource management.
@@ -120,12 +121,25 @@ public final class ResourceHelper {
             List<FileInfo> fileInfos,
             CheckFileMd5ProgressCallback progressCallback,
             CheckFileMd5ResultCallback completeCallback) {
+        checkFilesMd5WithProgress(destDirPath, fileInfos, () -> false, progressCallback, completeCallback);
+    }
+
+    /** Verify file MD5s with cancellation support. */
+    public static void checkFilesMd5WithProgress(
+            String destDirPath,
+            List<FileInfo> fileInfos,
+            BooleanSupplier cancellationRequested,
+            CheckFileMd5ProgressCallback progressCallback,
+            CheckFileMd5ResultCallback completeCallback) {
 
         long totalSize = getFileInfoListSize(fileInfos);
         long completedSize = 0;
         List<FileInfo> failList = new ArrayList<>();
 
         for (FileInfo fi : fileInfos) {
+            if (cancellationRequested.getAsBoolean()) {
+                return;
+            }
             String filePath = PathUtils.combine(destDirPath, fi.path);
             File file = new File(filePath);
 
@@ -139,7 +153,10 @@ public final class ResourceHelper {
             long tempCompleted = completedSize;
             String actualMd5 = MD5Utils.getFileMD5WithProgress(filePath,
                     (fileCompleted, fileTotal) -> progressCallback.onProgress(tempCompleted + fileCompleted,
-                            totalSize));
+                            totalSize), cancellationRequested);
+            if (cancellationRequested.getAsBoolean()) {
+                return;
+            }
 
             completedSize += fi.size;
             progressCallback.onProgress(completedSize, totalSize);
@@ -149,7 +166,9 @@ public final class ResourceHelper {
             }
         }
 
-        completeCallback.onResult(failList.isEmpty(), failList);
+        if (!cancellationRequested.getAsBoolean()) {
+            completeCallback.onResult(failList.isEmpty(), failList);
+        }
     }
 
     /**
@@ -164,9 +183,25 @@ public final class ResourceHelper {
             List<String> resourcesExcludeWhitePathList,
             CheckFileMd5ProgressCallback progressCallback,
             CheckFileMd5ResultCallback completeCallback) {
+        checkFilesMultiMd5WithProgress(destDirPath, remoteFileInfos, localFileInfos,
+                resourcesExcludePathList, resourcesExcludeWhitePathList, () -> false,
+                progressCallback, completeCallback);
+    }
+
+    /** Verify file MD5s with local file list support and cancellation. */
+    public static void checkFilesMultiMd5WithProgress(
+            String destDirPath,
+            List<FileInfo> remoteFileInfos,
+            List<FileInfo> localFileInfos,
+            List<String> resourcesExcludePathList,
+            List<String> resourcesExcludeWhitePathList,
+            BooleanSupplier cancellationRequested,
+            CheckFileMd5ProgressCallback progressCallback,
+            CheckFileMd5ResultCallback completeCallback) {
 
         if (localFileInfos == null || localFileInfos.isEmpty()) {
-            checkFilesMd5WithProgress(destDirPath, remoteFileInfos, progressCallback, completeCallback);
+            checkFilesMd5WithProgress(destDirPath, remoteFileInfos, cancellationRequested,
+                    progressCallback, completeCallback);
             return;
         }
 
@@ -174,6 +209,9 @@ public final class ResourceHelper {
         // non-blank paths (inside the IsNullOrWhiteSpace check).
         long totalSize = 0;
         for (FileInfo fi : remoteFileInfos) {
+            if (cancellationRequested.getAsBoolean()) {
+                return;
+            }
             if (fi.path != null && !fi.path.trim().isEmpty()) {
                 totalSize += fi.size;
             }
@@ -182,12 +220,18 @@ public final class ResourceHelper {
         Map<String, List<FileInfo>> dict = new HashMap<>();
 
         for (FileInfo remote : remoteFileInfos) {
+            if (cancellationRequested.getAsBoolean()) {
+                return;
+            }
             if (remote.path != null && !remote.path.trim().isEmpty()) {
                 dict.computeIfAbsent(remote.path, k -> new ArrayList<>()).add(remote);
             }
         }
 
         for (FileInfo local : localFileInfos) {
+            if (cancellationRequested.getAsBoolean()) {
+                return;
+            }
             if (local.path != null && !local.path.trim().isEmpty()
                     && isExcludePathConfigContainsLocalPath(local.path, resourcesExcludePathList,
                             resourcesExcludeWhitePathList)) {
@@ -199,6 +243,9 @@ public final class ResourceHelper {
         List<FileInfo> failList = new ArrayList<>();
 
         for (FileInfo remote : remoteFileInfos) {
+            if (cancellationRequested.getAsBoolean()) {
+                return;
+            }
             String filePath = PathUtils.combine(destDirPath, remote.path);
             File file = new File(filePath);
 
@@ -230,7 +277,10 @@ public final class ResourceHelper {
             long tempCompleted = completedSize;
             String actualMd5 = MD5Utils.getFileMD5WithProgress(filePath,
                     (fileCompleted, fileTotal) -> progressCallback.onProgress(tempCompleted + fileCompleted,
-                            finalTotalSize));
+                            finalTotalSize), cancellationRequested);
+            if (cancellationRequested.getAsBoolean()) {
+                return;
+            }
 
             completedSize += remote.size;
             progressCallback.onProgress(completedSize, totalSize);
@@ -249,7 +299,9 @@ public final class ResourceHelper {
             }
         }
 
-        completeCallback.onResult(failList.isEmpty(), failList);
+        if (!cancellationRequested.getAsBoolean()) {
+            completeCallback.onResult(failList.isEmpty(), failList);
+        }
     }
 
     private static boolean isExcludePathConfigContainsLocalPath(

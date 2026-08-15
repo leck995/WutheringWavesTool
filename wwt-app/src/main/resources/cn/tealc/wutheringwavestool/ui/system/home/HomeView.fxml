@@ -3,17 +3,53 @@
 <?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
 <BorderPane fx:id="root" prefHeight="648.0" prefWidth="1100.0" styleClass="home" stylesheets="@../../../css/Home.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.system.home.HomeView">
    <right>
-      <VBox fx:id="roleBoardGroup" alignment="TOP_RIGHT" prefHeight="200.0" prefWidth="100.0" spacing="8.0" styleClass="right" BorderPane.alignment="CENTER" />
+      <VBox alignment="TOP_RIGHT" spacing="8.0" styleClass="right" BorderPane.alignment="CENTER">
+         <children>
+            <VBox fx:id="roleBoardGroup" alignment="TOP_RIGHT" spacing="8.0" />
+            <HBox fx:id="resourceStatusPane" alignment="CENTER_LEFT" spacing="10.0"
+                  styleClass="resource-status">
+               <children>
+                  <StackPane minHeight="34.0" minWidth="34.0" prefHeight="34.0" prefWidth="34.0"
+                             styleClass="resource-status-icon-box">
+                     <children>
+                        <FontIcon fx:id="resourceStatusIcon" iconLiteral="mdomz-sync" iconSize="19"
+                                  styleClass="resource-status-icon" />
+                     </children>
+                  </StackPane>
+                  <VBox minWidth="0.0" spacing="2.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label fx:id="resourceStatusLabel" maxWidth="1.7976931348623157E308"
+                               styleClass="resource-status-title" textOverrun="ELLIPSIS" />
+                        <Label fx:id="resourceVersionLabel" maxWidth="1.7976931348623157E308"
+                               styleClass="resource-status-detail" textOverrun="ELLIPSIS" />
+                     </children>
+                  </VBox>
+                  <Button fx:id="resourceRetryBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
+                          onAction="#retryResourceUpdateCheck" styleClass="flat,resource-retry-button">
+                     <tooltip>
+                        <Tooltip text="%ui.home.resource.retry" />
+                     </tooltip>
+                     <graphic>
+                        <FontIcon iconLiteral="mdomz-refresh" iconSize="18" />
+                     </graphic>
+                  </Button>
+               </children>
+            </HBox>
+         </children>
+      </VBox>
    </right>
    <bottom>
       <VBox BorderPane.alignment="CENTER">
@@ -61,7 +97,8 @@
                         <FontIcon iconLiteral="mdsmz-timer" />
                      </graphic>
                   </Button>
-                  <Button layoutX="122.0" layoutY="10.0" mnemonicParsing="false" onAction="#startUpdate" styleClass="func-btn" text="%ui.home.button.start_update">
+                  <Button fx:id="startUpdateBtn" layoutX="122.0" layoutY="10.0" mnemonicParsing="false"
+                          onAction="#startUpdate" styleClass="func-btn" text="%ui.home.button.start_update">
                      <graphic>
                         <FontIcon iconLiteral="mdsal-cloud_download" />
                      </graphic>

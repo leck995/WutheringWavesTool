@@ -4,80 +4,205 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<StackPane prefHeight="600.0" prefWidth="1000.0" styleClass="game-asset-view" stylesheets="@../../../css/game/manage/GameAsset.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.game.manage.GameAssetView">
+<StackPane fx:id="assetRoot" prefHeight="600.0" prefWidth="1000.0" styleClass="game-asset-view"
+           stylesheets="@../../../css/game/manage/GameAsset.css" xmlns="http://javafx.com/javafx/23.0.1"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="cn.tealc.wutheringwavestool.ui.game.manage.GameAssetView">
    <children>
-      <VBox maxWidth="820.0" spacing="12.0" alignment="TOP_CENTER">
-         <children>
-            <!-- 标题 + 状态 -->
-            <HBox alignment="CENTER_LEFT" spacing="10.0">
+      <ScrollPane fitToWidth="true" hbarPolicy="NEVER" pannable="true" styleClass="asset-scroll"
+                  vbarPolicy="AS_NEEDED">
+         <content>
+            <StackPane alignment="TOP_CENTER">
                <children>
-                  <Label styleClass="title-3" text="%ui.game_manager.asset.title" />
-                  <Separator orientation="VERTICAL" />
-                  <Label fx:id="statusLabel" styleClass="text-subtle" text="就绪" />
-               </children>
-            </HBox>
+                  <VBox maxWidth="920.0" spacing="20.0" styleClass="asset-content">
+                     <children>
+                        <HBox alignment="CENTER_LEFT" spacing="16.0" styleClass="asset-header">
+                           <children>
+                              <Label styleClass="asset-title" text="%ui.game_manager.asset.title" />
+                              <Region HBox.hgrow="ALWAYS" />
+                              <HBox alignment="CENTER" spacing="8.0" styleClass="status-pill">
+                                 <children>
+                                    <Region minHeight="8.0" minWidth="8.0" prefHeight="8.0" prefWidth="8.0"
+                                            styleClass="status-indicator" />
+                                    <Label fx:id="statusLabel" maxWidth="420.0" minWidth="0.0" styleClass="status-text"
+                                           text="就绪" textOverrun="ELLIPSIS" />
+                                 </children>
+                              </HBox>
+                           </children>
+                        </HBox>
 
-            <!-- 版本行 -->
-            <HBox alignment="CENTER" spacing="24.0">
-               <children>
-                  <Label styleClass="title-4" text="%ui.game_manager.asset.current" />
-                  <Label fx:id="currentVersionLabel" styleClass="text-subtle" text="-" />
-                  <Label styleClass="title-4" text="%ui.game_manager.asset.latest" />
-                  <Label fx:id="latestVersionLabel" styleClass="text-subtle" text="-" />
-               </children>
-            </HBox>
+                        <HBox alignment="CENTER_LEFT" spacing="20.0" styleClass="version-overview">
+                           <children>
+                              <StackPane minHeight="52.0" minWidth="52.0" prefHeight="52.0" prefWidth="52.0"
+                                         styleClass="overview-icon-box">
+                                 <children>
+                                    <FontIcon iconLiteral="mdomz-storage" iconSize="26" styleClass="overview-icon" />
+                                 </children>
+                              </StackPane>
+                              <GridPane hgap="24.0" HBox.hgrow="ALWAYS">
+                                 <columnConstraints>
+                                    <ColumnConstraints percentWidth="50.0" />
+                                    <ColumnConstraints percentWidth="50.0" />
+                                 </columnConstraints>
+                                 <children>
+                                    <VBox spacing="5.0" styleClass="version-item">
+                                       <children>
+                                          <Label styleClass="version-caption" text="%ui.game_manager.asset.current" />
+                                          <Label fx:id="currentVersionLabel" maxWidth="1.7976931348623157E308"
+                                                 styleClass="version-value" text="-" textOverrun="ELLIPSIS" />
+                                       </children>
+                                    </VBox>
+                                    <VBox spacing="5.0" styleClass="version-item,version-item-latest"
+                                          GridPane.columnIndex="1">
+                                       <children>
+                                          <Label styleClass="version-caption" text="%ui.game_manager.asset.latest" />
+                                          <Label fx:id="latestVersionLabel" maxWidth="1.7976931348623157E308"
+                                                 styleClass="version-value" text="-" textOverrun="ELLIPSIS" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </GridPane>
+                           </children>
+                        </HBox>
 
-            <!-- 下载目录（未安装时全量下载落点） -->
-            <HBox alignment="CENTER" spacing="8.0">
-               <children>
-                  <Label styleClass="title-4" text="%ui.game_manager.asset.dir" />
-                  <TextField fx:id="downloadDirField" prefWidth="420.0" promptText="%ui.game_manager.asset.dir_tip" />
-                  <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#chooseDownloadDir">
-                     <graphic>
-                        <FontIcon iconLiteral="mdoal-folder" />
-                     </graphic>
-                  </Button>
-               </children>
-            </HBox>
+                        <VBox fx:id="directorySection" spacing="9.0" styleClass="asset-section">
+                           <children>
+                              <Label styleClass="section-title" text="%ui.game_manager.asset.dir" />
+                              <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                 <children>
+                                    <TextField fx:id="downloadDirField" maxWidth="1.7976931348623157E308"
+                                               promptText="%ui.game_manager.asset.dir_tip"
+                                               styleClass="asset-path-field" HBox.hgrow="ALWAYS" />
+                                    <Button fx:id="chooseDirBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
+                                            onAction="#chooseDownloadDir" styleClass="flat,asset-icon-button">
+                                       <tooltip>
+                                          <Tooltip text="%ui.game_manager.asset.dir" />
+                                       </tooltip>
+                                       <graphic>
+                                          <FontIcon iconLiteral="mdoal-folder_open" iconSize="19" />
+                                       </graphic>
+                                    </Button>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
 
-            <!-- 主进度条 -->
-            <VBox spacing="4.0">
-               <children>
-                  <ProgressBar fx:id="progressBar" maxWidth="740.0" progress="0.0" />
-                  <Label fx:id="progressTextLabel" styleClass="text-subtle" text="0%" />
-                  <Label fx:id="tipLabel" styleClass="text-tip" text="" wrapText="true" />
-               </children>
-            </VBox>
+                        <VBox spacing="10.0" styleClass="asset-section">
+                           <children>
+                              <HBox alignment="CENTER_LEFT">
+                                 <children>
+                                    <Label styleClass="section-title" text="%ui.game_manager.asset.progress" />
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <Label fx:id="progressTextLabel" alignment="CENTER_RIGHT" minWidth="58.0"
+                                           styleClass="progress-percent" text="0%" />
+                                 </children>
+                              </HBox>
+                              <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" progress="0.0"
+                                           styleClass="asset-progress-bar" />
+                              <Label fx:id="tipLabel" maxWidth="1.7976931348623157E308" styleClass="text-tip"
+                                     text="" wrapText="true" />
+                           </children>
+                        </VBox>
 
-            <!-- 主操作按钮（按安装态显隐） -->
-            <HBox alignment="CENTER" spacing="10.0">
-               <children>
-                  <Button fx:id="downloadBtn" styleClass="button-primary" mnemonicParsing="false" onAction="#download" text="%ui.game_manager.asset.download" />
-                  <Button fx:id="updateBtn" mnemonicParsing="false" onAction="#update" text="%ui.game_manager.asset.update" />
-                  <Button fx:id="repairBtn" mnemonicParsing="false" onAction="#repair" text="%ui.game_manager.asset.repair" />
-                  <Button fx:id="preDownloadBtn" mnemonicParsing="false" onAction="#preDownload" text="%ui.game_manager.asset.predownload" />
+                        <VBox spacing="11.0" styleClass="action-section">
+                           <children>
+                              <Label styleClass="section-title" text="%ui.game_manager.asset.actions" />
+                              <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="action-row">
+                                 <children>
+                                    <Button fx:id="downloadBtn" contentDisplay="LEFT" graphicTextGap="8.0"
+                                            mnemonicParsing="false" onAction="#download"
+                                            styleClass="accent,asset-action" text="%ui.game_manager.asset.download">
+                                       <graphic>
+                                          <FontIcon iconLiteral="mdoal-cloud_download" iconSize="18" />
+                                       </graphic>
+                                    </Button>
+                                    <Button fx:id="updateBtn" contentDisplay="LEFT" graphicTextGap="8.0"
+                                            mnemonicParsing="false" onAction="#update"
+                                            styleClass="accent,asset-action" text="%ui.game_manager.asset.update">
+                                       <graphic>
+                                          <FontIcon iconLiteral="mdomz-system_update_alt" iconSize="18" />
+                                       </graphic>
+                                    </Button>
+                                    <Button fx:id="repairBtn" contentDisplay="LEFT" graphicTextGap="8.0"
+                                            mnemonicParsing="false" onAction="#repair"
+                                            styleClass="button-outlined,asset-action" text="%ui.game_manager.asset.repair">
+                                       <graphic>
+                                          <FontIcon iconLiteral="mdoal-build" iconSize="18" />
+                                       </graphic>
+                                    </Button>
+                                    <Button fx:id="preDownloadBtn" contentDisplay="LEFT" graphicTextGap="8.0"
+                                            mnemonicParsing="false" onAction="#preDownload"
+                                            styleClass="button-outlined,asset-action"
+                                            text="%ui.game_manager.asset.predownload">
+                                       <graphic>
+                                          <FontIcon iconLiteral="mdomz-schedule" iconSize="18" />
+                                       </graphic>
+                                    </Button>
+                                    <Region HBox.hgrow="ALWAYS" />
+                                    <HBox fx:id="operationControls" alignment="CENTER" spacing="4.0"
+                                          styleClass="operation-controls">
+                                       <children>
+                                          <Separator fx:id="pauseSeparator" orientation="VERTICAL"
+                                                     styleClass="control-separator" />
+                                          <StackPane fx:id="pauseControls" minWidth="38.0" prefWidth="38.0">
+                                             <children>
+                                                <Button fx:id="pauseBtn" contentDisplay="GRAPHIC_ONLY"
+                                                        mnemonicParsing="false" onAction="#pause"
+                                                        styleClass="flat,asset-control-button">
+                                                   <tooltip>
+                                                      <Tooltip text="%ui.game_manager.download.pause" />
+                                                   </tooltip>
+                                                   <graphic>
+                                                      <FontIcon iconLiteral="mdomz-pause" iconSize="19" />
+                                                   </graphic>
+                                                </Button>
+                                                <Button fx:id="resumeBtn" contentDisplay="GRAPHIC_ONLY"
+                                                        mnemonicParsing="false" onAction="#resume"
+                                                        styleClass="flat,asset-control-button">
+                                                   <tooltip>
+                                                      <Tooltip text="%ui.game_manager.download.resume" />
+                                                   </tooltip>
+                                                   <graphic>
+                                                      <FontIcon iconLiteral="mdomz-play_arrow" iconSize="21" />
+                                                   </graphic>
+                                                </Button>
+                                             </children>
+                                          </StackPane>
+                                          <Button fx:id="stopBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
+                                                  onAction="#stop" styleClass="flat,danger,asset-control-button">
+                                             <tooltip>
+                                                <Tooltip text="%ui.game_manager.download.stop" />
+                                             </tooltip>
+                                             <graphic>
+                                                <FontIcon iconLiteral="mdomz-stop" iconSize="19" />
+                                             </graphic>
+                                          </Button>
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                     </children>
+                     <padding>
+                        <Insets bottom="24.0" left="24.0" right="24.0" top="18.0" />
+                     </padding>
+                  </VBox>
                </children>
-            </HBox>
-
-            <!-- 暂停/继续/停止 -->
-            <HBox alignment="CENTER" spacing="10.0">
-               <children>
-                  <Button fx:id="pauseBtn" mnemonicParsing="false" onAction="#pause" text="%ui.game_manager.download.pause" />
-                  <Button fx:id="resumeBtn" mnemonicParsing="false" onAction="#resume" text="%ui.game_manager.download.resume" />
-                  <Button fx:id="stopBtn" mnemonicParsing="false" onAction="#stop" text="%ui.game_manager.download.stop" />
-               </children>
-            </HBox>
-         </children>
-      </VBox>
+            </StackPane>
+         </content>
+      </ScrollPane>
    </children>
-   <padding>
-      <Insets bottom="16.0" left="16.0" right="16.0" top="16.0" />
-   </padding>
 </StackPane>

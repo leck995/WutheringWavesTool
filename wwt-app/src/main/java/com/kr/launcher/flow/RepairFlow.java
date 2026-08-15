@@ -48,6 +48,7 @@ public class RepairFlow {
     private DirectoryCheckTask checkDirectoryTask;
 
     private boolean isResourcesDownloadComplete;
+    private volatile boolean stopped;
     private IndexFile indexFile;
 
     private long lastNotifyProgressTime;
@@ -64,6 +65,9 @@ public class RepairFlow {
     }
 
     private void onRepairProgressChanged(int state, UpdateProgressInfo progressInfo) {
+        if (stopped) {
+            return;
+        }
         long now = System.currentTimeMillis();
         if (now - lastNotifyProgressTime > resUpdateModule.getProgressNotifyIntervalMillis()
                 || state != lastNotifyState
@@ -104,6 +108,9 @@ public class RepairFlow {
     }
 
     private void onRepairCompleteChanged(UpdateResult updateResult) {
+        if (stopped) {
+            return;
+        }
         if (updateResult.success && (updateResult.state == 8 || updateResult.state == 6)) {
             String gameDirPath = configManager.gameDirPath;
             List<DirectoryCheckEntry> directoryCheckEntries = ResourceHelper.getDirectoryCheckEntries(configManager);
@@ -141,6 +148,7 @@ public class RepairFlow {
     public void exec(UpdateInfo updateInfo,
             ProgressCallback onRepairProgressChanged,
             CompleteCallback onRepairCompleted) {
+        stopped = false;
         this.repairProgressCallback = onRepairProgressChanged;
         this.repairCompleteCallback = onRepairCompleted;
         try {
@@ -207,6 +215,9 @@ public class RepairFlow {
     }
 
     private void onGetFileIndexInfoCB(boolean succ, IndexFile indexFile, int errCode, String errMessage) {
+        if (stopped) {
+            return;
+        }
         if (!succ || indexFile == null || indexFile.getResource() == null) {
             log.warn("Repair failed, Because Get Origin File Index File Fail");
             UpdateResult result = new UpdateResult();
@@ -267,6 +278,9 @@ public class RepairFlow {
     }
 
     private void onCheckFileResultCB(boolean allFileValid, List<FileInfo> wrongFileInfos, int cSharpCode) {
+        if (stopped) {
+            return;
+        }
         if (cSharpCode != 0) {
             UpdateResult result = new UpdateResult();
             result.success = false;
@@ -352,6 +366,9 @@ public class RepairFlow {
 
     private void onDownloadProgressChanged(ResourcesDownloadTask sender,
             DownloadProgressChangedEventArgs progressInfo) {
+        if (stopped) {
+            return;
+        }
         long num = completedSizeBeforeDownload + progressInfo.receivedBytesSize;
         long remainingTime = UpdateProgressInfo.MAX_REMAINING_TIME;
         if (progressInfo.bytesPerSecondSpeed > 0.0) {
@@ -377,7 +394,7 @@ public class RepairFlow {
      */
     private void onDownloadMd5CheckProgressChanged(ResourcesDownloadTask sender,
             DownloadMd5CheckProgressChangedEventArgs progressInfo) {
-        if (isResourcesDownloadComplete) {
+        if (!stopped && isResourcesDownloadComplete) {
             UpdateProgressInfo info = new UpdateProgressInfo();
             info.totalSize = progressInfo.totalBytes;
             info.completedSize = progressInfo.completedBytesSize;
@@ -390,6 +407,9 @@ public class RepairFlow {
 
     private void onDownloadStateChanged(ResourcesDownloadTask sender,
             DownloadStateChangedEventArgs stateInfo) {
+        if (stopped) {
+            return;
+        }
         if (stateInfo.state == DownloadState.FAILED) {
             int errorCode = stateInfo.cSharpErrorCode != 0 ? stateInfo.cSharpErrorCode : stateInfo.errorCode;
             UpdateResult result = new UpdateResult();
@@ -464,6 +484,9 @@ public class RepairFlow {
 
     public void stop() {
         log.info("Stop repair");
+        stopped = true;
+        if (checkFileTask != null)
+            checkFileTask.stop();
         if (resourcesDownloadTask != null)
             resourcesDownloadTask.stop();
     }
