@@ -1,7 +1,9 @@
 package cn.tealc.wutheringwavestool.util;
 
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.base.AppInjector;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wwt.game.resource.GameServerSwitchService;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
@@ -122,24 +124,11 @@ public class GameResourcesManager {
 
     public static Optional<SourceType> getServerType(){
         File gameDir = getGameDir();
-        if (gameDir != null) {
-            File bilibili = new File(gameDir,"Client/Binaries/Win64/ThirdParty/KrPcSdk_Mainland/KRSDKRes/Bilibili");
-            if (bilibili.exists()) {
-                return Optional.of(SourceType.BILIBILI);
-            }
-            File WeGame = new File(gameDir,"Client/Binaries/Win64/ThirdParty/KrPcSdk_Mainland/KRSDKRes/wegame");
-            if (WeGame.exists()) {
-                return Optional.of(SourceType.WE_GAME);
-            }
-            File global = new File(gameDir,"Client/Binaries/Win64/ThirdParty/KrPcSdk_Global");
-            if (global.exists()) {
-                return Optional.of(SourceType.GLOBAL);
-            }
-            File official = new File(gameDir,"Client/Binaries/Win64/ThirdParty/KrPcSdk_Mainland");
-            if (official.exists()) {
-                return Optional.of(SourceType.DEFAULT);
-            }
+        if (gameDir == null) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        return AppInjector.getInstance(GameServerSwitchService.class)
+                .detectActiveSource(gameDir.toPath())
+                .map(SourceType::fromGameDownloadSource);
     }
 }

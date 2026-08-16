@@ -198,6 +198,10 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         return serverSwitchCoordinator.operatingProperty();
     }
 
+    public ReadOnlyBooleanProperty serverSwitchAvailableProperty() {
+        return serverSwitchCoordinator.switchAvailableProperty();
+    }
+
     public ReadOnlyDoubleProperty serverSwitchProgressProperty() {
         return serverSwitchCoordinator.progressProperty();
     }

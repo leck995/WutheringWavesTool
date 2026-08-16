@@ -2,12 +2,16 @@ package cn.tealc.wutheringwavestool.ui.game.manage;
 
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
+import cn.tealc.wwt.game.resource.GameDownloadSource;
+import cn.tealc.wwt.game.resource.GameServerSwitchService;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.thread.system.CheckGameConfigTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.SceneLifecycle;
+import com.google.inject.Inject;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -19,6 +23,9 @@ import javafx.collections.ObservableList;
  * @create: 2025-03-08 23:11
  */
 public class GameBaseSettingViewModel extends BaseViewModel implements SceneLifecycle {
+    @Inject
+    private GameServerSwitchService serverSwitchService;
+
     private SimpleStringProperty gameDir=new SimpleStringProperty();
     private SimpleStringProperty gameAppStartPath=new SimpleStringProperty();
     private SimpleBooleanProperty gameAppStartCustom=new SimpleBooleanProperty();
@@ -38,7 +45,7 @@ public class GameBaseSettingViewModel extends BaseViewModel implements SceneLife
         gameAppStartPath.bindBidirectional(Config.setting().gameStarAppPathProperty());
         gameAppStartCustom.bindBidirectional(Config.setting().gameStartAppCustomProperty());
 
-        currentServer.set(serverDisplayName(Config.setting().getGameRootDirSource()));
+        refreshCurrentServer();
         Config.setting().gameRootDirSourceProperty().addListener(
                 (observable, oldSource, newSource) -> currentServer.set(serverDisplayName(newSource)));
     }
@@ -153,6 +160,22 @@ public class GameBaseSettingViewModel extends BaseViewModel implements SceneLife
             case GLOBAL -> LanguageManager.getString("ui.game_manager.asset.server_global");
             case WE_GAME -> "WeGame";
         };
+    }
+
+    private void refreshCurrentServer() {
+        var gameDirectory = GameResourcesManager.getGameDir();
+        if (gameDirectory == null) {
+            currentServer.set(serverDisplayName(Config.setting().getGameRootDirSource()));
+            return;
+        }
+        var detectedSource = serverSwitchService.detectActiveSource(gameDirectory.toPath());
+        if (detectedSource.isEmpty()) {
+            currentServer.set("无法识别");
+            return;
+        }
+        SourceType source = SourceType.fromGameDownloadSource(detectedSource.get());
+        Config.setting().setGameRootDirSource(source);
+        currentServer.set(serverDisplayName(source));
     }
 
     public SimpleStringProperty currentServerProperty() {

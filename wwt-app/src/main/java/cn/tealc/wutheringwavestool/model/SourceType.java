@@ -15,4 +15,12 @@ public enum SourceType {
             case DEFAULT, WE_GAME -> GameDownloadSource.MAINLAND;
         };
     }
+
+    public static SourceType fromGameDownloadSource(GameDownloadSource source) {
+        return switch (source) {
+            case BILIBILI -> BILIBILI;
+            case GLOBAL -> GLOBAL;
+            case MAINLAND -> DEFAULT;
+        };
+    }
 }

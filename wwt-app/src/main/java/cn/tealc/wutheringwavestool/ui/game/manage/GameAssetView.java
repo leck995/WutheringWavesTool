@@ -1,7 +1,10 @@
 package cn.tealc.wutheringwavestool.ui.game.manage;
 
+import cn.tealc.wutheringwavestool.base.NotificationManager;
+import cn.tealc.wutheringwavestool.util.DialogBuilder;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.model.SourceType;
+import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;
 import javafx.beans.binding.Bindings;
 import javafx.css.PseudoClass;
@@ -174,8 +177,10 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         redownloadBilibiliButton.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
         deleteMainlandButton.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
         deleteBilibiliButton.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
-        serverSwitchMainlandRadio.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
-        serverSwitchBilibiliRadio.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
+        var serverSwitchDisabled = viewModel.serverSwitchOperatingProperty()
+                .or(viewModel.serverSwitchAvailableProperty().not());
+        serverSwitchMainlandRadio.disableProperty().bind(serverSwitchDisabled);
+        serverSwitchBilibiliRadio.disableProperty().bind(serverSwitchDisabled);
         viewModel.serverSwitchOperatingProperty().addListener((observable, oldValue, running) -> {
             if (!running) {
                 selectServerSource(viewModel.currentGameSourceProperty().get());
@@ -199,6 +204,10 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     }
 
     private void selectServerSource(SourceType source) {
+        if (source != SourceType.DEFAULT && source != SourceType.BILIBILI) {
+            serverSwitchSourceToggle.selectToggle(null);
+            return;
+        }
         RadioButton target = source == SourceType.BILIBILI ? serverSwitchBilibiliRadio : serverSwitchMainlandRadio;
         if (serverSwitchSourceToggle.getSelectedToggle() != target) {
             serverSwitchSourceToggle.selectToggle(target);
@@ -206,35 +215,39 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     }
 
     private void confirmServerSwitch(SourceType target) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(LanguageManager.getString("ui.game_manager.base.server_switch"));
-        alert.setHeaderText(null);
-        alert.setContentText(LanguageManager.getString("ui.game_manager.base.server_switch.confirm"));
-        if (alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-            viewModel.changeServer(target);
-        } else {
-            selectServerSource(viewModel.currentGameSourceProperty().get());
-        }
+        JFXDialogLayout layout = DialogBuilder
+                .create()
+                .title(LanguageManager.getString("ui.game_manager.base.server_switch"))
+                .message(LanguageManager.getString("ui.game_manager.base.server_switch.confirm"))
+                .button("确定",event ->  viewModel.changeServer(target))
+                .button("取消",event -> selectServerSource(viewModel.currentGameSourceProperty().get()))
+                .build();
+        NotificationManager.dialog(layout);
+
     }
 
     private void confirmRedownload(SourceType source) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(LanguageManager.getString("ui.game_manager.base.server_switch"));
-        alert.setHeaderText(null);
-        alert.setContentText(LanguageManager.getString("ui.game_manager.base.server_switch.redownload_confirm"));
-        if (alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-            viewModel.redownloadServerFiles(source);
-        }
+        JFXDialogLayout layout = DialogBuilder
+                .create()
+                .title(LanguageManager.getString("ui.game_manager.base.server_switch"))
+                .message(LanguageManager.getString("ui.game_manager.base.server_switch.redownload_confirm"))
+                .button("确定",event ->  viewModel.redownloadServerFiles(source))
+                .cancel()
+                .build();
+        NotificationManager.dialog(layout);
     }
 
     private void confirmDeleteCache(SourceType source) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(LanguageManager.getString("ui.game_manager.base.server_switch"));
-        alert.setHeaderText(null);
-        alert.setContentText(LanguageManager.getString("ui.game_manager.base.server_switch.delete_confirm"));
-        if (alert.showAndWait().orElse(ButtonType.CANCEL) == ButtonType.OK) {
-            viewModel.deleteServerCache(source);
-        }
+
+
+        JFXDialogLayout layout = DialogBuilder
+                .create()
+                .title(LanguageManager.getString("ui.game_manager.base.server_switch"))
+                .message(LanguageManager.getString("ui.game_manager.base.server_switch.delete_confirm"))
+                .button("确定",event -> viewModel.deleteServerCache(source))
+                .cancel()
+                .build();
+        NotificationManager.dialog(layout);
     }
 
     private void bindVisibility(Node node, javafx.beans.value.ObservableBooleanValue visible) {

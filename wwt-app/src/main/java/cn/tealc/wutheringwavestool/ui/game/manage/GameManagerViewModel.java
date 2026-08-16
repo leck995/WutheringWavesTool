@@ -3,6 +3,7 @@ package cn.tealc.wutheringwavestool.ui.game.manage;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
+import cn.tealc.wwt.game.resource.GameServerSwitchService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.teafx.utils.message.MessageInfo;
@@ -10,6 +11,7 @@ import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.model.ui.ServerData;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
+import com.google.inject.Inject;
 import de.saxsys.mvvmfx.MvvmFX;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -18,6 +20,8 @@ import javafx.collections.ObservableList;
 import javafx.util.Duration;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.util.Optional;
 
 /**
  * @description:
@@ -25,6 +29,9 @@ import java.io.File;
  * @create: 2025-02-10 19:18
  */
 public class GameManagerViewModel extends BaseViewModel {
+
+    @Inject
+    private GameServerSwitchService serverSwitchService;
 
     private final ObservableList<ServerData> serverList = FXCollections.observableArrayList();
 
@@ -57,22 +64,15 @@ public class GameManagerViewModel extends BaseViewModel {
 
 
     private void checkService(){
+        serverList.clear();
         File gameDir = GameResourcesManager.getGameDir();
-        if(gameDir != null){
-            //判断国际服是否存在
-            File globalFile = new File(gameDir, "/Client/Binaries/Win64/ThirdParty/KrPcSdk_Global");
-            serverList.add(new ServerData(SourceType.GLOBAL,globalFile.exists()));
-            //判断国内BILIBILI是否存在
-            File mainLandBiliBiliFile = new File(gameDir, "/Client/Binaries/Win64/ThirdParty/KrPcSdk_Mainland-bil/KRSDKRes/Bilibili");
-            serverList.add(new ServerData(SourceType.BILIBILI,mainLandBiliBiliFile.exists()));
-            //判断国内官服是否存在
-
-          /*  File globalFile = new File(gameDir, "/Client/Binaries/Win64/ThirdParty/KrPcSdk_Global");
-            //判断BiLIBILI是否存在
-            serverList.add(new Pair<>(SourceType.GLOBAL,globalFile.exists()));
-            File globalFile = new File(gameDir, "/Client/Binaries/Win64/ThirdParty/KrPcSdk_Global");
-            serverList.add(new Pair<>(SourceType.GLOBAL,globalFile.exists()));*/
-
+        if (gameDir == null) {
+            return;
+        }
+        Optional<SourceType> detected = serverSwitchService.detectActiveSource(gameDir.toPath())
+                .map(SourceType::fromGameDownloadSource);
+        for (SourceType source : SourceType.values()) {
+            serverList.add(new ServerData(source, detected.filter(source::equals).isPresent()));
         }
     }
 
@@ -81,40 +81,17 @@ public class GameManagerViewModel extends BaseViewModel {
         File startApp = new File(gameDir.getAbsolutePath() + File.separator + "Wuthering Waves.exe");
         if (startApp.exists()) {
             gameRootDir.set(gameDir.getAbsolutePath());
-            SourceType sourceType = checkCurrentServer();
-            setGameRootDirSource(sourceType);
+            var detectedSource = serverSwitchService
+                    .detectActiveSource(gameDir.toPath());
+            setGameRootDirSource(detectedSource.map(SourceType::fromGameDownloadSource)
+                    .orElse(SourceType.DEFAULT));
+            if (detectedSource.isEmpty()) {
+                NotificationManager.message(MessageInfo.warning("无法根据 launcherDownloadConfig.json 和 SDK 目录识别服务器，请手动确认区服"));
+            }
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,MessageInfo.warning(LanguageManager.getString("ui.setting.message.01")));
         }
     }
-    /**
-     * @description: 判断当前所处的服务器
-     * @param:
-     * @return  cn.tealc.wutheringwavestool.model.SourceType
-     * @date:   2025/2/18
-     */
-    private SourceType checkCurrentServer(){
-        File gameDir = GameResourcesManager.getGameDir();
-        if(gameDir != null){
-            File globalFile = new File(gameDir, "/Client/Binaries/Win64/ThirdParty/KrPcSdk_Global");
-            if (globalFile.exists()) {
-                return SourceType.GLOBAL;
-            }
-            File bilibiliFile = new File(gameDir, "/Client/Binaries/Win64/ThirdParty/KrPcSdk_Mainland/KRSDKRes/Bilibili");
-            if (bilibiliFile.exists()) {
-                return SourceType.BILIBILI;
-            }
-            File weGameFile = new File(gameDir, "/Client/Binaries/Win64/ThirdParty/KrPcSdk_Mainland/KRSDKRes/wegame");
-            if (bilibiliFile.exists()) {
-                return SourceType.WE_GAME;
-            }
-
-        }
-        return SourceType.DEFAULT;
-    }
-
-
-
     public void setGameRootDirSource(String type){
         switch (type) {
             case "default"-> {

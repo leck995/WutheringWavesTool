@@ -1,0 +1,215 @@
+.dialog-pane.shadcn-dialog-pane {
+    -fx-background-color: -color-bg-default;
+    -fx-background-insets: 0;
+    -fx-background-radius: 10px;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1px;
+    -fx-border-radius: 10px;
+    -fx-padding: 0;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.22), 28, 0.18, 0, 8);
+}
+
+.shadcn-dialog-headerbar {
+    -fx-min-height: 40px;
+    -fx-pref-height: 40px;
+    -fx-padding: 0 8px 0 20px;
+    -fx-background-color: -color-bg-default;
+    -fx-background-radius: 10px 10px 0 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.shadcn-dialog-header-left {
+    -fx-alignment: center-left;
+    -fx-spacing: 8px;
+}
+
+.shadcn-dialog-title {
+    -fx-text-fill: -color-fg-default;
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bold;
+}
+
+.shadcn-dialog-header-right {
+    -fx-alignment: center-right;
+}
+
+.shadcn-alert-icon {
+    -fx-icon-size: 20px;
+}
+
+.shadcn-dialog-pane.shadcn-alert-pane > .header-panel {
+    -fx-min-height: 0;
+    -fx-pref-height: 0;
+    -fx-max-height: 0;
+    -fx-padding: 0;
+    -fx-opacity: 0;
+}
+
+.shadcn-dialog-pane > .content.shadcn-alert-content,
+.shadcn-alert-content {
+    -fx-pref-height: 60px;
+    -fx-spacing: 16px;
+    -fx-padding: 10px 20px 10px 20px;
+}
+
+.shadcn-alert-content-label {
+    -fx-text-fill: -color-fg-muted;
+    -fx-wrap-text: true;
+}
+
+.shadcn-dialog-pane.shadcn-alert-info {
+    -fx-border-color: -color-accent-muted;
+}
+
+.shadcn-dialog-pane.shadcn-alert-info .shadcn-alert-icon {
+    -fx-icon-color: -color-accent-fg;
+    -fx-fill: -color-accent-fg;
+}
+
+.shadcn-dialog-pane.shadcn-alert-warning {
+    -fx-border-color: -color-warning-muted;
+}
+
+.shadcn-dialog-pane.shadcn-alert-warning .shadcn-alert-icon {
+    -fx-icon-color: -color-warning-fg;
+    -fx-fill: -color-warning-fg;
+}
+
+.shadcn-dialog-pane.shadcn-alert-danger {
+    -fx-border-color: -color-danger-muted;
+}
+
+.shadcn-dialog-pane.shadcn-alert-danger .shadcn-alert-icon {
+    -fx-icon-color: -color-danger-fg;
+    -fx-fill: -color-danger-fg;
+}
+
+.shadcn-dialog-pane.shadcn-alert-success {
+    -fx-border-color: -color-success-muted;
+}
+
+.shadcn-dialog-pane.shadcn-alert-success .shadcn-alert-icon {
+    -fx-icon-color: -color-success-fg;
+    -fx-fill: -color-success-fg;
+}
+
+.shadcn-dialog-pane.shadcn-alert-default .shadcn-alert-icon {
+    -fx-icon-color: -color-fg-muted;
+    -fx-fill: -color-fg-muted;
+}
+
+.shadcn-dialog-close {
+    -fx-content-display: graphic-only;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+    -fx-background-insets: 0;
+    -fx-border-insets: 0;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
+    -fx-padding: 7px;
+}
+
+.shadcn-dialog-close:hover {
+    -fx-background-color: -color-bg-subtle;
+}
+
+.shadcn-dialog-close:pressed {
+    -fx-background-color: -color-base-1;
+}
+
+.shadcn-dialog-pane > .header-panel {
+    -fx-padding: 16px 20px 0 20px;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+
+.shadcn-dialog-pane > .header-panel .label {
+    -fx-text-fill: -color-fg-default;
+    -fx-font-size: 1.05em;
+    -fx-font-weight: bold;
+    -fx-wrap-text: true;
+}
+
+.shadcn-dialog-pane > .content.label,
+.shadcn-dialog-pane > .content {
+    -fx-text-fill: -color-fg-muted;
+    -fx-padding: 18px 20px 4px 20px;
+    -fx-wrap-text: true;
+}
+
+.shadcn-dialog-pane > .graphic-container {
+    -fx-padding: 18px 0 4px 20px;
+}
+
+.shadcn-dialog-pane > .button-bar {
+    -fx-padding: 8px 0 0 0;
+    -fx-border-color: transparent;
+    -fx-border-width: 0;
+}
+
+.shadcn-dialog-pane > .button-bar > .container {
+    -fx-alignment: center-right;
+    -fx-spacing: 8px;
+    -fx-padding: 12px 20px 20px 20px;
+}
+
+.shadcn-dialog-pane > .button-bar .button {
+    -fx-background-color: transparent;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-text-fill: -color-fg-default;
+    -fx-padding: 4px 16px;
+}
+
+.shadcn-dialog-pane > .button-bar .button:hover {
+    -fx-background-color: -color-bg-subtle;
+    -fx-border-color: -color-fg-subtle;
+}
+
+.shadcn-dialog-pane > .button-bar .button:focused {
+    -fx-border-color: -color-accent-emphasis;
+    -fx-effect: dropshadow(three-pass-box, -color-accent-muted, 4, 0.4, 0, 0);
+}
+
+.shadcn-dialog-pane > .button-bar .button:default {
+    -fx-background-color: -color-fg-default;
+    -fx-border-color: -color-fg-default;
+    -fx-text-fill: -color-bg-default;
+}
+
+.shadcn-dialog-pane > .button-bar .button:default:hover {
+    -fx-background-color: -color-base-8;
+    -fx-border-color: -color-base-8;
+}
+
+.shadcn-dialog-pane .text-field,
+.shadcn-dialog-pane .text-area,
+.shadcn-dialog-pane .combo-box,
+.shadcn-dialog-pane .choice-box {
+    -fx-background-color: -color-bg-default;
+    -fx-border-color: -color-border-default;
+    -fx-border-width: 1px;
+    -fx-border-radius: 6px;
+    -fx-background-radius: 6px;
+}
+
+.shadcn-dialog-pane .text-field:focused,
+.shadcn-dialog-pane .text-area:focused,
+.shadcn-dialog-pane .combo-box:focused,
+.shadcn-dialog-pane .choice-box:focused {
+    -fx-border-color: -color-accent-emphasis;
+    -fx-effect: dropshadow(three-pass-box, -color-accent-muted, 4, 0.4, 0, 0);
+}
+
+.shadcn-dialog-pane > .expandable-content {
+    -fx-padding: 0 20px 12px 20px;
+}
+
+.shadcn-dialog-pane > .button-bar > .container > .details-button {
+    -fx-text-fill: -color-fg-muted;
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}

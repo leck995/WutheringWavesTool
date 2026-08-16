@@ -7,5 +7,6 @@ open module WutheringWavesTool_test {
     requires cn.tealc.fxplugin;
     requires org.apache.commons.codec;
     requires org.testfx.junit5;
+    requires javafx.controls;
     requires javafx.graphics;
 }

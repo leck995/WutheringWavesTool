@@ -3,13 +3,15 @@ package cn.tealc.wutheringwavestool.ui.game.manage;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
+import cn.tealc.wwt.game.resource.GameServerSwitchService;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import de.saxsys.mvvmfx.MvvmFX;
-import de.saxsys.mvvmfx.ViewModel;
+import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
+import com.google.inject.Inject;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -21,7 +23,9 @@ import java.io.File;
  * @author: Leck
  * @create: 2025-03-19 23:17
  */
-public class GameDirChooseViewModel implements ViewModel {
+public class GameDirChooseViewModel extends BaseViewModel {
+    @Inject
+    private GameServerSwitchService serverSwitchService;
     private SimpleStringProperty localDir = new SimpleStringProperty();
     private SimpleObjectProperty<SourceType> localSourceType = new SimpleObjectProperty<>();
 
@@ -58,7 +62,7 @@ public class GameDirChooseViewModel implements ViewModel {
         boolean checked = checkLocalDirCurrent(dir);
         if (checked) {
             localDir.set(dir.getAbsolutePath());
-            SourceType type = checkCurrentServer();
+            SourceType type = detectCurrentServer(dir.toPath());
             localSourceType.set(type);
             finishEnabled.set(true);
         }else {
@@ -85,24 +89,10 @@ public class GameDirChooseViewModel implements ViewModel {
      * @return  cn.tealc.wutheringwavestool.model.SourceType
      * @date:   2025/2/18
      */
-    private SourceType checkCurrentServer(){
-        File gameDir = GameResourcesManager.getGameDir();
-        if(gameDir != null){
-            File globalFile = new File(gameDir, "/Client/Binaries/Win64/ThirdParty/KrPcSdk_Global");
-            if (globalFile.exists()) {
-                return SourceType.GLOBAL;
-            }
-            File bilibiliFile = new File(gameDir, "/Client/Binaries/Win64/ThirdParty/KrPcSdk_Mainland/KRSDKRes/Bilibili");
-            if (bilibiliFile.exists()) {
-                return SourceType.BILIBILI;
-            }
-            File weGameFile = new File(gameDir, "/Client/Binaries/Win64/ThirdParty/KrPcSdk_Mainland/KRSDKRes/wegame");
-            if (weGameFile.exists()) {
-                return SourceType.WE_GAME;
-            }
-
-        }
-        return SourceType.DEFAULT;
+    private SourceType detectCurrentServer(java.nio.file.Path gameDirectory) {
+        return serverSwitchService.detectActiveSource(gameDirectory)
+                .map(SourceType::fromGameDownloadSource)
+                .orElse(SourceType.DEFAULT);
     }
 
 

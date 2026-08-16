@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.util;
 
 import cn.tealc.wutheringwavestool.WwtApp;
+import cn.tealc.wutheringwavestool.ui.component.dialog.NewAlter;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import org.slf4j.Logger;
@@ -27,10 +28,9 @@ public class AppLocked{
                 boolean delete = file.delete();
                 if(!delete){ //说明被占用了，助手存在,弹窗提示
                     LOG.info("检测到多开，即将关闭助手");
-                    Alert alert = new Alert(Alert.AlertType.ERROR);
+                    Alert alert = new NewAlter(Alert.AlertType.ERROR);
                     alert.initOwner(WwtApp.getWindow());
                     alert.setTitle(LanguageManager.getString("ui.app_locked.title"));
-                    alert.setHeaderText(LanguageManager.getString("ui.app_locked.header"));
                     alert.setContentText(LanguageManager.getString("ui.app_locked.content"));
                     Optional<ButtonType> buttonType = alert.showAndWait();
                     System.exit(0);

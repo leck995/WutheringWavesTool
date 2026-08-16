@@ -67,6 +67,7 @@ open module cn.tealc.wutheringwavestool {
     exports cn.tealc.wutheringwavestool.thread.gacha.cloud;
     exports cn.tealc.wutheringwavestool.thread.system.account;
     exports cn.tealc.wutheringwavestool.ui.system;
+    exports cn.tealc.wutheringwavestool.ui.component.dialog;
     exports cn.tealc.wutheringwavestool.service;
 
 }
