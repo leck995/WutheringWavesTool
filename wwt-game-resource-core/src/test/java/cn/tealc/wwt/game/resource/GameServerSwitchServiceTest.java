@@ -101,6 +101,39 @@ class GameServerSwitchServiceTest {
     }
 
     @Test
+    void switchesWithSizeValidatedCacheWithoutRehashingEveryFile() throws Exception {
+        ObjectMapper mapper = new ObjectMapper();
+        GameServerSwitchService service = new GameServerSwitchService(null, mapper);
+        Path game = temporaryDirectory.resolve("fast-switch-game");
+
+        write(game.resolve(EXECUTABLE), "mainland-exe");
+        write(game.resolve(SDK).resolve("KRSDKRes/KRSDKConfig.json"), "mainland-sdk");
+        write(game.resolve(ANTI_CHEAT).resolve("AntiCheatExpert.dll"), "mainland-anti-cheat");
+        write(game.resolve("launcherDownloadConfig.json"), "{\"appId\":\"10003\"}");
+
+        Path payload = game.resolve("WwtBackup/server-switch/bilibili/payload");
+        Path executable = payload.resolve(EXECUTABLE);
+        Path config = payload.resolve(SDK).resolve("KRSDKRes/KRSDKConfig.json");
+        Path marker = payload.resolve(SDK).resolve("KRSDKRes/Bilibili/PCGameSDK.dll");
+        Path antiCheat = payload.resolve(ANTI_CHEAT).resolve("AntiCheatExpert.dll");
+        write(executable, "bilibili-exe");
+        write(config, "bilibili-sdk");
+        write(marker, "bilibili-marker");
+        write(antiCheat, "bilibili-anti-cheat");
+        writeReadyCache(mapper, game, payload, executable, config, marker, antiCheat);
+
+        Path metadataPath = game.resolve("WwtBackup/server-switch/metadata.json");
+        ObjectNode metadata = (ObjectNode) mapper.readTree(metadataPath.toFile());
+        ((ObjectNode) metadata.path("caches").path("bilibili").path("files").get(0)).put("md5", "invalid");
+        mapper.writeValue(metadataPath.toFile(), metadata);
+
+        service.switchTo(game, GameDownloadSource.BILIBILI, ServerSwitchProgressListener.noop());
+
+        assertEquals(GameDownloadSource.BILIBILI, service.detectActiveSource(game).orElseThrow());
+        assertEquals("bilibili-exe", Files.readString(game.resolve(EXECUTABLE)));
+    }
+
+    @Test
     void detectsGlobalServerFromAppIdAndSdkDirectory() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
         GameServerSwitchService service = new GameServerSwitchService(null, mapper);

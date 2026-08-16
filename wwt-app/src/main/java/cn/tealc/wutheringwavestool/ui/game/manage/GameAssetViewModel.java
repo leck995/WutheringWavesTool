@@ -136,6 +136,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     private final BooleanProperty operating = new SimpleBooleanProperty(false);
     private final BooleanProperty pauseAvailable = new SimpleBooleanProperty(false);
     private final BooleanProperty stopAvailable = new SimpleBooleanProperty(false);
+    private final BooleanProperty fullDownloadOperating = new SimpleBooleanProperty(false);
+    private final BooleanProperty resourceOperationOperating = new SimpleBooleanProperty(false);
     private final ReadOnlyObjectWrapper<OperationState> operationState =
             new ReadOnlyObjectWrapper<>(OperationState.IDLE);
 
@@ -144,6 +146,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     private final StringProperty status = new SimpleStringProperty("就绪");
 
     private final BooleanProperty showDownload = new SimpleBooleanProperty(true);
+    private final BooleanProperty showDownloadSourceHint = new SimpleBooleanProperty(false);
     private final BooleanProperty showUpdate = new SimpleBooleanProperty(false);
     private final BooleanProperty showRepair = new SimpleBooleanProperty(false);
     private final BooleanProperty showPreDownload = new SimpleBooleanProperty(false);
@@ -204,7 +207,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             }
             if (!operating.get()) {
                 downloadDir.set(defaultDownloadDir());
-                refreshInstalledState();
+                refreshFullDownloadState();
             }
         });
     }
@@ -244,6 +247,14 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     public ReadOnlyBooleanProperty serverSwitchOperatingProperty() {
         return serverSwitchCoordinator.operatingProperty();
+    }
+
+    public ReadOnlyBooleanProperty mainlandServerSwitchReadyProperty() {
+        return serverSwitchCoordinator.mainlandTargetReadyProperty();
+    }
+
+    public ReadOnlyBooleanProperty bilibiliServerSwitchReadyProperty() {
+        return serverSwitchCoordinator.bilibiliTargetReadyProperty();
     }
 
     public ReadOnlyBooleanProperty serverSwitchAvailableProperty() {
@@ -302,25 +313,19 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     }
 
     private void refreshInstalledState() {
-        boolean downloadTargetInstalled = installationManager.isConfigured(downloadSource.get());
-        boolean downloadTargetRegistered = installationManager
-                .gameDirectory(GameInstallationManager.editionOf(downloadSource.get()))
-                .map(path -> hasText(installService.readInstalledVersion(path)))
-                .orElse(false);
-        boolean activeInstallationInstalled = GameResourcesManager.getGameExeBase() != null;
-        showDownload.set(!downloadTargetInstalled || !downloadTargetRegistered);
-        showUpdate.set(false);
-        showPreDownload.set(false);
-        tip.set("");
+        refreshFullDownloadState();
 
-        if (!downloadTargetInstalled) {
+        boolean activeInstallationInstalled = isActiveInstallationInstalled();
+        boolean activeInstallationRegistered = GameResourcesManager.getGameDir() != null
+                && hasText(installService.readInstalledVersion(GameResourcesManager.getGameDir().toPath()));
+        if (!activeInstallationInstalled) {
             cancelCheckTask();
             checkResult = null;
             currentVersion.set("-");
             latestVersion.set("-");
             showRepair.set(false);
             status.set(LanguageManager.getString("ui.game_manager.asset.not_installed"));
-        } else if (!downloadTargetRegistered) {
+        } else if (!activeInstallationRegistered) {
             cancelCheckTask();
             checkResult = null;
             currentVersion.set("-");
@@ -328,21 +333,27 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             showRepair.set(false);
             status.set(LanguageManager.getString("ui.game_manager.asset.registration_required"));
             tip.set(LanguageManager.getString("ui.game_manager.asset.registration_detail"));
-        } else if (activeInstallationInstalled) {
+        } else {
             String installedVersion = readInstalledVersion();
             currentVersion.set(installedVersion.isBlank() ? "-" : installedVersion);
             showRepair.set(false);
             status.set(LanguageManager.getString("ui.game_manager.asset.ready"));
             resourceUpdateCoordinator.checkForUpdates();
             checkUpdate();
-        } else {
-            cancelCheckTask();
-            checkResult = null;
-            currentVersion.set("-");
-            latestVersion.set("-");
-            showRepair.set(false);
-            status.set(LanguageManager.getString("ui.game_manager.asset.not_installed"));
         }
+    }
+
+    /** 仅根据全量下载来源刷新右侧下载入口，不影响当前服务器的资源状态。 */
+    private void refreshFullDownloadState() {
+        boolean downloadTargetInstalled = installationManager.isConfigured(downloadSource.get());
+        boolean downloadTargetRegistered = installationManager
+                .gameDirectory(GameInstallationManager.editionOf(downloadSource.get()))
+                .map(path -> hasText(installService.readInstalledVersion(path)))
+                .orElse(false);
+        showDownloadSourceHint.set(downloadTargetInstalled || downloadTargetRegistered);
+        // 国际服使用已配置的独立游戏目录，不在资源管理中重新全量下载。
+        boolean shouldShowFullDownload = downloadSource.get() != SourceType.GLOBAL || !downloadTargetInstalled;
+        showDownload.set(shouldShowFullDownload && (!downloadTargetInstalled || !downloadTargetRegistered));
     }
 
     private String readInstalledVersion() {
@@ -363,7 +374,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     /** 重新检查游戏版本；运行资源操作时忽略重复检查。 */
     public void checkUpdate() {
-        if (operating.get() || checkTask != null || !isDownloadTargetInstalled()
+        if (operating.get() || checkTask != null || !isActiveInstallationInstalled()
                 || GameResourcesManager.getGameExeBase() == null) {
             return;
         }
@@ -452,7 +463,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     }
 
     private void syncResourceUpdateState(GameResourceUpdateCoordinator.UpdateState state) {
-        if (!isDownloadTargetInstalled()) {
+        if (!isActiveInstallationInstalled()) {
             return;
         }
         String coordinatorCurrent = resourceUpdateCoordinator.currentVersionProperty().get();
@@ -477,6 +488,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             activeOperationId = NO_OPERATION;
             activeOperation = OperationType.UPDATE;
             operating.set(true);
+            fullDownloadOperating.set(false);
+            resourceOperationOperating.set(true);
             pauseAvailable.set(state == GameResourceUpdateCoordinator.UpdateState.DOWNLOADING
                     || state == GameResourceUpdateCoordinator.UpdateState.PAUSED);
             stopAvailable.set(state != GameResourceUpdateCoordinator.UpdateState.APPLYING);
@@ -496,6 +509,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             activeOperationId = NO_OPERATION;
             activeTask = null;
             operating.set(false);
+            resourceOperationOperating.set(false);
             pauseAvailable.set(false);
             stopAvailable.set(false);
             operationState.set(OperationState.IDLE);
@@ -860,6 +874,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         activeOperationId = operationId;
         activeOperation = operation;
         operating.set(true);
+        fullDownloadOperating.set(operation == OperationType.DOWNLOAD);
+        resourceOperationOperating.set(operation != OperationType.DOWNLOAD);
         pauseAvailable.set(operation != OperationType.UPDATE && operation != OperationType.REPAIR);
         stopAvailable.set(true);
         operationState.set(OperationState.RUNNING);
@@ -911,6 +927,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         activeOperationId = NO_OPERATION;
         activeOperation = OperationType.NONE;
         operating.set(false);
+        fullDownloadOperating.set(false);
+        resourceOperationOperating.set(false);
         pauseAvailable.set(false);
         stopAvailable.set(false);
         operationState.set(OperationState.IDLE);
@@ -1089,8 +1107,9 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     private static String downloadSourceName(SourceType source) {
         return switch (source) {
             case GLOBAL -> "国际服";
-            case BILIBILI -> "Bilibili服";
-            case DEFAULT, WE_GAME -> "国服";
+            case BILIBILI -> "BiliBili";
+            case DEFAULT -> "国内官服";
+            case WE_GAME -> "WeGame";
         };
     }
 
@@ -1108,8 +1127,9 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         return value != null && !value.isBlank();
     }
 
-    private boolean isDownloadTargetInstalled() {
-        return installationManager.isConfigured(downloadSource.get());
+    private boolean isActiveInstallationInstalled() {
+        SourceType activeSource = Config.setting().getGameRootDirSource();
+        return installationManager.isConfigured(activeSource != null ? activeSource : SourceType.DEFAULT);
     }
 
     private static SourceType normalizeDownloadSource(SourceType source) {
@@ -1133,6 +1153,14 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         return stopAvailable;
     }
 
+    public ReadOnlyBooleanProperty fullDownloadOperatingProperty() {
+        return fullDownloadOperating;
+    }
+
+    public ReadOnlyBooleanProperty resourceOperationOperatingProperty() {
+        return resourceOperationOperating;
+    }
+
     public ReadOnlyObjectProperty<OperationState> operationStateProperty() {
         return operationState.getReadOnlyProperty();
     }
@@ -1151,6 +1179,10 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     public BooleanProperty showDownloadProperty() {
         return showDownload;
+    }
+
+    public BooleanProperty showDownloadSourceHintProperty() {
+        return showDownloadSourceHint;
     }
 
     public BooleanProperty showUpdateProperty() {

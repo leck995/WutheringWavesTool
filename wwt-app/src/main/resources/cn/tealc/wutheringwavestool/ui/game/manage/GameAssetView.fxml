@@ -83,110 +83,21 @@
 
                         <HBox alignment="TOP_LEFT" fillHeight="true" spacing="24.0" styleClass="asset-columns">
                            <children>
-                              <VBox minWidth="0.0" prefWidth="560.0" spacing="16.0"
-                                    styleClass="asset-column,download-column" HBox.hgrow="ALWAYS">
+                              <VBox minWidth="0.0" prefWidth="0.0" spacing="16.0"
+                                    styleClass="asset-column,resource-column" HBox.hgrow="ALWAYS">
                                  <children>
-                        <VBox spacing="12.0" styleClass="asset-section">
-                           <children>
-                              <Label styleClass="asset-section-title" text="%ui.game_manager.asset.download_config" />
-                              <VBox spacing="9.0">
-                                 <children>
-                                    <Label styleClass="asset-form-label" text="%ui.game_manager.asset.server" />
-                                    <HBox spacing="15.0">
-                                       <children>
-                                          <RadioButton fx:id="mainlandSourceRadio" mnemonicParsing="false"
-                                                       styleClass="download-source-radio"
-                                                       text="%ui.game_manager.asset.server_mainland" userData="DEFAULT">
-                                             <toggleGroup>
-                                                <ToggleGroup fx:id="downloadSourceToggle" />
-                                             </toggleGroup>
-                                          </RadioButton>
-                                          <RadioButton fx:id="bilibiliSourceRadio" mnemonicParsing="false"
-                                                       styleClass="download-source-radio"
-                                                       text="%ui.game_manager.asset.server_bilibili"
-                                                       toggleGroup="$downloadSourceToggle" userData="BILIBILI" />
-                                          <RadioButton fx:id="globalSourceRadio" mnemonicParsing="false"
-                                                       styleClass="download-source-radio"
-                                                       text="%ui.game_manager.asset.server_global"
-                                                       toggleGroup="$downloadSourceToggle" userData="GLOBAL" />
-                                       </children>
-                                    </HBox>
-                                 </children>
-                              </VBox>
-                              <VBox spacing="10.0" styleClass="download-policy-section">
-                                 <children>
-                                    <Label styleClass="asset-form-label" text="%ui.game_manager.asset.download_policy" />
-                                    <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="download-policy-row">
-                                       <children>
-                                          <Label styleClass="download-policy-label" text="%ui.game_manager.asset.parallel" />
-                                          <Spinner fx:id="parallelSpinner" editable="false" prefWidth="92.0" />
-                                          <Label styleClass="text-tip" text="%ui.game_manager.asset.parallel_unit" />
-                                          <Region HBox.hgrow="ALWAYS" />
-                                          <Label styleClass="download-policy-label" text="%ui.game_manager.asset.speed_limit" />
-                                          <ToggleSwitch fx:id="speedLimitSwitch" />
-                                          <Spinner fx:id="speedLimitSpinner" editable="true" prefWidth="108.0" />
-                                          <Label styleClass="text-tip" text="MB/s" />
-                                       </children>
-                                    </HBox>
-                                 </children>
-                              </VBox>
-                           </children>
-                        </VBox>
-
-                        <VBox fx:id="directorySection" spacing="9.0" styleClass="asset-section">
-                           <children>
-                                    <Label styleClass="asset-form-label" text="%ui.game_manager.asset.dir" />
-                                    <StackPane maxWidth="560.0" styleClass="input-group">
-                                       <children>
-                                          <TextField fx:id="downloadDirField" maxWidth="1.7976931348623157E308"
-                                                     promptText="%ui.game_manager.asset.dir_tip"
-                                                     styleClass="asset-path-field" />
-                                          <Button fx:id="chooseDirBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
-                                                  onAction="#chooseDownloadDir" styleClass="flat,asset-icon-button"
-                                                  StackPane.alignment="CENTER_RIGHT">
-                                             <tooltip>
-                                                <Tooltip text="%ui.game_manager.asset.dir" />
-                                             </tooltip>
-                                             <graphic>
-                                                <FontIcon iconLiteral="mdoal-folder_open" iconSize="19" />
-                                             </graphic>
-                                          </Button>
-                                       </children>
-                                    </StackPane>
-                           </children>
-                        </VBox>
-
-                        <VBox spacing="10.0" styleClass="asset-section">
+                        <VBox spacing="11.0" styleClass="asset-section">
                            <children>
                               <HBox alignment="CENTER_LEFT">
                                  <children>
-                                    <Label styleClass="asset-section-title" text="%ui.game_manager.asset.progress" />
+                                    <Label styleClass="asset-section-title" text="%ui.game_manager.asset.current_server_resources" />
                                     <Region HBox.hgrow="ALWAYS" />
-                                    <Label fx:id="speedLabel" alignment="CENTER_RIGHT" maxWidth="118.0" minWidth="118.0"
-                                           prefWidth="118.0" styleClass="progress-speed" text="" textOverrun="ELLIPSIS" />
-                                    <Label fx:id="progressTextLabel" alignment="CENTER_RIGHT" minWidth="58.0"
-                                           styleClass="progress-percent" text="0%" />
+                                    <Label fx:id="currentServerLabel" maxWidth="220.0" minWidth="0.0"
+                                           styleClass="current-server-label" textOverrun="ELLIPSIS" />
                                  </children>
                               </HBox>
-                              <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" progress="0.0"
-                                           styleClass="asset-progress-bar" />
-                              <Label fx:id="tipLabel" maxWidth="1.7976931348623157E308" minWidth="0.0"
-                                     styleClass="text-tip" text="" textOverrun="ELLIPSIS" wrapText="false" />
-                           </children>
-                        </VBox>
-
-                        <VBox spacing="11.0" styleClass="action-section">
-                           <children>
-                              <Label styleClass="asset-section-title" text="%ui.game_manager.asset.actions" />
                               <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="action-row">
                                  <children>
-                                    <Button fx:id="downloadBtn" contentDisplay="LEFT" graphicTextGap="8.0"
-                                            mnemonicParsing="false" onAction="#download"
-                                            styleClass="accent,asset-action" text="%ui.game_manager.asset.download">
-                                       <graphic>
-                                          <FontIcon iconLiteral="mdoal-cloud_download" iconSize="18" />
-                                       </graphic>
-                                    </Button>
                                     <Button fx:id="updateBtn" contentDisplay="LEFT" graphicTextGap="8.0"
                                             mnemonicParsing="false" onAction="#update"
                                             styleClass="accent,asset-action" text="%ui.game_manager.asset.update">
@@ -213,15 +124,29 @@
                                           <FontIcon iconLiteral="mdomz-schedule" iconSize="18" />
                                        </graphic>
                                     </Button>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+
+                        <VBox fx:id="resourceProgressSection" spacing="10.0" styleClass="asset-section">
+                           <children>
+                              <HBox alignment="CENTER_LEFT">
+                                 <children>
+                                    <Label styleClass="asset-section-title" text="%ui.game_manager.asset.resource_progress" />
                                     <Region HBox.hgrow="ALWAYS" />
-                                    <HBox fx:id="operationControls" alignment="CENTER" spacing="4.0"
+                                    <Label fx:id="resourceSpeedLabel" alignment="CENTER_RIGHT" maxWidth="118.0" minWidth="118.0"
+                                           prefWidth="118.0" styleClass="progress-speed" text="" textOverrun="ELLIPSIS" />
+                                    <Label fx:id="resourceProgressTextLabel" alignment="CENTER_RIGHT" minWidth="58.0"
+                                           styleClass="progress-percent" text="0%" />
+                                    <HBox fx:id="resourceOperationControls" alignment="CENTER" spacing="4.0"
                                           styleClass="operation-controls">
                                        <children>
-                                          <Separator fx:id="pauseSeparator" orientation="VERTICAL"
+                                          <Separator fx:id="resourcePauseSeparator" orientation="VERTICAL"
                                                      styleClass="control-separator" />
-                                          <StackPane fx:id="pauseControls" minWidth="38.0" prefWidth="38.0">
+                                          <StackPane fx:id="resourcePauseControls" minWidth="38.0" prefWidth="38.0">
                                              <children>
-                                                <Button fx:id="pauseBtn" contentDisplay="GRAPHIC_ONLY"
+                                                <Button fx:id="resourcePauseBtn" contentDisplay="GRAPHIC_ONLY"
                                                         mnemonicParsing="false" onAction="#pause"
                                                         styleClass="flat,asset-control-button">
                                                    <tooltip>
@@ -231,7 +156,7 @@
                                                       <FontIcon iconLiteral="mdomz-pause" iconSize="19" />
                                                    </graphic>
                                                 </Button>
-                                                <Button fx:id="resumeBtn" contentDisplay="GRAPHIC_ONLY"
+                                                <Button fx:id="resourceResumeBtn" contentDisplay="GRAPHIC_ONLY"
                                                         mnemonicParsing="false" onAction="#resume"
                                                         styleClass="flat,asset-control-button">
                                                    <tooltip>
@@ -243,7 +168,7 @@
                                                 </Button>
                                              </children>
                                           </StackPane>
-                                          <Button fx:id="stopBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
+                                          <Button fx:id="resourceStopBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
                                                   onAction="#stop" styleClass="flat,danger,asset-control-button">
                                              <tooltip>
                                                 <Tooltip text="%ui.game_manager.asset.stop" />
@@ -253,46 +178,186 @@
                                              </graphic>
                                           </Button>
                                        </children>
-                                    </HBox>
-                                 </children>
-                              </HBox>
-                           </children>
-                        </VBox>
+                                     </HBox>
+                                  </children>
+                               </HBox>
+                              <ProgressBar fx:id="resourceProgressBar" maxWidth="1.7976931348623157E308" progress="0.0"
+                                           styleClass="asset-progress-bar" />
+                              <Label fx:id="resourceTipLabel" maxWidth="1.7976931348623157E308" minWidth="0.0"
+                                     styleClass="text-tip" text="" textOverrun="ELLIPSIS" wrapText="false" />
+                            </children>
+                         </VBox>
 
-                                 </children>
-                              </VBox>
+                                  </children>
+                               </VBox>
 
-                              <VBox minWidth="300.0" prefWidth="360.0" spacing="14.0"
-                                    styleClass="asset-column,server-switch-column" HBox.hgrow="NEVER">
+                               <VBox minWidth="0.0" prefWidth="0.0" spacing="14.0"
+                                     styleClass="asset-column,download-column" HBox.hgrow="ALWAYS">
                         <children>
-                           <Label styleClass="asset-section-title" text="%ui.game_manager.base.server_switch" />
-                           <Label styleClass="asset-form-label" text="%ui.game_manager.base.game_server" />
-                           <HBox spacing="15.0">
+                           <VBox spacing="12.0" styleClass="asset-section">
                               <children>
-                                 <RadioButton fx:id="serverSwitchMainlandRadio" mnemonicParsing="false"
-                                              text="%ui.game_manager.base.server_switch.mainland" userData="DEFAULT">
-                                    <toggleGroup>
-                                       <ToggleGroup fx:id="serverSwitchSourceToggle" />
-                                    </toggleGroup>
-                                 </RadioButton>
-                                 <RadioButton fx:id="serverSwitchBilibiliRadio" mnemonicParsing="false"
-                                              text="%ui.game_manager.base.server_switch.bilibili" toggleGroup="$serverSwitchSourceToggle"
-                                              userData="BILIBILI" />
-                              </children>
-                           </HBox>
-                           <Label fx:id="serverSwitchStatusLabel" styleClass="server-switch-status" wrapText="true" />
-                           <Label fx:id="serverSwitchDetailLabel" styleClass="text-tip" wrapText="true" />
-                           <ProgressBar fx:id="serverSwitchProgress" maxWidth="1.7976931348623157E308"
-                                        progress="0.0" styleClass="asset-progress-bar" />
-                           <VBox spacing="8.0" styleClass="server-switch-actions">
-                              <children>
-                                 <Label styleClass="asset-form-label"
-                                        text="%ui.game_manager.base.server_switch.cache_management" />
-                                 <HBox alignment="CENTER_LEFT" spacing="8.0" styleClass="server-cache-row">
+                                 <Label styleClass="asset-section-title" text="%ui.game_manager.asset.full_download" />
+                                 <VBox spacing="9.0">
                                     <children>
-                                       <Label styleClass="server-cache-label"
-                                              maxWidth="1.7976931348623157E308" text="%ui.game_manager.base.server_switch.mainland" HBox.hgrow="ALWAYS" />
-                                       <Button fx:id="redownloadMainlandButton" contentDisplay="GRAPHIC_ONLY"
+                                       <Label styleClass="asset-form-label" text="%ui.game_manager.asset.full_download_source" />
+                                       <HBox alignment="CENTER_LEFT" spacing="20.0">
+                                          <children>
+                                             <RadioButton fx:id="mainlandSourceRadio" mnemonicParsing="false"
+                                                          styleClass="download-source-radio"
+                                                          text="%ui.game_manager.asset.server_mainland" userData="DEFAULT">
+                                                <toggleGroup>
+                                                   <ToggleGroup fx:id="downloadSourceToggle" />
+                                                </toggleGroup>
+                                             </RadioButton>
+                                             <RadioButton fx:id="bilibiliSourceRadio" mnemonicParsing="false"
+                                                          styleClass="download-source-radio"
+                                                          text="%ui.game_manager.asset.server_bilibili"
+                                                          toggleGroup="$downloadSourceToggle" userData="BILIBILI" />
+                                             <RadioButton fx:id="globalSourceRadio" mnemonicParsing="false"
+                                                          styleClass="download-source-radio"
+                                                          text="%ui.game_manager.asset.server_global"
+                                                          toggleGroup="$downloadSourceToggle" userData="GLOBAL" />
+                                          </children>
+                                       </HBox>
+                                    </children>
+                                 </VBox>
+                                 <VBox fx:id="directorySection" spacing="9.0">
+                                    <children>
+                                       <Label styleClass="asset-form-label" text="%ui.game_manager.asset.dir" />
+                                       <StackPane maxWidth="350.0" prefWidth="350.0" styleClass="input-group">
+                                          <children>
+                                             <TextField fx:id="downloadDirField" prefWidth="250.0"
+                                                        promptText="%ui.game_manager.asset.dir_tip" />
+                                             <Button fx:id="chooseDirBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
+                                                     onAction="#chooseDownloadDir"
+                                                     StackPane.alignment="CENTER_RIGHT">
+                                                <tooltip>
+                                                   <Tooltip text="%ui.game_manager.asset.dir" />
+                                                </tooltip>
+                                                <graphic>
+                                                   <FontIcon iconLiteral="mdoal-folder_open" iconSize="19" />
+                                                </graphic>
+                                             </Button>
+                                          </children>
+                                       </StackPane>
+                                    </children>
+                                 </VBox>
+                                 <Label fx:id="downloadSourceHintLabel" maxWidth="1.7976931348623157E308"
+                                        styleClass="text-tip,download-source-hint"
+                                        text="%ui.game_manager.asset.download_existing_hint"
+                                        textOverrun="ELLIPSIS" wrapText="false" />
+                                 <VBox spacing="10.0" styleClass="download-policy-section">
+                                    <children>
+                                       <Label styleClass="asset-form-label" text="%ui.game_manager.asset.download_policy" />
+                                       <HBox alignment="CENTER_LEFT" spacing="8.0">
+                                          <children>
+                                             <HBox alignment="CENTER_LEFT" spacing="6.0" styleClass="download-policy-row">
+                                                <children>
+                                                  <Label styleClass="download-policy-label" text="%ui.game_manager.asset.parallel" />
+                                                   <Spinner fx:id="parallelSpinner" editable="false" prefWidth="72.0" />
+                                                   <Label styleClass="text-tip" text="%ui.game_manager.asset.parallel_unit" />
+                                                </children>
+                                             </HBox>
+                                             <HBox alignment="CENTER_LEFT" spacing="6.0" styleClass="download-policy-row">
+                                                <children>
+                                                   <Label styleClass="download-policy-label" text="%ui.game_manager.asset.speed_limit" />
+                                                   <ToggleSwitch fx:id="speedLimitSwitch" />
+                                                   <Spinner fx:id="speedLimitSpinner" editable="true" prefWidth="84.0" />
+                                                   <Label styleClass="text-tip" text="MB/s" />
+                                                </children>
+                                             </HBox>
+                                          </children>
+                                       </HBox>
+                                    </children>
+                                 </VBox>
+                                 <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="action-row">
+                                    <children>
+                                       <Button fx:id="downloadBtn" contentDisplay="LEFT" graphicTextGap="8.0"
+                                               mnemonicParsing="false" onAction="#download"
+                                               styleClass="accent,asset-action" text="%ui.game_manager.asset.download">
+                                          <graphic>
+                                             <FontIcon iconLiteral="mdoal-cloud_download" iconSize="18" />
+                                          </graphic>
+                                       </Button>
+                                    </children>
+                                 </HBox>
+                                 <VBox fx:id="downloadProgressSection" spacing="10.0" styleClass="download-progress-section">
+                                    <children>
+                                       <HBox alignment="CENTER_LEFT">
+                                          <children>
+                                             <Label styleClass="asset-section-title" text="%ui.game_manager.asset.full_download_progress" />
+                                             <Region HBox.hgrow="ALWAYS" />
+                                             <Label fx:id="downloadSpeedLabel" alignment="CENTER_RIGHT" maxWidth="88.0" minWidth="88.0"
+                                                    prefWidth="88.0" styleClass="progress-speed" text="" textOverrun="ELLIPSIS" />
+                                             <Label fx:id="downloadProgressTextLabel" alignment="CENTER_RIGHT" minWidth="58.0"
+                                                    styleClass="progress-percent" text="0%" />
+                                             <HBox fx:id="downloadOperationControls" alignment="CENTER" spacing="4.0"
+                                                   styleClass="operation-controls">
+                                                <children>
+                                                   <Separator fx:id="downloadPauseSeparator" orientation="VERTICAL"
+                                                              styleClass="control-separator" />
+                                                   <StackPane fx:id="downloadPauseControls" minWidth="38.0" prefWidth="38.0">
+                                                      <children>
+                                                         <Button fx:id="downloadPauseBtn" contentDisplay="GRAPHIC_ONLY"
+                                                                 mnemonicParsing="false" onAction="#pause"
+                                                                 styleClass="flat,asset-control-button">
+                                                            <tooltip>
+                                                               <Tooltip text="%ui.game_manager.asset.pause" />
+                                                            </tooltip>
+                                                            <graphic>
+                                                               <FontIcon iconLiteral="mdomz-pause" iconSize="19" />
+                                                            </graphic>
+                                                         </Button>
+                                                         <Button fx:id="downloadResumeBtn" contentDisplay="GRAPHIC_ONLY"
+                                                                 mnemonicParsing="false" onAction="#resume"
+                                                                 styleClass="flat,asset-control-button">
+                                                            <tooltip>
+                                                               <Tooltip text="%ui.game_manager.asset.resume" />
+                                                            </tooltip>
+                                                            <graphic>
+                                                               <FontIcon iconLiteral="mdomz-play_arrow" iconSize="21" />
+                                                            </graphic>
+                                                         </Button>
+                                                      </children>
+                                                   </StackPane>
+                                                   <Button fx:id="downloadStopBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
+                                                           onAction="#stop" styleClass="flat,danger,asset-control-button">
+                                                      <tooltip>
+                                                         <Tooltip text="%ui.game_manager.asset.stop" />
+                                                      </tooltip>
+                                                      <graphic>
+                                                         <FontIcon iconLiteral="mdomz-stop" iconSize="19" />
+                                                      </graphic>
+                                                   </Button>
+                                                </children>
+                                             </HBox>
+                                          </children>
+                                       </HBox>
+                                       <ProgressBar fx:id="downloadProgressBar" maxWidth="1.7976931348623157E308" progress="0.0"
+                                                    styleClass="asset-progress-bar" />
+                                       <Label fx:id="downloadTipLabel" maxWidth="1.7976931348623157E308" minWidth="0.0"
+                                              styleClass="text-tip" text="" textOverrun="ELLIPSIS" wrapText="false" />
+                                    </children>
+                                 </VBox>
+                              </children>
+                           </VBox>
+                           <VBox spacing="8.0" styleClass="asset-section,download-cache-section">
+                               <children>
+                                  <Label styleClass="asset-section-title" text="%ui.game_manager.asset.download_cache" />
+                                  <VBox fx:id="cacheOperationFeedback" spacing="5.0">
+                                     <children>
+                                        <Label fx:id="cacheStatusLabel" styleClass="download-cache-status" textOverrun="ELLIPSIS" />
+                                        <ProgressBar fx:id="cacheProgress" maxWidth="1.7976931348623157E308"
+                                                     progress="0.0" styleClass="asset-progress-bar" />
+                                        <Label fx:id="cacheDetailLabel" styleClass="text-tip" textOverrun="ELLIPSIS" />
+                                     </children>
+                                  </VBox>
+                                  <HBox alignment="CENTER_LEFT" spacing="8.0" styleClass="server-cache-row">
+                                     <children>
+                                        <Label styleClass="server-cache-label"
+                                               maxWidth="1.7976931348623157E308" text="%ui.game_manager.base.server_switch.mainland" HBox.hgrow="ALWAYS" />
+                                        <Label fx:id="mainlandCacheStatusLabel" styleClass="text-tip" />
+                                        <Button fx:id="redownloadMainlandButton" contentDisplay="GRAPHIC_ONLY"
                                                mnemonicParsing="false" onAction="#redownloadMainlandFiles"
                                                styleClass="flat,server-switch-icon-button">
                                           <tooltip>
@@ -314,11 +379,12 @@
                                        </Button>
                                     </children>
                                  </HBox>
-                                 <HBox alignment="CENTER_LEFT" spacing="8.0" styleClass="server-cache-row">
-                                    <children>
-                                       <Label styleClass="server-cache-label"
-                                              maxWidth="1.7976931348623157E308" text="%ui.game_manager.base.server_switch.bilibili" HBox.hgrow="ALWAYS" />
-                                       <Button fx:id="redownloadBilibiliButton" contentDisplay="GRAPHIC_ONLY"
+                                  <HBox alignment="CENTER_LEFT" spacing="8.0" styleClass="server-cache-row">
+                                     <children>
+                                        <Label styleClass="server-cache-label"
+                                               maxWidth="1.7976931348623157E308" text="%ui.game_manager.base.server_switch.bilibili" HBox.hgrow="ALWAYS" />
+                                        <Label fx:id="bilibiliCacheStatusLabel" styleClass="text-tip" />
+                                        <Button fx:id="redownloadBilibiliButton" contentDisplay="GRAPHIC_ONLY"
                                                mnemonicParsing="false" onAction="#redownloadBilibiliFiles"
                                                styleClass="flat,server-switch-icon-button">
                                           <tooltip>
@@ -339,13 +405,11 @@
                                           </graphic>
                                        </Button>
                                     </children>
-                                 </HBox>
-                              </children>
-                           </VBox>
-                           <Label maxWidth="1.7976931348623157E308" styleClass="text-tip"
-                                  text="%ui.game_manager.base.server_switch.tip" wrapText="true" />
-                        </children>
-                              </VBox>
+                                  </HBox>
+                               </children>
+                            </VBox>
+                         </children>
+                               </VBox>
                            </children>
                         </HBox>
                      </children>

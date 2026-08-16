@@ -207,8 +207,8 @@ public final class GameServerSwitchService {
             throw new IOException("目标服务器切换缓存不存在或不完整，请先重新下载必要文件");
         }
         Path targetPayload = payloadPath(gameRoot, target);
-        progressListener.onProgress(ServerSwitchPhase.VERIFYING, 0, targetCache.totalBytes(), "正在校验目标切换缓存");
-        verifyFiles(targetPayload, targetCache.files());
+        progressListener.onProgress(ServerSwitchPhase.VERIFYING, 0, targetCache.totalBytes(), "正在检查目标切换缓存");
+        verifyCachedFiles(targetPayload, targetCache.files());
 
         String operationId = UUID.randomUUID().toString();
         Transaction transaction = beginTransaction(gameRoot, operationId, "SWITCH", source, target);
@@ -222,7 +222,8 @@ public final class GameServerSwitchService {
             moveComponents(transactionRoot.resolve("active"), payloadPath(gameRoot, source), transaction, gameRoot);
 
             updateLauncherAppId(gameRoot, target);
-            CacheEntry sourceCache = capturePayload(source, payloadPath(gameRoot, source));
+            CacheEntry sourceCache = capturePayload(source, payloadPath(gameRoot, source),
+                    metadata.caches().get(sourceKey(source)));
             CacheMetadata updatedMetadata = metadata.withCache(sourceKey(source), sourceCache)
                     .withCache(sourceKey(target), targetCache.withReady(false));
             writeMetadata(gameRoot, updatedMetadata);
@@ -475,7 +476,14 @@ public final class GameServerSwitchService {
     }
 
 
-    private static CacheEntry capturePayload(GameDownloadSource source, Path payload) throws IOException {
+    private static CacheEntry capturePayload(GameDownloadSource source, Path payload, CacheEntry previous)
+            throws IOException {
+        // A source payload is moved, not downloaded, during a switch. Reuse its verified manifest
+        // when the file set still matches; a size mismatch falls back to a full MD5 capture.
+        if (previous != null && hasRequiredCachedComponents(previous.files())
+                && matchesCachedFiles(payload, previous.files())) {
+            return previous.withReady(true);
+        }
         if (!Files.isRegularFile(payload.resolve(GAME_EXECUTABLE)) || !Files.isDirectory(payload.resolve(SDK_DIRECTORY))
                 || !Files.isDirectory(payload.resolve(ANTI_CHEAT_DIRECTORY))) {
             throw new IOException("当前服务器必要文件不完整，无法建立切换缓存");
@@ -552,16 +560,40 @@ public final class GameServerSwitchService {
         }
     }
 
-    private static void verifyFiles(Path root, List<CachedFile> files) throws IOException {
+    /** Fast switch check; full MD5 verification is reserved for newly downloaded cache files. */
+    private static void verifyCachedFiles(Path root, List<CachedFile> files) throws IOException {
         for (CachedFile file : files) {
             Path target = resolveResourcePath(root, file.path());
             if (!Files.isRegularFile(target) || Files.size(target) != file.size()) {
                 throw new IOException("缓存文件缺失或大小错误：" + file.path());
             }
+        }
+    }
+
+    private static void verifyFiles(Path root, List<CachedFile> files) throws IOException {
+        verifyCachedFiles(root, files);
+        for (CachedFile file : files) {
+            Path target = resolveResourcePath(root, file.path());
             if (file.md5() != null && !file.md5().isBlank() && !file.md5().equalsIgnoreCase(md5(target))) {
                 throw new IOException("缓存文件校验失败：" + file.path());
             }
         }
+    }
+
+    private static boolean matchesCachedFiles(Path root, List<CachedFile> files) throws IOException {
+        if (files == null || files.isEmpty()) {
+            return false;
+        }
+        for (CachedFile file : files) {
+            if (file == null || file.path() == null || !isSafeResourcePath(file.path())) {
+                return false;
+            }
+            Path target = resolveResourcePath(root, file.path());
+            if (!Files.isRegularFile(target) || Files.size(target) != file.size()) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private static String md5(Path file) throws IOException {

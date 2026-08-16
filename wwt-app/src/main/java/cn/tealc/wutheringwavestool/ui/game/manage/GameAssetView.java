@@ -25,7 +25,7 @@ import java.util.ResourceBundle;
 
 /**
  * 统一「游戏资源管理」视图：全量下载 + 增量更新 + 预下载 + 校验修复合一，
- * 单进度条，作为 GameManagerView 的资源管理子 tab。
+ * 按任务类型展示独立进度区域，作为 GameManagerView 的资源管理子 tab。
  */
 public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializable {
     private static final PseudoClass RUNNING_STATE = PseudoClass.getPseudoClass("running");
@@ -40,17 +40,31 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     @FXML
     private VBox directorySection;
     @FXML
-    private HBox operationControls;
+    private Label downloadSourceHintLabel;
     @FXML
-    private Separator pauseSeparator;
+    private VBox resourceProgressSection;
     @FXML
-    private StackPane pauseControls;
+    private VBox downloadProgressSection;
+    @FXML
+    private HBox resourceOperationControls;
+    @FXML
+    private HBox downloadOperationControls;
+    @FXML
+    private Separator resourcePauseSeparator;
+    @FXML
+    private Separator downloadPauseSeparator;
+    @FXML
+    private StackPane resourcePauseControls;
+    @FXML
+    private StackPane downloadPauseControls;
     @FXML
     private Label currentVersionLabel;
     @FXML
     private Label latestVersionLabel;
     @FXML
     private Label statusLabel;
+    @FXML
+    private Label currentServerLabel;
     @FXML
     private TextField downloadDirField;
     @FXML
@@ -62,13 +76,21 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     @FXML
     private ToggleGroup downloadSourceToggle;
     @FXML
-    private ProgressBar progressBar;
+    private ProgressBar resourceProgressBar;
     @FXML
-    private Label speedLabel;
+    private ProgressBar downloadProgressBar;
     @FXML
-    private Label progressTextLabel;
+    private Label resourceSpeedLabel;
     @FXML
-    private Label tipLabel;
+    private Label downloadSpeedLabel;
+    @FXML
+    private Label resourceProgressTextLabel;
+    @FXML
+    private Label downloadProgressTextLabel;
+    @FXML
+    private Label resourceTipLabel;
+    @FXML
+    private Label downloadTipLabel;
     @FXML
     private Spinner<Integer> parallelSpinner;
     @FXML
@@ -85,25 +107,31 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     @FXML
     private Button preDownloadBtn;
     @FXML
-    private Button pauseBtn;
+    private Button resourcePauseBtn;
     @FXML
-    private Button resumeBtn;
+    private Button resourceResumeBtn;
     @FXML
-    private Button stopBtn;
+    private Button resourceStopBtn;
+    @FXML
+    private Button downloadPauseBtn;
+    @FXML
+    private Button downloadResumeBtn;
+    @FXML
+    private Button downloadStopBtn;
     @FXML
     private Button chooseDirBtn;
     @FXML
-    private ToggleGroup serverSwitchSourceToggle;
+    private VBox cacheOperationFeedback;
     @FXML
-    private RadioButton serverSwitchMainlandRadio;
+    private Label cacheStatusLabel;
     @FXML
-    private RadioButton serverSwitchBilibiliRadio;
+    private Label cacheDetailLabel;
     @FXML
-    private Label serverSwitchStatusLabel;
+    private ProgressBar cacheProgress;
     @FXML
-    private Label serverSwitchDetailLabel;
+    private Label mainlandCacheStatusLabel;
     @FXML
-    private ProgressBar serverSwitchProgress;
+    private Label bilibiliCacheStatusLabel;
     @FXML
     private Button redownloadMainlandButton;
     @FXML
@@ -113,17 +141,22 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     @FXML
     private Button deleteBilibiliButton;
 
-    private boolean serverSwitchSourceInitialized;
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         currentVersionLabel.textProperty().bind(viewModel.currentVersionProperty());
         latestVersionLabel.textProperty().bind(viewModel.latestVersionProperty());
         statusLabel.textProperty().bind(viewModel.statusProperty());
-        progressBar.progressProperty().bind(viewModel.progressProperty());
-        speedLabel.textProperty().bind(viewModel.downloadSpeedProperty());
-        progressTextLabel.textProperty().bind(viewModel.progressTextProperty());
-        tipLabel.textProperty().bind(viewModel.tipProperty());
+        resourceProgressBar.progressProperty().bind(viewModel.progressProperty());
+        resourceSpeedLabel.textProperty().bind(viewModel.downloadSpeedProperty());
+        resourceProgressTextLabel.textProperty().bind(viewModel.progressTextProperty());
+        resourceTipLabel.textProperty().bind(viewModel.tipProperty());
+        downloadProgressBar.progressProperty().bind(viewModel.progressProperty());
+        downloadSpeedLabel.textProperty().bind(viewModel.downloadSpeedProperty());
+        downloadProgressTextLabel.textProperty().bind(viewModel.progressTextProperty());
+        downloadTipLabel.textProperty().bind(viewModel.tipProperty());
+        viewModel.currentGameSourceProperty().addListener((observable, oldSource, newSource) ->
+                updateCurrentServerLabel(newSource));
+        updateCurrentServerLabel(viewModel.currentGameSourceProperty().get());
         downloadDirField.textProperty().bindBidirectional(viewModel.downloadDirProperty());
         viewModel.downloadSourceProperty().addListener((observable, oldSource, newSource) ->
                 selectDownloadSource(newSource));
@@ -141,35 +174,60 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         bindVisibility(repairBtn, viewModel.showRepairProperty());
         bindVisibility(preDownloadBtn, viewModel.showPreDownloadProperty());
         bindVisibility(directorySection, viewModel.showDownloadProperty());
-        bindVisibility(operationControls, viewModel.operatingProperty().and(
+        bindVisibility(downloadSourceHintLabel, viewModel.showDownloadSourceHintProperty());
+        bindVisibility(resourceProgressSection, viewModel.resourceOperationOperatingProperty());
+        bindVisibility(downloadProgressSection, viewModel.fullDownloadOperatingProperty());
+        bindVisibility(resourceOperationControls, viewModel.resourceOperationOperatingProperty().and(
                 viewModel.pauseAvailableProperty().or(viewModel.stopAvailableProperty())));
-        bindVisibility(pauseSeparator, viewModel.pauseAvailableProperty());
-        bindVisibility(pauseControls, viewModel.pauseAvailableProperty());
-        bindVisibility(stopBtn, viewModel.stopAvailableProperty());
-        bindVisibility(pauseBtn, Bindings.equal(
+        bindVisibility(downloadOperationControls, viewModel.fullDownloadOperatingProperty().and(
+                viewModel.pauseAvailableProperty().or(viewModel.stopAvailableProperty())));
+        bindVisibility(resourcePauseSeparator, viewModel.pauseAvailableProperty());
+        bindVisibility(resourcePauseControls, viewModel.pauseAvailableProperty());
+        bindVisibility(resourceStopBtn, viewModel.stopAvailableProperty());
+        bindVisibility(downloadPauseSeparator, viewModel.pauseAvailableProperty());
+        bindVisibility(downloadPauseControls, viewModel.pauseAvailableProperty());
+        bindVisibility(downloadStopBtn, viewModel.stopAvailableProperty());
+        bindVisibility(resourcePauseBtn, Bindings.equal(
                 viewModel.operationStateProperty(), GameAssetViewModel.OperationState.RUNNING)
                 .and(viewModel.pauseAvailableProperty()));
-        bindVisibility(resumeBtn, Bindings.equal(
+        bindVisibility(resourceResumeBtn, Bindings.equal(
+                viewModel.operationStateProperty(), GameAssetViewModel.OperationState.PAUSED)
+                .and(viewModel.pauseAvailableProperty()));
+        bindVisibility(downloadPauseBtn, Bindings.equal(
+                viewModel.operationStateProperty(), GameAssetViewModel.OperationState.RUNNING)
+                .and(viewModel.pauseAvailableProperty()));
+        bindVisibility(downloadResumeBtn, Bindings.equal(
                 viewModel.operationStateProperty(), GameAssetViewModel.OperationState.PAUSED)
                 .and(viewModel.pauseAvailableProperty()));
 
         // 操作过程中禁用主操作按钮，各控制按钮仅在对应状态下可用
-        downloadBtn.disableProperty().bind(viewModel.operatingProperty());
-        updateBtn.disableProperty().bind(viewModel.operatingProperty());
-        repairBtn.disableProperty().bind(viewModel.operatingProperty());
-        preDownloadBtn.disableProperty().bind(viewModel.operatingProperty());
-        mainlandSourceRadio.disableProperty().bind(viewModel.operatingProperty());
-        bilibiliSourceRadio.disableProperty().bind(viewModel.operatingProperty());
-        globalSourceRadio.disableProperty().bind(viewModel.operatingProperty());
-        downloadDirField.disableProperty().bind(viewModel.operatingProperty());
-        chooseDirBtn.disableProperty().bind(viewModel.operatingProperty());
-        pauseBtn.disableProperty().bind(Bindings.notEqual(
+        var resourceOrCacheOperating = viewModel.operatingProperty().or(viewModel.serverSwitchOperatingProperty());
+        downloadBtn.disableProperty().bind(resourceOrCacheOperating);
+        updateBtn.disableProperty().bind(resourceOrCacheOperating);
+        repairBtn.disableProperty().bind(resourceOrCacheOperating);
+        preDownloadBtn.disableProperty().bind(resourceOrCacheOperating);
+        mainlandSourceRadio.disableProperty().bind(resourceOrCacheOperating);
+        bilibiliSourceRadio.disableProperty().bind(resourceOrCacheOperating);
+        globalSourceRadio.disableProperty().bind(resourceOrCacheOperating);
+        downloadDirField.disableProperty().bind(resourceOrCacheOperating);
+        chooseDirBtn.disableProperty().bind(resourceOrCacheOperating);
+        resourcePauseBtn.disableProperty().bind(Bindings.notEqual(
                 viewModel.operationStateProperty(), GameAssetViewModel.OperationState.RUNNING)
                 .or(viewModel.pauseAvailableProperty().not()));
-        resumeBtn.disableProperty().bind(Bindings.notEqual(
+        resourceResumeBtn.disableProperty().bind(Bindings.notEqual(
                 viewModel.operationStateProperty(), GameAssetViewModel.OperationState.PAUSED)
                 .or(viewModel.pauseAvailableProperty().not()));
-        stopBtn.disableProperty().bind(
+        resourceStopBtn.disableProperty().bind(
+                Bindings.equal(viewModel.operationStateProperty(), GameAssetViewModel.OperationState.IDLE)
+                        .or(Bindings.equal(
+                                viewModel.operationStateProperty(), GameAssetViewModel.OperationState.STOPPING)));
+        downloadPauseBtn.disableProperty().bind(Bindings.notEqual(
+                viewModel.operationStateProperty(), GameAssetViewModel.OperationState.RUNNING)
+                .or(viewModel.pauseAvailableProperty().not()));
+        downloadResumeBtn.disableProperty().bind(Bindings.notEqual(
+                viewModel.operationStateProperty(), GameAssetViewModel.OperationState.PAUSED)
+                .or(viewModel.pauseAvailableProperty().not()));
+        downloadStopBtn.disableProperty().bind(
                 Bindings.equal(viewModel.operationStateProperty(), GameAssetViewModel.OperationState.IDLE)
                         .or(Bindings.equal(
                                 viewModel.operationStateProperty(), GameAssetViewModel.OperationState.STOPPING)));
@@ -177,7 +235,7 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         viewModel.operationStateProperty().addListener((observable, oldState, newState) ->
                 updateOperationStateStyle(newState));
         updateOperationStateStyle(viewModel.operationStateProperty().get());
-        initServerSwitch();
+        initDownloadCache();
     }
 
     private void initDownloadPolicy() {
@@ -221,9 +279,10 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
             }
         });
 
-        parallelSpinner.disableProperty().bind(viewModel.operatingProperty());
-        speedLimitSwitch.disableProperty().bind(viewModel.operatingProperty());
-        speedLimitSpinner.disableProperty().bind(viewModel.operatingProperty()
+        var resourceOrCacheOperating = viewModel.operatingProperty().or(viewModel.serverSwitchOperatingProperty());
+        parallelSpinner.disableProperty().bind(resourceOrCacheOperating);
+        speedLimitSwitch.disableProperty().bind(resourceOrCacheOperating);
+        speedLimitSpinner.disableProperty().bind(resourceOrCacheOperating
                 .or(speedLimitSwitch.selectedProperty().not()));
     }
 
@@ -233,67 +292,28 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         viewModel.setDownloadSpeedLimitBytesPerSecond(bytesPerSecond);
     }
 
-    private void initServerSwitch() {
-        serverSwitchStatusLabel.textProperty().bind(viewModel.serverSwitchStatusTextProperty());
-        serverSwitchDetailLabel.textProperty().bind(viewModel.serverSwitchDetailTextProperty());
-        serverSwitchProgress.progressProperty().bind(viewModel.serverSwitchProgressProperty());
-        redownloadMainlandButton.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
-        redownloadBilibiliButton.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
-        deleteMainlandButton.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
-        deleteBilibiliButton.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
-        var serverSwitchDisabled = viewModel.serverSwitchOperatingProperty()
-                .or(viewModel.serverSwitchAvailableProperty().not());
-        serverSwitchMainlandRadio.disableProperty().bind(serverSwitchDisabled);
-        serverSwitchBilibiliRadio.disableProperty().bind(serverSwitchDisabled);
-        viewModel.serverSwitchOperatingProperty().addListener((observable, oldValue, running) -> {
-            if (!running) {
-                selectServerSource(viewModel.currentGameSourceProperty().get());
-            }
-        });
-
-        viewModel.currentGameSourceProperty().addListener((observable, oldSource, newSource) ->
-                selectServerSource(newSource));
-        serverSwitchSourceToggle.selectedToggleProperty().addListener((observable, oldToggle, newToggle) -> {
-            if (!serverSwitchSourceInitialized || newToggle == null
-                    || !(newToggle.getUserData() instanceof String sourceName)) {
-                return;
-            }
-            SourceType target = SourceType.valueOf(sourceName);
-            if (target != viewModel.currentGameSourceProperty().get()) {
-                confirmServerSwitch(target);
-            }
-        });
-        selectServerSource(viewModel.currentGameSourceProperty().get());
-        serverSwitchSourceInitialized = true;
-    }
-
-    private void selectServerSource(SourceType source) {
-        if (source != SourceType.DEFAULT && source != SourceType.BILIBILI) {
-            serverSwitchSourceToggle.selectToggle(null);
-            return;
-        }
-        RadioButton target = source == SourceType.BILIBILI ? serverSwitchBilibiliRadio : serverSwitchMainlandRadio;
-        if (serverSwitchSourceToggle.getSelectedToggle() != target) {
-            serverSwitchSourceToggle.selectToggle(target);
-        }
-    }
-
-    private void confirmServerSwitch(SourceType target) {
-        JFXDialogLayout layout = DialogBuilder
-                .create()
-                .title(LanguageManager.getString("ui.game_manager.base.server_switch"))
-                .message(LanguageManager.getString("ui.game_manager.base.server_switch.confirm"))
-                .button("确定",event ->  viewModel.changeServer(target))
-                .button("取消",event -> selectServerSource(viewModel.currentGameSourceProperty().get()))
-                .build();
-        NotificationManager.dialog(layout);
-
+    private void initDownloadCache() {
+        cacheStatusLabel.textProperty().bind(viewModel.serverSwitchStatusTextProperty());
+        cacheDetailLabel.textProperty().bind(viewModel.serverSwitchDetailTextProperty());
+        cacheProgress.progressProperty().bind(viewModel.serverSwitchProgressProperty());
+        bindVisibility(cacheOperationFeedback, viewModel.serverSwitchOperatingProperty());
+        var resourceOrCacheOperating = viewModel.operatingProperty().or(viewModel.serverSwitchOperatingProperty());
+        redownloadMainlandButton.disableProperty().bind(resourceOrCacheOperating);
+        redownloadBilibiliButton.disableProperty().bind(resourceOrCacheOperating);
+        deleteMainlandButton.disableProperty().bind(resourceOrCacheOperating);
+        deleteBilibiliButton.disableProperty().bind(resourceOrCacheOperating);
+        mainlandCacheStatusLabel.textProperty().bind(Bindings.when(viewModel.mainlandServerSwitchReadyProperty())
+                .then(LanguageManager.getString("ui.game_manager.asset.cache_ready"))
+                .otherwise(LanguageManager.getString("ui.game_manager.asset.cache_not_ready")));
+        bilibiliCacheStatusLabel.textProperty().bind(Bindings.when(viewModel.bilibiliServerSwitchReadyProperty())
+                .then(LanguageManager.getString("ui.game_manager.asset.cache_ready"))
+                .otherwise(LanguageManager.getString("ui.game_manager.asset.cache_not_ready")));
     }
 
     private void confirmRedownload(SourceType source) {
         JFXDialogLayout layout = DialogBuilder
                 .create()
-                .title(LanguageManager.getString("ui.game_manager.base.server_switch"))
+                .title(LanguageManager.getString("ui.game_manager.asset.download_cache"))
                 .message(LanguageManager.getString("ui.game_manager.base.server_switch.redownload_confirm"))
                 .button("确定",event ->  viewModel.redownloadServerFiles(source))
                 .cancel()
@@ -306,7 +326,7 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
 
         JFXDialogLayout layout = DialogBuilder
                 .create()
-                .title(LanguageManager.getString("ui.game_manager.base.server_switch"))
+                .title(LanguageManager.getString("ui.game_manager.asset.download_cache"))
                 .message(LanguageManager.getString("ui.game_manager.base.server_switch.delete_confirm"))
                 .button("确定",event -> viewModel.deleteServerCache(source))
                 .cancel()
@@ -328,6 +348,17 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         if (downloadSourceToggle.getSelectedToggle() != radio) {
             downloadSourceToggle.selectToggle(radio);
         }
+    }
+
+    private void updateCurrentServerLabel(SourceType source) {
+        SourceType effectiveSource = source != null ? source : SourceType.DEFAULT;
+        String key = switch (effectiveSource) {
+            case BILIBILI -> "ui.game_manager.base.server_switch.bilibili";
+            case GLOBAL -> "ui.game_manager.asset.server_global";
+            case DEFAULT, WE_GAME -> "ui.game_manager.base.server_switch.mainland";
+        };
+        currentServerLabel.setText(LanguageManager.getString("ui.game_manager.base.server_switch.current")
+                + LanguageManager.getString(key));
     }
 
     private void updateOperationStateStyle(GameAssetViewModel.OperationState state) {

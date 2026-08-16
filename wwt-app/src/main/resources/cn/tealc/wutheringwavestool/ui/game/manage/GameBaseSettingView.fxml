@@ -38,12 +38,6 @@
                                     </Button>
                                  </children>
                               </StackPane>
-                              <HBox fx:id="chinaSourceSection" alignment="CENTER_LEFT" spacing="8.0">
-                                 <children>
-                                    <Label styleClass="title-4" text="%ui.game_manager.base.game_source" />
-                                    <Label fx:id="chinaSourceLabel" styleClass="text-subtle" />
-                                 </children>
-                              </HBox>
                               <Label styleClass="title-4" text="%ui.setting.default.app_path" />
                               <HBox spacing="15.0">
                                  <children>
@@ -97,9 +91,15 @@
                      <children>
                         <Label styleClass="title-3" text="%ui.game_manager.base.server_switch" />
                         <Label fx:id="currentServerLabel" styleClass="text-subtle" />
-                        <Button fx:id="mainlandServerButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#switchToMainland" styleClass="server-switch-button" text="%ui.game_manager.base.server_switch.mainland" />
-                        <Button fx:id="bilibiliServerButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#switchToBilibili" styleClass="server-switch-button" text="%ui.game_manager.base.server_switch.bilibili" />
-                        <Button fx:id="globalServerButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#switchToGlobal" styleClass="server-switch-button" text="%ui.game_manager.asset.server_global" />
+                        <VBox alignment="CENTER_LEFT" spacing="10.0">
+                           <children>
+                              <RadioButton fx:id="mainlandServerButton" mnemonicParsing="false" onAction="#switchToMainland" text="%ui.game_manager.base.server_switch.mainland" userData="DEFAULT">
+                                 <toggleGroup><ToggleGroup fx:id="serverSwitchSourceGroup" /></toggleGroup>
+                              </RadioButton>
+                              <RadioButton fx:id="bilibiliServerButton" mnemonicParsing="false" onAction="#switchToBilibili" text="%ui.game_manager.base.server_switch.bilibili" toggleGroup="$serverSwitchSourceGroup" userData="BILIBILI" />
+                              <RadioButton fx:id="globalServerButton" mnemonicParsing="false" onAction="#switchToGlobal" text="%ui.game_manager.asset.server_global" toggleGroup="$serverSwitchSourceGroup" userData="GLOBAL" />
+                           </children>
+                        </VBox>
                      </children>
                   </VBox>
                </children>

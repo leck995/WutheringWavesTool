@@ -20,7 +20,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
@@ -43,14 +42,13 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
     @FXML private StackPane gameStartAppGroup;
     @FXML private RadioButton gameStartAppRadioDefault;
     @FXML private ToggleGroup gameStartAppType;
-    @FXML private Label chinaSourceLabel;
-    @FXML private HBox chinaSourceSection;
     @FXML private ListView<String> paramListView;
     @FXML private TextField paramField;
     @FXML private ToggleGroup gameDxToggleGroup;
-    @FXML private Button mainlandServerButton;
-    @FXML private Button bilibiliServerButton;
-    @FXML private Button globalServerButton;
+    @FXML private RadioButton mainlandServerButton;
+    @FXML private RadioButton bilibiliServerButton;
+    @FXML private RadioButton globalServerButton;
+    @FXML private ToggleGroup serverSwitchSourceGroup;
     @FXML private Label currentServerLabel;
 
     @Override
@@ -89,7 +87,6 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
         gameStartAppGroup.disableProperty().bind(gameStartAppType.selectedToggleProperty()
                 .isEqualTo(gameStartAppRadioDefault));
         viewModel.editingEditionProperty().addListener((observable, oldValue, newValue) -> refreshInstallationControls());
-        viewModel.chinaSourceProperty().addListener((observable, oldValue, newValue) -> updateChinaSourceLabel(newValue));
         refreshInstallationControls();
     }
 
@@ -152,35 +149,37 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
     }
 
     @FXML
-    void switchToMainland(ActionEvent event) { viewModel.switchServer(SourceType.DEFAULT); }
+    void switchToMainland(ActionEvent event) {
+        viewModel.switchServer(SourceType.DEFAULT);
+        updateServerSelection(viewModel.currentServerProperty().get());
+    }
 
     @FXML
-    void switchToBilibili(ActionEvent event) { viewModel.switchServer(SourceType.BILIBILI); }
+    void switchToBilibili(ActionEvent event) {
+        viewModel.switchServer(SourceType.BILIBILI);
+        updateServerSelection(viewModel.currentServerProperty().get());
+    }
 
     @FXML
-    void switchToGlobal(ActionEvent event) { viewModel.switchServer(SourceType.GLOBAL); }
+    void switchToGlobal(ActionEvent event) {
+        viewModel.switchServer(SourceType.GLOBAL);
+        updateServerSelection(viewModel.currentServerProperty().get());
+    }
 
     private void refreshInstallationControls() {
         GameEdition edition = viewModel.editingEditionProperty().get();
         if (installationSelector.getValue() != edition) installationSelector.setValue(edition);
-        boolean china = edition == GameEdition.CHINA;
-        chinaSourceSection.setVisible(china);
-        chinaSourceSection.setManaged(china);
         selectAppMode(viewModel.startAppCustomProperty().get());
-        updateChinaSourceLabel(viewModel.chinaSourceProperty().get());
         updateDxSelection();
     }
 
     private void updateServerSelection(SourceType source) {
-        mainlandServerButton.getStyleClass().remove("server-switch-current");
-        bilibiliServerButton.getStyleClass().remove("server-switch-current");
-        globalServerButton.getStyleClass().remove("server-switch-current");
-        Button selected = switch (source) {
+        RadioButton selected = switch (source) {
             case BILIBILI -> bilibiliServerButton;
             case GLOBAL -> globalServerButton;
             default -> mainlandServerButton;
         };
-        selected.getStyleClass().add("server-switch-current");
+        serverSwitchSourceGroup.selectToggle(selected);
         String serverName = selected.getText();
         currentServerLabel.setText(LanguageManager.getString("ui.game_manager.base.server_switch.current") + serverName);
     }
@@ -206,12 +205,6 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
 
     private static boolean isCustomMode(ActionEvent event) {
         return event.getSource() instanceof RadioButton button && "custom".equals(button.getUserData());
-    }
-
-    private void updateChinaSourceLabel(SourceType source) {
-        String key = source == SourceType.BILIBILI
-                ? "ui.game_manager.asset.server_bilibili" : "ui.game_manager.asset.server_mainland";
-        chinaSourceLabel.setText(LanguageManager.getString(key));
     }
 
     private void selectAppMode(boolean custom) {

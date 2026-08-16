@@ -120,7 +120,7 @@ public class GameSetting {
         SourceType legacySource = getGameRootDirSource() != null ? getGameRootDirSource() : SourceType.DEFAULT;
 
         if (china == null) {
-            china = new GameInstallation(CHINA_INSTALLATION_ID, "国服", GameEdition.CHINA,
+            china = new GameInstallation(CHINA_INSTALLATION_ID, "国内服", GameEdition.CHINA,
                     legacySource == SourceType.GLOBAL ? SourceType.DEFAULT : legacySource);
             if (legacySource != SourceType.GLOBAL) {
                 copyLegacyValuesTo(china);
@@ -134,7 +134,7 @@ public class GameSetting {
             }
             gameInstallations.add(global);
         }
-        normalizeInstallation(china, CHINA_INSTALLATION_ID, "国服", GameEdition.CHINA, SourceType.DEFAULT);
+        normalizeInstallation(china, CHINA_INSTALLATION_ID, "国内服", GameEdition.CHINA, SourceType.DEFAULT);
         normalizeInstallation(global, GLOBAL_INSTALLATION_ID, "国际服", GameEdition.GLOBAL, SourceType.GLOBAL);
 
         if (findInstallation(activeGameInstallationId) == null) {

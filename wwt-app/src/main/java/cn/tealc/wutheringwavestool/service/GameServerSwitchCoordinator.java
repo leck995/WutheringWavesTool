@@ -117,7 +117,7 @@ public final class GameServerSwitchCoordinator {
         Path targetDirectory = installationManager.gameDirectory(targetEdition).orElse(null);
         if (targetDirectory == null || !installationManager.isConfigured(targetEdition)) {
             statusText.set("请先配置目标服务器的游戏目录");
-            detailText.set(target == SourceType.GLOBAL ? "尚未配置国际服目录" : "尚未配置国服目录");
+            detailText.set(target == SourceType.GLOBAL ? "尚未配置国际服目录" : "尚未配置国内服目录");
             return;
         }
         if (targetEdition == GameEdition.GLOBAL) {
@@ -133,7 +133,7 @@ public final class GameServerSwitchCoordinator {
         GameDownloadSource targetSource = supportedSource(target);
         refreshChinaStatus();
         if (chinaStatus == null || !isDomestic(chinaStatus.activeSource())) {
-            statusText.set("无法识别国服游戏目录");
+            statusText.set("无法识别国内服游戏目录");
             detailText.set("请确认目录属于国内官服或 BiliBili");
             return;
         }
@@ -176,7 +176,7 @@ public final class GameServerSwitchCoordinator {
         }
         SourceType detectedSource = SourceType.fromGameDownloadSource(detected.get());
         if (GameInstallationManager.editionOf(detectedSource) != GameInstallationManager.editionOf(target)) {
-            return target == SourceType.GLOBAL ? "所选目录不是国际服目录" : "所选目录不是国服目录";
+            return target == SourceType.GLOBAL ? "所选目录不是国际服目录" : "所选目录不是国内服目录";
         }
         installationManager.configureInstallation(detectedSource, normalized, false);
         Config.setting().save();

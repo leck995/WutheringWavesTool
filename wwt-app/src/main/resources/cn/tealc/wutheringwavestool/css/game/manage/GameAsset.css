@@ -21,6 +21,12 @@
     -fx-text-fill: -color-fg-default;
 }
 
+.game-asset-view .current-server-label {
+    -fx-font-size: 0.95em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-muted;
+}
+
 .game-asset-view .status-pill {
     -fx-min-height: 32px;
     -fx-padding: 6px 12px;
@@ -137,7 +143,35 @@
 }
 
 .game-asset-view .download-policy-row .spinner {
-    -fx-pref-height: 32px;
+    -fx-pref-height: 38px;
+    -fx-background-radius: 20px;
+    -fx-padding: 2px 8px 2px 5px;
+    -fx-background-color: -color-bg-default-60;
+    -fx-border-color: transparent;
+    -fx-border-radius: 20px;
+}
+
+.game-asset-view .download-policy-row .spinner:hover {
+    -fx-background-color: -color-bg-default-90;
+}
+
+.game-asset-view .download-policy-row .spinner > .text-field {
+    -fx-background-color: transparent;
+    -fx-background-radius: 20px;
+    -fx-padding: 0 4px;
+}
+
+.game-asset-view .download-policy-row .spinner > .increment-arrow-button,
+.game-asset-view .download-policy-row .spinner > .decrement-arrow-button {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-padding: 5px 4px;
+}
+
+.game-asset-view .download-policy-row .spinner > .increment-arrow-button:hover,
+.game-asset-view .download-policy-row .spinner > .decrement-arrow-button:hover {
+    -fx-background-color: -color-base-2;
+    -fx-cursor: hand;
 }
 
 .game-asset-view .input-group {
@@ -160,11 +194,6 @@
     -fx-padding: 5px;
 }
 
-.game-asset-view .asset-path-field {
-    -fx-pref-height: 38px;
-}
-
-.game-asset-view .asset-icon-button,
 .game-asset-view .asset-control-button {
     -fx-min-width: 38px;
     -fx-pref-width: 38px;
@@ -176,7 +205,6 @@
     -fx-underline: false;
 }
 
-.game-asset-view .asset-icon-button:hover,
 .game-asset-view .asset-control-button:hover {
     -fx-underline: false;
 }
@@ -257,6 +285,7 @@
     -fx-padding: 18px;
 }
 
+.game-asset-view .resource-column .asset-section,
 .game-asset-view .download-column .asset-section,
 .game-asset-view .download-column .action-section {
     -fx-padding: 0 0 16px 0;
@@ -266,6 +295,19 @@
 .game-asset-view .download-column .action-section {
     -fx-padding: 16px 0 0 0;
     -fx-border-width: 0;
+}
+
+.game-asset-view .download-column .download-cache-section {
+    -fx-border-width: 0;
+}
+
+.game-asset-view .download-progress-section {
+    -fx-padding: 2px 0 0 0;
+}
+
+.game-asset-view .download-cache-status {
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-muted;
 }
 
 .game-asset-view .server-switch-column .server-switch-radios {

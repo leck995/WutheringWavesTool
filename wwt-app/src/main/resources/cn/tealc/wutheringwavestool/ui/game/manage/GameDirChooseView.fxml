@@ -48,12 +48,12 @@
                         <Label layoutX="158.0" layoutY="146.0" styleClass="title-4" text="选取区服" />
                         <HBox>
                            <children>
-                              <RadioButton accessibleText="default" mnemonicParsing="false" text="官服默认">
+                              <RadioButton accessibleText="default" mnemonicParsing="false" text="国内官服">
                                  <toggleGroup>
                                     <ToggleGroup fx:id="serverTypeToggleGroup" />
                                  </toggleGroup>
                               </RadioButton>
-                              <RadioButton accessibleText="bilibili" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="BILIBILI" toggleGroup="$serverTypeToggleGroup" />
+                              <RadioButton accessibleText="bilibili" layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="BiliBili" toggleGroup="$serverTypeToggleGroup" />
                               <RadioButton accessibleText="wegame" layoutX="91.0" layoutY="10.0" mnemonicParsing="false" text="WeGame" toggleGroup="$serverTypeToggleGroup" />
                               <RadioButton accessibleText="global" layoutX="172.0" layoutY="10.0" mnemonicParsing="false" text="国际服" toggleGroup="$serverTypeToggleGroup" />
                            </children>
