@@ -1,5 +1,6 @@
 package cn.tealc.wwt.game.resource.internal.legacy.download;
 
+import cn.tealc.wwt.game.resource.BandwidthLimiter;
 import cn.tealc.wwt.game.resource.internal.legacy.model.CdnConfig;
 import cn.tealc.wwt.game.resource.internal.legacy.model.DownloadInfo;
 
@@ -23,6 +24,8 @@ public class CDNDownloadTaskBuilder {
     private String id;
     private long readBlockTimeout;
     private long cdnSelectTestDuration = 3000L;
+    private int maxParallelCount = 4;
+    private BandwidthLimiter bandwidthLimiter;
 
     public CDNDownloadTaskBuilder(List<DownloadInfo> downloadInfoList, List<CdnConfig> cdnConfigs) {
         this.downloadInfoList = downloadInfoList;
@@ -59,6 +62,16 @@ public class CDNDownloadTaskBuilder {
         return this;
     }
 
+    public CDNDownloadTaskBuilder withMaxParallelCount(int maxParallelCount) {
+        this.maxParallelCount = maxParallelCount;
+        return this;
+    }
+
+    public CDNDownloadTaskBuilder withBandwidthLimiter(BandwidthLimiter bandwidthLimiter) {
+        this.bandwidthLimiter = bandwidthLimiter;
+        return this;
+    }
+
     public CDNDownloadTask build() {
         if (id == null) {
             id = UUID.randomUUID().toString();
@@ -67,6 +80,8 @@ public class CDNDownloadTaskBuilder {
         task.setMaxRetryCount(maxRetryCount);
         task.setCdnSelectTestDuration(cdnSelectTestDuration);
         task.setReadBlockTimeout(readBlockTimeout);
+        task.setMaxParallelCount(maxParallelCount);
+        task.setBandwidthLimiter(bandwidthLimiter);
         return task;
     }
 }

@@ -48,6 +48,12 @@ public final class GameResourceDownloadService {
      */
     public DownloadManager createDownloadManager(Path destRoot, UpdateData updateData,
             List<FileInfo> fileInfos) {
+        return createDownloadManager(destRoot, updateData, fileInfos, DownloadOptions.DEFAULT);
+    }
+
+    /** 使用指定下载策略构建下载器。 */
+    public DownloadManager createDownloadManager(Path destRoot, UpdateData updateData,
+            List<FileInfo> fileInfos, DownloadOptions options) {
         if (!hasCdnAddress(updateData)) {
             throw new IllegalArgumentException("下载配置缺少 CDN 地址");
         }
@@ -67,7 +73,8 @@ public final class GameResourceDownloadService {
                 .toList();
         return new DownloadManagerBuilder(infos, destRoot)
                 .cdnBaseUrls(cdnBaseUrls)
-                .maxParallel(4)
+                .maxParallel(options != null ? options.maxParallel() : DownloadOptions.DEFAULT_MAX_PARALLEL)
+                .speedLimitBytesPerSecond(options != null ? options.speedLimitBytesPerSecond() : 0)
                 .maxRetry(5)
                 .build();
     }

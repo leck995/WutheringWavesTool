@@ -65,6 +65,12 @@ public final class GameResourceUpdateService {
 
     public void update(ResourceContext context, ResourceCheckResult checked,
             ResourceProgressListener progress, ResourceCompletionListener completion) {
+        update(context, checked, progress, completion, DownloadOptions.DEFAULT);
+    }
+
+    public void update(ResourceContext context, ResourceCheckResult checked,
+            ResourceProgressListener progress, ResourceCompletionListener completion,
+            DownloadOptions downloadOptions) {
         LegacySession active;
         CheckUpdateResult legacy;
         synchronized (this) {
@@ -76,6 +82,7 @@ public final class GameResourceUpdateService {
                     "The update operation requires a current successful check result."));
             return;
         }
+        active.updateModule.setDownloadOptions(downloadOptions);
         active.updateModule.update(legacy.stateInfo, legacy.updateInfo,
                 (state, completedBytes, totalBytes, completedFiles, totalFiles) ->
                         progress.onProgress(new ResourceProgress(state, completedBytes, totalBytes,
@@ -85,6 +92,12 @@ public final class GameResourceUpdateService {
 
     public void preDownload(ResourceContext context, ResourceCheckResult checked,
             ResourceProgressListener progress, ResourceCompletionListener completion) {
+        preDownload(context, checked, progress, completion, DownloadOptions.DEFAULT);
+    }
+
+    public void preDownload(ResourceContext context, ResourceCheckResult checked,
+            ResourceProgressListener progress, ResourceCompletionListener completion,
+            DownloadOptions downloadOptions) {
         LegacySession active;
         boolean checkKnown;
         synchronized (this) {
@@ -96,6 +109,7 @@ public final class GameResourceUpdateService {
                     "The pre-download operation requires an available pre-download check result."));
             return;
         }
+        active.updateModule.setDownloadOptions(downloadOptions);
         active.updateModule.preDownload(
                 (state, info) -> progress.onProgress(toPublicProgress(state, info)),
                 result -> completion.onComplete(toPublicResult(result)));
@@ -103,6 +117,12 @@ public final class GameResourceUpdateService {
 
     public void repair(ResourceContext context, ResourceCheckResult checked,
             ResourceProgressListener progress, ResourceCompletionListener completion) {
+        repair(context, checked, progress, completion, DownloadOptions.DEFAULT);
+    }
+
+    public void repair(ResourceContext context, ResourceCheckResult checked,
+            ResourceProgressListener progress, ResourceCompletionListener completion,
+            DownloadOptions downloadOptions) {
         LegacySession active;
         boolean checkKnown;
         synchronized (this) {
@@ -114,6 +134,7 @@ public final class GameResourceUpdateService {
                     "The repair operation requires a current successful check result."));
             return;
         }
+        active.updateModule.setDownloadOptions(downloadOptions);
         active.updateModule.repair(
                 (state, info) -> progress.onProgress(toPublicProgress(state, info)),
                 result -> completion.onComplete(toPublicResult(result)));

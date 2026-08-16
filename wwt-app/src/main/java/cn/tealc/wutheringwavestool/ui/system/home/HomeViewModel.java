@@ -58,7 +58,7 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     private SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
     private final ChangeListener<GameDownloadSource> serverSourceListener =
             (observable, oldSource, newSource) -> {
-                if (oldSource != null && newSource != null && oldSource != newSource) {
+                if (newSource != null && oldSource != newSource) {
                     checkGameResourceUpdate();
                 }
             };
@@ -101,6 +101,14 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
         serverSwitchCoordinator.switchTo(target);
     }
 
+    public boolean isServerInstallationConfigured(SourceType target) {
+        return serverSwitchCoordinator.isInstallationConfigured(target);
+    }
+
+    public String configureAndSwitchServer(SourceType target, File gameDirectory) {
+        return serverSwitchCoordinator.configureAndSwitch(target, gameDirectory.toPath());
+    }
+
     public ReadOnlyObjectProperty<SourceType> currentGameSourceProperty() {
         return Config.setting().gameRootDirSourceProperty();
     }
@@ -119,6 +127,14 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
 
     public ReadOnlyBooleanProperty bilibiliCacheReadyProperty() {
         return serverSwitchCoordinator.bilibiliCacheReadyProperty();
+    }
+
+    public ReadOnlyBooleanProperty mainlandTargetReadyProperty() {
+        return serverSwitchCoordinator.mainlandTargetReadyProperty();
+    }
+
+    public ReadOnlyBooleanProperty bilibiliTargetReadyProperty() {
+        return serverSwitchCoordinator.bilibiliTargetReadyProperty();
     }
 
     public ReadOnlyStringProperty serverSwitchStatusTextProperty() {

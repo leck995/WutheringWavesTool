@@ -128,6 +128,18 @@
     -fx-background-color: transparent;
 }
 
+.game-asset-view .download-policy-section {
+    -fx-padding: 4px 0 0 0;
+}
+
+.game-asset-view .download-policy-label {
+    -fx-text-fill: -color-fg-muted;
+}
+
+.game-asset-view .download-policy-row .spinner {
+    -fx-pref-height: 32px;
+}
+
 .game-asset-view .input-group {
     -fx-background-radius: 20px;
     -fx-padding: 5px 10px;
@@ -172,6 +184,11 @@
 .game-asset-view .progress-percent {
     -fx-font-weight: bold;
     -fx-text-fill: -color-fg-default;
+}
+
+.game-asset-view .progress-speed {
+    -fx-font-size: 0.9em;
+    -fx-text-fill: -color-fg-muted;
 }
 
 .game-asset-view .asset-progress-bar {

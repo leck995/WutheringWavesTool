@@ -1,5 +1,6 @@
 package cn.tealc.wwt.game.resource.internal.legacy.download;
 
+import cn.tealc.wwt.game.resource.BandwidthLimiter;
 import cn.tealc.wwt.game.resource.internal.legacy.model.DownloadInfo;
 import cn.tealc.wwt.game.resource.internal.legacy.model.FileInfo;
 import cn.tealc.wwt.game.resource.internal.legacy.model.CdnConfig;
@@ -84,6 +85,7 @@ public class CDNDownloadTask {
     private boolean isFinished = false;
     // Propagated to each DownloadTask after proxy exception retry.
     private boolean disableProxy = false;
+    private BandwidthLimiter bandwidthLimiter;
 
     public void setDisableProxy(boolean disable) {
         this.disableProxy = disable;
@@ -116,6 +118,14 @@ public class CDNDownloadTask {
 
     public void setMaxRetryCount(int max) {
         this.maxRetryCount = max;
+    }
+
+    public void setMaxParallelCount(int max) {
+        this.maxParallelCount = Math.clamp(max, 1, 16);
+    }
+
+    public void setBandwidthLimiter(BandwidthLimiter limiter) {
+        this.bandwidthLimiter = limiter;
     }
 
     public void setCdnSelectTestDuration(long duration) {
@@ -562,7 +572,8 @@ public class CDNDownloadTask {
                     i + 1, downloadInfoList.size(), info.url, destPath, info.fileSize,
                     info.chunkInfoList != null ? info.chunkInfoList.size() : 0);
 
-            DownloadTask task = new DownloadTask(dlInfo, destPath, backupFileUrls, perFileRetryCount);
+            DownloadTask task = new DownloadTask(dlInfo, destPath, backupFileUrls, perFileRetryCount,
+                    bandwidthLimiter);
             task.setCheckContentLength(true);
             task.setCheckContentEncoding(true);
             task.setDisableProxy(disableProxy);

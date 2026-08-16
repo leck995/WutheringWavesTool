@@ -24,6 +24,7 @@ public final class ResourceUpdateOperation {
     private final Path gameDirectory;
     private final GameResourceRelease initialRelease;
     private final ResourceOperationListener listener;
+    private final DownloadOptions downloadOptions;
 
     private volatile DownloadManager activeDownloadManager;
     private volatile boolean canceled;
@@ -31,11 +32,18 @@ public final class ResourceUpdateOperation {
     ResourceUpdateOperation(GameResourceDownloadService downloadService, ObjectMapper objectMapper,
             Path gameDirectory, GameResourceRelease initialRelease,
             ResourceOperationListener listener) {
+        this(downloadService, objectMapper, gameDirectory, initialRelease, listener, DownloadOptions.DEFAULT);
+    }
+
+    ResourceUpdateOperation(GameResourceDownloadService downloadService, ObjectMapper objectMapper,
+            Path gameDirectory, GameResourceRelease initialRelease,
+            ResourceOperationListener listener, DownloadOptions downloadOptions) {
         this.downloadService = downloadService;
         this.objectMapper = objectMapper;
         this.gameDirectory = gameDirectory.toAbsolutePath().normalize();
         this.initialRelease = initialRelease;
         this.listener = listener != null ? listener : new ResourceOperationListener() { };
+        this.downloadOptions = downloadOptions != null ? downloadOptions : DownloadOptions.DEFAULT;
     }
 
     public GameResourceRelease execute() throws IOException {
@@ -117,7 +125,7 @@ public final class ResourceUpdateOperation {
         }
         Files.createDirectories(stageDirectory);
         DownloadManager manager = downloadService.createDownloadManager(
-                stageDirectory, release.updateData(), changedFiles);
+                stageDirectory, release.updateData(), changedFiles, downloadOptions);
         activeDownloadManager = manager;
         AtomicReference<DownloadState> terminalState = new AtomicReference<>();
         AtomicReference<String> error = new AtomicReference<>();

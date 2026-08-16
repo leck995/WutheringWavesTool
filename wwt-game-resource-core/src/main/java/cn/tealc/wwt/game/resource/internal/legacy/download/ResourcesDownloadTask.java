@@ -1,5 +1,7 @@
 package cn.tealc.wwt.game.resource.internal.legacy.download;
 
+import cn.tealc.wwt.game.resource.BandwidthLimiter;
+import cn.tealc.wwt.game.resource.DownloadOptions;
 import cn.tealc.wwt.game.resource.internal.legacy.config.ResourceConfigManager;
 import cn.tealc.wwt.game.resource.internal.legacy.model.CdnConfig;
 import cn.tealc.wwt.game.resource.internal.legacy.model.DownloadInfo;
@@ -57,6 +59,7 @@ public class ResourcesDownloadTask {
     // also use no proxy. This field persists across run() rebuilds.
     private boolean proxyRetryUsed = false;
     private boolean disableProxy = false;
+    private DownloadOptions downloadOptions = DownloadOptions.DEFAULT;
 
     public ResourcesDownloadTask(ResourceConfigManager configManager,
             List<CdnConfig> cdnConfigList,
@@ -65,6 +68,18 @@ public class ResourcesDownloadTask {
             String downloadBasePath,
             ProgressChangedHandler progressChanged,
             StateChangedHandler stateChanged) {
+        this(configManager, cdnConfigList, downloadInfoList, baseUrl, downloadBasePath,
+                progressChanged, stateChanged, DownloadOptions.DEFAULT);
+    }
+
+    public ResourcesDownloadTask(ResourceConfigManager configManager,
+            List<CdnConfig> cdnConfigList,
+            List<DownloadInfo> downloadInfoList,
+            String baseUrl,
+            String downloadBasePath,
+            ProgressChangedHandler progressChanged,
+            StateChangedHandler stateChanged,
+            DownloadOptions downloadOptions) {
         this.configManager = configManager;
         this.cdnConfigList = cdnConfigList;
         this.downloadInfoList = downloadInfoList;
@@ -72,6 +87,7 @@ public class ResourcesDownloadTask {
         this.stateChanged = stateChanged;
         this.destPath = downloadBasePath;
         this.baseUrl = baseUrl;
+        this.downloadOptions = downloadOptions != null ? downloadOptions : DownloadOptions.DEFAULT;
     }
 
     public void setMd5CheckProgressCallback(Md5CheckProgressHandler md5CheckProgressChanged) {
@@ -146,6 +162,8 @@ public class ResourcesDownloadTask {
         builder.withMaxRetryCount(5);
         builder.withReadBlockTimeout(ResourceHelper.getReadBlockTimeout(configManager));
         builder.withCdnSelectTestDuration(ResourceHelper.getCdnSelectTestDuration(configManager));
+        builder.withMaxParallelCount(downloadOptions.maxParallel());
+        builder.withBandwidthLimiter(new BandwidthLimiter(downloadOptions.speedLimitBytesPerSecond()));
         task = builder.build();
         // Propagate disableProxy to the newly built task.
         // C# KRResourcesDownloadTask.cs:51-54: ResetHttpClient(allowUseProxy:false)

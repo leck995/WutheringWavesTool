@@ -7,6 +7,8 @@ import cn.tealc.wwt.game.resource.ServerSwitchResult;
 import cn.tealc.wwt.game.resource.ServerSwitchStatus;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
+import cn.tealc.wutheringwavestool.model.GameEdition;
+import cn.tealc.wutheringwavestool.model.GameInstallation;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import com.google.inject.Inject;
@@ -24,6 +26,7 @@ import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 /** JavaFX-facing adapter for the reduced mainland/Bilibili server switch service. */
@@ -33,6 +36,7 @@ public final class GameServerSwitchCoordinator {
 
     private final GameServerSwitchService switchService;
     private final TaskManageService taskManageService;
+    private final GameInstallationManager installationManager;
     private final ReadOnlyBooleanWrapper operating = new ReadOnlyBooleanWrapper(false);
     private final ReadOnlyDoubleWrapper progress = new ReadOnlyDoubleWrapper(0);
     private final ReadOnlyStringWrapper statusText = new ReadOnlyStringWrapper("准备就绪");
@@ -41,38 +45,42 @@ public final class GameServerSwitchCoordinator {
     private final ReadOnlyBooleanWrapper switchAvailable = new ReadOnlyBooleanWrapper(false);
     private final ReadOnlyBooleanWrapper mainlandCacheReady = new ReadOnlyBooleanWrapper(false);
     private final ReadOnlyBooleanWrapper bilibiliCacheReady = new ReadOnlyBooleanWrapper(false);
+    private final ReadOnlyBooleanWrapper mainlandTargetReady = new ReadOnlyBooleanWrapper(true);
+    private final ReadOnlyBooleanWrapper bilibiliTargetReady = new ReadOnlyBooleanWrapper(true);
 
     private volatile ServerSwitchTask activeTask;
     private ServerSwitchStatus lastStatus;
+    private ServerSwitchStatus chinaStatus;
 
     @Inject
     public GameServerSwitchCoordinator(GameServerSwitchService switchService,
-            TaskManageService taskManageService) {
+            TaskManageService taskManageService, GameInstallationManager installationManager) {
         this.switchService = switchService;
         this.taskManageService = taskManageService;
+        this.installationManager = installationManager;
     }
 
     public void refresh() {
+        refreshChinaStatus();
+        GameInstallation activeInstallation = installationManager.activeInstallation();
         Path gameDirectory = getGameDirectoryOrNull();
-        if (gameDirectory == null) {
-            lastStatus = null;
-            currentSource.set(null);
-            switchAvailable.set(false);
-            mainlandCacheReady.set(false);
-            bilibiliCacheReady.set(false);
-            statusText.set("请先选择游戏安装目录");
-            detailText.set("");
+        if (activeInstallation == null || gameDirectory == null) {
+            clearActiveStatus("请先选择游戏安装目录", "");
             return;
         }
         try {
-            lastStatus = switchService.inspect(gameDirectory);
+            lastStatus = activeInstallation.getEdition() == GameEdition.CHINA
+                    ? chinaStatus : switchService.inspect(gameDirectory);
+            if (lastStatus == null) {
+                clearActiveStatus("无法读取当前游戏安装目录", "请重新配置该安装实例");
+                return;
+            }
             currentSource.set(lastStatus.activeSource());
-            mainlandCacheReady.set(lastStatus.mainlandCacheReady());
-            bilibiliCacheReady.set(lastStatus.bilibiliCacheReady());
-            switchAvailable.set(lastStatus.activeSource() == GameDownloadSource.MAINLAND
-                    || lastStatus.activeSource() == GameDownloadSource.BILIBILI);
+            switchAvailable.set(activeInstallation.getEdition() == GameEdition.CHINA
+                    && isDomestic(lastStatus.activeSource()));
             if (lastStatus.activeSource() != null) {
-                Config.setting().setGameRootDirSource(SourceType.fromGameDownloadSource(lastStatus.activeSource()));
+                installationManager.updateSource(activeInstallation.getEdition(),
+                        SourceType.fromGameDownloadSource(lastStatus.activeSource()));
             }
             if (lastStatus.recoveryPending()) {
                 statusText.set("检测到未完成的切换操作");
@@ -85,31 +93,19 @@ public final class GameServerSwitchCoordinator {
                 detailText.set(lastStatus.bilibiliCacheReady() ? "BiliBili 切换缓存已就绪" : "BiliBili 切换缓存未准备");
             } else if (lastStatus.activeSource() == GameDownloadSource.GLOBAL) {
                 statusText.set("当前服务器：国际服");
-                detailText.set("国际服不支持快速切换");
+                detailText.set("国际服使用独立游戏目录");
             } else {
                 statusText.set("无法识别当前服务器");
                 detailText.set("可重新下载必要文件修复当前服务器");
             }
         } catch (Exception e) {
             LOG.warn("读取服务器切换状态失败", e);
-            currentSource.set(null);
-            switchAvailable.set(false);
-            mainlandCacheReady.set(false);
-            bilibiliCacheReady.set(false);
-            statusText.set("读取切换缓存失败");
-            detailText.set(messageOf(e));
+            clearActiveStatus("读取服务器状态失败", messageOf(e));
         }
     }
 
     public void switchTo(SourceType target) {
-        GameDownloadSource targetSource = supportedSource(target);
-        if (targetSource == null || activeTask != null) {
-            return;
-        }
-        if (lastStatus == null || (lastStatus.activeSource() != GameDownloadSource.MAINLAND
-                && lastStatus.activeSource() != GameDownloadSource.BILIBILI)) {
-            statusText.set("当前服务器不支持快速切换");
-            detailText.set("国际服或无法识别的服务器需要重新下载对应资源");
+        if (target == null || activeTask != null) {
             return;
         }
         if (GameAppListener.getInstance().isRunning()) {
@@ -117,20 +113,80 @@ public final class GameServerSwitchCoordinator {
             detailText.set("");
             return;
         }
-        Path gameDirectory = getGameDirectoryOrNull();
-        if (gameDirectory == null) {
+        GameEdition targetEdition = GameInstallationManager.editionOf(target);
+        Path targetDirectory = installationManager.gameDirectory(targetEdition).orElse(null);
+        if (targetDirectory == null || !installationManager.isConfigured(targetEdition)) {
+            statusText.set("请先配置目标服务器的游戏目录");
+            detailText.set(target == SourceType.GLOBAL ? "尚未配置国际服目录" : "尚未配置国服目录");
+            return;
+        }
+        if (targetEdition == GameEdition.GLOBAL) {
+            installationManager.updateSource(GameEdition.GLOBAL, SourceType.GLOBAL);
+            installationManager.activate(GameEdition.GLOBAL);
+            Config.setting().save();
+            statusText.set("服务器切换完成");
+            detailText.set("当前服务器：国际服");
             refresh();
             return;
         }
-        startTask("正在切换服务器", task -> switchService.switchTo(gameDirectory, targetSource,
+
+        GameDownloadSource targetSource = supportedSource(target);
+        refreshChinaStatus();
+        if (chinaStatus == null || !isDomestic(chinaStatus.activeSource())) {
+            statusText.set("无法识别国服游戏目录");
+            detailText.set("请确认目录属于国内官服或 BiliBili");
+            return;
+        }
+        if (chinaStatus.activeSource() == targetSource) {
+            activateChina(target);
+            return;
+        }
+        boolean cacheReady = targetSource == GameDownloadSource.MAINLAND
+                ? chinaStatus.mainlandCacheReady() : chinaStatus.bilibiliCacheReady();
+        if (!cacheReady) {
+            statusText.set("目标服务器切换缓存未准备");
+            detailText.set("请先在资源管理中下载对应服务器的必要文件");
+            return;
+        }
+        startTask("正在切换服务器", task -> switchService.switchTo(targetDirectory, targetSource,
                 (phase, completed, total, detail) -> report(task, phase, completed, total, detail)),
                 result -> {
-                    Config.setting().setGameRootDirSource(SourceType.fromGameDownloadSource(result.source()));
+                    installationManager.updateSource(GameEdition.CHINA,
+                            SourceType.fromGameDownloadSource(result.source()));
+                    installationManager.activate(GameEdition.CHINA);
                     Config.setting().save();
                     statusText.set("服务器切换完成");
                     detailText.set(result.source() == GameDownloadSource.BILIBILI ? "当前服务器：BiliBili" : "当前服务器：国内官服");
                     refresh();
                 });
+    }
+
+    /** Configures a physical installation, then performs the requested logical server switch. */
+    public String configureAndSwitch(SourceType target, Path gameDirectory) {
+        if (target == null || gameDirectory == null) {
+            return "游戏目录不能为空";
+        }
+        Path normalized = gameDirectory.toAbsolutePath().normalize();
+        if (!Files.isRegularFile(normalized.resolve("Wuthering Waves.exe"))) {
+            return "所选目录中未找到 Wuthering Waves.exe";
+        }
+        var detected = switchService.detectActiveSource(normalized);
+        if (detected.isEmpty()) {
+            return "无法识别所选目录的服务器类型";
+        }
+        SourceType detectedSource = SourceType.fromGameDownloadSource(detected.get());
+        if (GameInstallationManager.editionOf(detectedSource) != GameInstallationManager.editionOf(target)) {
+            return target == SourceType.GLOBAL ? "所选目录不是国际服目录" : "所选目录不是国服目录";
+        }
+        installationManager.configureInstallation(detectedSource, normalized, false);
+        Config.setting().save();
+        refresh();
+        switchTo(target);
+        return null;
+    }
+
+    public boolean isInstallationConfigured(SourceType source) {
+        return installationManager.isConfigured(source);
     }
 
     public void redownloadRequiredFiles(SourceType source) {
@@ -156,7 +212,8 @@ public final class GameServerSwitchCoordinator {
                 applyToGame, (phase, completed, total, detail) -> report(task, phase, completed, total, detail)),
                 result -> {
                     if (result.appliedToGame()) {
-                        Config.setting().setGameRootDirSource(SourceType.fromGameDownloadSource(result.source()));
+                        installationManager.updateSource(GameEdition.CHINA,
+                                SourceType.fromGameDownloadSource(result.source()));
                         Config.setting().save();
                         statusText.set("当前服务器必要文件已修复");
                     } else {
@@ -186,6 +243,56 @@ public final class GameServerSwitchCoordinator {
             detailText.set("");
             refresh();
         });
+    }
+
+    private void refreshChinaStatus() {
+        Path chinaDirectory = installationManager.gameDirectory(GameEdition.CHINA).orElse(null);
+        if (chinaDirectory == null) {
+            chinaStatus = null;
+            mainlandCacheReady.set(false);
+            bilibiliCacheReady.set(false);
+            mainlandTargetReady.set(true);
+            bilibiliTargetReady.set(true);
+            return;
+        }
+        try {
+            chinaStatus = switchService.inspect(chinaDirectory);
+            mainlandCacheReady.set(chinaStatus.mainlandCacheReady());
+            bilibiliCacheReady.set(chinaStatus.bilibiliCacheReady());
+            mainlandTargetReady.set(chinaStatus.activeSource() == GameDownloadSource.MAINLAND
+                    || chinaStatus.mainlandCacheReady());
+            bilibiliTargetReady.set(chinaStatus.activeSource() == GameDownloadSource.BILIBILI
+                    || chinaStatus.bilibiliCacheReady());
+            if (isDomestic(chinaStatus.activeSource())) {
+                installationManager.updateSource(GameEdition.CHINA,
+                        SourceType.fromGameDownloadSource(chinaStatus.activeSource()));
+            }
+        } catch (Exception e) {
+            LOG.warn("读取国服安装实例状态失败", e);
+            chinaStatus = null;
+            mainlandCacheReady.set(false);
+            bilibiliCacheReady.set(false);
+            boolean needsConfiguration = !installationManager.isConfigured(GameEdition.CHINA);
+            mainlandTargetReady.set(needsConfiguration);
+            bilibiliTargetReady.set(needsConfiguration);
+        }
+    }
+
+    private void activateChina(SourceType target) {
+        installationManager.updateSource(GameEdition.CHINA, target);
+        installationManager.activate(GameEdition.CHINA);
+        Config.setting().save();
+        statusText.set("服务器切换完成");
+        detailText.set(target == SourceType.BILIBILI ? "当前服务器：BiliBili" : "当前服务器：国内官服");
+        refresh();
+    }
+
+    private void clearActiveStatus(String status, String detail) {
+        lastStatus = null;
+        currentSource.set(null);
+        switchAvailable.set(false);
+        statusText.set(status);
+        detailText.set(detail);
     }
 
     private void startTask(String initialStatus, Operation operation, ResultHandler successHandler) {
@@ -241,6 +348,10 @@ public final class GameServerSwitchCoordinator {
         return null;
     }
 
+    private static boolean isDomestic(GameDownloadSource source) {
+        return source == GameDownloadSource.MAINLAND || source == GameDownloadSource.BILIBILI;
+    }
+
     private static Path getGameDirectoryOrNull() {
         var gameDirectory = GameResourcesManager.getGameDir();
         return gameDirectory != null ? gameDirectory.toPath().toAbsolutePath().normalize() : null;
@@ -293,6 +404,12 @@ public final class GameServerSwitchCoordinator {
     }
     public ReadOnlyBooleanProperty bilibiliCacheReadyProperty() {
         return bilibiliCacheReady.getReadOnlyProperty();
+    }
+    public ReadOnlyBooleanProperty mainlandTargetReadyProperty() {
+        return mainlandTargetReady.getReadOnlyProperty();
+    }
+    public ReadOnlyBooleanProperty bilibiliTargetReadyProperty() {
+        return bilibiliTargetReady.getReadOnlyProperty();
     }
     public ReadOnlyDoubleProperty progressProperty() { return progress.getReadOnlyProperty(); }
     public ReadOnlyObjectProperty<GameDownloadSource> currentSourceProperty() {

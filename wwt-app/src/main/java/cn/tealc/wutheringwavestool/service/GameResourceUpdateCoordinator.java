@@ -2,6 +2,7 @@ package cn.tealc.wutheringwavestool.service;
 
 import cn.tealc.wwt.game.resource.GameResourceInstallService;
 import cn.tealc.wwt.game.resource.GameResourceRelease;
+import cn.tealc.wwt.game.resource.DownloadOptions;
 import cn.tealc.wwt.game.resource.ResourceOperationListener;
 import cn.tealc.wwt.game.resource.ResourceUpdateOperation;
 import cn.tealc.wwt.game.resource.model.ResourceOperationState;
@@ -53,6 +54,7 @@ public class GameResourceUpdateCoordinator {
     private final ReadOnlyStringWrapper actionText = new ReadOnlyStringWrapper("");
     private final ReadOnlyDoubleWrapper progress = new ReadOnlyDoubleWrapper(0);
     private final ReadOnlyStringWrapper progressText = new ReadOnlyStringWrapper("0%");
+    private final ReadOnlyStringWrapper speedText = new ReadOnlyStringWrapper("");
     private final ReadOnlyBooleanWrapper statusVisible = new ReadOnlyBooleanWrapper(false);
     private final ReadOnlyBooleanWrapper retryVisible = new ReadOnlyBooleanWrapper(false);
     private final ReadOnlyBooleanWrapper updateActionVisible = new ReadOnlyBooleanWrapper(false);
@@ -300,6 +302,9 @@ public class GameResourceUpdateCoordinator {
             if (!isProgressState(newState) && newState != UpdateState.COMPLETED) {
                 progressText.set("0%");
             }
+            if (newState != UpdateState.DOWNLOADING) {
+                speedText.set("");
+            }
             state.set(newState);
         };
         if (Platform.isFxApplicationThread()) {
@@ -358,7 +363,7 @@ public class GameResourceUpdateCoordinator {
                         public void onProgress(ResourceProgress value) {
                             handleProgress(value);
                         }
-                    });
+                    }, downloadOptions());
             activeOperation = operation;
             if (isCancelled()) {
                 operation.cancel();
@@ -409,6 +414,7 @@ public class GameResourceUpdateCoordinator {
                 speed[0] = (completed - speedSample[1]) / (elapsed / 1_000_000_000.0);
                 speedSample[0] = now;
                 speedSample[1] = completed;
+                updateSpeedText(formatBytes((long) Math.max(0, speed[0])) + "/s");
             }
             updateMessage(String.format(Locale.ROOT, "%s / %s  ·  %s/s",
                     formatBytes(completed), formatBytes(total),
@@ -438,8 +444,26 @@ public class GameResourceUpdateCoordinator {
         return String.format(Locale.ROOT, "%.1f %s", value, units[unit]);
     }
 
+    private void updateSpeedText(String value) {
+        Runnable update = () -> {
+            if (state.get() == UpdateState.DOWNLOADING) {
+                speedText.set(value);
+            }
+        };
+        if (Platform.isFxApplicationThread()) {
+            update.run();
+        } else {
+            Platform.runLater(update);
+        }
+    }
+
     private static boolean hasText(String value) {
         return value != null && !value.isBlank();
+    }
+
+    private static DownloadOptions downloadOptions() {
+        return new DownloadOptions(Config.setting().getDownloadParallelCount(),
+                Config.setting().getDownloadSpeedLimitBytesPerSecond());
     }
 
     public ReadOnlyObjectProperty<UpdateState> stateProperty() { return state.getReadOnlyProperty(); }
@@ -450,6 +474,7 @@ public class GameResourceUpdateCoordinator {
     public ReadOnlyStringProperty actionTextProperty() { return actionText.getReadOnlyProperty(); }
     public ReadOnlyDoubleProperty progressProperty() { return progress.getReadOnlyProperty(); }
     public ReadOnlyStringProperty progressTextProperty() { return progressText.getReadOnlyProperty(); }
+    public ReadOnlyStringProperty speedTextProperty() { return speedText.getReadOnlyProperty(); }
     public ReadOnlyBooleanProperty statusVisibleProperty() { return statusVisible.getReadOnlyProperty(); }
     public ReadOnlyBooleanProperty retryVisibleProperty() { return retryVisible.getReadOnlyProperty(); }
     public ReadOnlyBooleanProperty updateActionVisibleProperty() { return updateActionVisible.getReadOnlyProperty(); }

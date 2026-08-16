@@ -63,6 +63,24 @@ public final class GameResourceInstallService {
         return new ResourceUpdateOperation(downloadService, objectMapper, gameDirectory, release, listener);
     }
 
+    public ResourceUpdateOperation createUpdate(Path gameDirectory, GameResourceRelease release,
+            ResourceOperationListener listener, DownloadOptions downloadOptions) {
+        return new ResourceUpdateOperation(downloadService, objectMapper, gameDirectory, release, listener,
+                downloadOptions);
+    }
+
+    /** 将已完成的全量下载登记为可供后续更新检查使用的本地资源状态。 */
+    public void registerInstalledRelease(Path gameDirectory, String version, List<FileInfo> resources)
+            throws IOException {
+        if (!hasText(version)) {
+            throw new IOException("下载配置缺少游戏版本号");
+        }
+        if (resources == null || resources.isEmpty()) {
+            throw new IOException("资源清单为空，无法登记游戏安装状态");
+        }
+        persistInstalledState(objectMapper, gameDirectory.toAbsolutePath().normalize(), version, resources);
+    }
+
     public String readInstalledVersion(Path gameDirectory) {
         Path config = gameDirectory.toAbsolutePath().normalize().resolve(DOWNLOAD_CONFIG_FILE);
         if (!Files.isRegularFile(config)) {

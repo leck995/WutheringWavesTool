@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -174,6 +175,22 @@ public class Setting {
     public String getGameInstalledVersion() { return game.getGameInstalledVersion(); }
     public SimpleStringProperty gameInstalledVersionProperty() { return game.gameInstalledVersionProperty(); }
     public void setGameInstalledVersion(String gameInstalledVersion) { game.setGameInstalledVersion(gameInstalledVersion); }
+
+    public int getDownloadParallelCount() { return game.getDownloadParallelCount(); }
+    public SimpleIntegerProperty downloadParallelCountProperty() { return game.downloadParallelCountProperty(); }
+    public void setDownloadParallelCount(int downloadParallelCount) {
+        game.setDownloadParallelCount(downloadParallelCount);
+    }
+
+    public long getDownloadSpeedLimitBytesPerSecond() {
+        return game.getDownloadSpeedLimitBytesPerSecond();
+    }
+    public SimpleLongProperty downloadSpeedLimitBytesPerSecondProperty() {
+        return game.downloadSpeedLimitBytesPerSecondProperty();
+    }
+    public void setDownloadSpeedLimitBytesPerSecond(long bytesPerSecond) {
+        game.setDownloadSpeedLimitBytesPerSecond(bytesPerSecond);
+    }
 
     // ============ LauncherSetting delegate ============
     public boolean isUserAdvanceGameSettings() { return launcher.isUserAdvanceGameSettings(); }

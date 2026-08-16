@@ -5,6 +5,7 @@ import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wwt.game.resource.GameDownloadSource;
 import cn.tealc.wwt.game.resource.GameServerSwitchService;
 import cn.tealc.wutheringwavestool.model.SourceType;
+import cn.tealc.wutheringwavestool.service.GameInstallationManager;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.thread.system.CheckGameConfigTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
@@ -25,6 +26,8 @@ import javafx.collections.ObservableList;
 public class GameBaseSettingViewModel extends BaseViewModel implements SceneLifecycle {
     @Inject
     private GameServerSwitchService serverSwitchService;
+    @Inject
+    private GameInstallationManager installationManager;
 
     private SimpleStringProperty gameDir=new SimpleStringProperty();
     private SimpleStringProperty gameAppStartPath=new SimpleStringProperty();
@@ -174,7 +177,7 @@ public class GameBaseSettingViewModel extends BaseViewModel implements SceneLife
             return;
         }
         SourceType source = SourceType.fromGameDownloadSource(detectedSource.get());
-        Config.setting().setGameRootDirSource(source);
+        installationManager.updateSource(GameInstallationManager.editionOf(source), source);
         currentServer.set(serverDisplayName(source));
     }
 

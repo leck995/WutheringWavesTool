@@ -7,6 +7,7 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.dao.JdbcUtils;
 import cn.tealc.wutheringwavestool.jna.GlobalKeyListener;
 import cn.tealc.wutheringwavestool.service.GameWindowMonitorService;
+import cn.tealc.wutheringwavestool.service.GameInstallationManager;
 import cn.tealc.wutheringwavestool.service.TokenRefreshService;
 import cn.tealc.wutheringwavestool.service.WebKujiequManager;
 import cn.tealc.wutheringwavestool.theme.FontManager;
@@ -53,6 +54,7 @@ public class WwtApp extends Application {
         autoStarted = getParameters().getRaw().contains("--auto-start");
         JdbcUtils.init();
         AppInjector.getInjector();
+        AppInjector.getInstance(GameInstallationManager.class);
         VersionUpdateUtil.update();
         window = stage;
         stage.initStyle(StageStyle.EXTENDED);

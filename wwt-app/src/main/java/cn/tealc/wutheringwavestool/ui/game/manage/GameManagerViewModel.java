@@ -6,6 +6,7 @@ import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wwt.game.resource.GameServerSwitchService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.model.SourceType;
+import cn.tealc.wutheringwavestool.service.GameInstallationManager;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.model.ui.ServerData;
@@ -32,6 +33,8 @@ public class GameManagerViewModel extends BaseViewModel {
 
     @Inject
     private GameServerSwitchService serverSwitchService;
+    @Inject
+    private GameInstallationManager installationManager;
 
     private final ObservableList<ServerData> serverList = FXCollections.observableArrayList();
 
@@ -80,13 +83,14 @@ public class GameManagerViewModel extends BaseViewModel {
     public void setGameDir(File gameDir) {
         File startApp = new File(gameDir.getAbsolutePath() + File.separator + "Wuthering Waves.exe");
         if (startApp.exists()) {
-            gameRootDir.set(gameDir.getAbsolutePath());
             var detectedSource = serverSwitchService
                     .detectActiveSource(gameDir.toPath());
-            setGameRootDirSource(detectedSource.map(SourceType::fromGameDownloadSource)
-                    .orElse(SourceType.DEFAULT));
+            detectedSource.map(SourceType::fromGameDownloadSource)
+                    .ifPresent(source -> installationManager.configureInstallation(source, gameDir.toPath(), true));
             if (detectedSource.isEmpty()) {
                 NotificationManager.message(MessageInfo.warning("无法根据 launcherDownloadConfig.json 和 SDK 目录识别服务器，请手动确认区服"));
+            } else {
+                Config.setting().save();
             }
         }else {
             MvvmFX.getNotificationCenter().publish(NotificationKey.MESSAGE,MessageInfo.warning(LanguageManager.getString("ui.setting.message.01")));

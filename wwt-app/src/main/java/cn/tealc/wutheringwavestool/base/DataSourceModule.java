@@ -88,6 +88,7 @@ public class DataSourceModule extends AbstractModule {
         if (setting == null) {
             setting = new Setting();
         }
+        setting.getGame().ensureGameInstallations();
         return setting;
     }
 

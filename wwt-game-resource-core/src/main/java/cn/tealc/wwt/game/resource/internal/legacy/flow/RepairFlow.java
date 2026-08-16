@@ -1,5 +1,6 @@
 package cn.tealc.wwt.game.resource.internal.legacy.flow;
 
+import cn.tealc.wwt.game.resource.DownloadOptions;
 import cn.tealc.wwt.game.resource.internal.legacy.config.LauncherDownloadConfigHelper;
 import cn.tealc.wwt.game.resource.internal.legacy.config.ResourceConfigManager;
 import cn.tealc.wwt.game.resource.internal.legacy.download.*;
@@ -58,10 +59,15 @@ public class RepairFlow {
     private long totalSize;
     private long completedSizeBeforeDownload;
     private String downloadBaseDestPath = "";
+    private DownloadOptions downloadOptions = DownloadOptions.DEFAULT;
 
     public RepairFlow(ResourceConfigManager configManager, ResUpdateModule module) {
         this.configManager = configManager;
         this.resUpdateModule = module;
+    }
+
+    public void setDownloadOptions(DownloadOptions downloadOptions) {
+        this.downloadOptions = downloadOptions != null ? downloadOptions : DownloadOptions.DEFAULT;
     }
 
     private void onRepairProgressChanged(int state, UpdateProgressInfo progressInfo) {
@@ -356,7 +362,8 @@ public class RepairFlow {
                     baseUrl,
                     downloadBaseDestPath,
                     this::onDownloadProgressChanged,
-                    this::onDownloadStateChanged);
+                    this::onDownloadStateChanged,
+                    downloadOptions);
             // C# KRRepairFlow.cs#L409: SetMd5CheckProgressCallback
             resourcesDownloadTask.setMd5CheckProgressCallback(this::onDownloadMd5CheckProgressChanged);
         }

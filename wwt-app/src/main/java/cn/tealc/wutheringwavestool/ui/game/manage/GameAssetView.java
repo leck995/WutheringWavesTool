@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.game.manage;
 
+import atlantafx.base.controls.ToggleSwitch;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.util.DialogBuilder;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
@@ -63,9 +64,17 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     @FXML
     private ProgressBar progressBar;
     @FXML
+    private Label speedLabel;
+    @FXML
     private Label progressTextLabel;
     @FXML
     private Label tipLabel;
+    @FXML
+    private Spinner<Integer> parallelSpinner;
+    @FXML
+    private ToggleSwitch speedLimitSwitch;
+    @FXML
+    private Spinner<Double> speedLimitSpinner;
 
     @FXML
     private Button downloadBtn;
@@ -112,6 +121,7 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         latestVersionLabel.textProperty().bind(viewModel.latestVersionProperty());
         statusLabel.textProperty().bind(viewModel.statusProperty());
         progressBar.progressProperty().bind(viewModel.progressProperty());
+        speedLabel.textProperty().bind(viewModel.downloadSpeedProperty());
         progressTextLabel.textProperty().bind(viewModel.progressTextProperty());
         tipLabel.textProperty().bind(viewModel.tipProperty());
         downloadDirField.textProperty().bindBidirectional(viewModel.downloadDirProperty());
@@ -123,6 +133,7 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
             }
         });
         selectDownloadSource(viewModel.downloadSourceProperty().get());
+        initDownloadPolicy();
 
         // 按钮显隐
         bindVisibility(downloadBtn, viewModel.showDownloadProperty());
@@ -167,6 +178,59 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
                 updateOperationStateStyle(newState));
         updateOperationStateStyle(viewModel.operationStateProperty().get());
         initServerSwitch();
+    }
+
+    private void initDownloadPolicy() {
+        int configuredParallel = Math.clamp(viewModel.downloadParallelCountProperty().get(), 1, 16);
+        SpinnerValueFactory.IntegerSpinnerValueFactory parallelValues =
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 16, configuredParallel);
+        parallelSpinner.setValueFactory(parallelValues);
+        parallelValues.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                viewModel.setDownloadParallelCount(newValue);
+            }
+        });
+
+        long configuredLimit = viewModel.downloadSpeedLimitBytesPerSecondProperty().get();
+        double initialLimit = configuredLimit > 0
+                ? configuredLimit / (1024D * 1024D) : 10D;
+        SpinnerValueFactory.DoubleSpinnerValueFactory speedValues =
+                new SpinnerValueFactory.DoubleSpinnerValueFactory(0.1, 1000, initialLimit, 0.1);
+        speedValues.setConverter(new javafx.util.StringConverter<>() {
+            @Override
+            public String toString(Double value) {
+                return value == null ? "" : String.format(java.util.Locale.ROOT, "%.1f", value);
+            }
+
+            @Override
+            public Double fromString(String value) {
+                try {
+                    return Double.parseDouble(value);
+                } catch (NumberFormatException e) {
+                    return speedValues.getValue();
+                }
+            }
+        });
+        speedLimitSpinner.setValueFactory(speedValues);
+        speedLimitSwitch.setSelected(configuredLimit > 0);
+        speedLimitSwitch.selectedProperty().addListener((observable, oldValue, enabled) ->
+                updateSpeedLimit(enabled, speedValues.getValue()));
+        speedValues.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (speedLimitSwitch.isSelected() && newValue != null) {
+                updateSpeedLimit(true, newValue);
+            }
+        });
+
+        parallelSpinner.disableProperty().bind(viewModel.operatingProperty());
+        speedLimitSwitch.disableProperty().bind(viewModel.operatingProperty());
+        speedLimitSpinner.disableProperty().bind(viewModel.operatingProperty()
+                .or(speedLimitSwitch.selectedProperty().not()));
+    }
+
+    private void updateSpeedLimit(boolean enabled, Double megabytesPerSecond) {
+        long bytesPerSecond = enabled && megabytesPerSecond != null
+                ? Math.max(1, Math.round(megabytesPerSecond * 1024 * 1024)) : 0;
+        viewModel.setDownloadSpeedLimitBytesPerSecond(bytesPerSecond);
     }
 
     private void initServerSwitch() {

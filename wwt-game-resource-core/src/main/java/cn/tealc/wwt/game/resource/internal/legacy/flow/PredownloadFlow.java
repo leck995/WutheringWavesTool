@@ -1,5 +1,6 @@
 package cn.tealc.wwt.game.resource.internal.legacy.flow;
 
+import cn.tealc.wwt.game.resource.DownloadOptions;
 import cn.tealc.wwt.game.resource.internal.legacy.config.LauncherDownloadConfigHelper;
 import cn.tealc.wwt.game.resource.internal.legacy.config.ResourceConfigManager;
 import cn.tealc.wwt.game.resource.internal.legacy.download.*;
@@ -53,12 +54,17 @@ public class PredownloadFlow {
     private long totalSize;
     private List<FileInfo> updateFileInfoList;
     private String downloadBaseDestPath = "";
+    private DownloadOptions downloadOptions = DownloadOptions.DEFAULT;
 
     public boolean predownloadRunning = false;
 
     public PredownloadFlow(ResourceConfigManager configManager, ResUpdateModule module) {
         this.configManager = configManager;
         this.resUpdateModule = module;
+    }
+
+    public void setDownloadOptions(DownloadOptions downloadOptions) {
+        this.downloadOptions = downloadOptions != null ? downloadOptions : DownloadOptions.DEFAULT;
     }
 
     private void onPredownloadProgressChanged(int state, UpdateProgressInfo progressInfo) {
@@ -173,7 +179,8 @@ public class PredownloadFlow {
                     baseUrl,
                     downloadBaseDestPath,
                     this::onDownloadProgressChanged,
-                    this::onDownloadStateChanged);
+                    this::onDownloadStateChanged,
+                    downloadOptions);
             // C# KRPredownloadFlow.cs#L180: SetMd5CheckProgressCallback
             resourcesDownloadTask.setMd5CheckProgressCallback(this::onDownloadMd5CheckProgressChanged);
         }

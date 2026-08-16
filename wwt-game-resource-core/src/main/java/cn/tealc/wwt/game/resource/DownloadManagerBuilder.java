@@ -16,6 +16,7 @@ public final class DownloadManagerBuilder {
     private int maxRetry = 5;
     private int connectTimeoutMs = 10_000;
     private int readTimeoutMs = 30_000;
+    private long speedLimitBytesPerSecond;
 
     public DownloadManagerBuilder(List<DownloadInfo> infos, Path destRoot) {
         this.infos = infos;
@@ -47,8 +48,13 @@ public final class DownloadManagerBuilder {
         return this;
     }
 
+    public DownloadManagerBuilder speedLimitBytesPerSecond(long bytesPerSecond) {
+        this.speedLimitBytesPerSecond = bytesPerSecond;
+        return this;
+    }
+
     public DownloadManager build() {
         return new DownloadManager(infos, destRoot, cdnBaseUrls, maxParallel, maxRetry,
-                connectTimeoutMs, readTimeoutMs);
+                connectTimeoutMs, readTimeoutMs, speedLimitBytesPerSecond);
     }
 }

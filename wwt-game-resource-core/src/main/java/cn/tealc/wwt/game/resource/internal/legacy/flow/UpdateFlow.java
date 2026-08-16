@@ -1,5 +1,6 @@
 package cn.tealc.wwt.game.resource.internal.legacy.flow;
 
+import cn.tealc.wwt.game.resource.DownloadOptions;
 import cn.tealc.wwt.game.resource.internal.legacy.config.LauncherDownloadConfigHelper;
 import cn.tealc.wwt.game.resource.internal.legacy.config.ResourceConfigManager;
 import cn.tealc.wwt.game.resource.internal.legacy.download.*;
@@ -43,6 +44,7 @@ public class UpdateFlow {
     private long totalDownloadSize;
     private String downloadBaseDestPath;
     private List<MoveFileRecord> redownloadMoveFileRecords;
+    private DownloadOptions downloadOptions = DownloadOptions.DEFAULT;
 
     public UpdateFlow(ResourceConfigManager configManager) {
         this.configManager = configManager;
@@ -54,6 +56,10 @@ public class UpdateFlow {
 
     public void setCompleteCallback(CompleteCallback cb) {
         this.completeCallback = cb;
+    }
+
+    public void setDownloadOptions(DownloadOptions downloadOptions) {
+        this.downloadOptions = downloadOptions != null ? downloadOptions : DownloadOptions.DEFAULT;
     }
 
     public void setSkipMoveFile(boolean skip) {
@@ -152,7 +158,8 @@ public class UpdateFlow {
                     downloadBaseUrl,
                     downloadBaseDestPath,
                     this::onDownloadProgressChanged,
-                    this::onDownloadStateChanged);
+                    this::onDownloadStateChanged,
+                    downloadOptions);
             resourcesDownloadTask.setMd5CheckProgressCallback(this::onDownloadMd5CheckProgressChanged);
 
             log.info("Run ResourceDownloadTask");
@@ -522,7 +529,8 @@ public class UpdateFlow {
                     reDownloadBaseUrl,
                     downloadBaseDestPath,
                     this::onReDownloadProgressChanged,
-                    this::onReDownloadStateChanged);
+                    this::onReDownloadStateChanged,
+                    downloadOptions);
             resourcesReDownloadTask.setMd5CheckProgressCallback(this::onReDownloadMd5CheckProgressChanged);
 
             resourcesReDownloadTask.run();

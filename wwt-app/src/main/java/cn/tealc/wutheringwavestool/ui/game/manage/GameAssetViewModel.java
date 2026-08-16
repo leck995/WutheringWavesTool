@@ -1,7 +1,10 @@
 package cn.tealc.wutheringwavestool.ui.game.manage;
 
 import cn.tealc.wwt.game.resource.DownloadManager;
+import cn.tealc.wwt.game.resource.DownloadOptions;
 import cn.tealc.wwt.game.resource.GameResourceDownloadService;
+import cn.tealc.wwt.game.resource.GameResourceInstallService;
+import cn.tealc.wwt.game.resource.model.DownloadPhase;
 import cn.tealc.wwt.game.resource.model.DownloadState;
 import cn.tealc.wwt.game.resource.model.game.FileInfo;
 import cn.tealc.wwt.game.resource.model.launcher.UpdateData;
@@ -10,6 +13,7 @@ import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.service.GameResourceUpdateCoordinator;
+import cn.tealc.wutheringwavestool.service.GameInstallationManager;
 import cn.tealc.wutheringwavestool.service.GameServerSwitchCoordinator;
 import cn.tealc.wutheringwavestool.service.GameUpdateService;
 import cn.tealc.wutheringwavestool.service.TaskManageService;
@@ -19,11 +23,15 @@ import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wwt.game.resource.model.ResourceCheckResult;
 import cn.tealc.wwt.game.resource.model.ResourceCheckState;
 import cn.tealc.wwt.game.resource.model.ResourceOperationResult;
+import cn.tealc.wwt.game.resource.model.ResourceOperationPhase;
+import cn.tealc.wwt.game.resource.model.ResourceProgress;
 import com.google.inject.Inject;
 import de.saxsys.mvvmfx.SceneLifecycle;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.LongProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -80,8 +88,40 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         }
     }
 
+    private record DownloadDetail(DownloadPhase phase, String relativePath,
+            int completedFiles, int totalFiles) {
+    }
+
+    private static final class ThroughputTracker {
+        private static final long SAMPLE_INTERVAL_NANOS = 250_000_000L;
+
+        private long lastBytes = -1;
+        private long lastSampleNanos = System.nanoTime();
+        private long bytesPerSecond;
+
+        synchronized String update(long completedBytes) {
+            long now = System.nanoTime();
+            if (lastBytes < 0 || completedBytes < lastBytes) {
+                lastBytes = completedBytes;
+                lastSampleNanos = now;
+                bytesPerSecond = 0;
+                return "";
+            }
+            long elapsed = now - lastSampleNanos;
+            if (elapsed >= SAMPLE_INTERVAL_NANOS) {
+                bytesPerSecond = Math.max(0, Math.round((completedBytes - lastBytes)
+                        * 1_000_000_000D / elapsed));
+                lastBytes = completedBytes;
+                lastSampleNanos = now;
+            }
+            return bytesPerSecond > 0 ? formatBytesPerSecond(bytesPerSecond) : "";
+        }
+    }
+
     @Inject
     private GameResourceDownloadService downloadService;
+    @Inject
+    private GameResourceInstallService installService;
     @Inject
     private GameUpdateService updateService;
     @Inject
@@ -90,6 +130,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     private GameResourceUpdateCoordinator resourceUpdateCoordinator;
     @Inject
     private GameServerSwitchCoordinator serverSwitchCoordinator;
+    @Inject
+    private GameInstallationManager installationManager;
 
     private final BooleanProperty operating = new SimpleBooleanProperty(false);
     private final BooleanProperty pauseAvailable = new SimpleBooleanProperty(false);
@@ -108,13 +150,13 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     private final DoubleProperty progress = new SimpleDoubleProperty(0);
     private final StringProperty progressText = new SimpleStringProperty("0%");
+    private final StringProperty downloadSpeed = new SimpleStringProperty("");
     private final StringProperty tip = new SimpleStringProperty("");
     private final StringProperty downloadDir = new SimpleStringProperty();
     private final ObjectProperty<SourceType> downloadSource =
             new SimpleObjectProperty<>(SourceType.DEFAULT);
 
     private ResourceCheckResult checkResult;
-    private boolean downloadSourceInitialized;
 
     private long operationSequence;
     private volatile long activeOperationId = NO_OPERATION;
@@ -140,6 +182,12 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                     progressText.set(newValue);
                 }
             };
+    private final ChangeListener<String> coordinatorSpeedListener =
+            (observable, oldValue, newValue) -> {
+                if (activeOperation == OperationType.UPDATE) {
+                    downloadSpeed.set(newValue);
+                }
+            };
     private final ChangeListener<String> coordinatorDetailListener =
             (observable, oldValue, newValue) -> {
                 if (activeOperation == OperationType.UPDATE) {
@@ -154,9 +202,9 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                 downloadSource.set(normalizedSource);
                 return;
             }
-            if (downloadSourceInitialized && GameResourcesManager.getGameExeBase() == null) {
-                Config.setting().setGameRootDirSource(normalizedSource);
-                Config.setting().save();
+            if (!operating.get()) {
+                downloadDir.set(defaultDownloadDir());
+                refreshInstalledState();
             }
         });
     }
@@ -221,7 +269,6 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         syncResourceUpdateState(resourceUpdateCoordinator.stateProperty().get());
         SourceType configuredSource = Config.setting().gameRootDirSourceProperty().get();
         downloadSource.set(normalizeDownloadSource(configuredSource));
-        downloadSourceInitialized = true;
         if (downloadDir.get() == null || downloadDir.get().isBlank()) {
             downloadDir.set(defaultDownloadDir());
         }
@@ -237,6 +284,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         resourceUpdateCoordinator.stateProperty().addListener(coordinatorStateListener);
         resourceUpdateCoordinator.progressProperty().addListener(coordinatorProgressListener);
         resourceUpdateCoordinator.progressTextProperty().addListener(coordinatorProgressTextListener);
+        resourceUpdateCoordinator.speedTextProperty().addListener(coordinatorSpeedListener);
         resourceUpdateCoordinator.detailTextProperty().addListener(coordinatorDetailListener);
         coordinatorListenersAttached = true;
     }
@@ -248,18 +296,39 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         resourceUpdateCoordinator.stateProperty().removeListener(coordinatorStateListener);
         resourceUpdateCoordinator.progressProperty().removeListener(coordinatorProgressListener);
         resourceUpdateCoordinator.progressTextProperty().removeListener(coordinatorProgressTextListener);
+        resourceUpdateCoordinator.speedTextProperty().removeListener(coordinatorSpeedListener);
         resourceUpdateCoordinator.detailTextProperty().removeListener(coordinatorDetailListener);
         coordinatorListenersAttached = false;
     }
 
     private void refreshInstalledState() {
-        boolean installed = GameResourcesManager.getGameExeBase() != null;
-        showDownload.set(!installed);
+        boolean downloadTargetInstalled = installationManager.isConfigured(downloadSource.get());
+        boolean downloadTargetRegistered = installationManager
+                .gameDirectory(GameInstallationManager.editionOf(downloadSource.get()))
+                .map(path -> hasText(installService.readInstalledVersion(path)))
+                .orElse(false);
+        boolean activeInstallationInstalled = GameResourcesManager.getGameExeBase() != null;
+        showDownload.set(!downloadTargetInstalled || !downloadTargetRegistered);
         showUpdate.set(false);
         showPreDownload.set(false);
         tip.set("");
 
-        if (installed) {
+        if (!downloadTargetInstalled) {
+            cancelCheckTask();
+            checkResult = null;
+            currentVersion.set("-");
+            latestVersion.set("-");
+            showRepair.set(false);
+            status.set(LanguageManager.getString("ui.game_manager.asset.not_installed"));
+        } else if (!downloadTargetRegistered) {
+            cancelCheckTask();
+            checkResult = null;
+            currentVersion.set("-");
+            latestVersion.set("-");
+            showRepair.set(false);
+            status.set(LanguageManager.getString("ui.game_manager.asset.registration_required"));
+            tip.set(LanguageManager.getString("ui.game_manager.asset.registration_detail"));
+        } else if (activeInstallationInstalled) {
             String installedVersion = readInstalledVersion();
             currentVersion.set(installedVersion.isBlank() ? "-" : installedVersion);
             showRepair.set(false);
@@ -287,16 +356,15 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     }
 
     private String defaultDownloadDir() {
-        File gameDir = GameResourcesManager.getGameDir();
-        if (gameDir == null) {
-            return "";
-        }
-        return new File(gameDir, "WwtBackup/" + downloadSource.get().name().toLowerCase()).getAbsolutePath();
+        return installationManager.gameDirectory(GameInstallationManager.editionOf(downloadSource.get()))
+                .map(path -> path.toString())
+                .orElse("");
     }
 
     /** 重新检查游戏版本；运行资源操作时忽略重复检查。 */
     public void checkUpdate() {
-        if (operating.get() || checkTask != null || GameResourcesManager.getGameExeBase() == null) {
+        if (operating.get() || checkTask != null || !isDownloadTargetInstalled()
+                || GameResourcesManager.getGameExeBase() == null) {
             return;
         }
 
@@ -384,6 +452,9 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     }
 
     private void syncResourceUpdateState(GameResourceUpdateCoordinator.UpdateState state) {
+        if (!isDownloadTargetInstalled()) {
+            return;
+        }
         String coordinatorCurrent = resourceUpdateCoordinator.currentVersionProperty().get();
         String coordinatorLatest = resourceUpdateCoordinator.latestVersionProperty().get();
         if (hasText(coordinatorCurrent) && !"-".equals(coordinatorCurrent)) {
@@ -415,6 +486,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             tip.set(resourceUpdateCoordinator.detailTextProperty().get());
             progress.set(resourceUpdateCoordinator.progressProperty().get());
             progressText.set(resourceUpdateCoordinator.progressTextProperty().get());
+            downloadSpeed.set(resourceUpdateCoordinator.speedTextProperty().get());
             showUpdate.set(false);
             return;
         }
@@ -427,6 +499,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             pauseAvailable.set(false);
             stopAvailable.set(false);
             operationState.set(OperationState.IDLE);
+            downloadSpeed.set("");
         }
 
         switch (state) {
@@ -492,6 +565,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         long operationId = beginOperation(
                 OperationType.DOWNLOAD,
                 LanguageManager.getString("ui.game_manager.asset.downloading"));
+        updateOperationDetail(operationId, "正在获取下载配置");
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
@@ -504,7 +578,18 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                 task,
                 LanguageManager.getString("ui.game_manager.asset.done"),
                 LanguageManager.getString("ui.game_manager.asset.fail"),
-                null);
+                () -> {
+                    tip.set("正在登记" + downloadSourceName(selectedSource) + "游戏目录");
+                    installationManager.configureInstallation(selectedSource, saveDir.toPath(), true);
+                    String installedVersion = installService.readInstalledVersion(saveDir.toPath());
+                    if (hasText(installedVersion)) {
+                        Config.setting().setGameInstalledVersion(installedVersion);
+                    }
+                    Config.setting().save();
+                    serverSwitchCoordinator.refresh();
+                    refreshInstalledState();
+                    tip.set(downloadSourceName(selectedSource) + "游戏目录已登记");
+                });
     }
 
     private void runFullDownload(
@@ -521,16 +606,36 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             throw new IllegalStateException("获取下载配置失败");
         }
         var updateData = launcherRes.getData();
+        updateOperationDetail(operationId, "正在读取资源清单");
         var fileInfos = loadFileInfos(updateData);
         if (fileInfos.isEmpty()) {
             throw new IllegalStateException("无文件可下载");
         }
 
+        updateOperationDetail(operationId, "正在检查磁盘空间并准备下载");
         DownloadManager manager = downloadService.createDownloadManager(
-                saveDir.toPath(), updateData, fileInfos);
+                saveDir.toPath(), updateData, fileInfos, downloadOptions());
         ActiveDownload handle = new ActiveDownload(operationId, manager);
         AtomicReference<String> failure = new AtomicReference<>();
-        manager.setProgressListener((done, total) -> updateProgressByData(operationId, done, total));
+        AtomicReference<DownloadDetail> activeDetail = new AtomicReference<>();
+        ThroughputTracker throughputTracker = new ThroughputTracker();
+        manager.setProgressListener((done, total) -> {
+            updateProgressByData(operationId, done, total);
+            DownloadDetail detail = activeDetail.get();
+            if (detail != null && detail.phase() == DownloadPhase.DOWNLOADING) {
+                updateDownloadSpeed(operationId, throughputTracker.update(done));
+                updateOperationDetail(operationId, fullDownloadDetail(detail));
+            }
+        });
+        manager.setPhaseListener((phase, relativePath, completedFiles, totalFiles) ->
+                {
+                    DownloadDetail detail = new DownloadDetail(phase, relativePath, completedFiles, totalFiles);
+                    activeDetail.set(detail);
+                    if (phase != DownloadPhase.DOWNLOADING) {
+                        updateDownloadSpeed(operationId, "");
+                    }
+                    updateOperationDetail(operationId, fullDownloadDetail(detail));
+                });
         manager.setStateListener((state, error) -> {
             if (state == DownloadState.FAILED) {
                 String message = hasText(error) ? error : "下载失败";
@@ -557,6 +662,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         if (failure.get() != null) {
             throw new IllegalStateException(failure.get());
         }
+        updateOperationDetail(operationId, "正在登记下载资源");
+        installService.registerInstalledRelease(saveDir.toPath(), updateData.getVersion(), fileInfos);
     }
 
     /** 启动增量更新。 */
@@ -580,6 +687,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         long operationId = beginOperation(
                 OperationType.REPAIR,
                 LanguageManager.getString("ui.game_manager.asset.repairing"));
+        updateOperationDetail(operationId, "正在校验游戏文件");
+        ThroughputTracker throughputTracker = new ThroughputTracker();
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
@@ -588,6 +697,13 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                                 progressInfo -> {
                                     updateProgressByData(operationId, progressInfo.completedBytes(),
                                             progressInfo.totalBytes());
+                                    String speed = progressInfo.operationPhase()
+                                            == ResourceOperationPhase.DOWNLOADING
+                                            ? throughputTracker.update(progressInfo.completedBytes())
+                                            : "";
+                                    updateDownloadSpeed(operationId, speed);
+                                    updateOperationDetail(operationId,
+                                            resourceOperationDetail(OperationType.REPAIR, progressInfo));
                                 },
                                 value -> completion.accept(value)),
                         "校验修复未返回结果",
@@ -617,6 +733,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         long operationId = beginOperation(
                 OperationType.PRE_DOWNLOAD,
                 LanguageManager.getString("ui.game_manager.asset.predownloading"));
+        updateOperationDetail(operationId, "正在准备预下载资源");
+        ThroughputTracker throughputTracker = new ThroughputTracker();
         Task<Void> task = new Task<>() {
             @Override
             protected Void call() throws Exception {
@@ -625,6 +743,13 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                                 progressInfo -> {
                                     updateProgressByData(operationId, progressInfo.completedBytes(),
                                             progressInfo.totalBytes());
+                                    String speed = progressInfo.operationPhase()
+                                            == ResourceOperationPhase.DOWNLOADING
+                                            ? throughputTracker.update(progressInfo.completedBytes())
+                                            : "";
+                                    updateDownloadSpeed(operationId, speed);
+                                    updateOperationDetail(operationId,
+                                            resourceOperationDetail(OperationType.PRE_DOWNLOAD, progressInfo));
                                 },
                                 value -> completion.accept(value)),
                         "预下载未返回结果",
@@ -660,6 +785,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             }
         }
         operationState.set(OperationState.PAUSED);
+        downloadSpeed.set("");
+        tip.set("资源操作已暂停");
     }
 
     public void resume() {
@@ -682,6 +809,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             }
         }
         operationState.set(OperationState.RUNNING);
+        tip.set(resumeDetail(activeOperation));
     }
 
     public void stop() {
@@ -693,6 +821,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         long operationId = activeOperationId;
         Task<?> task = activeTask;
         operationState.set(OperationState.STOPPING);
+        downloadSpeed.set("");
+        tip.set("正在停止资源操作");
         try {
             switch (activeOperation) {
                 case DOWNLOAD -> {
@@ -734,6 +864,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         stopAvailable.set(true);
         operationState.set(OperationState.RUNNING);
         status.set(statusText);
+        downloadSpeed.set("");
+        tip.set("");
         progress.set(0);
         progressText.set("0%");
         return operationId;
@@ -761,6 +893,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             String detail = exception != null && hasText(exception.getMessage())
                     ? ": " + exception.getMessage()
                     : "";
+            tip.set(failureText + detail);
             finishOperation(operationId, task, failureText + detail);
         });
         taskManageService.execute(task);
@@ -782,6 +915,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         stopAvailable.set(false);
         operationState.set(OperationState.IDLE);
         status.set(resultText);
+        downloadSpeed.set("");
         if (resetProgress) {
             progress.set(0);
             progressText.set("0%");
@@ -847,6 +981,119 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         }
     }
 
+    private void updateOperationDetail(long operationId, String detail) {
+        if (!hasText(detail)) {
+            return;
+        }
+        Runnable update = () -> {
+            if (activeOperationId != operationId
+                    || operationState.get() == OperationState.IDLE
+                    || operationState.get() == OperationState.STOPPING) {
+                return;
+            }
+            tip.set(detail);
+        };
+        if (Platform.isFxApplicationThread()) {
+            update.run();
+        } else {
+            Platform.runLater(update);
+        }
+    }
+
+    private void updateDownloadSpeed(long operationId, String speed) {
+        Runnable update = () -> {
+            if (activeOperationId != operationId
+                    || operationState.get() == OperationState.IDLE
+                    || operationState.get() == OperationState.STOPPING) {
+                return;
+            }
+            downloadSpeed.set(speed != null ? speed : "");
+        };
+        if (Platform.isFxApplicationThread()) {
+            update.run();
+        } else {
+            Platform.runLater(update);
+        }
+    }
+
+    private static String fullDownloadDetail(DownloadDetail detail) {
+        String action = switch (detail.phase()) {
+            case PREPARING -> "正在准备下载";
+            case DOWNLOADING -> "正在下载";
+            case VERIFYING -> "正在校验文件";
+            case MERGING -> "正在合成文件";
+        };
+        String count = detail.totalFiles() > 0
+                ? "（" + Math.min(detail.totalFiles(), detail.completedFiles() + 1)
+                + "/" + detail.totalFiles() + "）"
+                : "";
+        String path = displayPath(detail.relativePath());
+        return path.isEmpty() ? action + count : action + count + "：" + path;
+    }
+
+    private static String resourceOperationDetail(OperationType operation, ResourceProgress progressInfo) {
+        String action = switch (operation) {
+            case REPAIR -> switch (progressInfo.operationPhase()) {
+                case VERIFYING -> "正在校验游戏文件";
+                case DOWNLOADING -> "正在下载缺失文件";
+                case APPLYING -> "正在安装修复文件";
+                case UNKNOWN -> "正在校验修复游戏文件";
+            };
+            case PRE_DOWNLOAD -> switch (progressInfo.operationPhase()) {
+                case VERIFYING -> "正在校验预下载文件";
+                case DOWNLOADING -> "正在下载预下载资源";
+                case APPLYING -> "正在整理预下载资源";
+                case UNKNOWN -> "正在处理预下载资源";
+            };
+            default -> "正在处理游戏资源";
+        };
+        String count = progressInfo.totalFiles() > 0
+                ? "（" + Math.min(progressInfo.completedFiles() + 1, progressInfo.totalFiles())
+                + "/" + progressInfo.totalFiles() + "）"
+                : "";
+        return action + count;
+    }
+
+    private static String formatBytesPerSecond(long bytesPerSecond) {
+        if (bytesPerSecond < 1024) {
+            return bytesPerSecond + " B/s";
+        }
+        double value = bytesPerSecond;
+        String[] units = {"KB/s", "MB/s", "GB/s", "TB/s"};
+        int unit = -1;
+        do {
+            value /= 1024;
+            unit++;
+        } while (value >= 1024 && unit < units.length - 1);
+        return String.format("%.1f %s", value, units[unit]);
+    }
+
+    private static String resumeDetail(OperationType operation) {
+        return switch (operation) {
+            case DOWNLOAD -> "正在继续下载资源";
+            case REPAIR -> "正在继续校验修复游戏文件";
+            case PRE_DOWNLOAD -> "正在继续预下载资源";
+            case UPDATE -> "正在继续更新游戏资源";
+            case NONE -> "";
+        };
+    }
+
+    private static String displayPath(String path) {
+        if (!hasText(path)) {
+            return "";
+        }
+        String normalized = path.replace('\\', '/');
+        return normalized.length() <= 96 ? normalized : "..." + normalized.substring(normalized.length() - 93);
+    }
+
+    private static String downloadSourceName(SourceType source) {
+        return switch (source) {
+            case GLOBAL -> "国际服";
+            case BILIBILI -> "Bilibili服";
+            case DEFAULT, WE_GAME -> "国服";
+        };
+    }
+
     private void warnNoDownloadDir() {
         NotificationManager.message(MessageInfo.warning(
                 LanguageManager.getString("ui.game_manager.asset.no_dir")));
@@ -859,6 +1106,10 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     private static boolean hasText(String value) {
         return value != null && !value.isBlank();
+    }
+
+    private boolean isDownloadTargetInstalled() {
+        return installationManager.isConfigured(downloadSource.get());
     }
 
     private static SourceType normalizeDownloadSource(SourceType source) {
@@ -922,6 +1173,10 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         return progressText;
     }
 
+    public StringProperty downloadSpeedProperty() {
+        return downloadSpeed;
+    }
+
     public StringProperty tipProperty() {
         return tip;
     }
@@ -930,8 +1185,31 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         return downloadDir;
     }
 
+    public IntegerProperty downloadParallelCountProperty() {
+        return Config.setting().downloadParallelCountProperty();
+    }
+
+    public LongProperty downloadSpeedLimitBytesPerSecondProperty() {
+        return Config.setting().downloadSpeedLimitBytesPerSecondProperty();
+    }
+
+    public void setDownloadParallelCount(int parallelCount) {
+        Config.setting().setDownloadParallelCount(parallelCount);
+        Config.setting().save();
+    }
+
+    public void setDownloadSpeedLimitBytesPerSecond(long bytesPerSecond) {
+        Config.setting().setDownloadSpeedLimitBytesPerSecond(bytesPerSecond);
+        Config.setting().save();
+    }
+
     public ObjectProperty<SourceType> downloadSourceProperty() {
         return downloadSource;
+    }
+
+    private static DownloadOptions downloadOptions() {
+        return new DownloadOptions(Config.setting().getDownloadParallelCount(),
+                Config.setting().getDownloadSpeedLimitBytesPerSecond());
     }
 
     @Override

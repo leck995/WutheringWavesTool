@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.service;
 
 import cn.tealc.wwt.game.resource.GameResourceUpdateService;
+import cn.tealc.wwt.game.resource.DownloadOptions;
 import cn.tealc.wwt.game.resource.ResourceCompletionListener;
 import cn.tealc.wwt.game.resource.ResourceContext;
 import cn.tealc.wwt.game.resource.ResourceProgressListener;
@@ -41,7 +42,7 @@ public class GameUpdateService {
                 persistVersion(checkResult.latestVersion());
             }
             completion.onComplete(result);
-        });
+        }, downloadOptions());
     }
 
     public boolean isPreDownloadAvailable(ResourceCheckResult checkResult) {
@@ -54,12 +55,12 @@ public class GameUpdateService {
 
     public void preDownload(ResourceCheckResult checkResult, ResourceProgressListener progress,
             ResourceCompletionListener completion) {
-        resourceCore.preDownload(resourceContext(), checkResult, progress, completion);
+        resourceCore.preDownload(resourceContext(), checkResult, progress, completion, downloadOptions());
     }
 
     public void repair(ResourceCheckResult checkResult, ResourceProgressListener progress,
             ResourceCompletionListener completion) {
-        resourceCore.repair(resourceContext(), checkResult, progress, completion);
+        resourceCore.repair(resourceContext(), checkResult, progress, completion, downloadOptions());
     }
 
     public void pause() { resourceCore.pauseUpdate(); }
@@ -103,5 +104,10 @@ public class GameUpdateService {
         } catch (Exception e) {
             LOG.warn("Failed to persist installed version: {}", version, e);
         }
+    }
+
+    private static DownloadOptions downloadOptions() {
+        return new DownloadOptions(Config.setting().getDownloadParallelCount(),
+                Config.setting().getDownloadSpeedLimitBytesPerSecond());
     }
 }

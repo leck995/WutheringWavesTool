@@ -33,6 +33,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
+import javafx.stage.DirectoryChooser;
 import javafx.util.Duration;
 import org.kordamp.ikonli.javafx.FontIcon;
 
@@ -103,6 +104,8 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     private RadioMenuItem serverSwitchMainlandItem;
     @FXML
     private RadioMenuItem serverSwitchBilibiliItem;
+    @FXML
+    private RadioMenuItem serverSwitchGlobalItem;
     private RotateTransition resourceCheckRotation;
 
 
@@ -160,14 +163,15 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         ToggleGroup serverSwitchToggleGroup = new ToggleGroup();
         serverSwitchMainlandItem.setToggleGroup(serverSwitchToggleGroup);
         serverSwitchBilibiliItem.setToggleGroup(serverSwitchToggleGroup);
+        serverSwitchGlobalItem.setToggleGroup(serverSwitchToggleGroup);
         serverSwitchMainlandItem.disableProperty().bind(viewModel.serverSwitchOperatingProperty()
-                .or(viewModel.serverSwitchAvailableProperty().not())
                 .or(Bindings.equal(viewModel.currentGameSourceProperty(), SourceType.DEFAULT))
-                .or(viewModel.mainlandCacheReadyProperty().not()));
+                .or(viewModel.mainlandTargetReadyProperty().not()));
         serverSwitchBilibiliItem.disableProperty().bind(viewModel.serverSwitchOperatingProperty()
-                .or(viewModel.serverSwitchAvailableProperty().not())
                 .or(Bindings.equal(viewModel.currentGameSourceProperty(), SourceType.BILIBILI))
-                .or(viewModel.bilibiliCacheReadyProperty().not()));
+                .or(viewModel.bilibiliTargetReadyProperty().not()));
+        serverSwitchGlobalItem.disableProperty().bind(viewModel.serverSwitchOperatingProperty()
+                .or(Bindings.equal(viewModel.currentGameSourceProperty(), SourceType.GLOBAL)));
         serverSwitchMenu.setOnShowing(event -> updateServerSwitchSelection());
         updateServerSwitchSelection();
 
@@ -209,18 +213,42 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         SourceType current = viewModel.currentGameSourceProperty().get();
         serverSwitchMainlandItem.setSelected(current == SourceType.DEFAULT);
         serverSwitchBilibiliItem.setSelected(current == SourceType.BILIBILI);
+        serverSwitchGlobalItem.setSelected(current == SourceType.GLOBAL);
     }
 
     @FXML
     void switchToMainland(ActionEvent event) {
-        updateServerSwitchSelection();
-        viewModel.switchServer(SourceType.DEFAULT);
+        switchOrConfigure(SourceType.DEFAULT);
     }
 
     @FXML
     void switchToBilibili(ActionEvent event) {
+        switchOrConfigure(SourceType.BILIBILI);
+    }
+
+    @FXML
+    void switchToGlobal(ActionEvent event) {
+        switchOrConfigure(SourceType.GLOBAL);
+    }
+
+    private void switchOrConfigure(SourceType target) {
         updateServerSwitchSelection();
-        viewModel.switchServer(SourceType.BILIBILI);
+        if (viewModel.isServerInstallationConfigured(target)) {
+            viewModel.switchServer(target);
+            return;
+        }
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle(target == SourceType.GLOBAL
+                ? LanguageManager.getString("ui.home.server_switch.choose_global_dir")
+                : LanguageManager.getString("ui.home.server_switch.choose_china_dir"));
+        File selected = chooser.showDialog(serverSwitchMenu.getScene().getWindow());
+        if (selected == null) {
+            return;
+        }
+        String error = viewModel.configureAndSwitchServer(target, selected);
+        if (error != null) {
+            NotificationManager.message(MessageInfo.warning(error));
+        }
     }
 
     private void updateResourceStatusStyle(UpdateState state) {

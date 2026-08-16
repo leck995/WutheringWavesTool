@@ -7,6 +7,7 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.control.ToggleGroup?>
@@ -17,6 +18,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
+<?import atlantafx.base.controls.ToggleSwitch?>
 
 <StackPane fx:id="assetRoot" prefHeight="600.0" prefWidth="1000.0" styleClass="game-asset-view"
            stylesheets="@../../../css/game/manage/GameAsset.css" xmlns="http://javafx.com/javafx/23.0.1"
@@ -84,7 +86,7 @@
                               <VBox minWidth="0.0" prefWidth="560.0" spacing="16.0"
                                     styleClass="asset-column,download-column" HBox.hgrow="ALWAYS">
                                  <children>
-                        <VBox fx:id="directorySection" spacing="12.0" styleClass="asset-section">
+                        <VBox spacing="12.0" styleClass="asset-section">
                            <children>
                               <Label styleClass="asset-section-title" text="%ui.game_manager.asset.download_config" />
                               <VBox spacing="9.0">
@@ -109,6 +111,30 @@
                                                        toggleGroup="$downloadSourceToggle" userData="GLOBAL" />
                                        </children>
                                     </HBox>
+                                 </children>
+                              </VBox>
+                              <VBox spacing="10.0" styleClass="download-policy-section">
+                                 <children>
+                                    <Label styleClass="asset-form-label" text="%ui.game_manager.asset.download_policy" />
+                                    <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="download-policy-row">
+                                       <children>
+                                          <Label styleClass="download-policy-label" text="%ui.game_manager.asset.parallel" />
+                                          <Spinner fx:id="parallelSpinner" editable="false" prefWidth="92.0" />
+                                          <Label styleClass="text-tip" text="%ui.game_manager.asset.parallel_unit" />
+                                          <Region HBox.hgrow="ALWAYS" />
+                                          <Label styleClass="download-policy-label" text="%ui.game_manager.asset.speed_limit" />
+                                          <ToggleSwitch fx:id="speedLimitSwitch" />
+                                          <Spinner fx:id="speedLimitSpinner" editable="true" prefWidth="108.0" />
+                                          <Label styleClass="text-tip" text="MB/s" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </VBox>
+
+                        <VBox fx:id="directorySection" spacing="9.0" styleClass="asset-section">
+                           <children>
                                     <Label styleClass="asset-form-label" text="%ui.game_manager.asset.dir" />
                                     <StackPane maxWidth="560.0" styleClass="input-group">
                                        <children>
@@ -127,8 +153,6 @@
                                           </Button>
                                        </children>
                                     </StackPane>
-                                 </children>
-                              </VBox>
                            </children>
                         </VBox>
 
@@ -138,14 +162,16 @@
                                  <children>
                                     <Label styleClass="asset-section-title" text="%ui.game_manager.asset.progress" />
                                     <Region HBox.hgrow="ALWAYS" />
+                                    <Label fx:id="speedLabel" alignment="CENTER_RIGHT" maxWidth="118.0" minWidth="118.0"
+                                           prefWidth="118.0" styleClass="progress-speed" text="" textOverrun="ELLIPSIS" />
                                     <Label fx:id="progressTextLabel" alignment="CENTER_RIGHT" minWidth="58.0"
                                            styleClass="progress-percent" text="0%" />
                                  </children>
                               </HBox>
                               <ProgressBar fx:id="progressBar" maxWidth="1.7976931348623157E308" progress="0.0"
                                            styleClass="asset-progress-bar" />
-                              <Label fx:id="tipLabel" maxWidth="1.7976931348623157E308" styleClass="text-tip"
-                                     text="" wrapText="true" />
+                              <Label fx:id="tipLabel" maxWidth="1.7976931348623157E308" minWidth="0.0"
+                                     styleClass="text-tip" text="" textOverrun="ELLIPSIS" wrapText="false" />
                            </children>
                         </VBox>
 

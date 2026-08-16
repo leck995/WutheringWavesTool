@@ -1,5 +1,6 @@
 package cn.tealc.wwt.game.resource.internal.legacy.download;
 
+import cn.tealc.wwt.game.resource.BandwidthLimiter;
 import cn.tealc.wwt.game.resource.internal.legacy.model.ChunkInfo;
 import cn.tealc.wwt.game.resource.internal.legacy.model.DownloadInfo;
 import cn.tealc.wwt.game.resource.internal.legacy.util.*;
@@ -26,6 +27,7 @@ public class DownloadTask {
     private final String destPath;
     private final String primaryUrl;
     private final List<String> backUpUrls;
+    private final BandwidthLimiter bandwidthLimiter;
     private DownloadState state = DownloadState.IDLE;
     private final AtomicBoolean pauseFlag = new AtomicBoolean(false);
     private final AtomicBoolean stopFlag = new AtomicBoolean(false);
@@ -87,6 +89,11 @@ public class DownloadTask {
     }
 
     public DownloadTask(DownloadInfo info, String destPath, List<String> backUpUrls, int maxRetryCount) {
+        this(info, destPath, backUpUrls, maxRetryCount, new BandwidthLimiter(0));
+    }
+
+    public DownloadTask(DownloadInfo info, String destPath, List<String> backUpUrls, int maxRetryCount,
+            BandwidthLimiter bandwidthLimiter) {
         this.downloadInfo = info;
         this.destPath = destPath;
         this.primaryUrl = info.url;
@@ -99,6 +106,7 @@ public class DownloadTask {
         }
         this.backUpUrls.add(primaryUrl);
         this.maxRetryCount = maxRetryCount;
+        this.bandwidthLimiter = bandwidthLimiter != null ? bandwidthLimiter : new BandwidthLimiter(0);
     }
 
     public void setProgressCallback(ProgressCallback cb) {
@@ -708,6 +716,13 @@ public class DownloadTask {
                     return;
                 }
 
+                if (!bandwidthLimiter.acquire(bytesRead, stopFlag::get)) {
+                    conn.disconnect();
+                    state = DownloadState.CANCELED;
+                    notifyState(DownloadState.CANCELED, null);
+                    return;
+                }
+
                 fos.write(buffer, 0, bytesRead);
                 downloadedBytes += bytesRead;
 
@@ -1157,6 +1172,12 @@ public class DownloadTask {
                     handlePauseInLoop();
                 }
                 if (stopFlag.get()) {
+                    conn.disconnect();
+                    state = DownloadState.CANCELED;
+                    notifyState(DownloadState.CANCELED, null);
+                    return;
+                }
+                if (!bandwidthLimiter.acquire(read, stopFlag::get)) {
                     conn.disconnect();
                     state = DownloadState.CANCELED;
                     notifyState(DownloadState.CANCELED, null);

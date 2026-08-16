@@ -5,6 +5,7 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wwt.game.resource.GameServerSwitchService;
 import cn.tealc.wutheringwavestool.model.SourceType;
+import cn.tealc.wutheringwavestool.service.GameInstallationManager;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
@@ -26,6 +27,8 @@ import java.io.File;
 public class GameDirChooseViewModel extends BaseViewModel {
     @Inject
     private GameServerSwitchService serverSwitchService;
+    @Inject
+    private GameInstallationManager installationManager;
     private SimpleStringProperty localDir = new SimpleStringProperty();
     private SimpleObjectProperty<SourceType> localSourceType = new SimpleObjectProperty<>();
 
@@ -49,8 +52,8 @@ public class GameDirChooseViewModel extends BaseViewModel {
     public boolean finishLocal(){
         boolean checked = checkLocalDirCurrent(new File(localDir.get()));
         if (checked) {
-            Config.setting().setGameRootDir(localDir.get());
-            Config.setting().setGameRootDirSource(localSourceType.get());
+            installationManager.configureInstallation(localSourceType.get(), new File(localDir.get()).toPath(), true);
+            Config.setting().save();
             return true;
         }
         return false;

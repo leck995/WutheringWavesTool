@@ -3,6 +3,7 @@ package cn.tealc.wwt.game.resource;
 import cn.tealc.wwt.game.resource.error.DownloadError;
 import cn.tealc.wwt.game.resource.error.RetryHelper;
 import cn.tealc.wwt.game.resource.model.ChunkInfo;
+import cn.tealc.wwt.game.resource.model.DownloadPhase;
 import cn.tealc.wwt.game.resource.model.DownloadInfo;
 import cn.tealc.wwt.game.resource.model.DownloadState;
 import cn.tealc.wwt.game.resource.util.FileUtils;
@@ -40,10 +41,12 @@ public class DownloadItem {
     private final int maxRetryCount;
     private final int connectTimeoutMs;
     private final int readTimeoutMs;
+    private final BandwidthLimiter bandwidthLimiter;
 
     private DownloadListeners.StateListener stateListener;
     private DownloadListeners.ProgressListener progressListener;
     private DownloadListeners.Md5CheckListener md5CheckListener;
+    private DownloadListeners.PhaseListener phaseListener;
 
     private volatile DownloadState state = DownloadState.IDLE;
     private final AtomicBoolean pauseFlag = new AtomicBoolean(false);
@@ -57,6 +60,12 @@ public class DownloadItem {
 
     public DownloadItem(DownloadInfo info, Path destRoot, List<String> backUpUrls, int maxRetryCount,
             int connectTimeoutMs, int readTimeoutMs) {
+        this(info, destRoot, backUpUrls, maxRetryCount, connectTimeoutMs, readTimeoutMs,
+                new BandwidthLimiter(0));
+    }
+
+    public DownloadItem(DownloadInfo info, Path destRoot, List<String> backUpUrls, int maxRetryCount,
+            int connectTimeoutMs, int readTimeoutMs, BandwidthLimiter bandwidthLimiter) {
         this.info = info;
         this.destRoot = destRoot;
         // 备用 URL 之前追加主 URL，与之对应 kr 的 BackUpUrls=[backup..., primary]，按 retry 轮换。
@@ -68,6 +77,7 @@ public class DownloadItem {
         this.maxRetryCount = maxRetryCount;
         this.connectTimeoutMs = connectTimeoutMs;
         this.readTimeoutMs = readTimeoutMs;
+        this.bandwidthLimiter = bandwidthLimiter != null ? bandwidthLimiter : new BandwidthLimiter(0);
     }
 
     public void setStateListener(DownloadListeners.StateListener listener) {
@@ -80,6 +90,10 @@ public class DownloadItem {
 
     public void setMd5CheckListener(DownloadListeners.Md5CheckListener listener) {
         this.md5CheckListener = listener;
+    }
+
+    public void setPhaseListener(DownloadListeners.PhaseListener listener) {
+        this.phaseListener = listener;
     }
 
     public DownloadState getState() {
@@ -143,6 +157,7 @@ public class DownloadItem {
             return;
         }
         setState(DownloadState.WAITING, null);
+        notifyPhase(DownloadPhase.PREPARING);
         try {
             if (info.chunkInfoList().isEmpty()) {
                 runSingleFile();
@@ -269,6 +284,7 @@ public class DownloadItem {
             throw new IOException("HTTP " + code + " for " + url);
         }
         setState(DownloadState.DOWNLOADING, null);
+        notifyPhase(DownloadPhase.DOWNLOADING);
         boolean append = baseOffset > 0 && code == HttpURLConnection.HTTP_PARTIAL;
         downloadedBytes = append ? baseOffset : 0;
         try (InputStream in = conn.getInputStream();
@@ -284,6 +300,11 @@ public class DownloadItem {
                 if (pauseFlag.get()) {
                     handlePauseInLoop();
                 }
+                if (!bandwidthLimiter.acquire(read, stopFlag::get)) {
+                    setState(DownloadState.CANCELED, null);
+                    conn.disconnect();
+                    return;
+                }
                 out.write(buffer, 0, read);
                 downloadedBytes += read;
                 maybeNotifyProgress();
@@ -295,6 +316,13 @@ public class DownloadItem {
 
     private void runWithChunks() throws IOException, InterruptedException {
         Path dest = destPath();
+        if (Files.isRegularFile(dest) && Files.size(dest) >= info.fileSize()
+                && (info.md5() == null || info.md5().isEmpty() || verifyFileMd5(dest))) {
+            downloadedBytes = Files.size(dest);
+            notifyProgress();
+            setState(DownloadState.COMPLETE, null);
+            return;
+        }
         Path chunkDir = Path.of(dest.getFileName() + "_Chunks");
         Path chunkRoot = dest.getParent() != null ? dest.getParent().resolve(chunkDir) : chunkDir;
         FileUtils.createParents(chunkRoot);
@@ -305,6 +333,7 @@ public class DownloadItem {
         boolean verified = false;
         while (!verified && !stopFlag.get()) {
             setState(DownloadState.DOWNLOADING, null);
+            notifyPhase(DownloadPhase.DOWNLOADING);
             // 1. 逐块下载
             for (ChunkInfo chunk : chunks) {
                 if (stopFlag.get()) {
@@ -318,6 +347,7 @@ public class DownloadItem {
                 return;
             }
             // 2. 合并
+            notifyPhase(DownloadPhase.MERGING);
             mergeChunks(chunkRoot, chunks, dest);
             // 3. 整文件校验
             if (info.md5() != null && !info.md5().isEmpty()) {
@@ -383,6 +413,11 @@ public class DownloadItem {
                 if (pauseFlag.get()) {
                     handlePauseInLoop();
                 }
+                if (!bandwidthLimiter.acquire(read, stopFlag::get)) {
+                    setState(DownloadState.CANCELED, null);
+                    conn.disconnect();
+                    return;
+                }
                 out.write(buffer, 0, read);
                 downloadedBytes += read;
                 maybeNotifyProgress();
@@ -422,6 +457,7 @@ public class DownloadItem {
             return true;
         }
         setState(DownloadState.WAITING, null);
+        notifyPhase(DownloadPhase.VERIFYING);
         String actual = MD5Utils.md5(dest, (completed, total) -> {
             if (md5CheckListener != null) {
                 md5CheckListener.onMd5Check(completed, total);
@@ -485,6 +521,12 @@ public class DownloadItem {
         this.state = newState;
         if (stateListener != null) {
             stateListener.onStateChanged(newState, error);
+        }
+    }
+
+    private void notifyPhase(DownloadPhase phase) {
+        if (phaseListener != null) {
+            phaseListener.onPhaseChanged(phase, info.destPath(), 0, 0);
         }
     }
 

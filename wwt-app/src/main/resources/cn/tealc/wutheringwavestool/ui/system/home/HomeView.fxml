@@ -155,6 +155,9 @@
                         <RadioMenuItem fx:id="serverSwitchBilibiliItem" mnemonicParsing="false"
                                        onAction="#switchToBilibili"
                                        text="%ui.game_manager.base.server_switch.bilibili" />
+                        <RadioMenuItem fx:id="serverSwitchGlobalItem" mnemonicParsing="false"
+                                       onAction="#switchToGlobal"
+                                       text="%ui.game_manager.asset.server_global" />
                      </items>
                   </MenuButton>
                   <Button fx:id="startUpdateBtn" layoutX="122.0" layoutY="10.0" mnemonicParsing="false"

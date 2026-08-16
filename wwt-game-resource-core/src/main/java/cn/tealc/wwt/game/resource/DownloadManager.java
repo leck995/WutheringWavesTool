@@ -1,5 +1,6 @@
 package cn.tealc.wwt.game.resource;
 
+import cn.tealc.wwt.game.resource.model.DownloadPhase;
 import cn.tealc.wwt.game.resource.model.DownloadInfo;
 import cn.tealc.wwt.game.resource.model.DownloadState;
 import cn.tealc.wwt.game.resource.util.FileUtils;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * 多文件并行下载编排器。
@@ -33,10 +35,12 @@ public class DownloadManager {
     private final int maxRetry;
     private final int connectTimeoutMs;
     private final int readTimeoutMs;
+    private final BandwidthLimiter bandwidthLimiter;
 
     private DownloadListeners.StateListener stateListener;
     private DownloadListeners.ProgressListener progressListener;
     private DownloadListeners.Md5CheckListener md5CheckListener;
+    private DownloadListeners.PhaseListener phaseListener;
 
     private final List<DownloadItem> items = new ArrayList<>();
     private final long[] itemDownloaded;
@@ -44,7 +48,8 @@ public class DownloadManager {
     private final long totalBytes;
 
     DownloadManager(List<DownloadInfo> infos, Path destRoot, List<String> cdnBaseUrls,
-            int maxParallel, int maxRetry, int connectTimeoutMs, int readTimeoutMs) {
+            int maxParallel, int maxRetry, int connectTimeoutMs, int readTimeoutMs,
+            long speedLimitBytesPerSecond) {
         this.infos = infos;
         this.destRoot = destRoot;
         this.cdnBaseUrls = cdnBaseUrls == null ? List.of() : List.copyOf(cdnBaseUrls);
@@ -52,6 +57,7 @@ public class DownloadManager {
         this.maxRetry = maxRetry;
         this.connectTimeoutMs = connectTimeoutMs;
         this.readTimeoutMs = readTimeoutMs;
+        this.bandwidthLimiter = new BandwidthLimiter(speedLimitBytesPerSecond);
         this.totalBytes = infos.stream().mapToLong(DownloadInfo::fileSize).sum();
         this.itemDownloaded = new long[infos.size()];
     }
@@ -66,6 +72,10 @@ public class DownloadManager {
 
     public void setMd5CheckListener(DownloadListeners.Md5CheckListener listener) {
         this.md5CheckListener = listener;
+    }
+
+    public void setPhaseListener(DownloadListeners.PhaseListener listener) {
+        this.phaseListener = listener;
     }
 
     public long totalBytes() {
@@ -92,6 +102,7 @@ public class DownloadManager {
         }
 
         items.clear();
+        AtomicInteger completedFiles = new AtomicInteger();
         for (int i = 0; i < infos.size(); i++) {
             DownloadInfo info = infos.get(i);
             List<String> urls = resolveUrlsByBase(info, cdnBaseUrls);
@@ -102,10 +113,13 @@ public class DownloadManager {
                     : new DownloadInfo(urls.get(0), info.destPath(), info.fileSize(),
                             info.md5(), info.basePath(), info.chunkInfoList());
             DownloadItem item = new DownloadItem(resolved, destRoot, urls.size() > 1 ? urls.subList(1, urls.size()) : List.of(),
-                    maxRetry, connectTimeoutMs, readTimeoutMs);
+                    maxRetry, connectTimeoutMs, readTimeoutMs, bandwidthLimiter);
             item.setStateListener((state, err) -> {
                 if (state == DownloadState.FAILED && running) {
                     stop();
+                }
+                if (state == DownloadState.COMPLETE) {
+                    completedFiles.incrementAndGet();
                 }
             });
             item.setProgressListener((done, total) -> {
@@ -113,6 +127,8 @@ public class DownloadManager {
                 notifyAggregatedProgress();
             });
             item.setMd5CheckListener(md5CheckListener);
+            item.setPhaseListener((phase, relativePath, ignoredCompleted, ignoredTotal) ->
+                    notifyPhase(phase, relativePath, completedFiles.get(), infos.size()));
             items.add(item);
         }
         if (LOG.isDebugEnabled()) {
@@ -228,6 +244,13 @@ public class DownloadManager {
     private void notifyState(DownloadState state, String error) {
         if (stateListener != null) {
             stateListener.onStateChanged(state, error);
+        }
+    }
+
+    private void notifyPhase(DownloadPhase phase,
+            String relativePath, int completedFiles, int totalFiles) {
+        if (phaseListener != null) {
+            phaseListener.onPhaseChanged(phase, relativePath, completedFiles, totalFiles);
         }
     }
 }

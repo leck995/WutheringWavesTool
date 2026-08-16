@@ -1,5 +1,6 @@
 package cn.tealc.wwt.game.resource.internal.legacy.flow;
 
+import cn.tealc.wwt.game.resource.DownloadOptions;
 import cn.tealc.wwt.game.resource.internal.legacy.config.ResourceConfigManager;
 import cn.tealc.wwt.game.resource.internal.legacy.model.CheckUpdateResult;
 import cn.tealc.wwt.game.resource.internal.legacy.model.ResStateInfo;
@@ -38,6 +39,14 @@ public class ResUpdateModule {
     private RepairFlow repairFlow;
 
     private long progressNotifyIntervalMillis = 100L;
+    private DownloadOptions downloadOptions = DownloadOptions.DEFAULT;
+
+    public void setDownloadOptions(DownloadOptions downloadOptions) {
+        this.downloadOptions = downloadOptions != null ? downloadOptions : DownloadOptions.DEFAULT;
+        if (updateFlow != null) updateFlow.setDownloadOptions(this.downloadOptions);
+        if (predownloadFlow != null) predownloadFlow.setDownloadOptions(this.downloadOptions);
+        if (repairFlow != null) repairFlow.setDownloadOptions(this.downloadOptions);
+    }
 
     public ResUpdateModule(ResourceConfigManager configManager) {
         this.configManager = configManager;
@@ -108,6 +117,7 @@ public class ResUpdateModule {
         if (updateFlow == null) {
             updateFlow = new UpdateFlow(configManager);
         }
+        updateFlow.setDownloadOptions(downloadOptions);
         updateFlow.setProgressCallback(updateProgressCallback);
         updateFlow.setCompleteCallback(updateResult -> {
             updateCompleted.onComplete(updateResult);
@@ -129,6 +139,7 @@ public class ResUpdateModule {
         if (updateFlow == null) {
             updateFlow = new UpdateFlow(configManager);
         }
+        updateFlow.setDownloadOptions(downloadOptions);
         updateFlow.setProgressCallback(updateProgressCallback);
         updateFlow.setCompleteCallback(updateResult -> {
             updateCompleted.onComplete(updateResult);
@@ -164,6 +175,7 @@ public class ResUpdateModule {
         if (predownloadFlow == null) {
             predownloadFlow = new PredownloadFlow(configManager, this);
         }
+        predownloadFlow.setDownloadOptions(downloadOptions);
         predownloadFlow.exec(predownloadUpdateInfo, predownloadProgressCallback, predownloadCompleteCallback);
     }
 
@@ -198,6 +210,7 @@ public class ResUpdateModule {
         if (repairFlow == null) {
             repairFlow = new RepairFlow(configManager, this);
         }
+        repairFlow.setDownloadOptions(downloadOptions);
         RepairFlow flow = repairFlow;
         flow.exec(updateInfo, repairProgressCallback, updateResult -> {
             // RepairFlow stores completed CheckFileTask/ResourcesDownloadTask instances;
