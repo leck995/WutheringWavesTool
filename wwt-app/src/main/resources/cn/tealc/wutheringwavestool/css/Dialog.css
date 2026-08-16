@@ -169,10 +169,6 @@
     -fx-border-color: -color-fg-subtle;
 }
 
-.shadcn-dialog-pane > .button-bar .button:focused {
-    -fx-border-color: -color-accent-emphasis;
-    -fx-effect: dropshadow(three-pass-box, -color-accent-muted, 4, 0.4, 0, 0);
-}
 
 .shadcn-dialog-pane > .button-bar .button:default {
     -fx-background-color: -color-fg-default;
@@ -212,4 +208,66 @@
     -fx-text-fill: -color-fg-muted;
     -fx-background-color: transparent;
     -fx-border-color: transparent;
+}
+
+
+/* Alert 主操作按钮按样式着色：主按钮实心、其余按钮描边 */
+/* --- Info：蓝色 --- */
+.shadcn-dialog-pane.shadcn-alert-info > .button-bar .button:default {
+    -fx-background-color: -color-accent-emphasis;
+    -fx-border-color: -color-accent-emphasis;
+    -fx-text-fill: -color-fg-emphasis;
+}
+.shadcn-dialog-pane.shadcn-alert-info > .button-bar .button:default:hover {
+    -fx-background-color: -color-accent-6;
+    -fx-border-color: -color-accent-6;
+}
+.shadcn-dialog-pane.shadcn-alert-info > .button-bar .button {
+    -fx-text-fill: -color-accent-fg;
+    -fx-border-color: -color-accent-muted;
+}
+
+/* --- Warning：黄色 --- */
+.shadcn-dialog-pane.shadcn-alert-warning > .button-bar .button:default {
+    -fx-background-color: -color-warning-emphasis;
+    -fx-border-color: -color-warning-emphasis;
+    -fx-text-fill: -color-fg-emphasis;
+}
+.shadcn-dialog-pane.shadcn-alert-warning > .button-bar .button:default:hover {
+    -fx-background-color: -color-warning-6;
+    -fx-border-color: -color-warning-6;
+}
+.shadcn-dialog-pane.shadcn-alert-warning > .button-bar .button {
+    -fx-text-fill: -color-warning-fg;
+    -fx-border-color: -color-warning-muted;
+}
+
+/* --- Danger：红色 --- */
+.shadcn-dialog-pane.shadcn-alert-danger > .button-bar .button:default {
+    -fx-background-color: -color-danger-emphasis;
+    -fx-border-color: -color-danger-emphasis;
+    -fx-text-fill: -color-fg-emphasis;
+}
+.shadcn-dialog-pane.shadcn-alert-danger > .button-bar .button:default:hover {
+    -fx-background-color: -color-danger-6;
+    -fx-border-color: -color-danger-6;
+}
+.shadcn-dialog-pane.shadcn-alert-danger > .button-bar .button {
+    -fx-text-fill: -color-danger-fg;
+    -fx-border-color: -color-danger-muted;
+}
+
+/* --- Success：绿色 --- */
+.shadcn-dialog-pane.shadcn-alert-success > .button-bar .button:default {
+    -fx-background-color: -color-success-emphasis;
+    -fx-border-color: -color-success-emphasis;
+    -fx-text-fill: -color-fg-emphasis;
+}
+.shadcn-dialog-pane.shadcn-alert-success > .button-bar .button:default:hover {
+    -fx-background-color: -color-success-6;
+    -fx-border-color: -color-success-6;
+}
+.shadcn-dialog-pane.shadcn-alert-success > .button-bar .button {
+    -fx-text-fill: -color-success-fg;
+    -fx-border-color: -color-success-muted;
 }

@@ -1,5 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.component.dialog;
 
+import cn.tealc.wutheringwavestool.theme.FontManager;
+
 import javafx.scene.Scene;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogEvent;
@@ -38,6 +40,8 @@ public final class DialogStyler {
         }
 
         styledPane.attach(dialog);
+        // 弹窗是独立 Stage，不会继承主窗口 root 的内联样式，这里显式套用同一字体
+        FontManager.applyTo(styledPane);
         dialog.initStyle(StageStyle.EXTENDED);
         dialog.addEventHandler(DialogEvent.DIALOG_SHOWN, event -> hideSystemButtons(dialog));
         return dialog;

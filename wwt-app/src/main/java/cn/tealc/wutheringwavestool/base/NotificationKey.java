@@ -9,6 +9,7 @@ package cn.tealc.wutheringwavestool.base;
 public class NotificationKey {
     public static final String MESSAGE="MESSAGE";
     public static final String DIALOG="DIALOG";
+    public static final String ALERT="ALERT";
     public static final String CHANGE_BG="CHANGE_BG";
     public static final String CHANGE_HEADER="CHANGE_HEADER";
     public static final String CHANGE_NAV="CHANGE_NAV";

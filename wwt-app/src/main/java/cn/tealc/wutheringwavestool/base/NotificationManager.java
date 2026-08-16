@@ -33,4 +33,7 @@ public class NotificationManager {
     public static void dialog(Pane pane, BaseDialog dialog) {
         MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, pane,dialog);
     }
+    public static void alert(JFXDialogLayout layout) {
+        MvvmFX.getNotificationCenter().publish(NotificationKey.ALERT, layout);
+    }
 }

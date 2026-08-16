@@ -15,6 +15,11 @@ import java.util.Objects;
 
 /** Alert with the application's shared HeaderBar and shadcn-style skin. */
 public class NewAlter extends Alert {
+
+    /** 默认内容宽度：长文本在 CONTENT_PREF_WIDTH 内换行，弹窗宽度不会随文本变长。 */
+    private static final double CONTENT_PREF_WIDTH = 300;
+    private static final double CONTENT_MAX_WIDTH = 300;
+
     public enum AlertStyle {
         INFO("shadcn-alert-info", Material2OutlinedAL.INFO, AlertType.INFORMATION),
         WARNING("shadcn-alert-warning", Material2OutlinedMZ.WARNING, AlertType.WARNING),
@@ -146,11 +151,12 @@ public class NewAlter extends Alert {
 
         contentLabel.getStyleClass().add("shadcn-alert-content-label");
         contentLabel.setWrapText(true);
-        contentLabel.setMaxWidth(Double.MAX_VALUE);
+        contentLabel.setPrefWidth(CONTENT_PREF_WIDTH);
+        contentLabel.setMaxWidth(CONTENT_MAX_WIDTH);
         HBox.setHgrow(contentLabel, Priority.ALWAYS);
 
         alertContent.getStyleClass().add("shadcn-alert-content");
-        alertContent.setMaxWidth(Double.MAX_VALUE);
+        alertContent.setMaxWidth(CONTENT_MAX_WIDTH + 40);
         alertContent.setAlignment(Pos.TOP_LEFT);
         alertContent.getChildren().add(contentLabel);
 
