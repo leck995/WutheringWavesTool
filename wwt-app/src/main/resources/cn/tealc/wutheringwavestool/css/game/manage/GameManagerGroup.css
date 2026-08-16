@@ -1,0 +1,22 @@
+.game-manager-group-view .scroll-bar {
+    -fx-background-color: transparent;
+    -fx-opacity: 1;
+}
+
+.game-manager-group-view .scroll-bar:vertical .thumb {
+    -fx-background-color: transparent;
+    -fx-background-insets: 1;
+}
+
+.game-manager-group-view:hover .scroll-bar:vertical .thumb {
+    -fx-background-color: -color-bg-default-60;
+}
+
+.game-manager-group-view .tabbed-view-layout .child-select {
+    -fx-text-fill: -color-fg-subtle;
+    -fx-font-size: 1em;
+}
+
+.game-manager-group-view .tabbed-view-layout .child-select:selected {
+    -fx-text-fill: -color-fg-muted;
+}

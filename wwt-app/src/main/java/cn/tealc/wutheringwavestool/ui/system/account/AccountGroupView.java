@@ -1,87 +1,50 @@
 package cn.tealc.wutheringwavestool.ui.system.account;
 
-import atlantafx.base.util.Animations;
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.ui.component.TabbedViewLayout;
 import cn.tealc.wutheringwavestool.ui.kujiequ.account.AccountView;
 import cn.tealc.wutheringwavestool.ui.kujiequ.account.AccountViewModel;
-import cn.tealc.wutheringwavestool.ui.kujiequ.tower.*;
-import de.saxsys.mvvmfx.FluentViewLoader;
-import de.saxsys.mvvmfx.FxmlView;
-import de.saxsys.mvvmfx.InjectViewModel;
-import de.saxsys.mvvmfx.ViewTuple;
-import javafx.event.ActionEvent;
-import javafx.fxml.FXML;
-import javafx.scene.Node;
-import javafx.scene.control.Toggle;
-import javafx.scene.control.ToggleButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.util.Duration;
+import cn.tealc.wutheringwavestool.util.LanguageManager;
+import de.saxsys.mvvmfx.JavaView;
+import javafx.fxml.Initializable;
 
-public class AccountGroupView implements FxmlView<AccountGroupViewModel> {
-    @InjectViewModel
-    private AccountGroupViewModel viewModel;
-    @FXML
-    private ToggleGroup childSelectedToggle;
-    @FXML
-    private StackPane content;
-    @FXML
-    private HBox headerPane;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-    private Node kujiequView;
-    private Node appAccountView;
+public class AccountGroupView extends TabbedViewLayout
+        implements JavaView<AccountGroupViewModel>, Initializable {
 
-    public void initialize() {
+    private final Tab<AppAccountViewModel> appAccountTab;
+    private final Tab<AccountViewModel> kujiequAccountTab;
 
-        if (Config.setting().isNoKuJieQu()){
-            ToggleButton toggle = (ToggleButton) childSelectedToggle.getToggles().get(1);
-            toggle.setVisible(false);
-            toggle.setSelected(false);
-            toggle.setDisable(true);
-            createAppAccountView();
-        }else {
-            createKujiequAccountView();
-        }
+    public AccountGroupView() {
+        super(
+                LanguageManager.getString("ui.account.title"),
+                50
+        );
+
+        appAccountTab = addTab(
+                LanguageManager.getString("ui.account.app_account"),
+                false,
+                AppAccountView.class
+        );
+        kujiequAccountTab = addTab(
+                LanguageManager.getString("ui.account.kujiequ"),
+                true,
+                AccountView.class
+        );
     }
 
-
-
-    @FXML
-    void toAppAccount(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
-        if (toggleButton.isSelected()){
-            createAppAccountView();
-        }else {
-            toggleButton.setSelected(true);
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        if (Config.setting().isNoKuJieQu()) {
+            kujiequAccountTab.setVisible(false);
+            kujiequAccountTab.setSelected(false);
+            kujiequAccountTab.setDisabled(true);
+            // 保留原页面的行为：无库街区账号时显示 App 账号，但不强行选中隐藏页签。
+            showTab(appAccountTab);
+        } else {
+            showTab(kujiequAccountTab);
         }
-    }
-
-    @FXML
-    void toKujiequ(ActionEvent event) {
-        ToggleButton toggleButton= (ToggleButton) event.getSource();
-        if (toggleButton.isSelected()){
-            createKujiequAccountView();
-        }else {
-            toggleButton.setSelected(true);
-        }
-    }
-
-    private void createKujiequAccountView(){
-        if (kujiequView == null) {
-            ViewTuple<AccountView, AccountViewModel> viewTuple = FluentViewLoader.fxmlView(AccountView.class).load();
-            kujiequView = viewTuple.getView();
-        }
-        content.getChildren().setAll(kujiequView);
-        Animations.slideInUp(kujiequView, Duration.millis(300)).play();
-    }
-
-    private void createAppAccountView(){
-        if (appAccountView == null) {
-            ViewTuple<AppAccountView, AppAccountViewModel> viewTuple = FluentViewLoader.fxmlView(AppAccountView.class).load();
-            appAccountView = viewTuple.getView();
-        }
-        content.getChildren().setAll(appAccountView);
-        Animations.slideInUp(appAccountView, Duration.millis(300)).play();
     }
 }

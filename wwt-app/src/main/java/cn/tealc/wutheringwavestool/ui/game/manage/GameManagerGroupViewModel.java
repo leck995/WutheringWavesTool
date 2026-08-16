@@ -29,7 +29,7 @@ import java.util.Optional;
  * @author: Leck
  * @create: 2025-02-10 19:18
  */
-public class GameManagerViewModel extends BaseViewModel {
+public class GameManagerGroupViewModel extends BaseViewModel {
 
     @Inject
     private GameServerSwitchService serverSwitchService;
@@ -45,7 +45,7 @@ public class GameManagerViewModel extends BaseViewModel {
 
 
 
-    public GameManagerViewModel() {
+    public GameManagerGroupViewModel() {
         gameRootDirSource.bindBidirectional(Config.setting().gameRootDirSourceProperty());
         gameRootDir.bindBidirectional(Config.setting().gameRootDirProperty());
         checkService();

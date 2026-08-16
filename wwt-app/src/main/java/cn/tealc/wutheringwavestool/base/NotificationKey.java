@@ -29,9 +29,9 @@ public class NotificationKey {
     public static final String CARD_POOL_USER_LIST_REFRESH="CARD_POOL_USER_LIST_REFRESH"; //重新获取数据列表使用
 
 
-    public static final String GAME_MANAGER_TO_BASE="GAME_MANAGE_TO_BASE"; // 通知GameManagerView显示GameBaseSettingView
-    public static final String GAME_MANAGE_TO_CHOOSE="GAME_MANAGE_TO_CHOOSE"; // 通知GameManagerView显示GameDirChooseView
-    public static final String GAME_MANAGER_TO_ASSET="GAME_MANAGER_TO_ASSET"; // 通知GameManagerView显示GameAssetView
+    public static final String GAME_MANAGER_TO_BASE="GAME_MANAGE_TO_BASE"; // 通知GameManagerGroupView显示GameBaseSettingView
+    public static final String GAME_MANAGE_TO_CHOOSE="GAME_MANAGE_TO_CHOOSE"; // 通知GameManagerGroupView显示GameDirChooseView
+    public static final String GAME_MANAGER_TO_ASSET="GAME_MANAGER_TO_ASSET"; // 通知GameManagerGroupView显示GameAssetView
 
 
 

@@ -25,7 +25,7 @@ import java.util.ResourceBundle;
 
 /**
  * 统一「游戏资源管理」视图：全量下载 + 增量更新 + 预下载 + 校验修复合一，
- * 按任务类型展示独立进度区域，作为 GameManagerView 的资源管理子 tab。
+ * 按任务类型展示独立进度区域，作为 GameManagerGroupView 的资源管理子 tab。
  */
 public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializable {
     private static final PseudoClass RUNNING_STATE = PseudoClass.getPseudoClass("running");

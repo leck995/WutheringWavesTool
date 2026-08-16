@@ -20,10 +20,10 @@
     "visible": true,
     "order": 2,
     "kujiequ": false,
-    "viewClass": "cn.tealc.wutheringwavestool.ui.game.manage.GameManagerView",
+    "viewClass": "cn.tealc.wutheringwavestool.ui.game.manage.GameManagerGroupView",
     "viewModelClass": null,
     "bottom": false,
-    "fxml": true,
+    "fxml": false,
     "diy": true,
     "showBg": false
   },
@@ -48,10 +48,10 @@
     "visible": true,
     "order": 4,
     "kujiequ": false,
-    "viewClass": "cn.tealc.wutheringwavestool.ui.game.GameStatisticsView",
+    "viewClass": "cn.tealc.wutheringwavestool.ui.game.GameStatisticsGroupView",
     "viewModelClass": null,
     "bottom": false,
-    "fxml": true,
+    "fxml": false,
     "diy": true,
     "showBg": false
   },
@@ -93,7 +93,7 @@
     "viewClass": "cn.tealc.wutheringwavestool.ui.kujiequ.tower.TowerGroupView",
     "viewModelClass": null,
     "bottom": false,
-    "fxml": true,
+    "fxml": false,
     "diy": true,
     "showBg": false
   },
@@ -163,7 +163,7 @@
     "viewClass": "cn.tealc.wutheringwavestool.ui.system.account.AccountGroupView",
     "viewModelClass": null,
     "bottom": true,
-    "fxml": true,
+    "fxml": false,
     "diy": true,
     "showBg": false
   },
