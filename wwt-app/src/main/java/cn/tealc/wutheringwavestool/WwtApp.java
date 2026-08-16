@@ -9,6 +9,7 @@ import cn.tealc.wutheringwavestool.jna.GlobalKeyListener;
 import cn.tealc.wutheringwavestool.service.GameWindowMonitorService;
 import cn.tealc.wutheringwavestool.service.TokenRefreshService;
 import cn.tealc.wutheringwavestool.service.WebKujiequManager;
+import cn.tealc.wutheringwavestool.theme.FontManager;
 import cn.tealc.wutheringwavestool.thread.system.ClearLogFileTask;
 import cn.tealc.wutheringwavestool.ui.system.MainView;
 import cn.tealc.wutheringwavestool.ui.system.MainViewModel;
@@ -25,7 +26,6 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
@@ -97,14 +97,8 @@ public class WwtApp extends Application {
     }
 
     private void initFont() {
-        boolean contains = Font.getFamilies().contains("Microsoft YaHei");
-        if (!contains) {
-            LOG.info("默认字体不存在，加载内置字体");
-            Font.loadFonts(FXResourcesLoader.loadStream("font/HarmonyOS_Sans_SC_Bold.ttf"), 12);
-            window.getScene().getRoot().setStyle("-fx-font-family: \"HarmonyOS Sans SC\"");
-        } else {
-            window.getScene().getRoot().setStyle("-fx-font-family: \"Microsoft YaHei\"");
-        }
+        FontManager.ensureDefaultLoaded();
+        FontManager.applyTo(window.getScene().getRoot());
     }
 
     public void initKeyHook() {
