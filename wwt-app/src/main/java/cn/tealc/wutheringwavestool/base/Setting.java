@@ -12,6 +12,7 @@ import cn.tealc.wutheringwavestool.base.config.serializer.ObservableListSerializ
 import cn.tealc.wutheringwavestool.model.SourceType;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -60,13 +61,8 @@ public class Setting {
     @JsonUnwrapped private final ServerSetting server = new ServerSetting();
     @JsonUnwrapped private final AppBehaviorSetting behavior = new AppBehaviorSetting();
 
-    /**
-     * 启动参数列表。
-     * <p>使用自定义 Jackson 序列化器，与历史 settings.json 格式保持一致。
-     * <p>保留在 Setting 顶层而非 {@link LauncherSetting} 中，是因为
-     * {@code @JsonUnwrapped} 场景下字段级 {@code @JsonDeserialize(using=...)}
-     * 不生效，会导致 {@link ObservableList} 接口类型无法反序列化。
-     */
+    /** 旧版全局启动参数，仅用于读取并迁移到活动安装实例，不再写回配置文件。 */
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @JsonSerialize(using = ObservableListSerializer.class)
     @JsonDeserialize(using = ObservableListDeserializer.class)
     private ObservableList<String> startUpParams = FXCollections.observableArrayList();
@@ -202,7 +198,19 @@ public class Setting {
     public void setAppParams(String appParams) { launcher.setAppParams(appParams); }
 
     public ObservableList<String> getStartUpParams() { return startUpParams; }
-    public void setStartUpParams(ObservableList<String> startUpParams) { this.startUpParams = startUpParams; }
+    public void setStartUpParams(ObservableList<String> startUpParams) {
+        this.startUpParams = startUpParams != null
+                ? startUpParams : FXCollections.observableArrayList();
+    }
+    public ObservableList<String> consumeLegacyStartUpParams() {
+        ObservableList<String> legacyParams = FXCollections.observableArrayList(
+                startUpParams != null ? startUpParams : FXCollections.emptyObservableList());
+        if (startUpParams == null) {
+            startUpParams = FXCollections.observableArrayList();
+        }
+        startUpParams.clear();
+        return legacyParams;
+    }
 
     // ============ GachaSetting delegate ============
     public String getGachaCurrentPlayerId() { return gacha.getGachaCurrentPlayerId(); }

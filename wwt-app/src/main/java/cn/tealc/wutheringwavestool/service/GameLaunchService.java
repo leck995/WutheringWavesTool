@@ -20,8 +20,12 @@ import java.util.stream.Stream;
 public class GameLaunchService {
     private static final Logger LOG = LoggerFactory.getLogger(GameLaunchService.class);
 
+    private final GameInstallationManager installationManager;
+
     @Inject
-    public GameLaunchService() {}
+    public GameLaunchService(GameInstallationManager installationManager) {
+        this.installationManager = installationManager;
+    }
 
     /** 删除游戏日志文件，确保每次启动日志是最新的 */
     public void deleteLogFiles() {
@@ -52,7 +56,7 @@ public class GameLaunchService {
 
     /** 组装启动参数 */
     public String[] buildLaunchCommand(File exe) {
-        List<String> paramsList = new ArrayList<>(Config.setting().getStartUpParams());
+        List<String> paramsList = new ArrayList<>(installationManager.activeStartUpParams());
         if (!paramsList.isEmpty()) {
             paramsList.addFirst(exe.getAbsolutePath());
             return paramsList.toArray(new String[0]);

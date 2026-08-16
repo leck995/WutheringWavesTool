@@ -89,6 +89,7 @@ public class DataSourceModule extends AbstractModule {
             setting = new Setting();
         }
         setting.getGame().ensureGameInstallations();
+        setting.getGame().migrateLegacyStartUpParams(setting.consumeLegacyStartUpParams());
         return setting;
     }
 

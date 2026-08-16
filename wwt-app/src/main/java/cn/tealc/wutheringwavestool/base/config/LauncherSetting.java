@@ -4,11 +4,9 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 /**
- * 高级启动相关配置：是否启用高级启动、启动参数字符串。
+ * 高级启动相关配置：是否启用高级启动、兼容旧版的启动参数字符串。
  * <p>对应原 Setting 的"高级启动相关"分段。
- * <p>注意：{@code startUpParams} 因使用自定义 Jackson 序列化器，且 {@code @JsonUnwrapped}
- * 场景下字段级 {@code @JsonDeserialize} 不生效，该字段保留在 {@link cn.tealc.wutheringwavestool.base.Setting}
- * 顶层，不放入本分组类。
+ * <p>新配置中的启动参数保存在 {@code GameInstallation}，此处的 {@code appParams} 仅用于旧版迁移。
  */
 public class LauncherSetting {
     private SimpleBooleanProperty userAdvanceGameSettings = new SimpleBooleanProperty(false); //使用高级启动

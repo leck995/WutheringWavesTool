@@ -163,6 +163,17 @@ public class GameSetting {
                 .orElse(null);
     }
 
+    /** Migrates the old global launch parameters to the installation that was active on upgrade. */
+    public void migrateLegacyStartUpParams(List<String> startUpParams) {
+        if (startUpParams == null || startUpParams.isEmpty()) {
+            return;
+        }
+        GameInstallation active = findInstallation(activeGameInstallationId);
+        if (active != null && active.getStartUpParams().isEmpty()) {
+            active.setStartUpParams(startUpParams);
+        }
+    }
+
     private void copyLegacyValuesTo(GameInstallation installation) {
         installation.setGameDir(getGameRootDir());
         installation.setVersion(getGameInstalledVersion());

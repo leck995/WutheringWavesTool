@@ -4,6 +4,7 @@ import cn.tealc.wutheringwavestool.WwtApp;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.service.GameResourceUpdateCoordinator;
+import cn.tealc.wutheringwavestool.service.GameInstallationManager;
 import cn.tealc.wutheringwavestool.service.GameServerSwitchCoordinator;
 import cn.tealc.wutheringwavestool.service.GameTimeService;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
@@ -53,6 +54,8 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     private GameResourceUpdateCoordinator resourceUpdateCoordinator;
     @Inject
     private GameServerSwitchCoordinator serverSwitchCoordinator;
+    @Inject
+    private GameInstallationManager installationManager;
     private SimpleStringProperty gameTimeText = new SimpleStringProperty();
     private SimpleStringProperty gameTimeTipText = new SimpleStringProperty();
     private SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
@@ -259,7 +262,7 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
 
             if (exe != null) {
                 if (Config.setting().isUserAdvanceGameSettings()) { //使用高级启动设置
-                    List<String> paramsList = new ArrayList<String>(Config.setting().getStartUpParams());
+                    List<String> paramsList = new ArrayList<>(installationManager.activeStartUpParams());
                     if (!paramsList.isEmpty()) {
                         paramsList.addFirst(exe.getAbsolutePath());
                         String[] newArray = new String[paramsList.size()];

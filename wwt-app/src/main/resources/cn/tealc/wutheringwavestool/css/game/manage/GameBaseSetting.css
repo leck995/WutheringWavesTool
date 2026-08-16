@@ -1,5 +1,42 @@
-.game-base-setting{
+.game-base-setting .installation-section {
+    -fx-padding: 0 16 12 0;
+}
 
+.game-base-setting .server-switch-section {
+    -fx-padding: 0 0 0 24;
+    -fx-border-color: transparent transparent transparent -color-border-default;
+    -fx-border-width: 0 0 0 1;
+}
+
+.game-base-setting .installation-selector {
+    -fx-background-color: -color-bg-default-60;
+    -fx-background-radius: 20px;
+    -fx-padding: 2 6 2 10;
+}
+
+.game-base-setting .installation-selector:hover {
+    -fx-background-color: -color-bg-default-90;
+}
+
+.game-base-setting .installation-selector:showing {
+    -fx-background-radius: 20px 20px 0 0;
+}
+
+.game-base-setting .installation-selector > .list-cell,
+.game-base-setting .installation-selector > .arrow-button {
+    -fx-background-color: transparent;
+}
+
+.game-base-setting .server-switch-button {
+    -fx-alignment: CENTER_LEFT;
+    -fx-background-radius: 6px;
+    -fx-padding: 9 12 9 12;
+}
+
+.game-base-setting .server-switch-button.server-switch-current {
+    -fx-background-color: -color-accent-muted;
+    -fx-text-fill: -color-accent-fg;
+    -fx-font-weight: bold;
 }
 
 .game-base-setting .title-4{

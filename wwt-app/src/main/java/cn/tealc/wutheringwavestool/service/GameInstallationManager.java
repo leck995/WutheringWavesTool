@@ -12,6 +12,7 @@ import javafx.beans.property.ReadOnlyObjectWrapper;
 
 import java.nio.file.Path;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Optional;
 
 /** Owns the active physical game installation and mirrors it to legacy settings properties. */
@@ -118,6 +119,38 @@ public final class GameInstallationManager {
         installation.setSource(normalizeSource(edition, source));
         if (activeInstallation.get() == installation) {
             runSynchronized(() -> setting.setGameRootDirSource(installation.getSource()));
+        }
+    }
+
+    /** Updates launch-related settings without changing the configured game directory. */
+    public synchronized void updateLaunchSettings(GameEdition edition, String startAppPath,
+            boolean startAppCustom, String officialLauncherDir) {
+        GameInstallation installation = gameSetting.findInstallation(edition);
+        if (installation == null) {
+            return;
+        }
+        installation.setStartAppPath(startAppPath);
+        installation.setStartAppCustom(startAppCustom);
+        installation.setOfficialLauncherDir(officialLauncherDir);
+        if (activeInstallation.get() == installation) {
+            loadLegacyMirror(installation);
+        }
+    }
+
+    public synchronized List<String> startUpParams(GameEdition edition) {
+        GameInstallation installation = gameSetting.findInstallation(edition);
+        return installation != null ? List.copyOf(installation.getStartUpParams()) : List.of();
+    }
+
+    public synchronized List<String> activeStartUpParams() {
+        GameInstallation installation = activeInstallation.get();
+        return installation != null ? List.copyOf(installation.getStartUpParams()) : List.of();
+    }
+
+    public synchronized void updateStartUpParams(GameEdition edition, List<String> startUpParams) {
+        GameInstallation installation = gameSetting.findInstallation(edition);
+        if (installation != null) {
+            installation.setStartUpParams(startUpParams);
         }
     }
 

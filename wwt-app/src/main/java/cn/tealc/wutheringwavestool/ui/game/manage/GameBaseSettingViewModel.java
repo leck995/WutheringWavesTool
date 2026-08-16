@@ -1,132 +1,139 @@
 package cn.tealc.wutheringwavestool.ui.game.manage;
 
+import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wwt.game.resource.GameDownloadSource;
-import cn.tealc.wwt.game.resource.GameServerSwitchService;
+import cn.tealc.wutheringwavestool.model.GameEdition;
+import cn.tealc.wutheringwavestool.model.GameInstallation;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.service.GameInstallationManager;
-import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.wutheringwavestool.service.GameServerSwitchCoordinator;
 import cn.tealc.wutheringwavestool.thread.system.CheckGameConfigTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
-import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
-import de.saxsys.mvvmfx.SceneLifecycle;
 import com.google.inject.Inject;
+import de.saxsys.mvvmfx.SceneLifecycle;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 
-/**
- * @description:
- * @author: Leck
- * @create: 2025-03-08 23:11
- */
+import java.nio.file.Path;
+
+/** 管理当前编辑的游戏安装实例及服务器切换入口。 */
 public class GameBaseSettingViewModel extends BaseViewModel implements SceneLifecycle {
-    @Inject
-    private GameServerSwitchService serverSwitchService;
-    @Inject
-    private GameInstallationManager installationManager;
+    private static final String DEFAULT_START_APP = "Wuthering Waves.exe";
+    private static final String CUSTOM_START_APP = "Client/Binaries/Win64/Client-Win64-Shipping.exe";
 
-    private SimpleStringProperty gameDir=new SimpleStringProperty();
-    private SimpleStringProperty gameAppStartPath=new SimpleStringProperty();
-    private SimpleBooleanProperty gameAppStartCustom=new SimpleBooleanProperty();
-    private final SimpleStringProperty currentServer = new SimpleStringProperty("-");
+    @Inject private GameInstallationManager installationManager;
+    @Inject private GameServerSwitchCoordinator serverSwitchCoordinator;
 
+    private final ObjectProperty<GameEdition> editingEdition = new SimpleObjectProperty<>(GameEdition.CHINA);
+    private final StringProperty gameDir = new SimpleStringProperty();
+    private final StringProperty startAppPath = new SimpleStringProperty();
+    private final StringProperty launcherPath = new SimpleStringProperty();
+    private final BooleanProperty startAppCustom = new SimpleBooleanProperty();
+    private final ObjectProperty<SourceType> chinaSource = new SimpleObjectProperty<>(SourceType.DEFAULT);
+    private final StringProperty installationStatus = new SimpleStringProperty();
+    private final ObservableList<String> startUpParams = FXCollections.observableArrayList();
 
-    private final ObservableList<String> startUpParams;
-
-    public GameBaseSettingViewModel() {
-        startUpParams = Config.setting().getStartUpParams();
-    }
-
-
+    private boolean initialized;
+    private boolean synchronizing;
 
     public void init() {
-        gameDir.bindBidirectional(Config.setting().gameRootDirProperty());
-        gameAppStartPath.bindBidirectional(Config.setting().gameStarAppPathProperty());
-        gameAppStartCustom.bindBidirectional(Config.setting().gameStartAppCustomProperty());
-
-        refreshCurrentServer();
-        Config.setting().gameRootDirSourceProperty().addListener(
-                (observable, oldSource, newSource) -> currentServer.set(serverDisplayName(newSource)));
+        if (initialized) return;
+        initialized = true;
+        editingEdition.addListener((observable, oldValue, newValue) -> refreshEditingInstallation());
+        startAppPath.addListener((observable, oldValue, newValue) -> updateLaunchSettings());
+        launcherPath.addListener((observable, oldValue, newValue) -> updateLaunchSettings());
+        startAppCustom.addListener((observable, oldValue, newValue) -> updateLaunchSettings());
+        chinaSource.addListener((observable, oldValue, newValue) -> {
+            if (!synchronizing && editingEdition.get() == GameEdition.CHINA && newValue != null) {
+                GameInstallation active = installationManager.activeInstallation();
+                if (active != null && active.getEdition() == GameEdition.CHINA
+                        && active.getSource() != newValue) {
+                    synchronizing = true;
+                    try {
+                        chinaSource.set(active.getSource());
+                    } finally {
+                        synchronizing = false;
+                    }
+                    NotificationManager.message(MessageInfo.warning(LanguageManager.getString(
+                            "ui.game_manager.base.server_switch.use_switch")));
+                } else {
+                    installationManager.updateSource(GameEdition.CHINA, newValue);
+                }
+            }
+        });
+        startUpParams.addListener((ListChangeListener<String>) change -> updateStartUpParams());
+        refreshEditingInstallation();
     }
 
-
-
-
-
-
-
-
-    /**
-     * 删除指定启动参数
-     * @param index
-     */
-    public void deleteParam(int index) {
-        startUpParams.remove(index);
+    public void setEditingEdition(GameEdition edition) {
+        if (edition != null) editingEdition.set(edition);
     }
 
-    /**
-     * 添加启动参数
-     * @param param
-     */
-    public void addParam(String param) {
-        startUpParams.add(param);
+    public void setGameDirectory(Path gameDirectory) {
+        if (gameDirectory == null) return;
+        SourceType source = editingEdition.get() == GameEdition.GLOBAL ? SourceType.GLOBAL : chinaSource.get();
+        installationManager.configureInstallation(source, gameDirectory, false);
+        refreshEditingInstallation();
     }
 
-    public boolean isDx11(){
-        return startUpParams.contains("-dx11");
-    }
-    public boolean isDx12(){
-        return startUpParams.contains("-dx12");
+    public void setStartAppMode(boolean custom) {
+        startAppCustom.set(custom);
+        startAppPath.set(defaultStartPath(custom));
     }
 
-    /**
-     * 启动参数中添加dx11
-     */
-    public void addDx11(){
-        int index = startUpParams.indexOf("-dx12");
-        if (index != -1){
-            startUpParams.set(index,"-dx11");
-        }else {
-            startUpParams.add("-dx11");
+    public void setStartAppPath(String path) {
+        startAppPath.set(path);
+        startAppCustom.set(true);
+    }
+
+    public void setLauncherPath(String path) { launcherPath.set(path); }
+    public void addParam(String param) { startUpParams.add(param); }
+    public void deleteParam(int index) { startUpParams.remove(index); }
+    public boolean isDx11() { return startUpParams.contains("-dx11"); }
+    public boolean isDx12() { return startUpParams.contains("-dx12"); }
+    public void addDx11() { replaceDxParam("-dx12", "-dx11"); }
+    public void addDx12() { replaceDxParam("-dx11", "-dx12"); }
+
+    public void switchServer(SourceType target) {
+        if (target == null) return;
+        GameEdition targetEdition = GameInstallationManager.editionOf(target);
+        if (!installationManager.isConfigured(targetEdition)) {
+            String key = target == SourceType.GLOBAL
+                    ? "ui.game_manager.base.server_switch.global_unconfigured"
+                    : "ui.game_manager.base.server_switch.china_unconfigured";
+            NotificationManager.message(MessageInfo.warning(LanguageManager.getString(key)));
+            return;
         }
-    }
-
-    /**
-     * 启动参数中添加dx12
-     */
-    public void addDx12(){
-        int index = startUpParams.indexOf("-dx11");
-        if (index != -1){
-            startUpParams.set(index,"-dx12");
-        }else {
-            startUpParams.add("-dx12");
+        if (target != SourceType.GLOBAL) {
+            serverSwitchCoordinator.refresh();
+            boolean ready = target == SourceType.BILIBILI
+                    ? serverSwitchCoordinator.bilibiliTargetReadyProperty().get()
+                    : serverSwitchCoordinator.mainlandTargetReadyProperty().get();
+            if (!ready) {
+                String key = target == SourceType.BILIBILI
+                        ? "ui.game_manager.base.server_switch.bilibili_unready"
+                        : "ui.game_manager.base.server_switch.mainland_unready";
+                NotificationManager.message(MessageInfo.warning(LanguageManager.getString(key)));
+                return;
+            }
         }
+        serverSwitchCoordinator.switchTo(target);
     }
-
-    public void replaceParam(String param1, String param2) {
-
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     @Override
     public void onViewAdded() {
-        // 安装页仅负责安装配置，服务器切换由资源管理页负责。
+        serverSwitchCoordinator.refresh();
+        refreshEditingInstallation();
     }
 
     @Override
@@ -134,86 +141,71 @@ public class GameBaseSettingViewModel extends BaseViewModel implements SceneLife
         checkGameLogOpen();
         Config.setting().save();
     }
-    /**
-     * description: 检测游戏日志是否被关闭
-     */
+
+    private void refreshEditingInstallation() {
+        synchronizing = true;
+        try {
+            GameEdition edition = editingEdition.get();
+            GameInstallation installation = installationManager.installation(edition).orElse(null);
+            gameDir.set(installation != null ? valueOrEmpty(installation.getGameDir()) : "");
+            startAppPath.set(installation != null ? valueOrEmpty(installation.getStartAppPath()) : "");
+            startAppCustom.set(installation != null && installation.isStartAppCustom());
+            launcherPath.set(installation != null ? valueOrEmpty(installation.getOfficialLauncherDir()) : "");
+            if (edition == GameEdition.CHINA) {
+                chinaSource.set(installation != null ? installation.getSource() : SourceType.DEFAULT);
+            }
+            startUpParams.setAll(installation != null ? installation.getStartUpParams() : FXCollections.emptyObservableList());
+            installationStatus.set(installationManager.isConfigured(edition)
+                    ? LanguageManager.getString("ui.game_manager.base.configured")
+                    : LanguageManager.getString("ui.game_manager.base.not_configured"));
+        } finally {
+            synchronizing = false;
+        }
+    }
+
+    private void updateLaunchSettings() {
+        if (!synchronizing) {
+            installationManager.updateLaunchSettings(editingEdition.get(), startAppPath.get(),
+                    startAppCustom.get(), launcherPath.get());
+        }
+    }
+
+    private void updateStartUpParams() {
+        if (!synchronizing) installationManager.updateStartUpParams(editingEdition.get(), startUpParams);
+    }
+
+    private String defaultStartPath(boolean custom) {
+        String directory = gameDir.get();
+        if (directory == null || directory.isBlank()) return custom ? CUSTOM_START_APP : DEFAULT_START_APP;
+        return Path.of(directory).resolve(custom ? CUSTOM_START_APP : DEFAULT_START_APP).toString();
+    }
+
+    private void replaceDxParam(String previous, String replacement) {
+        int index = startUpParams.indexOf(previous);
+        if (index >= 0) startUpParams.set(index, replacement);
+        else if (!startUpParams.contains(replacement)) startUpParams.add(replacement);
+    }
+
     private void checkGameLogOpen() {
         CheckGameConfigTask task = new CheckGameConfigTask();
-        task.setOnSucceeded(workerStateEvent -> {
-            Boolean value = task.getValue();
-            if (!value) { //游戏日志可能被关闭了
-                Platform.runLater(() -> {
-                    NotificationManager.message(MessageInfo.success(LanguageManager.getString("ui.main.sync.message.log.close")));
-                });
+        task.setOnSucceeded(event -> {
+            if (!task.getValue()) {
+                Platform.runLater(() -> NotificationManager.message(MessageInfo.success(
+                        LanguageManager.getString("ui.main.sync.message.log.close"))));
             }
-        });
-        task.setOnFailed(workerStateEvent -> {
-            System.err.println("检测游戏日志状态失败: " + workerStateEvent.getSource().getException());
         });
         Thread.startVirtualThread(task);
     }
 
-    private String serverDisplayName(SourceType source) {
-        if (source == null) {
-            return "-";
-        }
-        return switch (source) {
-            case DEFAULT -> LanguageManager.getString("ui.game_manager.base.server_switch.mainland");
-            case BILIBILI -> LanguageManager.getString("ui.game_manager.base.server_switch.bilibili");
-            case GLOBAL -> LanguageManager.getString("ui.game_manager.asset.server_global");
-            case WE_GAME -> "WeGame";
-        };
-    }
+    private static String valueOrEmpty(String value) { return value != null ? value : ""; }
 
-    private void refreshCurrentServer() {
-        var gameDirectory = GameResourcesManager.getGameDir();
-        if (gameDirectory == null) {
-            currentServer.set(serverDisplayName(Config.setting().getGameRootDirSource()));
-            return;
-        }
-        var detectedSource = serverSwitchService.detectActiveSource(gameDirectory.toPath());
-        if (detectedSource.isEmpty()) {
-            currentServer.set("无法识别");
-            return;
-        }
-        SourceType source = SourceType.fromGameDownloadSource(detectedSource.get());
-        installationManager.updateSource(GameInstallationManager.editionOf(source), source);
-        currentServer.set(serverDisplayName(source));
-    }
-
-    public SimpleStringProperty currentServerProperty() {
-        return currentServer;
-    }
-
-    public String getGameDir() {
-        return gameDir.get();
-    }
-
-    public SimpleStringProperty gameDirProperty() {
-        return gameDir;
-    }
-
-    public String getGameAppStartPath() {
-        return gameAppStartPath.get();
-    }
-
-    public SimpleStringProperty gameAppStartPathProperty() {
-        return gameAppStartPath;
-    }
-
-    public boolean isGameAppStartCustom() {
-        return gameAppStartCustom.get();
-    }
-
-    public SimpleBooleanProperty gameAppStartCustomProperty() {
-        return gameAppStartCustom;
-    }
-
-    public ObservableList<String> getStartUpParams() {
-        return startUpParams;
-    }
-
-
-
-
+    public ObjectProperty<GameEdition> editingEditionProperty() { return editingEdition; }
+    public StringProperty gameDirProperty() { return gameDir; }
+    public StringProperty startAppPathProperty() { return startAppPath; }
+    public StringProperty launcherPathProperty() { return launcherPath; }
+    public BooleanProperty startAppCustomProperty() { return startAppCustom; }
+    public ObjectProperty<SourceType> chinaSourceProperty() { return chinaSource; }
+    public StringProperty installationStatusProperty() { return installationStatus; }
+    public ObservableList<String> getStartUpParams() { return startUpParams; }
+    public ObjectProperty<SourceType> currentServerProperty() { return Config.setting().gameRootDirSourceProperty(); }
 }

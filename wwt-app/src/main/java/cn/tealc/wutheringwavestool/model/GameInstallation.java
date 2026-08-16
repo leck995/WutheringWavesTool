@@ -1,5 +1,8 @@
 package cn.tealc.wutheringwavestool.model;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Persisted configuration for one physical game installation. */
 public final class GameInstallation {
     private String id;
@@ -11,6 +14,7 @@ public final class GameInstallation {
     private String startAppPath;
     private boolean startAppCustom;
     private String officialLauncherDir;
+    private List<String> startUpParams = new ArrayList<>();
 
     public GameInstallation() {
     }
@@ -40,4 +44,13 @@ public final class GameInstallation {
     public void setStartAppCustom(boolean startAppCustom) { this.startAppCustom = startAppCustom; }
     public String getOfficialLauncherDir() { return officialLauncherDir; }
     public void setOfficialLauncherDir(String officialLauncherDir) { this.officialLauncherDir = officialLauncherDir; }
+    public List<String> getStartUpParams() {
+        if (startUpParams == null) {
+            startUpParams = new ArrayList<>();
+        }
+        return startUpParams;
+    }
+    public void setStartUpParams(List<String> startUpParams) {
+        this.startUpParams = startUpParams != null ? new ArrayList<>(startUpParams) : new ArrayList<>();
+    }
 }
