@@ -39,6 +39,8 @@ public final class GameServerSwitchCoordinator {
     private final ReadOnlyStringWrapper detailText = new ReadOnlyStringWrapper("");
     private final ReadOnlyObjectWrapper<GameDownloadSource> currentSource = new ReadOnlyObjectWrapper<>();
     private final ReadOnlyBooleanWrapper switchAvailable = new ReadOnlyBooleanWrapper(false);
+    private final ReadOnlyBooleanWrapper mainlandCacheReady = new ReadOnlyBooleanWrapper(false);
+    private final ReadOnlyBooleanWrapper bilibiliCacheReady = new ReadOnlyBooleanWrapper(false);
 
     private volatile ServerSwitchTask activeTask;
     private ServerSwitchStatus lastStatus;
@@ -56,6 +58,8 @@ public final class GameServerSwitchCoordinator {
             lastStatus = null;
             currentSource.set(null);
             switchAvailable.set(false);
+            mainlandCacheReady.set(false);
+            bilibiliCacheReady.set(false);
             statusText.set("请先选择游戏安装目录");
             detailText.set("");
             return;
@@ -63,6 +67,8 @@ public final class GameServerSwitchCoordinator {
         try {
             lastStatus = switchService.inspect(gameDirectory);
             currentSource.set(lastStatus.activeSource());
+            mainlandCacheReady.set(lastStatus.mainlandCacheReady());
+            bilibiliCacheReady.set(lastStatus.bilibiliCacheReady());
             switchAvailable.set(lastStatus.activeSource() == GameDownloadSource.MAINLAND
                     || lastStatus.activeSource() == GameDownloadSource.BILIBILI);
             if (lastStatus.activeSource() != null) {
@@ -88,6 +94,8 @@ public final class GameServerSwitchCoordinator {
             LOG.warn("读取服务器切换状态失败", e);
             currentSource.set(null);
             switchAvailable.set(false);
+            mainlandCacheReady.set(false);
+            bilibiliCacheReady.set(false);
             statusText.set("读取切换缓存失败");
             detailText.set(messageOf(e));
         }
@@ -280,6 +288,12 @@ public final class GameServerSwitchCoordinator {
 
     public ReadOnlyBooleanProperty operatingProperty() { return operating.getReadOnlyProperty(); }
     public ReadOnlyBooleanProperty switchAvailableProperty() { return switchAvailable.getReadOnlyProperty(); }
+    public ReadOnlyBooleanProperty mainlandCacheReadyProperty() {
+        return mainlandCacheReady.getReadOnlyProperty();
+    }
+    public ReadOnlyBooleanProperty bilibiliCacheReadyProperty() {
+        return bilibiliCacheReady.getReadOnlyProperty();
+    }
     public ReadOnlyDoubleProperty progressProperty() { return progress.getReadOnlyProperty(); }
     public ReadOnlyObjectProperty<GameDownloadSource> currentSourceProperty() {
         return currentSource.getReadOnlyProperty();

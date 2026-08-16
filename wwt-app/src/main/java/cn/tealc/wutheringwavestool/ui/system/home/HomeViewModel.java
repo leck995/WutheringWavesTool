@@ -4,9 +4,12 @@ import cn.tealc.wutheringwavestool.WwtApp;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.service.GameResourceUpdateCoordinator;
+import cn.tealc.wutheringwavestool.service.GameServerSwitchCoordinator;
 import cn.tealc.wutheringwavestool.service.GameTimeService;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
+import cn.tealc.wutheringwavestool.model.SourceType;
+import cn.tealc.wwt.game.resource.GameDownloadSource;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
@@ -21,6 +24,7 @@ import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,9 +51,17 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     private GameTimeService gameTimeService;
     @Inject
     private GameResourceUpdateCoordinator resourceUpdateCoordinator;
+    @Inject
+    private GameServerSwitchCoordinator serverSwitchCoordinator;
     private SimpleStringProperty gameTimeText = new SimpleStringProperty();
     private SimpleStringProperty gameTimeTipText = new SimpleStringProperty();
     private SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
+    private final ChangeListener<GameDownloadSource> serverSourceListener =
+            (observable, oldSource, newSource) -> {
+                if (oldSource != null && newSource != null && oldSource != newSource) {
+                    checkGameResourceUpdate();
+                }
+            };
 
     public void initialize() {
         updateGameTime(GameAppListener.getInstance().getDuration());
@@ -69,17 +81,52 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
 
     @Override
     public void onViewAdded() {
+        serverSwitchCoordinator.currentSourceProperty().addListener(serverSourceListener);
+        serverSwitchCoordinator.refresh();
         checkGameResourceUpdate();
     }
 
     @Override
     public void onViewRemoved() {
+        serverSwitchCoordinator.currentSourceProperty().removeListener(serverSourceListener);
         // 更新任务由全局协调器持有，离开首页后继续执行。
     }
 
     /** 首页创建后后台检查远端资源版本，不阻塞页面和游戏启动。 */
     public void checkGameResourceUpdate() {
         resourceUpdateCoordinator.checkForUpdates();
+    }
+
+    public void switchServer(SourceType target) {
+        serverSwitchCoordinator.switchTo(target);
+    }
+
+    public ReadOnlyObjectProperty<SourceType> currentGameSourceProperty() {
+        return Config.setting().gameRootDirSourceProperty();
+    }
+
+    public ReadOnlyBooleanProperty serverSwitchOperatingProperty() {
+        return serverSwitchCoordinator.operatingProperty();
+    }
+
+    public ReadOnlyBooleanProperty serverSwitchAvailableProperty() {
+        return serverSwitchCoordinator.switchAvailableProperty();
+    }
+
+    public ReadOnlyBooleanProperty mainlandCacheReadyProperty() {
+        return serverSwitchCoordinator.mainlandCacheReadyProperty();
+    }
+
+    public ReadOnlyBooleanProperty bilibiliCacheReadyProperty() {
+        return serverSwitchCoordinator.bilibiliCacheReadyProperty();
+    }
+
+    public ReadOnlyStringProperty serverSwitchStatusTextProperty() {
+        return serverSwitchCoordinator.statusTextProperty();
+    }
+
+    public ReadOnlyStringProperty serverSwitchDetailTextProperty() {
+        return serverSwitchCoordinator.detailTextProperty();
     }
 
 

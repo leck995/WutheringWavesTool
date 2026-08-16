@@ -8,6 +8,7 @@
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.RadioMenuItem?>
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -142,6 +143,20 @@
                         <FontIcon iconLiteral="mdsmz-timer" />
                      </graphic>
                   </Button>
+                  <MenuButton fx:id="serverSwitchMenu" mnemonicParsing="false" popupSide="TOP"
+                              styleClass="func-btn,server-switch-button">
+                     <graphic>
+                        <FontIcon iconLiteral="mdmz-public" />
+                     </graphic>
+                     <items>
+                        <RadioMenuItem fx:id="serverSwitchMainlandItem" mnemonicParsing="false"
+                                       onAction="#switchToMainland"
+                                       text="%ui.game_manager.base.server_switch.mainland" />
+                        <RadioMenuItem fx:id="serverSwitchBilibiliItem" mnemonicParsing="false"
+                                       onAction="#switchToBilibili"
+                                       text="%ui.game_manager.base.server_switch.bilibili" />
+                     </items>
+                  </MenuButton>
                   <Button fx:id="startUpdateBtn" layoutX="122.0" layoutY="10.0" mnemonicParsing="false"
                           onAction="#startUpdate" styleClass="func-btn" text="%ui.home.button.start_update">
                      <graphic>

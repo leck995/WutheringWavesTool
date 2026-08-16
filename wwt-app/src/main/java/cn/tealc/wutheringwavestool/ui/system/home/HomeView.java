@@ -8,6 +8,7 @@ import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.service.GameResourceUpdateCoordinator.UpdateState;
+import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.ui.item.HeaderImageSelectView;
 import cn.tealc.wutheringwavestool.ui.item.PlayTimeAlertItemView;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
@@ -96,6 +97,12 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     @FXML
     private Button resourceCancelBtn;
 
+    @FXML
+    private MenuButton serverSwitchMenu;
+    @FXML
+    private RadioMenuItem serverSwitchMainlandItem;
+    @FXML
+    private RadioMenuItem serverSwitchBilibiliItem;
     private RotateTransition resourceCheckRotation;
 
 
@@ -105,7 +112,8 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         startGameBtn.disableProperty().bind(viewModel.startGameBtnDisabledProperty().or(
                 Bindings.equal(viewModel.resourceUpdateStateProperty(),
-                        UpdateState.APPLYING)));
+                        UpdateState.APPLYING)).or(viewModel.serverSwitchOperatingProperty()));
+        startUpdateBtn.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
         startUpdateBtn.textProperty().bind(viewModel.updateActionTextProperty());
         bindVisibility(startUpdateBtn, viewModel.updateActionVisibleProperty());
         resourceStatusLabel.textProperty().bind(viewModel.resourceStatusTextProperty());
@@ -118,6 +126,50 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         bindVisibility(resourceCancelBtn, viewModel.resourceCancelVisibleProperty());
         resourceProgressBar.progressProperty().bind(viewModel.resourceProgressProperty());
         resourceProgressLabel.textProperty().bind(viewModel.resourceProgressTextProperty());
+
+        serverSwitchMenu.textProperty().bind(Bindings.createStringBinding(() -> {
+            if (viewModel.serverSwitchOperatingProperty().get()) {
+                return LanguageManager.getString("ui.home.server_switch.switching");
+            }
+            SourceType source = viewModel.currentGameSourceProperty().get();
+            if (source == null) {
+                return LanguageManager.getString("ui.home.server_switch.default");
+            }
+            return switch (source) {
+                case DEFAULT, WE_GAME -> LanguageManager.getString(
+                        "ui.game_manager.base.server_switch.mainland");
+                case BILIBILI -> LanguageManager.getString(
+                        "ui.game_manager.base.server_switch.bilibili");
+                case GLOBAL -> LanguageManager.getString("ui.game_manager.asset.server_global");
+            };
+        }, viewModel.serverSwitchOperatingProperty(), viewModel.currentGameSourceProperty()));
+        Tooltip serverSwitchTooltip = new Tooltip();
+        serverSwitchTooltip.textProperty().bind(Bindings.createStringBinding(() -> {
+            String status = viewModel.serverSwitchStatusTextProperty().get();
+            String detail = viewModel.serverSwitchDetailTextProperty().get();
+            return detail == null || detail.isBlank() ? status : status + System.lineSeparator() + detail;
+        }, viewModel.serverSwitchStatusTextProperty(), viewModel.serverSwitchDetailTextProperty()));
+        serverSwitchMenu.setTooltip(serverSwitchTooltip);
+        var resourceOperationRunning = Bindings.createBooleanBinding(() -> switch (
+                viewModel.resourceUpdateStateProperty().get()) {
+            case CHECKING, PREPARING, DOWNLOADING, PAUSED, APPLYING -> true;
+            default -> false;
+        }, viewModel.resourceUpdateStateProperty());
+        serverSwitchMenu.disableProperty().bind(
+                viewModel.serverSwitchOperatingProperty().or(resourceOperationRunning));
+        ToggleGroup serverSwitchToggleGroup = new ToggleGroup();
+        serverSwitchMainlandItem.setToggleGroup(serverSwitchToggleGroup);
+        serverSwitchBilibiliItem.setToggleGroup(serverSwitchToggleGroup);
+        serverSwitchMainlandItem.disableProperty().bind(viewModel.serverSwitchOperatingProperty()
+                .or(viewModel.serverSwitchAvailableProperty().not())
+                .or(Bindings.equal(viewModel.currentGameSourceProperty(), SourceType.DEFAULT))
+                .or(viewModel.mainlandCacheReadyProperty().not()));
+        serverSwitchBilibiliItem.disableProperty().bind(viewModel.serverSwitchOperatingProperty()
+                .or(viewModel.serverSwitchAvailableProperty().not())
+                .or(Bindings.equal(viewModel.currentGameSourceProperty(), SourceType.BILIBILI))
+                .or(viewModel.bilibiliCacheReadyProperty().not()));
+        serverSwitchMenu.setOnShowing(event -> updateServerSwitchSelection());
+        updateServerSwitchSelection();
 
         resourceCheckRotation = new RotateTransition(Duration.seconds(1.2), resourceStatusIcon);
         resourceCheckRotation.setByAngle(360);
@@ -151,6 +203,24 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     private void bindVisibility(Node node, javafx.beans.value.ObservableBooleanValue visible) {
         node.visibleProperty().bind(visible);
         node.managedProperty().bind(visible);
+    }
+
+    private void updateServerSwitchSelection() {
+        SourceType current = viewModel.currentGameSourceProperty().get();
+        serverSwitchMainlandItem.setSelected(current == SourceType.DEFAULT);
+        serverSwitchBilibiliItem.setSelected(current == SourceType.BILIBILI);
+    }
+
+    @FXML
+    void switchToMainland(ActionEvent event) {
+        updateServerSwitchSelection();
+        viewModel.switchServer(SourceType.DEFAULT);
+    }
+
+    @FXML
+    void switchToBilibili(ActionEvent event) {
+        updateServerSwitchSelection();
+        viewModel.switchServer(SourceType.BILIBILI);
     }
 
     private void updateResourceStatusStyle(UpdateState state) {

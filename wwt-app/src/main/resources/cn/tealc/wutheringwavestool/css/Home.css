@@ -282,6 +282,12 @@
     -fx-background-color: -color-bg-default-90;
 }
 
+.home .menu-button.server-switch-button {
+    -fx-min-width: 9.5em;
+    -fx-pref-width: 9.5em;
+    -fx-max-width: 9.5em;
+}
+
 .home .button.func-btn:update-available {
     -fx-background-color: -color-warning-emphasis;
     -fx-text-fill: -color-bg-default;
