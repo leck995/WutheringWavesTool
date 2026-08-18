@@ -93,28 +93,35 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     }
 
     private static final class ThroughputTracker {
+        /** 采样间隔：每隔该时长计算一次瞬时速率。 */
         private static final long SAMPLE_INTERVAL_NANOS = 250_000_000L;
+        /** EMA 平滑系数：越大越灵敏，越小越平滑。 */
+        private static final double EMA_ALPHA = 0.3;
 
         private long lastBytes = -1;
         private long lastSampleNanos = System.nanoTime();
-        private long bytesPerSecond;
+        private double emaBytesPerSecond;
 
         synchronized String update(long completedBytes) {
             long now = System.nanoTime();
             if (lastBytes < 0 || completedBytes < lastBytes) {
                 lastBytes = completedBytes;
                 lastSampleNanos = now;
-                bytesPerSecond = 0;
+                emaBytesPerSecond = 0;
                 return "";
             }
             long elapsed = now - lastSampleNanos;
             if (elapsed >= SAMPLE_INTERVAL_NANOS) {
-                bytesPerSecond = Math.max(0, Math.round((completedBytes - lastBytes)
-                        * 1_000_000_000D / elapsed));
+                double instantBytesPerSecond = Math.max(0, (completedBytes - lastBytes)
+                        * 1_000_000_000D / elapsed);
+                // EMA_now = alpha * instant + (1 - alpha) * EMA_prev，首次直接用瞬时值作初值。
+                emaBytesPerSecond = (emaBytesPerSecond == 0)
+                        ? instantBytesPerSecond
+                        : EMA_ALPHA * instantBytesPerSecond + (1 - EMA_ALPHA) * emaBytesPerSecond;
                 lastBytes = completedBytes;
                 lastSampleNanos = now;
             }
-            return bytesPerSecond > 0 ? formatBytesPerSecond(bytesPerSecond) : "";
+            return emaBytesPerSecond > 0 ? formatBytesPerSecond(Math.round(emaBytesPerSecond)) : "";
         }
     }
 
@@ -316,31 +323,28 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         refreshFullDownloadState();
 
         boolean activeInstallationInstalled = isActiveInstallationInstalled();
-        boolean activeInstallationRegistered = GameResourcesManager.getGameDir() != null
-                && hasText(installService.readInstalledVersion(GameResourcesManager.getGameDir().toPath()));
         if (!activeInstallationInstalled) {
             cancelCheckTask();
             checkResult = null;
             currentVersion.set("-");
             latestVersion.set("-");
+            tip.set("");
             showRepair.set(false);
+            showUpdate.set(false);
+            showPreDownload.set(false);
             status.set(LanguageManager.getString("ui.game_manager.asset.not_installed"));
-        } else if (!activeInstallationRegistered) {
-            cancelCheckTask();
-            checkResult = null;
-            currentVersion.set("-");
-            latestVersion.set("-");
-            showRepair.set(false);
-            status.set(LanguageManager.getString("ui.game_manager.asset.registration_required"));
-            tip.set(LanguageManager.getString("ui.game_manager.asset.registration_detail"));
-        } else {
-            String installedVersion = readInstalledVersion();
-            currentVersion.set(installedVersion.isBlank() ? "-" : installedVersion);
-            showRepair.set(false);
-            status.set(LanguageManager.getString("ui.game_manager.asset.ready"));
-            resourceUpdateCoordinator.checkForUpdates();
-            checkUpdate();
+            return;
         }
+
+        // 已安装但缺少 launcherDownloadConfig.json（未登记版本）时，仍执行更新检查，
+        // 以便获取最新版本并开放校验修复（修复流程会自行重建该文件）。
+        boolean activeInstallationRegistered = GameResourcesManager.getGameDir() != null
+                && hasText(installService.readInstalledVersion(GameResourcesManager.getGameDir().toPath()));
+        tip.set(activeInstallationRegistered ? "" : LanguageManager
+                .getString("ui.game_manager.asset.registration_detail"));
+        status.set(LanguageManager.getString("ui.game_manager.asset.checking"));
+        resourceUpdateCoordinator.checkForUpdates();
+        checkUpdate();
     }
 
     /** 仅根据全量下载来源刷新右侧下载入口，不影响当前服务器的资源状态。 */
@@ -447,9 +451,13 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                 || result.state() == ResourceCheckState.REPAIR_REQUIRED;
         showRepair.set(result.isRepairAvailable());
         showPreDownload.set(result.hasUpdatePlan() && updateService.isPreDownloadAvailable(result));
-        tip.set(needsUpdate
-                ? LanguageManager.getString("ui.game_manager.asset.tip_update") + "  " + result.latestVersion()
-                : LanguageManager.getString("ui.game_manager.asset.tip_up_to_date"));
+        if (result.state() == ResourceCheckState.REPAIR_REQUIRED) {
+            tip.set(LanguageManager.getString("ui.game_manager.asset.tip_repair"));
+        } else {
+            tip.set(needsUpdate
+                    ? LanguageManager.getString("ui.game_manager.asset.tip_update") + "  " + result.latestVersion()
+                    : LanguageManager.getString("ui.game_manager.asset.tip_up_to_date"));
+        }
         return true;
     }
 

@@ -341,6 +341,8 @@ public class GameResourceUpdateCoordinator {
     }
 
     private final class ResourceUpdateTask extends Task<GameResourceRelease> {
+        private static final long SAMPLE_INTERVAL_NANOS = 500_000_000L;
+        private static final double EMA_ALPHA = 0.3;
         private final GameResourceRelease initialRelease;
         private final long[] speedSample = {System.nanoTime(), 0L};
         private final double[] speed = {0};
@@ -410,8 +412,13 @@ public class GameResourceUpdateCoordinator {
             updateProgress(completed, total);
             long now = System.nanoTime();
             long elapsed = now - speedSample[0];
-            if (elapsed >= 500_000_000L) {
-                speed[0] = (completed - speedSample[1]) / (elapsed / 1_000_000_000.0);
+            if (elapsed >= SAMPLE_INTERVAL_NANOS) {
+                double instantSpeed = Math.max(0, (completed - speedSample[1])
+                        / (elapsed / 1_000_000_000.0));
+                // EMA_now = alpha * instant + (1 - alpha) * EMA_prev，首次直接用瞬时值作初值。
+                speed[0] = (speed[0] == 0)
+                        ? instantSpeed
+                        : EMA_ALPHA * instantSpeed + (1 - EMA_ALPHA) * speed[0];
                 speedSample[0] = now;
                 speedSample[1] = completed;
                 updateSpeedText(formatBytes((long) Math.max(0, speed[0])) + "/s");

@@ -107,6 +107,8 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     @FXML
     private Button preDownloadBtn;
     @FXML
+    private Label assetActionTipLabel;
+    @FXML
     private Button resourcePauseBtn;
     @FXML
     private Button resourceResumeBtn;
@@ -150,6 +152,7 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         resourceSpeedLabel.textProperty().bind(viewModel.downloadSpeedProperty());
         resourceProgressTextLabel.textProperty().bind(viewModel.progressTextProperty());
         resourceTipLabel.textProperty().bind(viewModel.tipProperty());
+        assetActionTipLabel.textProperty().bind(viewModel.tipProperty());
         downloadProgressBar.progressProperty().bind(viewModel.progressProperty());
         downloadSpeedLabel.textProperty().bind(viewModel.downloadSpeedProperty());
         downloadProgressTextLabel.textProperty().bind(viewModel.progressTextProperty());

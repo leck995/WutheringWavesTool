@@ -126,6 +126,8 @@
                                     </Button>
                                  </children>
                               </HBox>
+                              <Label fx:id="assetActionTipLabel" maxWidth="1.7976931348623157E308" minWidth="0.0"
+                                     styleClass="text-tip,asset-action-tip" text="" textOverrun="ELLIPSIS" wrapText="true" />
                            </children>
                         </VBox>
 
