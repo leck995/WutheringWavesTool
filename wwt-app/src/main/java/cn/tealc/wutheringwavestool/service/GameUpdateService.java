@@ -91,7 +91,10 @@ public class GameUpdateService {
         if (gameDirectory == null) {
             throw new IllegalStateException("Game directory is not configured");
         }
-        return new ResourceContext(gameDirectory.toPath(), Path.of("."));
+        String customCache = Config.setting().getCustomDownloadCacheDir();
+        Path cacheDir = (customCache != null && !customCache.isBlank())
+                ? Path.of(customCache) : null;
+        return new ResourceContext(gameDirectory.toPath(), Path.of("."), cacheDir);
     }
 
     private static void persistVersion(String version) {

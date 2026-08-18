@@ -1247,6 +1247,15 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         return downloadSource;
     }
 
+    public StringProperty customDownloadCacheDirProperty() {
+        return Config.setting().customDownloadCacheDirProperty();
+    }
+
+    public void setCustomDownloadCacheDir(String cacheDir) {
+        Config.setting().setCustomDownloadCacheDir(cacheDir);
+        Config.setting().save();
+    }
+
     private static DownloadOptions downloadOptions() {
         return new DownloadOptions(Config.setting().getDownloadParallelCount(),
                 Config.setting().getDownloadSpeedLimitBytesPerSecond());

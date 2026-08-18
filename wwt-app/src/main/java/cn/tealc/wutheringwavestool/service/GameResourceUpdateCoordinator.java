@@ -351,21 +351,21 @@ public class GameResourceUpdateCoordinator {
             this.initialRelease = initialRelease;
         }
 
-        @Override
-        protected GameResourceRelease call() throws Exception {
-            updateTitle(LanguageManager.getString("ui.home.resource.update_task"));
-            ResourceUpdateOperation operation = installService.createUpdate(getGameDir(), initialRelease,
-                    new ResourceOperationListener() {
-                        @Override
-                        public void onStateChanged(ResourceOperationState value) {
-                            handleOperationState(value);
-                        }
+@Override
+            protected GameResourceRelease call() throws Exception {
+                updateTitle(LanguageManager.getString("ui.home.resource.update_task"));
+                ResourceUpdateOperation operation = installService.createUpdate(getGameDir(), initialRelease,
+                        new ResourceOperationListener() {
+                            @Override
+                            public void onStateChanged(ResourceOperationState value) {
+                                handleOperationState(value);
+                            }
 
-                        @Override
-                        public void onProgress(ResourceProgress value) {
-                            handleProgress(value);
-                        }
-                    }, downloadOptions());
+                            @Override
+                            public void onProgress(ResourceProgress value) {
+                                handleProgress(value);
+                            }
+                        }, downloadOptions(), customCacheRoot());
             activeOperation = operation;
             if (isCancelled()) {
                 operation.cancel();
@@ -471,6 +471,12 @@ public class GameResourceUpdateCoordinator {
     private static DownloadOptions downloadOptions() {
         return new DownloadOptions(Config.setting().getDownloadParallelCount(),
                 Config.setting().getDownloadSpeedLimitBytesPerSecond());
+    }
+
+    /** 用户自定义下载缓存根目录，留空返回 null（回落默认 cacheRoot）。 */
+    private static Path customCacheRoot() {
+        String custom = Config.setting().getCustomDownloadCacheDir();
+        return (custom != null && !custom.isBlank()) ? Path.of(custom) : null;
     }
 
     public ReadOnlyObjectProperty<UpdateState> stateProperty() { return state.getReadOnlyProperty(); }

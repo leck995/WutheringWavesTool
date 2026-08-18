@@ -68,6 +68,10 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     @FXML
     private TextField downloadDirField;
     @FXML
+    private TextField downloadCacheDirField;
+    @FXML
+    private Button chooseCacheDirBtn;
+    @FXML
     private RadioButton mainlandSourceRadio;
     @FXML
     private RadioButton bilibiliSourceRadio;
@@ -161,6 +165,12 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
                 updateCurrentServerLabel(newSource));
         updateCurrentServerLabel(viewModel.currentGameSourceProperty().get());
         downloadDirField.textProperty().bindBidirectional(viewModel.downloadDirProperty());
+        downloadCacheDirField.textProperty().bindBidirectional(viewModel.customDownloadCacheDirProperty());
+        downloadCacheDirField.focusedProperty().addListener((observable, wasFocused, isFocused) -> {
+            if (!isFocused) {
+                viewModel.setCustomDownloadCacheDir(downloadCacheDirField.getText());
+            }
+        });
         viewModel.downloadSourceProperty().addListener((observable, oldSource, newSource) ->
                 selectDownloadSource(newSource));
         downloadSourceToggle.selectedToggleProperty().addListener((observable, oldToggle, newToggle) -> {
@@ -214,6 +224,8 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         globalSourceRadio.disableProperty().bind(resourceOrCacheOperating);
         downloadDirField.disableProperty().bind(resourceOrCacheOperating);
         chooseDirBtn.disableProperty().bind(resourceOrCacheOperating);
+        downloadCacheDirField.disableProperty().bind(resourceOrCacheOperating);
+        chooseCacheDirBtn.disableProperty().bind(resourceOrCacheOperating);
         resourcePauseBtn.disableProperty().bind(Bindings.notEqual(
                 viewModel.operationStateProperty(), GameAssetViewModel.OperationState.RUNNING)
                 .or(viewModel.pauseAvailableProperty().not()));
@@ -384,6 +396,23 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         File selected = chooser.showDialog(downloadDirField.getScene().getWindow());
         if (selected != null) {
             viewModel.setDownloadDir(selected.getAbsolutePath());
+        }
+    }
+
+    @FXML
+    void chooseDownloadCacheDir(ActionEvent event) {
+        DirectoryChooser chooser = new DirectoryChooser();
+        chooser.setTitle(LanguageManager.getString("ui.game_manager.asset.cache_dir"));
+        String cwd = viewModel.customDownloadCacheDirProperty().get();
+        if (cwd != null && !cwd.isBlank()) {
+            File f = new File(cwd);
+            if (f.isDirectory()) {
+                chooser.setInitialDirectory(f);
+            }
+        }
+        File selected = chooser.showDialog(downloadCacheDirField.getScene().getWindow());
+        if (selected != null) {
+            viewModel.setCustomDownloadCacheDir(selected.getAbsolutePath());
         }
     }
 

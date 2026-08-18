@@ -204,6 +204,7 @@ public final class GameResourceUpdateService {
             LauncherConfig config = KRAppConfLoader.loadFromKRAppConf(configPath.toString());
             ResourceConfigManager configManager = new ResourceConfigManager(
                     config, context.gameDirectory().toString());
+            configManager.setCustomCacheDir(context.cacheDirectory().toString());
             session = new LegacySession(context, configManager, new ResUpdateModule(configManager));
             return session;
         } catch (Exception e) {

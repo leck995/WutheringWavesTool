@@ -19,9 +19,11 @@ import java.util.concurrent.atomic.AtomicReference;
 
 /** A single transactional resource update. The caller executes it on a worker thread. */
 public final class ResourceUpdateOperation {
+    private static final String DEFAULT_CACHE_FOLDER = GameResourceInstallService.DOWNLOAD_DIRECTORY;
     private final GameResourceDownloadService downloadService;
     private final ObjectMapper objectMapper;
     private final Path gameDirectory;
+    private final Path cacheRoot;
     private final GameResourceRelease initialRelease;
     private final ResourceOperationListener listener;
     private final DownloadOptions downloadOptions;
@@ -32,15 +34,26 @@ public final class ResourceUpdateOperation {
     ResourceUpdateOperation(GameResourceDownloadService downloadService, ObjectMapper objectMapper,
             Path gameDirectory, GameResourceRelease initialRelease,
             ResourceOperationListener listener) {
-        this(downloadService, objectMapper, gameDirectory, initialRelease, listener, DownloadOptions.DEFAULT);
+        this(downloadService, objectMapper, gameDirectory, initialRelease, listener,
+                DownloadOptions.DEFAULT, null);
     }
 
     ResourceUpdateOperation(GameResourceDownloadService downloadService, ObjectMapper objectMapper,
             Path gameDirectory, GameResourceRelease initialRelease,
             ResourceOperationListener listener, DownloadOptions downloadOptions) {
+        this(downloadService, objectMapper, gameDirectory, initialRelease, listener,
+                downloadOptions, null);
+    }
+
+    ResourceUpdateOperation(GameResourceDownloadService downloadService, ObjectMapper objectMapper,
+            Path gameDirectory, GameResourceRelease initialRelease,
+            ResourceOperationListener listener, DownloadOptions downloadOptions, Path cacheRoot) {
         this.downloadService = downloadService;
         this.objectMapper = objectMapper;
         this.gameDirectory = gameDirectory.toAbsolutePath().normalize();
+        this.cacheRoot = cacheRoot == null
+                ? this.gameDirectory.resolve(DEFAULT_CACHE_FOLDER)
+                : cacheRoot.toAbsolutePath().normalize();
         this.initialRelease = initialRelease;
         this.listener = listener != null ? listener : new ResourceOperationListener() { };
         this.downloadOptions = downloadOptions != null ? downloadOptions : DownloadOptions.DEFAULT;
@@ -155,8 +168,7 @@ public final class ResourceUpdateOperation {
 
     private Path stageDirectory(String version) {
         String safeVersion = version.replaceAll("[^A-Za-z0-9._-]", "_");
-        return gameDirectory.resolve(GameResourceInstallService.DOWNLOAD_DIRECTORY)
-                .resolve(safeVersion).resolve("wwt-update").normalize();
+        return cacheRoot.resolve(safeVersion).resolve("wwt-update").normalize();
     }
 
     private void apply(Path stageDirectory, List<FileInfo> changedFiles,

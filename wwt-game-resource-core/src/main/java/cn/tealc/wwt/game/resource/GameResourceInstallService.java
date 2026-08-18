@@ -60,13 +60,21 @@ public final class GameResourceInstallService {
 
     public ResourceUpdateOperation createUpdate(Path gameDirectory, GameResourceRelease release,
             ResourceOperationListener listener) {
-        return new ResourceUpdateOperation(downloadService, objectMapper, gameDirectory, release, listener);
+        return createUpdate(gameDirectory, release, listener, DownloadOptions.DEFAULT, null);
     }
 
     public ResourceUpdateOperation createUpdate(Path gameDirectory, GameResourceRelease release,
             ResourceOperationListener listener, DownloadOptions downloadOptions) {
+        return createUpdate(gameDirectory, release, listener, downloadOptions, null);
+    }
+
+    /**
+     * {@code cacheRoot} 可选：下载临时区根目录，默认落在 {@code gameDirectory/launcherDownload}。
+     */
+    public ResourceUpdateOperation createUpdate(Path gameDirectory, GameResourceRelease release,
+            ResourceOperationListener listener, DownloadOptions downloadOptions, Path cacheRoot) {
         return new ResourceUpdateOperation(downloadService, objectMapper, gameDirectory, release, listener,
-                downloadOptions);
+                downloadOptions, cacheRoot);
     }
 
     /** 将已完成的全量下载登记为可供后续更新检查使用的本地资源状态。 */

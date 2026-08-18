@@ -244,6 +244,27 @@
                                        </StackPane>
                                     </children>
                                  </VBox>
+                                 <VBox spacing="9.0">
+                                    <children>
+                                       <Label styleClass="asset-form-label" text="%ui.game_manager.asset.cache_dir" />
+                                       <StackPane maxWidth="350.0" prefWidth="350.0" styleClass="input-group">
+                                          <children>
+                                             <TextField fx:id="downloadCacheDirField" prefWidth="250.0"
+                                                        promptText="%ui.game_manager.asset.cache_dir_tip" />
+                                             <Button fx:id="chooseCacheDirBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
+                                                     onAction="#chooseDownloadCacheDir"
+                                                     StackPane.alignment="CENTER_RIGHT">
+                                                <tooltip>
+                                                   <Tooltip text="%ui.game_manager.asset.cache_dir" />
+                                                </tooltip>
+                                                <graphic>
+                                                   <FontIcon iconLiteral="mdoal-folder_open" iconSize="19" />
+                                                </graphic>
+                                             </Button>
+                                          </children>
+                                       </StackPane>
+                                    </children>
+                                 </VBox>
                                  <Label fx:id="downloadSourceHintLabel" maxWidth="1.7976931348623157E308"
                                         styleClass="text-tip,download-source-hint"
                                         text="%ui.game_manager.asset.download_existing_hint"

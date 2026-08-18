@@ -40,10 +40,31 @@ public class ResourceConfigManager {
 
     public void setGameDir(String gameDir) {
         this.gameDirPath = gameDir;
-        this.gameCacheDirPath = PathUtils.combine(gameDir, LAUNCHER_DOWNLOAD);
         this.gameConfigFilePath = PathUtils.combine(gameDir, LAUNCHER_DOWNLOAD_CONFIG);
-        this.gameDownloadingConfigFilePath = PathUtils.combine(gameDir, LAUNCHER_DOWNLOAD, LAUNCHER_DOWNLOAD_CONFIG);
         this.gameExePath = PathUtils.combine(gameDir, launcherConfig.gameExeName);
+        setCacheDir(cacheDirPathOf());
+    }
+
+    /**
+     * 覆盖下载缓存目录（默认为 {@code gameDir/launcherDownload}）。
+     * 下载临时数据（含断点续传配置）将写入该目录，而非游戏目录所在盘。
+     * 传空或 null 时回落默认值。
+     */
+    public void setCustomCacheDir(String cacheDir) {
+        setCacheDir(hasText(cacheDir) ? cacheDir : cacheDirPathOf());
+    }
+
+    private String cacheDirPathOf() {
+        return PathUtils.combine(gameDirPath, LAUNCHER_DOWNLOAD);
+    }
+
+    private void setCacheDir(String cacheDir) {
+        this.gameCacheDirPath = cacheDir;
+        this.gameDownloadingConfigFilePath = PathUtils.combine(cacheDir, LAUNCHER_DOWNLOAD_CONFIG);
+    }
+
+    private static boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 
     public LauncherDownloadConfig getDownloadConfig() {

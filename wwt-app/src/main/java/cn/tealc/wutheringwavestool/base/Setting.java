@@ -168,6 +168,12 @@ public class Setting {
     public SimpleStringProperty gameDownloadDirProperty() { return game.gameDownloadDirProperty(); }
     public void setGameDownloadDir(String gameDownloadDir) { game.setGameDownloadDir(gameDownloadDir); }
 
+    public String getCustomDownloadCacheDir() { return game.getCustomDownloadCacheDir(); }
+    public SimpleStringProperty customDownloadCacheDirProperty() { return game.customDownloadCacheDirProperty(); }
+    public void setCustomDownloadCacheDir(String customDownloadCacheDir) {
+        game.setCustomDownloadCacheDir(customDownloadCacheDir);
+    }
+
     public String getGameInstalledVersion() { return game.getGameInstalledVersion(); }
     public SimpleStringProperty gameInstalledVersionProperty() { return game.gameInstalledVersionProperty(); }
     public void setGameInstalledVersion(String gameInstalledVersion) { game.setGameInstalledVersion(gameInstalledVersion); }
