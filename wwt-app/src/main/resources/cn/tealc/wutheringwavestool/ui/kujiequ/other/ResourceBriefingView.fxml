@@ -21,7 +21,7 @@
       <AnchorPane prefHeight="800.0" prefWidth="1300.0" styleClass="resource-briefing" stylesheets="@../../../css/kujiequ/ResourceBriefing.css">
           <children>
               <!-- Header -->
-              <HBox fx:id="headerPane" alignment="CENTER_LEFT" spacing="20.0" styleClass="header" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+              <HBox fx:id="headerPane" alignment="CENTER_LEFT" spacing="9.0" styleClass="header" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                   <children>
                       <Label styleClass="title-2" text="%ui.resource_briefing.title" />
                       <Separator orientation="VERTICAL" />

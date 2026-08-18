@@ -6,11 +6,11 @@
 /* ── Header ──────────────────────────────── */
 .game-record .header {
     -fx-background-color: -color-bg-default-60;
-    -fx-background-radius: 12;
-    -fx-padding: 14 20 14 20;
+    -fx-background-radius: 12px;
+    -fx-padding: 14px 20px 14px 20px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);
     -fx-border-color: rgba(255,255,255,0.12);
-    -fx-border-radius: 12;
+    -fx-border-radius: 12px;
     -fx-border-width: 1;
 }
 
@@ -19,27 +19,24 @@
     -fx-text-fill: -color-font-subtle;
 }
 
-.game-record .header .account-combo {
-    -fx-background-radius: 20;
-    -fx-background-color: -color-bg-default-80;
-}
+/* account-combo 样式由 Default.css .combo-box-base 公共类统一提供 */
 
 /* ── Cell card ───────────────────────────── */
 .game-record .stat-cell {
     -fx-background-color: -color-bg-default-60;
-    -fx-background-radius: 12;
-    -fx-padding: 16 18 16 18;
+    -fx-background-radius: 12px;
+    -fx-padding: 16px 18px 16px 18px;
     -fx-spacing: 14;
     -fx-alignment: CENTER_LEFT;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);
     -fx-border-color: rgba(255,255,255,0.10);
-    -fx-border-radius: 12;
+    -fx-border-radius: 12px;
     -fx-border-width: 1;
 }
 
 .game-record .stat-cell:hover {
     -fx-background-color: -color-bg-default-80;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 14, 0, 0, 4);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 16, 0, 0, 6);
     -fx-border-color: rgba(255,255,255,0.18);
 }
 

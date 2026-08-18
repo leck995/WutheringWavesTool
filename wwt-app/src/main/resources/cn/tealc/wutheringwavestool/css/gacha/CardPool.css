@@ -1,571 +1,442 @@
-.list-view{
+/* child-select、gradient-separator 基础样式已提取到 Default.css 公共组件类 */
+
+/* ===== 通用 ListView/Table 透明化 + 隐藏滚动条 ===== */
+.list-view {
     -fx-border-color: transparent;
     -fx-padding: 0;
 }
-.list-view:hover{
-    -fx-padding: 0;
-}
-.list-view .list-cell{
+.list-view .list-cell {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
 }
 .list-view .list-cell:hover,
-.list-view .list-cell:selected{
+.list-view .list-cell:selected {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
 }
-
-.list-view  > .virtual-flow > .scroll-bar{
+.list-view > .virtual-flow > .scroll-bar {
     -fx-background-color: transparent;
     -fx-translate-x: 5px;
 }
-
-.list-view  > .virtual-flow > .scroll-bar:vertical .thumb,
-.list-view  > .virtual-flow > .scroll-bar:vertical .track{
+.list-view > .virtual-flow > .scroll-bar:vertical .thumb,
+.list-view > .virtual-flow > .scroll-bar:vertical .track {
     -fx-background-color: transparent;
 }
-.list-view:hover  > .virtual-flow > .scroll-bar:vertical .thumb {
+.list-view:hover > .virtual-flow > .scroll-bar:vertical .thumb {
     -fx-background-color: -color-hover-emphasis;
 }
-.list-view > .virtual-flow > .scroll-bar:horizontal .thumb{
+.list-view > .virtual-flow > .scroll-bar:horizontal .thumb {
     -fx-background-color: -color-hover-emphasis;
 }
 
 
-
-/*==============================base============================================*/
-.card-pool{
-
-}
-
+/*============================== base ==============================*/
 .card-pool .separator {
-    -fx-padding: 6 0 6 0;
+    -fx-padding: 0 2px 0 2px;
+    -fx-max-height: 18px;
 }
-.card-pool .separator > .line{
-    -fx-border-color: #00000070;
-    -fx-border-insets: 1px 0 0 0;
-    -fx-border-width: 1px;
+.card-pool .separator > .line {
+    -fx-border-color: transparent transparent transparent -color-base-4;
+    -fx-border-width: 0 0 0 2px;
     -fx-padding: 0;
 }
-.card-pool .child-select{
-    -fx-background-color: transparent;
-    -fx-text-fill: -color-font-muted;
-    -fx-font-weight: bold;
-    -fx-graphic-text-gap: 2;
-    -fx-padding: 3;
-    -fx-cursor: hand;
-}
-.card-pool .child-select:hover{
-    -fx-text-fill: -color-accent-fg;
-}
-.card-pool .child-select:selected{
-    -fx-text-fill: -color-accent-fg;
-}
-.card-pool .child-select > Pane{
-    -fx-pref-width: 25;
-    -fx-pref-height: 3;
-    -fx-background-radius: 3px;
-    -fx-background-color: transparent;
-}
 
 
-.card-pool .toggle-button:selected > Pane{
+/*============================== detail ==============================*/
+.detail-child .select-listview {
+    -fx-background-color: -color-bg-default-50;
+    -fx-background-radius: 10px;
+    -fx-border-color: -color-border-muted;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+    -fx-padding: 14px;
+    -fx-spacing: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);
+}
+/* 卡池名称列表 */
+.detail-child .select-listview .list-cell {
+    -fx-font-size: 1em;
+    -fx-padding: 5px;
+}
+.detail-child .select-listview .list-cell:selected .label {
+    -fx-text-fill: -color-fg-emphasis;
     -fx-background-color: -color-accent-fg;
 }
-
-
-
-
-/*==============================detail============================================*/
-.detail-child{
-
-}
-
-.detail-child .select-listview{
+.detail-child .select-listview .list-cell .label {
+    -fx-max-height: 70px;
+    -fx-pref-height: 60px;
+    -fx-pref-width: 100px;
+    -fx-font-size: 1em;
+    -fx-padding: 3px;
     -fx-background-color: -color-bg-default-50;
-    -fx-background-radius: 0.571em;  /* 8px */
-    -fx-border-color: -color-border-muted;
-    -fx-border-radius: 0.571em;
-    -fx-border-width: 1px;
-    -fx-padding: 1em;
-    -fx-spacing: 0.857em;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 4);
-}
-    /*卡池名称列表*/
-.detail-child .select-listview .list-cell{
-    -fx-font-size: 1em;              /* 14px */
-    -fx-padding: 0.357em;
-}
-.detail-child .select-listview .list-cell:selected .label{
-    -fx-text-fill:#ffffff;
-    -fx-background-color: #0969da;
-}
-.detail-child .select-listview .list-cell .label{
-    -fx-max-height: 5em;             /* 70px */
-    -fx-pref-height: 4.286em;        /* 60px */
-    -fx-pref-width: 7.143em;         /* 100px */
-    -fx-font-size: 1em;              /* 14px */
-    -fx-padding: 0.214em;
-    -fx-background-color: -color-bg-default-50;
-    -fx-background-radius: 5;
+    -fx-background-radius: 6px;
 }
 
-
-
-
-.detail-child .default-color0.chart-pie { -fx-pie-color: #ffd700; }
-.detail-child .default-color1.chart-pie { -fx-pie-color: #a855f7; }
-.detail-child .default-color2.chart-pie { -fx-pie-color: #22d3ee; }
+.detail-child .default-color0.chart-pie { -fx-pie-color: -root-rarity-ssr; }
+.detail-child .default-color1.chart-pie { -fx-pie-color: -root-rarity-sr; }
+.detail-child .default-color2.chart-pie { -fx-pie-color: -root-rarity-r; }
 .detail-child .default-color3.chart-pie { -fx-pie-color: #0181e2; }
 .detail-child .default-color4.chart-pie { -fx-pie-color: #2f357f; }
 .detail-child .default-color5.chart-pie { -fx-pie-color: #860061; }
 .detail-child .default-color6.chart-pie { -fx-pie-color: #c62b00; }
-.detail-child .default-color7.chart-pie { -fx-pie-color: #ff8000; }
+.detail-child .default-color7.chart-pie { -fx-pie-color: -root-rarity-ssr; }
 
-.detail-child .chart-title{
+.detail-child .chart-title {
     -fx-font-weight: bold;
     -fx-font-size: 1.8em;
 }
 
-.detail-child .ssr-label{
-    -fx-text-fill: #ff8000;
+.detail-child .ssr-label {
+    -fx-text-fill: -root-rarity-ssr;
     -fx-font-size: 1em;
     -fx-font-weight: bold;
 }
-.detail-child .sr-label{
-    -fx-text-fill: #933fb1;
+.detail-child .sr-label {
+    -fx-text-fill: -root-rarity-sr;
     -fx-font-size: 1em;
     -fx-font-weight: bold;
 }
-.detail-child .r-label{
-    -fx-text-fill: #04b6c6;
+.detail-child .r-label {
+    -fx-text-fill: -root-rarity-r;
     -fx-font-size: 1em;
     -fx-font-weight: bold;
 }
-.detail-child .total-label{
+.detail-child .total-label {
     -fx-text-fill: #ff6666;
     -fx-font-size: 1em;
     -fx-font-weight: bold;
-    -fx-padding: 0 5 0 5;
+    -fx-padding: 0 5px 0 5px;
 }
-.detail-child .current-label{
+.detail-child .current-label {
     -fx-text-fill: #4caf50;
     -fx-font-size: 1em;
     -fx-font-weight: bold;
 }
 
-
-.detail-child  .tip{
+.detail-child .tip {
     -fx-text-fill: -color-font-subtle;
-    -fx-font-size: 0.857em;  /* 12px */
+    -fx-font-size: 0.857em; /* 12px */
 }
 
 .detail-child .left,
-.detail-child .right{
+.detail-child .right {
     -fx-background-color: -color-bg-default-50;
-    -fx-background-radius: 0.571em;  /* 8px */
+    -fx-background-radius: 10px;
     -fx-border-color: -color-border-muted;
-    -fx-border-radius: 0.571em;
+    -fx-border-radius: 10px;
     -fx-border-width: 1px;
-    -fx-padding: 1em;
-    -fx-spacing: 0.857em;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 4);
+    -fx-padding: 14px;
+    -fx-spacing: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);
 }
-.detail-child .left > .date{
+.detail-child .left > .date {
     -fx-text-fill: -color-font-subtle;
     -fx-font-size: 0.857em;
 }
-.detail-child .left .sr-no-up{
+.detail-child .left .sr-no-up {
     -fx-text-fill: #4caf50;
 }
-.detail-child .left .non-banner-rate{
+.detail-child .left .non-banner-rate {
     -fx-text-fill: #64b5f6;
 }
-.detail-child .left .up-ssr-avg{
+.detail-child .left .up-ssr-avg {
     -fx-text-fill: #e57373;
 }
-.detail-child .left .up-ssr-count{
-    -fx-text-fill: #ff8000;
+.detail-child .left .up-ssr-count {
+    -fx-text-fill: -root-rarity-ssr;
     -fx-font-size: 1em;
     -fx-font-weight: bold;
 }
 
-.detail-child .ssr-list-view{
+.detail-child .ssr-list-view {
     -fx-border-color: transparent;
-    -fx-background-radius: 0.286em;  /* 4px */
+    -fx-background-radius: 4px;
 }
-
-.detail-child .ssr-list-view .list-cell{
+.detail-child .ssr-list-view .list-cell {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
-    -fx-padding: 0.357em;
+    -fx-padding: 5px;
 }
 .detail-child .ssr-list-view .list-cell:hover,
-.detail-child .ssr-list-view .list-cell:selected{
+.detail-child .ssr-list-view .list-cell:selected {
     -fx-background-color: transparent;
     -fx-border-color: transparent;
 }
 
-.detail-child .role-pane{
-    -fx-padding: 0.3em 0.714em 0.3em 0.714em;            /* 10px */
-    -fx-background-radius: 0.571em;  /* 8px */
+.detail-child .role-pane {
+    -fx-padding: 5px 10px 5px 10px;
+    -fx-background-radius: 10px;
     -fx-background-color: -color-bg-default-50;
 }
-.detail-child .role-pane .role-name{
+.detail-child .role-pane .role-name {
     -fx-font-size: 1.214em;
 }
-.detail-child .role-pane .role-date{
+.detail-child .role-pane .role-date {
     -fx-text-fill: -color-font-subtle;
 }
-.detail-child .role-pane .role-desc{
+.detail-child .role-pane .role-desc {
     -fx-font-weight: bold;
     -fx-font-size: 1.286em;
-    -fx-min-width: 2.143em;
+    -fx-min-width: 30px;
     -fx-alignment: CENTER;
-    -fx-background-radius: 0.286em;
-    -fx-padding: 0.143em 0.357em;
+    -fx-background-radius: 4px;
+    -fx-padding: 2px 5px;
 }
-.detail-child .role-pane .role-desc.up{
-    -fx-text-fill: #ff8000;
-    -fx-background-color: rgba(255, 208, 0, 0.12);
+.detail-child .role-pane .role-desc.up {
+    -fx-text-fill: -root-rarity-ssr;
+    -fx-background-color: -root-rarity-ssr-bg;
 }
-.detail-child .role-pane .role-desc.unup{
+.detail-child .role-pane .role-desc.unup {
     -fx-text-fill: #787878;
     -fx-background-color: rgba(120, 120, 120, 0.1);
 }
-.detail-child .role-pane .role-desc.up{
-    -fx-text-fill: #ff8000;
-}
-.detail-child .role-pane .role-desc.unup{
-    -fx-text-fill: #787878;
-}
-.detail-child .role-pane .up-tag{
+.detail-child .role-pane .up-tag {
     -fx-text-fill: #f8a62b;
     -fx-font-weight: bold;
     -fx-font-size: 1.286em;
 }
 
-.detail-child .role-pane .progress-bar > .bar{
-    -fx-padding: 0.286em;
+/* 进度条 up/unup 渐变已提取到 Default.css .progress-bar.up/.unup */
+.detail-child .role-pane .progress-bar > .bar {
+    -fx-padding: 4px;
 }
-.detail-child .role-pane .progress-bar.up > .bar{
-    -fx-background-color: linear-gradient(to right, #ffcdd2, #ef5350, #b71c1c);
-}
-.detail-child .role-pane .progress-bar.unup > .bar{
-    -fx-background-color: linear-gradient(to right, #c8e6c9, #66bb6a, #1b5e20);
-}
-.detail-child .role-pane .progress-bar > .track{
+.detail-child .role-pane .progress-bar > .track {
     -fx-background-color: -color-border-default;
 }
 
-
-
-
-
-
-
 /* 左侧统计面板分组样式 */
-.detail-child .left .stat-group{
+.detail-child .left .stat-group {
     -fx-background-color: -color-bg-default-30;
-    -fx-background-radius: 0.357em;
-    -fx-padding: 0.5em 0.643em;
-    -fx-spacing: 0.286em;
+    -fx-background-radius: 6px;
+    -fx-padding: 7px 9px;
+    -fx-spacing: 4px;
 }
-.detail-child .left .stat-header{
+.detail-child .left .stat-header {
     -fx-font-size: 0.786em;
     -fx-text-fill: -color-fg-muted;
     -fx-font-weight: bold;
-    -fx-padding: 0 0 0.143em 0;
+    -fx-padding: 0 0 2px 0;
 }
-.detail-child .left .stat-row{
+.detail-child .left .stat-row {
     -fx-alignment: CENTER;
-    -fx-spacing: 1em;
+    -fx-spacing: 14px;
 }
-.detail-child .left .stat-row2{
-
+.detail-child .left .stat-row2 {
 }
-
 .detail-child .left .stat-row .stat-value,
-.detail-child .left .stat-row2 .stat-value{
+.detail-child .left .stat-row2 .stat-value {
     -fx-font-weight: bold;
     -fx-font-size: 1em;
 }
 
-.detail-child .scroll-pane .scroll-bar{
+.detail-child .scroll-pane .scroll-bar {
     -fx-background-color: transparent;
 }
-.detail-child .scroll-pane .scroll-bar:vertical{
+.detail-child .scroll-pane .scroll-bar:vertical {
     -fx-translate-x: 5px;
 }
 .detail-child .scroll-pane .scroll-bar:vertical .thumb,
-.detail-child .scroll-pane .scroll-bar:vertical .track{
+.detail-child .scroll-pane .scroll-bar:vertical .track {
     -fx-background-color: transparent;
-
 }
 .detail-child .scroll-pane:hover .scroll-bar:vertical .thumb {
     -fx-background-color: -color-hover-emphasis;
 }
-.detail-child .scroll-pane .scroll-bar:horizontal .thumb{
+.detail-child .scroll-pane .scroll-bar:horizontal .thumb {
     -fx-background-color: transparent;
 }
 
-
-
-.detail-child .analysis-pool .separator{
-    -fx-padding: 4 0 8 0;
+.detail-child .analysis-pool .separator {
+    -fx-padding: 4px 0 8px 0;
 }
-.detail-child .analysis-pool .separator > .line{
-    -fx-border-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #77767680 0.0%, #77767600 100.0%) transparent transparent transparent;
+.detail-child .analysis-pool .separator > .line {
+    -fx-border-color: linear-gradient(from 0% 0% to 100% 0%, -color-border-muted 0%, transparent 100%) transparent transparent transparent;
     -fx-border-insets: 1px 0 0 0;
     -fx-border-width: 1px;
     -fx-padding: 0;
 }
 
-.detail-child .analysis-pool .data-show{
-    -fx-background-radius: 8px;
+.detail-child .analysis-pool .data-show {
+    -fx-background-radius: 6px;
 }
-
-.detail-child .analysis-pool .data-child{
+.detail-child .analysis-pool .data-child {
     -fx-background-color: -color-bg-default-30;
-    -fx-background-radius: 0.357em;  /* 5px */
-    -fx-padding: 0.357em 0.714em;    /* 5px 10px */
-    -fx-spacing: 5;
-
+    -fx-background-radius: 6px;
+    -fx-padding: 5px 10px;
+    -fx-spacing: 5px;
 }
-.detail-child .analysis-pool .data-child .title{
+.detail-child .analysis-pool .data-child .title {
     -fx-font-size: 1.286em;
     -fx-font-weight: bold;
 }
 
-
-/*网格视图子项样式*/
-.detail-child .ssr-thumb .child{
-    -fx-background-radius: 8;
+/* 网格视图子项样式 */
+.detail-child .ssr-thumb .child {
+    -fx-background-radius: 6px;
     -fx-background-color: -color-bg-default-70;
-    -fx-border-radius: 8;
+    -fx-border-radius: 6px;
     -fx-border-color: -color-border-default;
     -fx-border-width: 1px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 4);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);
 }
-.detail-child .ssr-thumb .child .count{
-    -fx-font-size: 14;
+.detail-child .ssr-thumb .child .count {
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
-.detail-child .ssr-thumb .child .thumb-count-up{
+.detail-child .ssr-thumb .child .thumb-count-up {
     -fx-text-fill: #ff6666;
 }
-.detail-child .ssr-thumb .child .thumb-count-unup{
+.detail-child .ssr-thumb .child .thumb-count-unup {
     -fx-text-fill: #4caf50;
 }
-
-.detail-child .ssr-thumb .child .thumb-name{
-    -fx-font-size: 12;
+.detail-child .ssr-thumb .child .thumb-name {
+    -fx-font-size: 12px;
     -fx-text-fill: -color-fg-default;
-    -fx-max-width: 80;
+    -fx-max-width: 80px;
     -fx-alignment: CENTER;
     -fx-wrap-text: true;
     -fx-text-alignment: CENTER;
 }
-.detail-child .ssr-thumb .child .thumb-up-badge{
-    -fx-text-fill: #ff8000;
+.detail-child .ssr-thumb .child .thumb-up-badge {
+    -fx-text-fill: -root-rarity-ssr;
     -fx-font-weight: bold;
-    -fx-font-size: 14;
+    -fx-font-size: 14px;
     -fx-background-color: rgba(255, 136, 0, 0.15);
-    -fx-background-radius: 3;
-    -fx-padding: 1 4 1 4;
+    -fx-background-radius: 3px;
+    -fx-padding: 1px 4px 1px 4px;
 }
 
 
-
-
-
-/*==============================common============================================*/
-.common-child{
-
-}
-.common-child .pool-pane{
+/*============================== common ==============================*/
+.common-child .pool-pane {
     -fx-padding: 8px;
     -fx-background-radius: 10px;
     -fx-background-color: -color-bg-default-50;
-    -fx-border-radius: 16;
+    -fx-border-radius: 10px; /* 修复：原 background-radius 10px 与 border-radius 16 不匹配 */
     -fx-border-color: -color-border-default;
     -fx-border-width: 1px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 4);
-    -fx-min-width: 260;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);
+    -fx-min-width: 260px;
 }
-.common-child .pool-pane .total-count{
+.common-child .pool-pane .total-count {
     -fx-text-fill: #64b5f6;
 }
-.common-child .pool-pane .separator{
-    -fx-padding: 4 0 8 0;
+.common-child .pool-pane .separator {
+    -fx-padding: 4px 0 8px 0;
 }
-.common-child .pool-pane .separator > .line{
-    -fx-border-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #cccbcb70 0.0%, #ff98d4 50.0%, #cccbcb70 100.0%) transparent transparent transparent;
+.common-child .pool-pane .separator > .line {
+    -fx-border-color: linear-gradient(from 0% 0% to 100% 0%, -color-border-muted 0%, -color-accent-subtle 50%, -color-border-muted 100%) transparent transparent transparent;
     -fx-border-insets: 1px 0 0 0;
     -fx-border-width: 1px;
     -fx-padding: 0;
 }
-.common-child .pool-pane > .date{
+.common-child .pool-pane > .date {
     -fx-text-fill: -color-font-subtle;
     -fx-font-size: 1.0em;
 }
 
-.common-child .pool-pane > StackPane.conclusion > .label{
+.common-child .pool-pane > StackPane.conclusion > .label {
     -fx-text-fill: -color-fg-muted;
     -fx-font-weight: bold;
     -fx-font-size: 1.1em;
 }
+.common-child .pool-pane > StackPane.conclusion.sr-no-up > .label { -fx-text-fill: #4caf50; }
+.common-child .pool-pane > StackPane.conclusion.ssr-no-up > .label { -fx-text-fill: #4caf50; }
+.common-child .pool-pane > StackPane.conclusion.ssr-avg > .label { -fx-text-fill: #e57373; }
+.common-child .pool-pane > StackPane.conclusion.ssr-count > .label { -fx-text-fill: -root-rarity-ssr; }
+.common-child .pool-pane > StackPane.conclusion.sr-count > .label { -fx-text-fill: #a679ef; }
+.common-child .pool-pane > StackPane.conclusion.up-ssr-avg > .label { -fx-text-fill: #e57373; }
+.common-child .pool-pane > StackPane.conclusion.up-ssr-count > .label { -fx-text-fill: -root-rarity-ssr; }
+.common-child .pool-pane > StackPane.conclusion.non-banner-rate > .label { -fx-text-fill: -root-rarity-ssr; }
 
-.common-child .pool-pane > StackPane.conclusion.sr-no-up > .label {
-    -fx-text-fill: #4caf50;
+.common-child .list-view {
+    -fx-padding: 5px 0 0 0;
 }
-.common-child .pool-pane > StackPane.conclusion.ssr-no-up > .label {
-    -fx-text-fill: #4caf50;
+.common-child .list-view .list-cell {
+    -fx-padding: 2px 0 2px 0;
 }
-.common-child .pool-pane > StackPane.conclusion.ssr-avg > .label {
-    -fx-text-fill: #e57373;
-}
-.common-child .pool-pane > StackPane.conclusion.ssr-count > .label {
-    -fx-text-fill: #ff8000;
-}
-.common-child .pool-pane > StackPane.conclusion.sr-count > .label {
-    -fx-text-fill: #a679ef;
-}
-.common-child .pool-pane > StackPane.conclusion.up-ssr-avg > .label {
-    -fx-text-fill: #e57373;
-}
-.common-child .pool-pane > StackPane.conclusion.up-ssr-count > .label {
-    -fx-text-fill: #ff8000;
-}
-.common-child .pool-pane > StackPane.conclusion.non-banner-rate > .label {
-    -fx-text-fill: #ff8000;
-}
-
-.common-child .list-view{
-    -fx-padding: 5 0 0 0;
-}
-.common-child .list-view .list-cell{
-    -fx-padding: 0.15em 0 0.15em 0;
-}
-
-
 .common-child .list-view > .virtual-flow > .scroll-bar:vertical {
     -fx-pref-width: 3px;
 }
 
-
-.common-child .role-cell{
-    -fx-padding: 0.2em 0.2em 0 0.2em;            /* 10px */
-    -fx-background-radius: 0.571em;  /* 8px */
+.common-child .role-cell {
+    -fx-padding: 3px 3px 0 3px;
+    -fx-background-radius: 10px;
     -fx-background-color: -color-bg-default-50;
 }
-.common-child .role-cell .role-name{
+.common-child .role-cell .role-name {
     -fx-font-size: 1.1em;
     -fx-font-weight: bold;
 }
-.common-child .role-cell .role-name.up{
-    -fx-text-fill: #ca3e3e;
-}
-.common-child .role-cell .role-name.unup{
-    -fx-text-fill: #269578;
-}
-.common-child .role-cell .up-tag{
+.common-child .role-cell .role-name.up { -fx-text-fill: #ca3e3e; }
+.common-child .role-cell .role-name.unup { -fx-text-fill: #269578; }
+.common-child .role-cell .up-tag {
     -fx-text-fill: #f8a62b;
     -fx-font-weight: bold;
     -fx-font-size: 1em;
 }
-
-
-.common-child .role-cell .role-date{
+.common-child .role-cell .role-date {
     -fx-text-fill: -color-font-subtle;
     -fx-font-size: 1.0em;
 }
-.common-child .role-cell .role-desc{
+.common-child .role-cell .role-desc {
     -fx-font-weight: bold;
-    -fx-font-size: 1.1em;          /* 20px */
-    -fx-pref-width: 1.786em;
+    -fx-font-size: 1.1em;
+    -fx-pref-width: 25px;
     -fx-rotate: 15;
 }
-/*.common-child .role-cell .role-desc.up{
-    -fx-text-fill: #ffbe79;
-}
-.common-child .role-cell .role-desc.unup{
-    -fx-text-fill: #f1305c;
-}
-
-*/
 .common-child .role-cell .progress-bar > .track {
     -fx-background-color: transparent;
 }
 .common-child .role-cell .progress-bar > .bar {
     -fx-padding: 1px;
 }
-.common-child .role-cell .progress-bar.up > .bar {
-    -fx-background-color: linear-gradient(to right, #ffcdd2, #ef5350, #b71c1c);
-}
-.common-child .role-cell .progress-bar.unup > .bar {
-    -fx-background-color: linear-gradient(to right, #c8e6c9, #66bb6a, #1b5e20);
-}
+/* 进度条 up/unup 渐变已提取到 Default.css .progress-bar.up/.unup */
+
 .common-child .arrow-left,
 .common-child .arrow-right {
-	-fx-font-size: 1.6em;
-	-fx-text-fill: -color-fg-muted;
-	-fx-padding: 2 6 2 6;
-	-fx-cursor: hand;
+    -fx-font-size: 1.6em;
+    -fx-text-fill: -color-fg-muted;
+    -fx-padding: 2px 6px 2px 6px;
+    -fx-cursor: hand;
 }
 .common-child .arrow-left:hover,
 .common-child .arrow-right:hover {
-	-fx-text-fill: -color-accent-fg;
+    -fx-text-fill: -color-accent-fg;
 }
 .common-child .arrow-left:disabled,
 .common-child .arrow-right:disabled {
-	-fx-opacity: 0.35;
-	-fx-cursor: default;
+    -fx-opacity: 0.35;
+    -fx-cursor: default;
 }
 
-/*==============================table============================================*/
+
+/*============================== table ==============================*/
 .table-view {
     -fx-background-color: transparent;
     -fx-table-cell-border-color: transparent;
     -fx-border-color: transparent;
 }
-.table-view .column-header-background {
-    -fx-background-color: transparent;
-}
-.table-view .column-header-background .filler {
-    -fx-background-color: transparent;
-}
-.table-view .column-header {
-    -fx-background-color: transparent;
-}
-.table-view .table-cell {
-    -fx-background-color: transparent;
-}
-.table-view .table-row-cell {
-    -fx-background-color: transparent;
-}
-.table-view .table-row-cell:odd {
-    -fx-background-color: transparent;
-}
+.table-view .column-header-background { -fx-background-color: transparent; }
+.table-view .column-header-background .filler { -fx-background-color: transparent; }
+.table-view .column-header { -fx-background-color: transparent; }
+.table-view .table-cell { -fx-background-color: transparent; }
+.table-view .table-row-cell { -fx-background-color: transparent; }
+.table-view .table-row-cell:odd { -fx-background-color: transparent; }
 .table-view .ssr-row .table-cell {
-    -fx-background-color: rgba(212, 160, 23, 0.12);
+    -fx-background-color: -root-rarity-ssr-bg;
     -fx-text-fill: #d4a017;
     -fx-font-weight: bold;
 }
 .table-view .sr-row .table-cell {
-    -fx-background-color: rgba(147, 63, 177, 0.08);
-    -fx-text-fill: #933fb1;
+    -fx-background-color: -root-rarity-sr-bg;
+    -fx-text-fill: -root-rarity-sr;
 }
-.table-view .virtual-flow .scroll-bar {
-    -fx-background-color: transparent;
-}
+.table-view .virtual-flow .scroll-bar { -fx-background-color: transparent; }
 .table-view .virtual-flow .scroll-bar:vertical .thumb,
-.table-view .virtual-flow .scroll-bar:vertical .track {
-    -fx-background-color: transparent;
-}
-.table-view:hover .virtual-flow .scroll-bar:vertical .thumb {
-    -fx-background-color: -color-hover-emphasis;
-}
+.table-view .virtual-flow .scroll-bar:vertical .track { -fx-background-color: transparent; }
+.table-view:hover .virtual-flow .scroll-bar:vertical .thumb { -fx-background-color: -color-hover-emphasis; }
+
 
 /* ====== 统计子界面 ====== */
 .stat-view {
@@ -581,7 +452,7 @@
     -fx-border-color: -color-border-default;
     -fx-border-radius: 10px;
     -fx-border-width: 1px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 4);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);
 }
 
 .stat-view .stat-card {
@@ -608,8 +479,8 @@
     -fx-text-fill: -color-fg-muted;
 }
 .stat-view .stat-card.stat-total .stat-value { -fx-text-fill: #ef7377; }
-.stat-view .stat-card.stat-ssr .stat-value { -fx-text-fill: #eea13d; }
-.stat-view .stat-card.stat-sr .stat-value { -fx-text-fill: #933fb1; }
+.stat-view .stat-card.stat-ssr .stat-value { -fx-text-fill: -root-rarity-ssr; }
+.stat-view .stat-card.stat-sr .stat-value { -fx-text-fill: -root-rarity-sr; }
 .stat-view .stat-card.stat-up .stat-value { -fx-text-fill: #38a6a1; }
 
 .stat-view .stat-emblem {
@@ -627,7 +498,7 @@
     -fx-background-radius: 25px;
     -fx-border-color: rgba(105, 119, 142, 0.18);
     -fx-border-radius: 25px;
-    -fx-effect: dropshadow(gaussian, rgba(44, 55, 72, 0.10), 6, 0.06, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
 }
 .stat-view .stat-emblem.stat-total .emblem-icon { -fx-icon-color: #e6c7bf; }
 .stat-view .stat-emblem.stat-ssr .emblem-icon { -fx-icon-color: #f3d592; }
@@ -638,9 +509,7 @@
 .stat-view .stat-emblem.stat-role { -fx-background-color: #67af78; -fx-border-color: transparent; }
 .stat-view .stat-emblem.stat-weapon { -fx-background-color: #6099d4; -fx-border-color: transparent; }
 
-.stat-view .stat-section {
-    -fx-padding: 17px;
-}
+.stat-view .stat-section { -fx-padding: 17px; }
 .stat-view .stat-section-title {
     -fx-font-size: 17px;
     -fx-font-weight: bold;
@@ -659,23 +528,19 @@
     -fx-text-fill: -color-fg-muted;
 }
 
-.stat-view .chart {
-    -fx-padding: 0;
-}
-.stat-view .chart-content {
-    -fx-padding: 0;
-}
+.stat-view .chart { -fx-padding: 0; }
+.stat-view .chart-content { -fx-padding: 0; }
 .stat-view .chart-pie {
     -fx-border-color: rgba(255, 255, 255, 0.95);
     -fx-border-width: 1.5px;
 }
-.stat-view .default-color0.chart-pie { -fx-pie-color: #ff8000; }
-.stat-view .default-color1.chart-pie { -fx-pie-color: #933fb1; }
-.stat-view .default-color2.chart-pie { -fx-pie-color: #04b6c6; }
+.stat-view .default-color0.chart-pie { -fx-pie-color: -root-rarity-ssr; }
+.stat-view .default-color1.chart-pie { -fx-pie-color: -root-rarity-sr; }
+.stat-view .default-color2.chart-pie { -fx-pie-color: -root-rarity-r; }
 .stat-view .donut-center {
-    -fx-background-color: #ffffff;
+    -fx-background-color: -color-bg-default;
     -fx-background-radius: 66px;
-    -fx-effect: dropshadow(gaussian, rgba(31, 42, 55, 0.08), 7, 0.04, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);
 }
 .stat-view .donut-total {
     -fx-font-size: 30px;
@@ -693,9 +558,9 @@
     -fx-max-height: 11px;
     -fx-background-radius: 6px;
 }
-.stat-view .rarity-dot.rarity-0 { -fx-background-color: #ff8000; }
-.stat-view .rarity-dot.rarity-1 { -fx-background-color: #933fb1; }
-.stat-view .rarity-dot.rarity-2 { -fx-background-color: #04b6c6; }
+.stat-view .rarity-dot.rarity-0 { -fx-background-color: -root-rarity-ssr; }
+.stat-view .rarity-dot.rarity-1 { -fx-background-color: -root-rarity-sr; }
+.stat-view .rarity-dot.rarity-2 { -fx-background-color: -root-rarity-r; }
 .stat-view .rarity-name,
 .stat-view .rarity-percent {
     -fx-font-size: 13px;
@@ -724,46 +589,28 @@
     -fx-max-height: 24px;
     -fx-alignment: center-left;
 }
-.stat-view .metric-icon-box {
-    -fx-alignment: center;
-}
+.stat-view .metric-icon-box { -fx-alignment: center; }
 .stat-view .metric-value {
     -fx-font-size: 17px;
     -fx-text-fill: -color-fg-default;
 }
-.stat-view .metric-icon {
-    -fx-icon-color: #4c8fd8;
-}
-.stat-view .metric-star .metric-icon {
-    -fx-icon-color: #ff8000;
-}
-.stat-view .metric-average .metric-icon {
-    -fx-icon-color: #e57373;
-}
-.stat-view .metric-date .metric-icon {
-    -fx-icon-color: -color-fg-muted;
-}
+.stat-view .metric-icon { -fx-icon-color: #4c8fd8; }
+.stat-view .metric-star .metric-icon { -fx-icon-color: -root-rarity-ssr; }
+.stat-view .metric-average .metric-icon { -fx-icon-color: #e57373; }
+.stat-view .metric-date .metric-icon { -fx-icon-color: -color-fg-muted; }
 .stat-view .metric-date-line {
     -fx-font-size: 11px;
     -fx-text-fill: -color-fg-default;
 }
-.stat-view .metric-date-lines {
-    -fx-alignment: center-left;
-}
+.stat-view .metric-date-lines { -fx-alignment: center-left; }
 
 .stat-view .pool-summary {
     -fx-padding: 12px;
     -fx-spacing: 0;
 }
-.stat-view .pool-summary.stat-role {
-    -fx-border-color: rgba(92, 164, 108, 0.25);
-}
-.stat-view .pool-summary.stat-weapon {
-    -fx-border-color: rgba(77, 142, 207, 0.25);
-}
-.stat-view .pool-header {
-    -fx-padding: 7px 10px;
-}
+.stat-view .pool-summary.stat-role { -fx-border-color: rgba(92, 164, 108, 0.25); }
+.stat-view .pool-summary.stat-weapon { -fx-border-color: rgba(77, 142, 207, 0.25); }
+.stat-view .pool-header { -fx-padding: 7px 10px; }
 .stat-view .stat-role .pool-header {
     -fx-background-color: linear-gradient(to right, rgba(93, 169, 107, 0.20), rgba(93, 169, 107, 0.08));
     -fx-background-radius: 7px 7px 0 0;
@@ -790,9 +637,7 @@
     -fx-border-color: transparent rgba(120, 128, 145, 0.12) transparent transparent;
     -fx-border-width: 0 1px 0 0;
 }
-.stat-view .pool-metric.last {
-    -fx-border-color: transparent;
-}
+.stat-view .pool-metric.last { -fx-border-color: transparent; }
 .stat-view .pool-metric-title {
     -fx-font-size: 12px;
     -fx-text-fill: -color-fg-muted;
@@ -802,9 +647,7 @@
     -fx-text-fill: -color-fg-default;
 }
 
-.stat-view .stat-list-pane {
-    -fx-padding: 17px 13px 12px 13px;
-}
+.stat-view .stat-list-pane { -fx-padding: 17px 13px 12px 13px; }
 .stat-view .filter-group {
     -fx-background-color: -color-bg-default-30;
     -fx-background-radius: 14px;
@@ -824,22 +667,17 @@
     -fx-background-color: rgba(97, 157, 222, 0.18);
     -fx-text-fill: #397abe;
 }
-/* ComboBox：与 filter-group 背景统一 */
 .stat-view .filter-combo {
-    -fx-background-color: -color-bg-default-30;
+    -fx-background-color: -color-bg-default-60;
     -fx-background-radius: 14px;
     -fx-border-color: transparent;
     -fx-font-size: 11px;
     -fx-pref-height: 26px;
+    -fx-min-height: 26px;
     -fx-cursor: hand;
 }
-.stat-view .filter-combo:hover {
-    -fx-background-color: -color-bg-default-50;
-}
-.stat-view .filter-combo:focused {
-    -fx-background-color: -color-bg-default-50;
-    -fx-border-color: transparent;
-}
+.stat-view .filter-combo:hover { -fx-background-color: -color-bg-default-90; }
+.stat-view .filter-combo:showing { -fx-background-color: -color-bg-default-90; }
 .stat-view .filter-combo .list-cell {
     -fx-text-fill: -color-fg-muted;
     -fx-padding: 0 10px;
@@ -864,9 +702,7 @@
 .stat-view .list-view .sheet {
     -fx-background-color: transparent;
 }
-.stat-view .list-view .list-cell {
-    -fx-padding: 3px 0;
-}
+.stat-view .list-view .list-cell { -fx-padding: 3px 0; }
 .stat-view .list-view > .virtual-flow > .scroll-bar:horizontal {
     -fx-pref-height: 0;
     -fx-min-height: 0;
@@ -904,23 +740,15 @@
     -fx-background-color: rgba(255, 128, 0, 0.14);
     -fx-border-color: rgba(255, 128, 0, 0.38);
 }
-.stat-view .rank-cell.rank-ssr .rank-name {
-    -fx-text-fill: #d96d00;
-}
-.stat-view .rank-cell.rank-ssr .rank-count {
-    -fx-background-color: #ff8000;
-}
+.stat-view .rank-cell.rank-ssr .rank-name { -fx-text-fill: #d96d00; }
+.stat-view .rank-cell.rank-ssr .rank-count { -fx-background-color: -root-rarity-ssr; }
 .stat-view .rank-cell.rank-sr .rank-avatar-frame,
 .stat-view .rank-cell.rank-sr .rank-name {
     -fx-background-color: rgba(147, 63, 177, 0.14);
     -fx-border-color: rgba(147, 63, 177, 0.38);
 }
-.stat-view .rank-cell.rank-sr .rank-name {
-    -fx-text-fill: #8736a3;
-}
-.stat-view .rank-cell.rank-sr .rank-count {
-    -fx-background-color: #933fb1;
-}
+.stat-view .rank-cell.rank-sr .rank-name { -fx-text-fill: #8736a3; }
+.stat-view .rank-cell.rank-sr .rank-count { -fx-background-color: -root-rarity-sr; }
 
 .stat-view .stat-state-pane {
     -fx-background-color: -color-bg-default-50;
@@ -929,4 +757,18 @@
 .stat-view .stat-state-label {
     -fx-font-size: 15px;
     -fx-text-fill: -color-fg-muted;
+}
+
+/*============================表格=====================================*/
+.table-child {
+
+}
+.table-child .combo-box-base {
+    -fx-min-height: 28px;
+    -fx-pref-height: 28px;
+    -fx-background-insets: 0;
+}
+.table-child .combo-box-base:showing {
+    -fx-background-radius: 14px 14px 0 0;
+    -fx-background-insets: 0;
 }

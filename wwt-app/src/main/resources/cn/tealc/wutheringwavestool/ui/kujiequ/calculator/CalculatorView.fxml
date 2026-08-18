@@ -19,11 +19,11 @@
    <children>
       <AnchorPane prefHeight="600.0" prefWidth="1000.0">
          <children>
-            <HBox fx:id="actionBox" spacing="15.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <HBox fx:id="actionBox" alignment="CENTER_LEFT" spacing="9.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                <children>
                   <Label styleClass="title-2" text="%ui.calculator.title" />
                   <Separator orientation="VERTICAL" />
-                  <HBox>
+                  <HBox alignment="CENTER_LEFT">
                      <children>
                         <ToggleButton contentDisplay="BOTTOM" mnemonicParsing="false" onAction="#toRoleTab" selected="true" styleClass="child-select" text="%ui.calculator.tab.title01">
                            <toggleGroup>

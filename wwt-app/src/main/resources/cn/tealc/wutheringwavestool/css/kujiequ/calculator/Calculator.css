@@ -1,5 +1,9 @@
-.calculator-view {
+/* child-select 基础样式已提取到 Default.css 公共组件类 */
+/* 此处仅保留 no-header TabPane 的特殊样式 */
 
+.calculator-view .actionBox {
+    -fx-pref-height: 35px;
+    -fx-alignment: center-left;
 }
 
 .calculator-view .tab-pane.no-header {
@@ -19,49 +23,25 @@
     -fx-border-width: 0;
     visibility: hidden;
 }
+
+/* 竖向分隔线：与 TabbedViewLayout.css 保持一致 */
 .calculator-view .separator {
-    -fx-padding: 6 0 6 0;
+    -fx-padding: 0 2px 0 2px;
+    -fx-max-height: 18px;
 }
-.calculator-view .separator > .line{
-    -fx-border-color: #00000070;
-    -fx-border-insets: 1px 0 0 0;
-    -fx-border-width: 1px;
+.calculator-view .separator > .line {
+    -fx-border-color: transparent transparent transparent -color-base-4;
+    -fx-border-width: 0 0 0 2px;
     -fx-padding: 0;
 }
-.calculator-view .child-select{
-    -fx-background-color: transparent;
-    -fx-text-fill: -color-font-muted;
-    -fx-font-weight: bold;
-    -fx-graphic-text-gap: 2;
-    -fx-padding: 3;
-    -fx-cursor: hand;
-}
-.calculator-view .child-select:hover{
-    -fx-text-fill: -color-accent-fg;
-}
-.calculator-view .child-select:selected{
-    -fx-text-fill: -color-accent-fg;
-}
-.calculator-view .child-select > Pane{
-    -fx-pref-width: 25;
-    -fx-pref-height: 3;
-    -fx-background-radius: 3px;
-    -fx-background-color: transparent;
-}
 
-
-.calculator-view .toggle-button:selected > Pane{
-    -fx-background-color: -color-accent-fg;
-}
-
-
-.calculator-view .item-cell{
-    -fx-pref-width: 80.0;
+.calculator-view .item-cell {
+    -fx-pref-width: 80px;
     -fx-background-color: -color-bg-default-60;
-    -fx-background-radius: 5;
-    -fx-padding: 0 0 2 0;
+    -fx-background-radius: 6px;
+    -fx-padding: 0 0 2px 0;
 }
-.calculator-view .item-cell:hover{
+.calculator-view .item-cell:hover {
     -fx-cursor: hand;
     -fx-background-color: -color-bg-default-40;
 }

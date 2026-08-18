@@ -39,7 +39,7 @@ public abstract class TabbedViewLayout extends StackPane {
             FXResourcesLoader.load("css/component/TabbedViewLayout.css");
 
     private final AnchorPane pagePane = new AnchorPane();
-    private final HBox headerPane = new HBox(20);
+    private final HBox headerPane = new HBox(9);
     private final HBox tabPane = new HBox();
     private final StackPane contentPane = new StackPane();
     private final ToggleGroup toggleGroup = new ToggleGroup();
@@ -56,6 +56,8 @@ public abstract class TabbedViewLayout extends StackPane {
     ) {
         Objects.requireNonNull(title, "title");
 
+        tabPane.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
+        tabPane.setPadding(new Insets(5, 0, 0, 0));
         configureHeader(title);
         configureContent(contentTopAnchor);
         configurePage(pageStyleClass, stylesheet);
@@ -200,6 +202,7 @@ public abstract class TabbedViewLayout extends StackPane {
 
         Separator separator = new Separator(Orientation.VERTICAL);
         headerPane.setPrefHeight(35);
+        headerPane.setAlignment(javafx.geometry.Pos.CENTER_LEFT);
         headerPane.setLayoutX(20);
         headerPane.setLayoutY(20);
         headerPane.getChildren().addAll(titleLabel, separator, tabPane);

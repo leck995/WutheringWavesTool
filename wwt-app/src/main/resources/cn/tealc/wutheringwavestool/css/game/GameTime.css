@@ -6,11 +6,11 @@
 /* ── Header ──────────────────────────────── */
 .gametime .header {
     -fx-background-color: -color-bg-default-60;
-    -fx-background-radius: 12;
-    -fx-padding: 14 20 14 20;
+    -fx-background-radius: 12px;
+    -fx-padding: 14px 20px 14px 20px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);
     -fx-border-color: rgba(255,255,255,0.12);
-    -fx-border-radius: 12;
+    -fx-border-radius: 12px;
     -fx-border-width: 1;
 }
 
@@ -20,26 +20,23 @@
     -fx-text-fill: -color-font-default;
 }
 
-.gametime .header .account-combo {
-    -fx-background-radius: 20;
-    -fx-background-color: -color-bg-default-80;
-}
+/* account-combo 样式由 Default.css .combo-box-base 公共类统一提供 */
 
 /* ── Cards ───────────────────────────────── */
 .gametime .card {
     -fx-background-color: -color-bg-default-60;
-    -fx-background-radius: 12;
-    -fx-padding: 16 20 16 20;
+    -fx-background-radius: 12px;
+    -fx-padding: 16px 20px 16px 20px;
     -fx-spacing: 8;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);
     -fx-border-color: rgba(255,255,255,0.10);
-    -fx-border-radius: 12;
+    -fx-border-radius: 12px;
     -fx-border-width: 1;
 }
 
 .gametime .card:hover {
     -fx-background-color: -color-bg-default-80;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.12), 14, 0, 0, 4);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 16, 0, 0, 6);
 }
 
 .gametime .card-label {
@@ -103,22 +100,22 @@
 /* ── Progress bar ────────────────────────── */
 .gametime .progress-bar > .bar {
     -fx-padding: 4px;
-    -fx-background-radius: 4;
+    -fx-background-radius: 4px;
 }
 
 .gametime .progress-bar > .track {
     -fx-background-color: rgba(128,128,128,0.15);
-    -fx-background-radius: 4;
+    -fx-background-radius: 4px;
 }
 
 /* ── Chart card ──────────────────────────── */
 .gametime .chart-card {
     -fx-background-color: -color-bg-default-60;
-    -fx-background-radius: 12;
-    -fx-padding: 16 20 16 20;
+    -fx-background-radius: 12px;
+    -fx-padding: 16px 20px 16px 20px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 8, 0, 0, 2);
     -fx-border-color: rgba(255,255,255,0.10);
-    -fx-border-radius: 12;
+    -fx-border-radius: 12px;
     -fx-border-width: 1;
 }
 
@@ -140,10 +137,10 @@
 
 /* ── Table toggle button ─────────────────── */
 .gametime .table-toggle-btn {
-    -fx-background-radius: 20;
+    -fx-background-radius: 20px;
     -fx-background-color: -color-bg-default-80;
     -fx-text-fill: -color-font-muted;
-    -fx-padding: 6 16 6 16;
+    -fx-padding: 6px 16px 6px 16px;
     -fx-font-size: 0.9em;
     -fx-cursor: hand;
 }
@@ -155,14 +152,14 @@
 /* ── Table toolbar ───────────────────────── */
 .gametime .table-toolbar {
     -fx-background-color: -color-bg-default-60;
-    -fx-background-radius: 10;
-    -fx-padding: 10 14 10 14;
+    -fx-background-radius: 10px;
+    -fx-padding: 10px 14px 10px 14px;
 }
 .gametime .table-btn {
     -fx-background-radius: 16;
     -fx-background-color: -color-accent-fg;
     -fx-text-fill: -color-font-emphasis;
-    -fx-padding: 6 16 6 16;
+    -fx-padding: 6px 16px 6px 16px;
     -fx-font-size: 0.9em;
     -fx-cursor: hand;
 }
@@ -177,8 +174,8 @@
 .gametime .record-table{
     -fx-background-color: -color-bg-default-60;
     -fx-border-color: transparent;
-    -fx-background-radius: 10;
-    -fx-padding: 10 14 10 14;
+    -fx-background-radius: 10px;
+    -fx-padding: 10px 14px 10px 14px;
 }
 
 .gametime .record-table .column-header-background{
@@ -208,10 +205,8 @@
     -fx-background-color: -color-bg-default-80;
 }
 .gametime .record-table .table-cell {
-    -fx-padding: 10 14 10 14;
+    -fx-padding: 10px 14px 10px 14px;
     -fx-text-fill: -color-font-default;
     -fx-font-size: 1em;
     -fx-alignment: CENTER;
 }
-
-

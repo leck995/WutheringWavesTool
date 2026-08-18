@@ -1,35 +1,12 @@
+/* child-select 基础样式已提取到 Default.css 公共组件类 */
+
+/* 竖向分隔线：标题与页签之间的分割线 */
 .tabbed-view-layout .separator {
-    -fx-padding: 6 0 6 0;
+    -fx-padding: 0 2px 0 2px;
+    -fx-max-height: 18px;
 }
-
 .tabbed-view-layout .separator > .line {
-    -fx-border-color: #00000070;
-    -fx-border-insets: 1px 0 0 0;
-    -fx-border-width: 1px;
+    -fx-border-color: transparent transparent transparent -color-base-4;
+    -fx-border-width: 0 0 0 2px;
     -fx-padding: 0;
-}
-
-.tabbed-view-layout .child-select {
-    -fx-background-color: transparent;
-    -fx-text-fill: -color-font-muted;
-    -fx-font-weight: bold;
-    -fx-graphic-text-gap: 2;
-    -fx-padding: 3;
-    -fx-cursor: hand;
-}
-
-.tabbed-view-layout .child-select:hover,
-.tabbed-view-layout .child-select:selected {
-    -fx-text-fill: -color-accent-fg;
-}
-
-.tabbed-view-layout .child-select > Pane {
-    -fx-pref-width: 25;
-    -fx-pref-height: 3;
-    -fx-background-radius: 3px;
-    -fx-background-color: transparent;
-}
-
-.tabbed-view-layout .toggle-button:selected > Pane {
-    -fx-background-color: -color-accent-fg;
 }

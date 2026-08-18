@@ -1,34 +1,30 @@
-.tray{
-    -fx-pref-width: 150;
-
+.tray {
+    -fx-pref-width: 150px;
     -fx-spacing: 0;
     -fx-alignment: top-center;
-    -fx-padding:  5 5 5 5;
-    -fx-background-radius: 5;
-    -fx-background-color: white;
+    -fx-padding: 5px;
+    -fx-background-radius: 6px;
+    -fx-background-color: -color-bg-default;
 }
 
-.tray > .button{
-    -fx-padding:2;
+.tray > .button {
+    -fx-padding: 2px;
     -fx-border-color: transparent;
     -fx-background-insets: 0;
     -fx-graphic-text-gap: 10px;
     -fx-text-fill: -color-button-fg;
     -fx-alignment: center-left;
-    -fx-pref-width: 120;
-    -fx-pref-height: 25;
-    -fx-font-size: 13;
-    -fx-background-radius: 3;
-
-
+    -fx-pref-width: 120px;
+    -fx-pref-height: 25px;
+    -fx-font-size: 13px;
+    -fx-background-radius: 4px;
 }
 
 .tray > .button:hover,
-.tray > .button:focused{
+.tray > .button:focused {
     -fx-background-insets: 0px;
-
 }
-.tray > .button:hover{
+.tray > .button:hover {
     -fx-background-color: -color-hover-subtle;
 }
 

@@ -1,154 +1,90 @@
-.main{
-    -fx-background-color: #7a7a7a;
+.main {
+    -fx-background-color: -color-bg-subtle;
 }
-/*侧边导航栏*/
-.main .main-nav{
-    -fx-background-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #ffffff30 0.0%, #ffffff00 100.0%);
+
+/* ===== 侧边导航栏 ===== */
+.main .main-nav {
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 0%, -color-bg-default-30 0%, transparent 100%);
 }
-.main .main-nav:hover{
-    -fx-background-radius: 0 10 10 0;
-    -fx-background-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #ffffff60 0.0%, #ffffff20 100.0%);
+.main .main-nav:hover {
+    -fx-background-radius: 0 10px 10px 0;
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 0%, -color-bg-default-60 0%, -color-bg-default-20 100%);
 }
 .main .main-nav .toggle-button,
-.main .main-nav .button{
+.main .main-nav .button {
     -fx-background-color: transparent;
-    -fx-font-size: 14;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
     -fx-text-fill: -color-font-default;
-    -fx-background-radius: 10;
-    -fx-graphic-text-gap: 15;
-    -fx-padding: 5 5 5 5;
-    -fx-content-display:left;
+    -fx-background-radius: 10px;
+    -fx-graphic-text-gap: 15px;
+    -fx-padding: 5px;
+    -fx-content-display: left;
     -fx-alignment: center-left;
-    -fx-min-width: 120;
-    -fx-max-width: 130;
+    -fx-min-width: 120px;
+    -fx-max-width: 130px;
 }
-.main .main-nav .toggle-button.icon-only{
+.main .main-nav .toggle-button.icon-only {
     -fx-text-fill: -color-font-default;
-    -fx-content-display:graphic-only;
+    -fx-content-display: graphic-only;
     -fx-pref-width: 40px;
     -fx-alignment: center;
-    -fx-min-width: 40;
+    -fx-min-width: 40px;
 }
-.main .main-nav .toggle-button .ikonli-font-icon{
+.main .main-nav .toggle-button .ikonli-font-icon {
     -fx-icon-color: -color-font-default;
-    -fx-icon-size:22px;
+    -fx-icon-size: 22px;
 }
-.main .main-nav .toggle-button:hover{
+.main .main-nav .toggle-button:hover {
     -fx-background-color: -color-hover-muted;
 }
-.main .main-nav .toggle-button:selected .ikonli-font-icon{
+.main .main-nav .toggle-button:selected .ikonli-font-icon {
     -fx-icon-color: -color-selected-default;
 }
-.main .main-nav .toggle-button:selected{
+.main .main-nav .toggle-button:selected {
     -fx-background-color: -color-accent-fg;
     -fx-text-fill: -color-selected-default;
 }
-.main .main-nav .nav-btn{
-    -fx-content-display:graphic-only;
+.main .main-nav .nav-btn {
+    -fx-content-display: graphic-only;
     -fx-pref-width: 36px;
-    -fx-padding: 5;
+    -fx-padding: 5px;
     -fx-alignment: center-left;
-    -fx-min-width: 30;
+    -fx-min-width: 30px;
 }
-.main .main-nav .nav-btn:hover{
+.main .main-nav .nav-btn:hover {
     -fx-background-color: -color-hover-muted;
 }
-.main .main-nav .nav-btn:selected{
+.main .main-nav .nav-btn:selected {
     -fx-background-color: transparent;
 }
-.main .main-nav .nav-btn:selected .ikonli-font-icon{
-    -fx-icon-color:  -color-font-default;
-}
-.main .main-nav .icon-1 > .ikonli-font-icon{
-    -fx-icon-color: #cd7e7e;
-}
-.main .main-nav .icon-2 > .ikonli-font-icon{
-    -fx-icon-color: #ddc66f;
-}
-.main .main-nav .icon-3 > .ikonli-font-icon{
-    -fx-icon-color: #34d2b1;
-}
-.main .main-nav .icon-4 > .ikonli-font-icon{
-    -fx-icon-color: #bfa07d;
-}
-.main .main-nav .icon-5 > .ikonli-font-icon{
-    -fx-icon-color: #41aec5;
+.main .main-nav .nav-btn:selected .ikonli-font-icon {
+    -fx-icon-color: -color-font-default;
 }
 
+/* 导航图标专属装饰色 */
+.main .main-nav .icon-1 > .ikonli-font-icon { -fx-icon-color: #cd7e7e; }
+.main .main-nav .icon-2 > .ikonli-font-icon { -fx-icon-color: #ddc66f; }
+.main .main-nav .icon-3 > .ikonli-font-icon { -fx-icon-color: #34d2b1; }
+.main .main-nav .icon-4 > .ikonli-font-icon { -fx-icon-color: #bfa07d; }
+.main .main-nav .icon-5 > .ikonli-font-icon { -fx-icon-color: #41aec5; }
+
+/* ===== SplitPane ===== */
 .split-pane .split-pane-divider,
-.split-pane > .split-pane-divider > .horizontal-grabber{
+.split-pane > .split-pane-divider > .horizontal-grabber {
     -fx-background-color: transparent;
 }
 
-
-
-.main .title-bar{
+/* ===== 标题栏 ===== */
+/* headbar 基础样式已提取到 Default.css，此处仅保留 .title-bar（旧命名）和 download-progress-btn */
+.main .title-bar {
     -fx-pref-height: 3.8em;
     -fx-min-height: 3.3em;
 }
-
-.main .title-bar .title{
+.main .title-bar .title {
     -fx-font-size: 1.4em;
     -fx-text-fill: -color-fg-default;
     -fx-font-weight: bold;
-}
-
-.main .headbar {
-    -fx-pref-height: 3.8em;
-    -fx-min-height: 3.3em;
-}
-
-.main .headbar .leading{
-    -fx-alignment: center-left;
-}
-
-.main .headbar .leading .title{
-    -fx-font-size: 1.4em;
-    -fx-text-fill: -color-fg-default;
-    -fx-font-weight: bold;
-}
-
-
-.main .headbar .trailing{
-    -fx-spacing: 8;
-    -fx-alignment: CENTER_RIGHT;
-    -fx-padding: 0 10 0 0;
-}
-
-.main .headbar .trailing .button,
-.main .headbar .trailing .toggle-button{
-    -fx-content-display: graphic-only;
-    -fx-graphic-text-gap: 0;
-    -fx-background-color: transparent;
-    -fx-border-width: 0;
-    -fx-background-insets: 0;
-}
-
-.main .headbar .trailing .button:hover,
-.main .headbar .trailing .toggle-button:hover{
-    -fx-background-color: -color-accent-subtle;
-    -fx-opacity: 0.9;
-}
-
-.main .headbar .trailing > .func,
-.main .headbar .trailing > .system-func{
-    -fx-spacing: 8;
-    -fx-alignment: CENTER_RIGHT;
-}
-
-
-
-.main .headbar .trailing > .system-func > .close-btn:hover{
-    -fx-background-color: -color-danger-5;
-}
-
-.main .headbar .trailing > .system-func > .max-btn > .ikonli-font-icon{
-    -fx-icon-code:mdral-fullscreen;
-}
-
-.main .headbar .trailing > .system-func > .max-btn.full-exit > .ikonli-font-icon{
-    -fx-icon-code: mdral-fullscreen_exit;
 }
 
 /* 下载进度按钮 */
@@ -160,21 +96,16 @@
     -fx-max-height: 32px;
     -fx-padding: 0;
 }
-
 .main .headbar .trailing .download-progress-btn .ikonli-font-icon {
     -fx-icon-size: 18px;
     -fx-icon-color: -color-fg-default;
 }
 
-
-
-
-
-    /* 下载进度弹窗 */
+/* ===== 下载进度弹窗 ===== */
 .download-progress-popup {
     -fx-background-color: -color-bg-default;
-    -fx-background-radius: 8px;
-    -fx-border-radius: 8px;
+    -fx-background-radius: 6px;
+    -fx-border-radius: 6px;
     -fx-border-color: -color-border-muted;
     -fx-border-width: 1px;
     -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 10, 0, 0, 4);
@@ -182,92 +113,74 @@
     -fx-min-width: 300px;
     -fx-max-width: 380px;
 }
-
 .download-progress-popup .popup-header {
     -fx-font-size: 1.1em;
     -fx-font-weight: bold;
     -fx-text-fill: -color-fg-default;
-    -fx-padding: 0 0 8 0;
+    -fx-padding: 0 0 8px 0;
 }
-
 .download-progress-popup .task-list {
-    -fx-spacing: 8;
+    -fx-spacing: 8px;
 }
-
 .download-progress-popup .task-row {
     -fx-background-color: -color-bg-subtle;
     -fx-background-radius: 6px;
-    -fx-padding: 8 10 8 10;
-    -fx-spacing: 4;
+    -fx-padding: 8px 10px 8px 10px;
+    -fx-spacing: 4px;
 }
-
 .download-progress-popup .task-row .task-name {
     -fx-font-size: 0.95em;
     -fx-font-weight: bold;
     -fx-text-fill: -color-fg-default;
 }
-
 .download-progress-popup .task-row .task-progress {
     -fx-pref-height: 6px;
     -fx-min-height: 6px;
 }
-
 .download-progress-popup .task-row.task-running .task-progress > .bar {
     -fx-background-color: -color-accent-emphasis;
 }
-
 .download-progress-popup .task-row.task-completed .task-progress > .bar {
     -fx-background-color: -color-success-emphasis;
 }
-
 .download-progress-popup .task-row.task-failed .task-progress > .bar {
     -fx-background-color: -color-danger-emphasis;
 }
-
 .download-progress-popup .task-row .task-message {
     -fx-font-size: 0.85em;
     -fx-text-fill: -color-fg-muted;
 }
-
 .download-progress-popup .empty-label {
     -fx-font-size: 0.9em;
     -fx-text-fill: -color-fg-muted;
-    -fx-padding: 8 0 8 0;
+    -fx-padding: 8px 0 8px 0;
 }
 
-
-
+/* ===== 玻璃消息卡 ===== */
 .glass-message > .container {
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 16, 0, 0, 6);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 16, 0, 0, 6);
     -fx-background-radius: 12px;
     -fx-border-radius: 12px;
 }
-
 .glass-message.success > .container {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, rgba(218,251,225), rgba(200,240,210));
-    -fx-border-color: rgba(74,194,107,0.28);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, -color-success-subtle, -color-success-0);
+    -fx-border-color: -color-success-muted;
 }
-
 .glass-message.warning > .container {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, rgba(255,248,197), rgba(245,235,180));
-    -fx-border-color: rgba(212,167,44,0.28);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, -color-warning-subtle, -color-warning-0);
+    -fx-border-color: -color-warning-muted;
 }
-
 .glass-message.accent > .container {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, rgba(221,244,255), rgba(200,230,245));
-    -fx-border-color: rgba(84,174,255,0.28);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, -color-accent-subtle, -color-accent-0);
+    -fx-border-color: -color-accent-muted;
 }
-
 .glass-message.danger > .container {
-    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, rgba(255,235,233), rgba(245,220,218));
-    -fx-border-color: rgba(255,129,130,0.28);
+    -fx-background-color: linear-gradient(from 0% 0% to 100% 100%, -color-danger-subtle, -color-danger-0);
+    -fx-border-color: -color-danger-muted;
 }
-
 .glass-message > .container > .header > .title {
-    -fx-text-fill: #1a1a1a;
+    -fx-text-fill: -color-fg-default;
 }
-
 .glass-message > .container > .header > .description Text {
-    -fx-fill: #6e6e6e;
+    -fx-fill: -color-fg-muted;
 }
-

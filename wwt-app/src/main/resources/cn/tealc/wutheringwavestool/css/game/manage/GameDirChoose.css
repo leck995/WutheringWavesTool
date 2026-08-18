@@ -1,27 +1,6 @@
-.game-choose{
-    
-}
+/* input-group 基础样式已提取到 Default.css 公共组件类 */
+/* 本文件与 GameBaseSetting 的 input-group 完全相同，已删除重复 */
 
-
-.game-choose .radio-button{
+.game-choose .radio-button {
     -fx-background-color: transparent;
-}
-.game-choose .input-group{
-    -fx-background-radius: 20;
-    -fx-padding: 5 10 5 10;
-    -fx-background-color: -color-bg-default-60;
-}
-.game-choose .input-group >.text-field{
-    -fx-background-color: transparent;
-    -fx-padding: 0 40 0 0;
-}
-.game-choose .input-group:hover{
-    -fx-background-color: -color-bg-default-90;
-}
-.game-choose .input-group > .button{
-    -fx-background-color: transparent;
-    -fx-padding: 5;
-}
-.game-choose .input-group > .button:hover .ikonli-font-icon{
-    -fx-icon-color: -color-accent-emphasis;
 }

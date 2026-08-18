@@ -1,7 +1,7 @@
 
 .role-edit {
     -fx-base: #d0d0d0;
-    -fx-background: #f4f4f4;
+    -fx-background: transparent;
     -fx-control-inner-background: white;
     -fx-dark-text-color: black;
     -fx-mid-text-color: #292929;
@@ -215,7 +215,7 @@
     -fx-tab-border-color: -fx-box-border;
 
     /* These are needed for Popup */
-    -fx-background-color: inherit;
+    -fx-background-color: transparent;
     -fx-background-radius: inherit;
     -fx-background-insets: inherit;
     -fx-padding: inherit;

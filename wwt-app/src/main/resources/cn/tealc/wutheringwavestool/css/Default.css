@@ -1,66 +1,230 @@
 
+/* ===== Design Tokens ===== */
+/* 颜色令牌：JavaFX CSS lookup 仅支持 Paint（颜色）类型的自定义变量，
+   不支持 -fx-background-radius / -fx-effect / -fx-padding 等数值型属性。
+   因此圆角、阴影、间距已直接写入各 CSS 的具体值（统一收敛后的值），
+   此处仅保留颜色令牌（稀有度/评级/队伍色），供 -fx-text-fill /
+   -fx-background-color / -fx-border-color / -fx-icon-color 等颜色属性引用。 */
+.root {
+    /* —— 稀有度令牌（统一 SSR/SR/R 3 套色值为 1 套）—— */
+    -root-rarity-ssr: #ff8000;        /* SSR 金 */
+    -root-rarity-ssr-bg: rgba(255,128,0,0.12);
+    -root-rarity-sr: #933fb1;         /* SR 紫 */
+    -root-rarity-sr-bg: rgba(147,63,177,0.08);
+    -root-rarity-r: #04b6c6;          /* R 青 */
+
+    /* —— 评级令牌（ace/sss/ss/s/a/b，统一 OwnRoleDetail + Tower）—— */
+    -root-rank-ace: #e33737;
+    -root-rank-ace-bg: rgba(227,55,55,0.12);
+    -root-rank-sss: #ffec16;
+    -root-rank-sss-bg: rgba(255,236,22,0.12);
+    -root-rank-ss: #ffec16;
+    -root-rank-ss-bg: rgba(255,236,22,0.12);
+    -root-rank-s: #9300e8;
+    -root-rank-s-bg: rgba(147,0,232,0.12);
+    -root-rank-a: #ff6b9d;
+    -root-rank-a-bg: rgba(255,107,157,0.12);
+    -root-rank-b: #56b8ff;
+    -root-rank-b-bg: rgba(86,184,255,0.12);
+
+    /* —— 队伍主题色（Tower 四色）—— */
+    -root-team-blue: #5c9cf5;
+    -root-team-violet: #a875ef;
+    -root-team-green: #5bc58d;
+    -root-team-orange: #f59a5c;
+}
+
+
+/* ===== Base ===== */
+
 .text{
     -fx-font-smoothing-type: gray;
 }
 
 
-.combo-box-base{
-    -fx-background-radius: 20;
-    -fx-padding: 0 5 0 5;
+/* ===== Common Components ===== */
+/* 公共组件类：从各业务 CSS 中提取的重复实现，统一定义在此。
+   业务 FXML 中已有的 styleClass（如 child-select、input-group）会自动命中这些全局定义。 */
+
+/* —— 半透明卡片（替代 15+ 处重复）—— */
+.surface-card {
+    -fx-background-color: -color-bg-default-60;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-border-color: -color-border-muted;
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);
+}
+.surface-card:hover {
+    -fx-background-color: -color-bg-default-80;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 16, 0, 0, 6);
+}
+.surface-card-strong {
+    -fx-background-color: -color-bg-default-90;
+}
+.surface-card-overlay {
+    -fx-background-color: -color-bg-default-40;
+}
+
+/* —— 胶囊输入框（替代 5 处 input-group 重复）—— */
+.input-group {
+    -fx-background-radius: 20px;
+    -fx-min-height: 38px;
+    -fx-pref-height: 38px;
+    -fx-padding: 0 12px;
+    -fx-background-color: -color-bg-default-60;
+    -fx-alignment: center-left;
+}
+.input-group > .text-field {
+    -fx-background-color: transparent;
+    -fx-padding: 0 40px 0 0;
+}
+.input-group:hover {
+    -fx-background-color: -color-bg-default-90;
+}
+.input-group > .button {
+    -fx-background-color: transparent;
+    -fx-padding: 8px;
+}
+.input-group > .button:hover .ikonli-font-icon {
+    -fx-icon-color: -color-accent-emphasis;
+}
+
+/* —— 子页指示器（替代 4 处 child-select 重复）—— */
+.child-select {
+    -fx-background-color: transparent;
+    -fx-text-fill: -color-font-muted;
+    -fx-font-weight: bold;
+    -fx-graphic-text-gap: 2;
+    -fx-padding: 3px;
+    -fx-cursor: hand;
+}
+.child-select:hover,
+.child-select:selected {
+    -fx-text-fill: -color-accent-fg;
+}
+.child-select > Pane {
+    -fx-pref-width: 25px;
+    -fx-pref-height: 3px;
+    -fx-background-radius: 3px;
+    -fx-background-color: transparent;
+}
+.toggle-button:selected > Pane {
+    -fx-background-color: -color-accent-fg;
+}
+
+/* —— 隐藏滚动条（替代 9+ 处重复）—— */
+.hidden-scrollbar .scroll-bar {
+    -fx-background-color: transparent;
+    -fx-opacity: 1;
+}
+.hidden-scrollbar .scroll-bar:vertical .thumb,
+.hidden-scrollbar .scroll-bar:vertical .track {
+    -fx-background-color: transparent;
+    -fx-background-insets: 1px;
+}
+.hidden-scrollbar:hover .scroll-bar:vertical .thumb {
+    -fx-background-color: -color-bg-default-30;
+}
+
+/* —— 列表项卡片（替代 Account/RedemptionCode 的 list-item 模式）—— */
+.list-item-card {
+    -fx-background-color: -color-bg-default-90;
+    -fx-background-radius: 10px;
+    -fx-padding: 8px;
+}
+
+/* —— 渐变分隔线（替代 6+ 处 separator > .line 重复，修复 #00000070 硬编码）—— */
+.gradient-separator {
+    -fx-padding: 6px 0 6px 0;
+}
+.gradient-separator > .line {
+    -fx-border-color: linear-gradient(from 0% 0% to 100% 0%, -color-border-muted 0%, transparent 100%);
+    -fx-border-insets: 1px 0 0 0;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+}
+
+/* —— 进度条 up/unup 渐变（替代 CardPool 内 2 处重复）—— */
+.progress-bar.up > .bar {
+    -fx-background-color: linear-gradient(to right, #ffcdd2, #ef5350, #b71c1c);
+}
+.progress-bar.unup > .bar {
+    -fx-background-color: linear-gradient(to right, #c8e6c9, #66bb6a, #1b5e20);
+}
+
+
+/* ===== ComboBox ===== */
+
+.combo-box-base {
+    -fx-background-radius: 20px;
+    -fx-min-height: 38px;
+    -fx-pref-height: 38px;
+    -fx-padding: 0 6px 0 10px;
     -fx-background-color: -color-bg-default-60;
 }
-.combo-box-base:showing{
-    -fx-background-radius: 20 20 0 0;
-
+.combo-box-base:hover {
+    -fx-background-color: -color-bg-default-90;
+}
+.combo-box-base:showing {
+    -fx-background-radius: 20px 20px 0 0;
+    -fx-background-color: -color-bg-default-90;
+}
+.combo-box-base > .list-cell,
+.combo-box-base > .arrow-button {
+    -fx-background-color: transparent;
+}
+.combo-box-base > .arrow-button {
+    -fx-padding: 0px 12px 0px 0px;
 }
 .combo-box > .list-cell {
     -fx-background: transparent;
+    -fx-padding: 0px 12px 0px 8px;
 }
 
+/* 下拉弹出列表：背景与 ComboBox 显示态一致 */
 .combo-box-popup > .list-view {
-    -fx-background-color: -color-bg-default-60;
+    -fx-background-color: -color-bg-default-90;
     -fx-background-insets: null;
     -fx-border-color: transparent;
-
 }
 .combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell {
-    -fx-background-color: -color-bg-default-40;
+    -fx-background-color: transparent;
     -fx-border-color: transparent;
+    -fx-padding: 8px 10px;
+    -fx-cursor: hand;
 }
 .combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:hover {
-    -fx-opacity: 0.8;
+
+}
+.combo-box-popup > .list-view > .virtual-flow > .clipped-container > .sheet > .list-cell:selected {
+
+    -fx-text-fill: -color-accent-fg;
 }
 
+
+/* ===== Dialog ===== */
 
 .jfx-dialog > StackPane{
     -fx-background-color: transparent;
 }
 
 .jfx-dialog-layout {
-    -fx-text-fill: rgba(0, 0, 0, 0.87);
-    -fx-background-radius: 10;
-    -fx-padding: 10;
+    -fx-text-fill: -color-fg-default;
+    -fx-background-radius: 10px;
+    -fx-padding: 8px;
     -fx-background-color: -color-bg-default;
 }
 
 
-/*
-.jfx-dialog-layout > .jfx-layout-body .label {
-    -fx-text-fill: -color-bg-inset;
-    -fx-font-size: 16.0;
-    -fx-wrap-text: true;
-}
-*/
-
-
-
-
 .tea-dialog{
-    -fx-background-color: #ffffff;
-    -fx-background-radius: 10;
-    -fx-padding: 20;
+    -fx-background-color: -color-bg-default;
+    -fx-background-radius: 10px;
+    -fx-padding: 20px;
 }
 
+
+/* ===== Headbar ===== */
 
 .headbar {
     -fx-pref-height: 3.8em;
@@ -118,7 +282,3 @@
 .headbar .trailing > .system-func > .max-btn.full-exit > .ikonli-font-icon{
     -fx-icon-code: mdral-fullscreen_exit;
 }
-
-
-
-

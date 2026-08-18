@@ -29,11 +29,11 @@
 
 .cloud-card {
     -fx-background-color: -color-bg-default-40;
-    -fx-padding: 20 24 20 24;
-    -fx-background-radius: 16;
-    -fx-border-radius: 16;
+    -fx-padding: 20px 24px 20px 24px;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
     -fx-border-color: -color-border-default;
     -fx-border-width: 1px;
-    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 12, 0, 0, 4);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.06), 12, 0, 0, 4);
 }
 

@@ -1,15 +1,14 @@
-.tower{
-    -color-bg-default-60: #ffffff60;
-    -color-bg-default-40: #ffffff40;
-    -color-bg-default-30: #ffffff30;
-}
+/* 令牌说明：本文件被 3 个 FXML 共用（TowerView/NewTowerView/SlashView），
+   根节点均叠加 styleClass：tower + classic-tower + new-tower。
+   圆角/阴影/半透明层/评级/队伍色统一引用 Default.css 的 -root-* 令牌。 */
+
 .tower .separator{
-    -fx-padding: 4 0 8 0;
+    -fx-padding: 0 2px 0 2px;
+    -fx-max-height: 18px;
 }
 .tower .separator > .line{
-    -fx-border-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #777676 0.0%, #77767600 100.0%) transparent transparent transparent;
-    -fx-border-insets: 1px 0 0 0;
-    -fx-border-width: 1px;
+    -fx-border-color: transparent transparent transparent -color-base-4;
+    -fx-border-width: 0 0 0 2px;
     -fx-padding: 0;
 }
 .tower .status{
@@ -19,16 +18,16 @@
 
 }
 .tower .status.ace{
-    -fx-text-fill: #e33737;
+    -fx-text-fill: -root-rank-ace;
 }
 .tower .status.sss{
-    -fx-text-fill: #ffec16;
+    -fx-text-fill: -root-rank-sss;
 }
 .tower  .status.ss{
-    -fx-text-fill:#ffec16;
+    -fx-text-fill: -root-rank-ss;
 }
 .tower  .status.s{
-    -fx-text-fill: #9300e8;
+    -fx-text-fill: -root-rank-s;
 }
 .tower  .status.n{
     /* -fx-text-fill: #434343;*/
@@ -41,7 +40,7 @@
     -fx-font-weight: bold;
     -fx-background-color: -color-accent-muted;
     -fx-padding: 4 14 4 14;
-    -fx-background-radius: 20;
+    -fx-background-radius: 20px;
 }
 
 
@@ -69,7 +68,7 @@
 .tower .difficulty-list-view .list-cell > .tower-cell{
     -fx-padding: 8 12 8 12;
     -fx-spacing: 15;
-    -fx-background-radius: 5;
+    -fx-background-radius: 6px;
     -fx-pref-height: 35;
     -fx-max-width: infinity;
 }
@@ -85,18 +84,18 @@
 
 .tower .difficulty-list-view .list-cell > .tower-cell .tower-star{
     -fx-font-size: 15;
-    -fx-text-fill: #ff6666;
+    -fx-text-fill: -root-rank-ace;
 }
 .tower .difficulty-list-view .list-cell > .tower-cell .tower-star .ikonli-font-icon {
-    -fx-icon-color: #ff6666;
-    -fx-fill: #ff6666;
+    -fx-icon-color: -root-rank-ace;
+    -fx-fill: -root-rank-ace;
 }
 .tower .difficulty-list-view .list-cell > .tower-cell .tower-star.full-star{
-    -fx-text-fill: #ff6666;
+    -fx-text-fill: -root-rank-ace;
 }
 .tower .difficulty-list-view .list-cell > .tower-cell .tower-star.full-star .ikonli-font-icon {
-    -fx-icon-color: #ff6666;
-    -fx-fill: #ff6666;
+    -fx-icon-color: -root-rank-ace;
+    -fx-fill: -root-rank-ace;
 }
 .tower .difficulty-list-view .scroll-bar{
     -fx-background-color: transparent;
@@ -138,8 +137,8 @@
 .tower .right .area{
     -fx-spacing: 8;
     -fx-background-color: -color-bg-default-40;
-    -fx-background-radius: 14;
-    -fx-border-radius: 14;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
     -fx-border-color: -color-border-default;
     -fx-border-width: 1;
     -fx-padding: 16 18 14 18;
@@ -168,16 +167,16 @@
 .tower .right .area .area-score{
     -fx-font-size: 15;
     -fx-font-weight: bold;
-    -fx-text-fill: #ff6666;
+    -fx-text-fill: -root-rank-ace;
 }
 
 .tower .right .area .area-score.full-star{
-    -fx-text-fill: #ff6666;
+    -fx-text-fill: -root-rank-ace;
 }
 
 .tower .right .area .area-score.full-star .ikonli-font-icon{
-    -fx-icon-color: #ff6666;
-    -fx-fill: #ff6666;
+    -fx-icon-color: -root-rank-ace;
+    -fx-fill: -root-rank-ace;
 }
 
 .tower .right .area .floor-list{
@@ -206,11 +205,11 @@
     -fx-font-size: 22;
     -fx-font-weight: bold;
     -fx-padding:  0 4 0 4;
-    -fx-background-radius: 4;
+    -fx-background-radius: 4px;
 }
 .tower .right .area .area-level.s{
-    -fx-text-fill: #ff6666;
-    -fx-background-color: #ff666620;
+    -fx-text-fill: -root-rank-ace;
+    -fx-background-color: -root-rank-ace-bg;
 }
 .tower .right .area .area-level.a,
 .tower .right .area .area-level.b,
@@ -223,14 +222,14 @@
     -fx-text-fill: -color-fg-default;
     -fx-pref-width: 16;
     -fx-pref-height: 16;
-    -fx-background-radius: 20;
+    -fx-background-radius: 20px;
     -fx-font-size: 0.8em;
     -fx-font-weight: bold;
     -fx-alignment: center;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.25), 3, 0, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
     -fx-border-color: -color-border-default;
     -fx-border-width: 1;
-    -fx-border-radius: 20;
+    -fx-border-radius: 20px;
 }
 
 
@@ -256,13 +255,13 @@
 .tower .summary-bar {
     -fx-padding: 6 14 6 14;
     -fx-background-color: -color-bg-default-60;
-    -fx-background-radius: 6;
+    -fx-background-radius: 6px;
 }
 
 .tower .summary-bar .summary-score {
     -fx-font-size: 15;
     -fx-font-weight: bold;
-    -fx-text-fill: #ff6666;
+    -fx-text-fill: -root-rank-ace;
 }
 
 .tower .summary-bar .summary-progress {
@@ -278,25 +277,46 @@
     -fx-background-radius: 3;
 }
 
-.tower .summary-bar .summary-rank.s {
-    -fx-text-fill: #ff6666;
-    -fx-background-color: #ff666620;
-    -fx-effect: dropshadow(gaussian, #2e2e2e, 4, 0, 0, 0);
+/* ========== summary-rank 评级配色（3 套合并：.tower / .new-tower.classic-tower / .new-tower .slash-card）==========
+   顶层 sss/ss/s 统一为黄色 -root-rank-sss/-root-rank-ss（业务历史色），
+   a 粉 -root-rank-a，b 蓝 -root-rank-b，c 静音。
+   .slash-card 含 sss/ss 级别；其余视图仅 s/a/b/c。 */
+.tower .summary-bar .summary-rank.s,
+.new-tower.classic-tower .summary-bar .summary-rank.s,
+.new-tower .slash-card .summary-rank.s {
+    -fx-text-fill: -root-rank-sss;
+    -fx-background-color: -root-rank-sss-bg;
 }
 
-.tower .summary-bar .summary-rank.a {
-    -fx-text-fill: #ff6b9d;
-    -fx-background-color: #ff6b9d20;
+.tower .summary-bar .summary-rank.a,
+.new-tower.classic-tower .summary-bar .summary-rank.a,
+.new-tower .slash-card .summary-rank.a {
+    -fx-text-fill: -root-rank-a;
+    -fx-background-color: -root-rank-a-bg;
 }
 
-.tower .summary-bar .summary-rank.b {
-    -fx-text-fill: #56b8ff;
-    -fx-background-color: #56b8ff20;
+.tower .summary-bar .summary-rank.b,
+.new-tower.classic-tower .summary-bar .summary-rank.b,
+.new-tower .slash-card .summary-rank.b {
+    -fx-text-fill: -root-rank-b;
+    -fx-background-color: -root-rank-b-bg;
 }
 
-.tower .summary-bar .summary-rank.c {
+.tower .summary-bar .summary-rank.c,
+.new-tower.classic-tower .summary-bar .summary-rank.c,
+.new-tower .slash-card .summary-rank.c {
     -fx-text-fill: -color-font-muted;
     -fx-background-color: -color-bg-default-40;
+}
+
+/* sss/ss 仅 .slash-card 出现，保留顶级评级（黄色令牌） */
+.new-tower .slash-card .summary-rank.sss {
+    -fx-text-fill: -root-rank-sss;
+    -fx-background-color: -root-rank-sss-bg;
+}
+.new-tower .slash-card .summary-rank.ss {
+    -fx-text-fill: -root-rank-ss;
+    -fx-background-color: -root-rank-ss-bg;
 }
 
 /* ========== NewTowerView AreaCell 美化 ========== */
@@ -341,7 +361,7 @@
     -fx-border-color: rgba(255, 255, 255, 0.92);
     -fx-border-width: 1.5;
     -fx-border-radius: 30;
-    -fx-effect: dropshadow(gaussian, rgba(30, 42, 66, 0.14), 5, 0, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
 }
 
 .tower .right .area .role-item > .chain-unlock-num {
@@ -352,7 +372,7 @@
 .tower .right .area .buff-section {
     -fx-cursor: hand;
     -fx-padding: 6;
-    -fx-background-radius: 8;
+    -fx-background-radius: 10px;
     -fx-background-color: -color-bg-default-60;
     -fx-alignment: center;
 }
@@ -362,16 +382,16 @@
 }
 
 .tower .right .area .buff-section .image-view {
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 4, 0, 0, 2);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
 }
 
 /* ========== NewTowerView / 终焉矩阵 ========== */
 
 .new-tower {
-    -tower-blue: #5c9cf5;
-    -tower-violet: #a875ef;
-    -tower-green: #5bc58d;
-    -tower-orange: #f59a5c;
+    -tower-blue: -root-team-blue;
+    -tower-violet: -root-team-violet;
+    -tower-green: -root-team-green;
+    -tower-orange: -root-team-orange;
     -fx-background-color: transparent;
 }
 
@@ -418,8 +438,8 @@
     -fx-min-height: 48;
     -fx-pref-height: 48;
     -fx-padding: 0 13 0 14;
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
     -fx-border-color: transparent;
 }
 
@@ -457,10 +477,10 @@
 .new-tower .history-panel {
     -fx-padding: 15 12 12 12;
     -fx-background-color: -color-bg-default-40;
-    -fx-background-radius: 8;
+    -fx-background-radius: 10px;
     -fx-border-color: rgba(132, 143, 166, 0.15);
-    -fx-border-radius: 8;
-    -fx-effect: dropshadow(gaussian, rgba(32, 47, 73, 0.07), 16, 0, 0, 6);
+    -fx-border-radius: 10px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 16, 0, 0, 6);
 }
 
 .new-tower .history-heading {
@@ -521,7 +541,7 @@
     -fx-text-fill: -color-font-muted;
     -fx-padding: 5 11;
     -fx-background-color: -color-bg-default-30;
-    -fx-background-radius: 20;
+    -fx-background-radius: 20px;
 }
 
 .new-tower .matrix-summary {
@@ -531,10 +551,10 @@
     -fx-background-color:
         linear-gradient(to right, rgba(92, 156, 245, 0.12), transparent 30%),
         -color-bg-default-50;
-    -fx-background-radius: 12;
+    -fx-background-radius: 12px;
     -fx-border-color: rgba(132, 152, 190, 0.16);
-    -fx-border-radius: 12;
-    -fx-effect: dropshadow(gaussian, rgba(45, 64, 105, 0.08), 18, 0, 0, 7);
+    -fx-border-radius: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 16, 0, 0, 6);
 }
 
 .new-tower .score-block {
@@ -550,9 +570,9 @@
 .new-tower .rank-emblem {
     -fx-padding: 7;
     -fx-background-color: rgba(255, 255, 255, 0.24);
-    -fx-background-radius: 50;
+    -fx-background-radius: 50%;
     -fx-border-color: rgba(116, 180, 255, 0.36);
-    -fx-border-radius: 50;
+    -fx-border-radius: 50%;
     -fx-effect: dropshadow(gaussian, rgba(79, 135, 235, 0.28), 18, 0.25, 0, 3);
 }
 
@@ -578,7 +598,7 @@
     -fx-font-size: 30;
     -fx-font-weight: bold;
     -fx-text-fill: white;
-    -fx-effect: dropshadow(gaussian, rgba(43, 86, 170, 0.7), 4, 0, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
 }
 
 .new-tower .rank-emblem.a .rank-emblem-inner {
@@ -633,40 +653,83 @@
 
 .new-tower .tower-scroll .scroll-bar:vertical .thumb {
     -fx-background-color: rgba(120, 135, 160, 0.24);
-    -fx-background-radius: 8;
+    -fx-background-radius: 10px;
+}
+
+/* ========== 队伍四色渐变（2 套合并：.matrix-team-card 与 .right .area.team-*）==========
+   背景 = 右向队伍色低透明渐变 + -color-bg-default-50；
+   左边框 = 队伍色实色，其余三边 = 队伍色低透明。
+   matrix-team-card 与 classic-tower .right .area.team-* 共用同一套规则。 */
+.new-tower .matrix-team-card,
+.new-tower.classic-tower .right .area.team-blue {
+    -fx-background-color:
+        linear-gradient(to right, rgba(92, 156, 245, 0.13), transparent 48%),
+        -color-bg-default-50;
+    -fx-border-color: -root-team-blue rgba(92, 156, 245, 0.18) rgba(92, 156, 245, 0.18) -root-team-blue;
+}
+
+.new-tower .matrix-team-card.team-blue,
+.new-tower.classic-tower .right .area.team-blue {
+    -team-accent: -root-team-blue;
+}
+
+.new-tower.classic-tower .right .area.team-violet {
+    -team-accent: -root-team-violet;
+    -fx-background-color:
+        linear-gradient(to right, rgba(168, 117, 239, 0.13), transparent 48%),
+        -color-bg-default-50;
+    -fx-border-color: -root-team-violet rgba(168, 117, 239, 0.18) rgba(168, 117, 239, 0.18) -root-team-violet;
+}
+
+.new-tower.classic-tower .right .area.team-green {
+    -team-accent: -root-team-green;
+    -fx-background-color:
+        linear-gradient(to right, rgba(91, 197, 141, 0.13), transparent 48%),
+        -color-bg-default-50;
+    -fx-border-color: -root-team-green rgba(91, 197, 141, 0.18) rgba(91, 197, 141, 0.18) -root-team-green;
+}
+
+.new-tower.classic-tower .right .area.team-orange {
+    -team-accent: -root-team-orange;
+    -fx-background-color:
+        linear-gradient(to right, rgba(245, 154, 92, 0.13), transparent 48%),
+        -color-bg-default-50;
+    -fx-border-color: -root-team-orange rgba(245, 154, 92, 0.18) rgba(245, 154, 92, 0.18) -root-team-orange;
+}
+
+/* matrix-team-card 的 .team-* 变体仅设置 -team-accent（背景/边框沿用上面的 team-blue 默认；
+   violet/green/orange 变体在下方补齐各自渐变） */
+.new-tower .matrix-team-card.team-violet {
+    -team-accent: -root-team-violet;
+    -fx-background-color:
+        linear-gradient(to right, rgba(168, 117, 239, 0.13), transparent 48%),
+        -color-bg-default-50;
+    -fx-border-color: -root-team-violet rgba(168, 117, 239, 0.18) rgba(168, 117, 239, 0.18) -root-team-violet;
+}
+
+.new-tower .matrix-team-card.team-green {
+    -team-accent: -root-team-green;
+    -fx-background-color:
+        linear-gradient(to right, rgba(91, 197, 141, 0.13), transparent 48%),
+        -color-bg-default-50;
+    -fx-border-color: -root-team-green rgba(91, 197, 141, 0.18) rgba(91, 197, 141, 0.18) -root-team-green;
+}
+
+.new-tower .matrix-team-card.team-orange {
+    -team-accent: -root-team-orange;
+    -fx-background-color:
+        linear-gradient(to right, rgba(245, 154, 92, 0.13), transparent 48%),
+        -color-bg-default-50;
+    -fx-border-color: -root-team-orange rgba(245, 154, 92, 0.18) rgba(245, 154, 92, 0.18) -root-team-orange;
 }
 
 .new-tower .matrix-team-card {
     -fx-padding: 14 18 16 18;
     -fx-spacing: 8;
-    -fx-background-radius: 12;
-    -fx-border-radius: 12;
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
     -fx-border-width: 1 1 1 3;
-    -fx-effect: dropshadow(gaussian, rgba(34, 52, 82, 0.08), 16, 0, 0, 6);
-}
-
-.new-tower .matrix-team-card.team-blue {
-    -team-accent: -tower-blue;
-    -fx-background-color: linear-gradient(to right, rgba(92, 156, 245, 0.13), transparent 48%), -color-bg-default-50;
-    -fx-border-color: rgba(92, 156, 245, 0.70) rgba(92, 156, 245, 0.18) rgba(92, 156, 245, 0.18) -tower-blue;
-}
-
-.new-tower .matrix-team-card.team-violet {
-    -team-accent: -tower-violet;
-    -fx-background-color: linear-gradient(to right, rgba(168, 117, 239, 0.13), transparent 48%), -color-bg-default-50;
-    -fx-border-color: rgba(168, 117, 239, 0.70) rgba(168, 117, 239, 0.18) rgba(168, 117, 239, 0.18) -tower-violet;
-}
-
-.new-tower .matrix-team-card.team-green {
-    -team-accent: -tower-green;
-    -fx-background-color: linear-gradient(to right, rgba(91, 197, 141, 0.13), transparent 48%), -color-bg-default-50;
-    -fx-border-color: rgba(91, 197, 141, 0.70) rgba(91, 197, 141, 0.18) rgba(91, 197, 141, 0.18) -tower-green;
-}
-
-.new-tower .matrix-team-card.team-orange {
-    -team-accent: -tower-orange;
-    -fx-background-color: linear-gradient(to right, rgba(245, 154, 92, 0.13), transparent 48%), -color-bg-default-50;
-    -fx-border-color: rgba(245, 154, 92, 0.70) rgba(245, 154, 92, 0.18) rgba(245, 154, 92, 0.18) -tower-orange;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 16, 0, 0, 6);
 }
 
 .new-tower .matrix-team-card:hover {
@@ -736,14 +799,14 @@
     -fx-padding: 0;
     -fx-alignment: center;
     -fx-background-color: -color-bg-default;
-    -fx-background-radius: 12;
+    -fx-background-radius: 12px;
     -fx-border-color: rgba(120, 133, 154, 0.22);
-    -fx-border-radius: 12;
+    -fx-border-radius: 12px;
     -fx-font-size: 9;
     -fx-font-weight: bold;
     -fx-translate-x: 3;
     -fx-translate-y: -3;
-    -fx-effect: dropshadow(gaussian, rgba(24, 37, 57, 0.18), 4, 0, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
 }
 
 .new-tower .buff-frame {
@@ -795,7 +858,7 @@
 
 .new-tower .tower-lock-pane {
     -fx-background-color: -color-bg-default-40;
-    -fx-background-radius: 8;
+    -fx-background-radius: 10px;
 }
 
 .new-tower .lock-symbol {
@@ -817,11 +880,11 @@
 
 .classic-tower .classic-sidebar-card {
     -fx-background-color: -color-bg-default-40;
-    -fx-background-radius: 12;
+    -fx-background-radius: 12px;
     -fx-border-color: rgba(132, 143, 166, 0.18);
-    -fx-border-radius: 12;
+    -fx-border-radius: 12px;
     -fx-border-width: 1;
-    -fx-effect: dropshadow(gaussian, rgba(32, 47, 73, 0.08), 16, 0, 0, 6);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 16, 0, 0, 6);
 }
 
 .classic-tower .classic-main {
@@ -966,9 +1029,9 @@
     -fx-min-height: 50;
     -fx-padding: 8 12;
     -fx-background-color: -color-bg-default-30;
-    -fx-background-radius: 12;
+    -fx-background-radius: 12px;
     -fx-border-color: rgba(132, 143, 166, 0.14);
-    -fx-border-radius: 12;
+    -fx-border-radius: 12px;
 }
 
 .classic-tower .summary-bar > .separator {
@@ -993,10 +1056,10 @@
 .classic-tower .classic-results-panel {
     -fx-padding: 6;
     -fx-background-color: -color-bg-default-40;
-    -fx-background-radius: 12;
+    -fx-background-radius: 12px;
     -fx-border-color: rgba(132, 143, 166, 0.18);
-    -fx-border-radius: 12;
-    -fx-effect: dropshadow(gaussian, rgba(32, 47, 73, 0.08), 16, 0, 0, 6);
+    -fx-border-radius: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 16, 0, 0, 6);
 }
 
 .classic-tower .star-progress {
@@ -1008,13 +1071,13 @@
 
 .classic-tower .star-progress > .track {
     -fx-background-color: rgba(119, 131, 151, 0.18);
-    -fx-background-radius: 6;
+    -fx-background-radius: 6px;
 }
 
 .classic-tower .star-progress > .bar {
     -fx-background-color: #ef5e62;
     -fx-background-insets: 0;
-    -fx-background-radius: 6;
+    -fx-background-radius: 6px;
     -fx-padding: 3.5;
 }
 
@@ -1036,8 +1099,8 @@
 
 .classic-tower .right .area {
     -fx-background-color: -color-bg-default-30;
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
     -fx-padding: 7 6;
     -fx-effect: none;
 }
@@ -1049,42 +1112,10 @@
         -color-bg-default-50;
     -fx-border-color: rgba(92, 156, 245, 0.18) rgba(92, 156, 245, 0.18) rgba(92, 156, 245, 0.18) rgba(92, 156, 245, 0.18);
     -fx-border-width: 3 1 1 1;
-    -fx-background-radius: 12;
-    -fx-border-radius: 12;
-    -fx-effect: dropshadow(gaussian, rgba(34, 52, 82, 0.08), 16, 0, 0, 6);
+    -fx-background-radius: 12px;
+    -fx-border-radius: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 16, 0, 0, 6);
     -fx-padding: 9 14 11 14;
-}
-
-.new-tower.classic-tower .right .area.team-blue {
-    -team-accent: -tower-blue;
-    -fx-background-color:
-        linear-gradient(to right, rgba(92, 156, 245, 0.13), transparent 48%),
-        -color-bg-default-50;
-    -fx-border-color: -tower-blue rgba(92, 156, 245, 0.18) rgba(92, 156, 245, 0.18) rgba(92, 156, 245, 0.18);
-}
-
-.new-tower.classic-tower .right .area.team-violet {
-    -team-accent: -tower-violet;
-    -fx-background-color:
-        linear-gradient(to right, rgba(168, 117, 239, 0.13), transparent 48%),
-        -color-bg-default-50;
-    -fx-border-color: -tower-violet rgba(168, 117, 239, 0.18) rgba(168, 117, 239, 0.18) rgba(168, 117, 239, 0.18);
-}
-
-.new-tower.classic-tower .right .area.team-green {
-    -team-accent: -tower-green;
-    -fx-background-color:
-        linear-gradient(to right, rgba(91, 197, 141, 0.13), transparent 48%),
-        -color-bg-default-50;
-    -fx-border-color: -tower-green rgba(91, 197, 141, 0.18) rgba(91, 197, 141, 0.18) rgba(91, 197, 141, 0.18);
-}
-
-.new-tower.classic-tower .right .area.team-orange {
-    -team-accent: -tower-orange;
-    -fx-background-color:
-        linear-gradient(to right, rgba(245, 154, 92, 0.13), transparent 48%),
-        -color-bg-default-50;
-    -fx-border-color: -tower-orange rgba(245, 154, 92, 0.18) rgba(245, 154, 92, 0.18) rgba(245, 154, 92, 0.18);
 }
 
 /* TowerView summary-bar 匹配 SlashView 渐变背景 */
@@ -1093,7 +1124,7 @@
         linear-gradient(to right, rgba(92, 156, 245, 0.12), transparent 30%),
         -color-bg-default-50;
     -fx-border-color: rgba(132, 152, 190, 0.16);
-    -fx-effect: dropshadow(gaussian, rgba(45, 64, 105, 0.08), 18, 0, 0, 7);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 16, 0, 0, 6);
 }
 
 .new-tower.classic-tower .summary-bar .end-time {
@@ -1102,7 +1133,7 @@
     -fx-text-fill: -color-accent-fg;
     -fx-padding: 6 14;
     -fx-background-color: -color-accent-muted;
-    -fx-background-radius: 20;
+    -fx-background-radius: 20px;
 }
 
 .classic-tower .right .classic-area-card {
@@ -1158,9 +1189,9 @@
     -fx-spacing: 5;
     -fx-alignment: top-left;
     -fx-background-color: -color-bg-default-30;
-    -fx-background-radius: 12;
+    -fx-background-radius: 12px;
     -fx-border-color: rgba(132, 143, 166, 0.12);
-    -fx-border-radius: 12;
+    -fx-border-radius: 12px;
 }
 
 .classic-tower .right .classic-area-card .floor-title {
@@ -1210,7 +1241,7 @@
     -fx-border-color: rgba(255, 255, 255, 0.92);
     -fx-border-width: 1.5;
     -fx-border-radius: 24;
-    -fx-effect: dropshadow(gaussian, rgba(30, 42, 66, 0.14), 5, 0, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 3, 0, 0, 1);
 }
 
 .classic-tower .right .classic-area-card .chain-unlock-num {
@@ -1234,10 +1265,10 @@
     -fx-background-color:
         linear-gradient(to right, rgba(92, 156, 245, 0.12), transparent 30%),
         -color-bg-default-50;
-    -fx-background-radius: 12;
+    -fx-background-radius: 12px;
     -fx-border-color: rgba(132, 152, 190, 0.16);
-    -fx-border-radius: 12;
-    -fx-effect: dropshadow(gaussian, rgba(45, 64, 105, 0.08), 18, 0, 0, 7);
+    -fx-border-radius: 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.10), 16, 0, 0, 6);
 }
 
 .new-tower.classic-tower .summary-bar .classic-page-title {
@@ -1248,7 +1279,7 @@
 .new-tower.classic-tower .summary-bar .end-time-box {
     -fx-padding: 6 14;
     -fx-background-color: -color-accent-muted;
-    -fx-background-radius: 20;
+    -fx-background-radius: 20px;
 }
 
 .new-tower.classic-tower .summary-bar .end-time-box .end-time {
@@ -1272,36 +1303,16 @@
 .new-tower.classic-tower .summary-bar .slash-score-value {
     -fx-font-size: 15;
     -fx-font-weight: bold;
-    -fx-text-fill: #ff6666;
+    -fx-text-fill: -root-rank-ace;
 }
 
 .new-tower.classic-tower .summary-bar .summary-rank {
     -fx-font-size: 18;
     -fx-font-weight: bold;
     -fx-padding: 2 8 2 8;
-    -fx-background-radius: 4;
-    -fx-text-fill: #ffec16;
-    -fx-background-color: #ffec1620;
-}
-
-.new-tower.classic-tower .summary-bar .summary-rank.s {
-    -fx-text-fill: #ffec16;
-    -fx-background-color: #ffec1620;
-}
-
-.new-tower.classic-tower .summary-bar .summary-rank.a {
-    -fx-text-fill: #ff6b9d;
-    -fx-background-color: #ff6b9d20;
-}
-
-.new-tower.classic-tower .summary-bar .summary-rank.b {
-    -fx-text-fill: #3d8fd9;
-    -fx-background-color: #56b8ff30;
-}
-
-.new-tower.classic-tower .summary-bar .summary-rank.c {
-    -fx-text-fill: -color-font-muted;
-    -fx-background-color: -color-bg-default-40;
+    -fx-background-radius: 4px;
+    -fx-text-fill: -root-rank-sss;
+    -fx-background-color: -root-rank-sss-bg;
 }
 
 .new-tower .slash-card {
@@ -1321,34 +1332,4 @@
     -fx-font-weight: bold;
     -fx-padding: 1 6 1 6;
     -fx-background-radius: 3;
-}
-
-.new-tower .slash-card .summary-rank.sss {
-    -fx-text-fill: #ff6666;
-    -fx-background-color: #ff666620;
-}
-
-.new-tower .slash-card .summary-rank.ss {
-    -fx-text-fill: #ff6666;
-    -fx-background-color: #ff666620;
-}
-
-.new-tower .slash-card .summary-rank.s {
-    -fx-text-fill: #ffec16;
-    -fx-background-color: #ffec1620;
-}
-
-.new-tower .slash-card .summary-rank.a {
-    -fx-text-fill: #ff6b9d;
-    -fx-background-color: #ff6b9d20;
-}
-
-.new-tower .slash-card .summary-rank.b {
-    -fx-text-fill: #56b8ff;
-    -fx-background-color: #56b8ff20;
-}
-
-.new-tower .slash-card .summary-rank.c {
-    -fx-text-fill: -color-font-muted;
-    -fx-background-color: -color-bg-default-40;
 }

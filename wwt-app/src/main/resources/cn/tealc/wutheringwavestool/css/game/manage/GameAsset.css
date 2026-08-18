@@ -31,14 +31,14 @@
     -fx-min-height: 32px;
     -fx-padding: 6px 12px;
     -fx-background-color: -color-bg-subtle;
-    -fx-background-radius: 16px;
+    -fx-background-radius: 12px;
     -fx-border-color: -color-border-muted;
-    -fx-border-radius: 16px;
+    -fx-border-radius: 12px;
 }
 
 .game-asset-view .status-indicator {
     -fx-background-color: -color-fg-subtle;
-    -fx-background-radius: 999px;
+    -fx-background-radius: 50%;
 }
 
 .game-asset-view .status-text {
@@ -143,9 +143,10 @@
 }
 
 .game-asset-view .download-policy-row .spinner {
+    -fx-min-height: 38px;
     -fx-pref-height: 38px;
     -fx-background-radius: 20px;
-    -fx-padding: 2px 8px 2px 5px;
+    -fx-padding: 0 8px 0 5px;
     -fx-background-color: -color-bg-default-60;
     -fx-border-color: transparent;
     -fx-border-radius: 20px;
@@ -172,26 +173,6 @@
 .game-asset-view .download-policy-row .spinner > .decrement-arrow-button:hover {
     -fx-background-color: -color-base-2;
     -fx-cursor: hand;
-}
-
-.game-asset-view .input-group {
-    -fx-background-radius: 20px;
-    -fx-padding: 5px 10px;
-    -fx-background-color: -color-bg-default-60;
-}
-
-.game-asset-view .input-group:hover {
-    -fx-background-color: -color-bg-default-90;
-}
-
-.game-asset-view .input-group > .text-field {
-    -fx-background-color: transparent;
-    -fx-padding: 0 40px 0 0;
-}
-
-.game-asset-view .input-group > .button {
-    -fx-background-color: transparent;
-    -fx-padding: 5px;
 }
 
 .game-asset-view .asset-control-button {
@@ -228,9 +209,9 @@
 .game-asset-view .asset-progress-bar > .track {
     -fx-background-color: -color-bg-inset;
     -fx-background-insets: 0;
-    -fx-background-radius: 5px;
+    -fx-background-radius: 6px;
     -fx-border-color: -color-border-muted;
-    -fx-border-radius: 5px;
+    -fx-border-radius: 6px;
 }
 
 .game-asset-view .asset-progress-bar > .bar {
@@ -321,7 +302,7 @@
 .game-asset-view .server-cache-row {
     -fx-padding: 8px;
     -fx-background-color: -color-bg-default-60;
-    -fx-background-radius: 8px;
+    -fx-background-radius: 10px;
 }
 
 .game-asset-view .server-cache-label {

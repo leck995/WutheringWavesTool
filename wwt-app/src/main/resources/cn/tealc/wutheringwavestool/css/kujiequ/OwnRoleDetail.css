@@ -1,13 +1,8 @@
-.role-detail{
-    -color-bg-default-60: #ffffff60;
-    -color-bg-default-40: #ffffff40;
-    -color-bg-default-30: #ffffff30;
-}
 .role-detail .separator{
     -fx-padding: 4 0 8 0;
 }
 .role-detail .separator > .line{
-    -fx-border-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, #777676 0.0%, #77767600 100.0%) transparent transparent transparent;
+    -fx-border-color: linear-gradient(from 0.0% 0.0% to 100.0% 0.0%, -color-border-muted 0.0%, transparent 100.0%) transparent transparent transparent;
     -fx-border-insets: 1px 0 0 0;
     -fx-border-width: 1px;
     -fx-padding: 0;
@@ -19,19 +14,19 @@
 
 }
 .role-detail .status.ace{
-    -fx-text-fill: #e33737;
+    -fx-text-fill: -root-rank-ace;
 }
 .role-detail .status.sss{
-    -fx-text-fill: #ffec16;
+    -fx-text-fill: -root-rank-sss;
 }
 .role-detail  .status.ss{
-    -fx-text-fill:#ffec16;
+    -fx-text-fill: -root-rank-ss;
 }
 .role-detail  .status.s{
-    -fx-text-fill: #9300e8;
+    -fx-text-fill: -root-rank-s;
 }
 .role-detail  .status.n{
-    /* -fx-text-fill: #434343;*/
+    /* -fx-text-fill: -color-fg-muted;*/
 }
 .role-detail .role{
 
@@ -42,20 +37,20 @@
     -fx-fit-to-height: 600;
 }
 .role-detail .role .role-bg{
-    -fx-effect:dropshadow(three-pass-box,-color-border-muted,2,0.7,0,0);
+    -fx-effect: dropshadow(three-pass-box, rgba(50,49,49,0.5), 3, 1, 0, 0);
     -fx-padding: 10 20 20 10;
 }
 .role-detail .role  .role-name{
     -fx-font-size: 35;
     -fx-font-weight: bold;
     -fx-padding: 0 15 0 0;
-    -fx-text-fill: white;
+    -fx-text-fill: -color-fg-emphasis;
 }
 
 .role-detail .role  .role-level{
     -fx-font-size: 20;
     -fx-font-weight: bold;
-    -fx-text-fill: white;
+    -fx-text-fill: -color-fg-emphasis;
 }
 .role-detail .role .weapon{
 
@@ -87,23 +82,23 @@
 .role-detail .role .weapon .level{
     -fx-alignment: center;
     -fx-font-weight: bold;
-    -fx-text-fill: white;
+    -fx-text-fill: -color-fg-emphasis;
 }
 
 .role-detail .role .weapon .level2{
     -fx-alignment: center;
     -fx-font-weight: bold;
-    -fx-text-fill: white;
+    -fx-text-fill: -color-fg-emphasis;
 }
 .role-detail .role .weapon .name{
     -fx-font-size: 20;
     -fx-font-weight: bold;
-    -fx-text-fill: white;
-    -fx-padding: 0 0 5 0;
+    -fx-text-fill: -color-fg-emphasis;
+    -fx-padding: 0 0 5px 0;
 }
 .role-detail .role .role-skill .level{
     -fx-font-size: 14;
-    -fx-text-fill: white;
+    -fx-text-fill: -color-fg-emphasis;
 }
 
 
@@ -138,7 +133,7 @@
 
 .role-detail .role .role-attribute{
     -fx-background-color: -color-bg-default-40;
-    -fx-background-radius: 15;
+    -fx-background-radius: 10px;
 }
 .role-detail .role .role-attribute >.simple-pane > .attribute-item{
     -fx-pref-width: 170;
@@ -153,7 +148,7 @@
 .role-detail .role .role-attribute  >.simple-pane > .attribute-item > .attribute-name{
     -fx-alignment: center;
     -fx-font-weight: bold;
-    -fx-text-fill: white;
+    -fx-text-fill: -color-fg-emphasis;
     -fx-font-size: 15;
 }
 
@@ -165,18 +160,18 @@
 .role-detail .role .role-attribute >.simple-pane > .attribute-item > .attribute-value{
     -fx-alignment: center;
     -fx-font-weight: bold;
-    -fx-text-fill: white;
+    -fx-text-fill: -color-fg-emphasis;
     -fx-font-size: 15;
 }
 .role-detail .role .role-attribute >.more-btn{
     -fx-background-color: transparent;
-    -fx-padding: 5;
+    -fx-padding: 5px;
     -fx-cursor: hand;
 }
 
 
 .role-detail .role .role-attribute >.more-btn > .ikonli-font-icon {
-    -fx-icon-color: white;
+    -fx-icon-color: -color-fg-emphasis;
     -fx-icon-size: 22px;
 }
 
@@ -187,9 +182,9 @@
 
 .role-detail .phantom-desc{
     -fx-background-color: -color-bg-default-30;
-    -fx-background-radius: 5;
+    -fx-background-radius: 6px;
     -fx-border-color: transparent;
-    -fx-padding: 5 10 5 10;
+    -fx-padding: 5px 10px 5px 10px;
 }
 .role-detail .phantom-desc .tip{
     -fx-font-size: 18;
@@ -201,9 +196,9 @@
 
 .role-detail .phantom-total{
     -fx-background-color: -color-bg-default-30;
-    -fx-background-radius: 5;
+    -fx-background-radius: 6px;
     -fx-border-color: transparent;
-    -fx-padding: 5 0 5 0;
+    -fx-padding: 5px 0 5px 0;
 }
 
 
@@ -213,13 +208,13 @@
     -fx-font-size: 15;
     -fx-pref-width: 150;
     -fx-font-weight: bold;
-    -fx-text-fill: #434343;
+    -fx-text-fill: -color-fg-muted;
 }
 .role-detail .phantom-total .sub-prop1 .thumb{
-    -fx-fill: #434343;
+    -fx-fill: -color-fg-muted;
 }
 .role-detail .phantom-total .sub-prop1 .thumb.sss {
-    -fx-fill: #ffec16;
+    -fx-fill: -root-rank-sss;
 }
 .role-detail .phantom-total .sub-prop1 .thumb.ss {
     -fx-fill: #00dde8;
@@ -228,14 +223,14 @@
 .role-detail .phantom-total .sub-prop2{
     -fx-font-size: 15;
     -fx-font-weight: bold;
-    -fx-text-fill: #434343;
+    -fx-text-fill: -color-fg-muted;
 }
 
 .role-detail .phantom{
     -fx-background-color: -color-bg-default-30;
-    -fx-background-radius: 5;
+    -fx-background-radius: 6px;
     -fx-border-color: transparent;
-    -fx-padding: 5 10 5 10;
+    -fx-padding: 5px 10px 5px 10px;
 }
 
 
@@ -251,22 +246,10 @@
     -fx-font-size: 20;
     -fx-font-weight: bold ;
     -fx-font-style: italic;
-    -fx-pref-width: 40;
-}
-.role-detail .phantom .top .status.ace{
-    -fx-text-fill: #e33737;
-}
-.role-detail .phantom .top .status.sss{
-    -fx-text-fill: #ffec16;
-}
-.role-detail .phantom .top .status.ss{
-    -fx-text-fill:#ffec16;
-}
-.role-detail .phantom .top .status.s{
-    -fx-text-fill: #9300e8;
+    -fx-pref-width: 40px;
 }
 .role-detail .phantom .top .status.n{
-   /* -fx-text-fill: #434343;*/
+   /* -fx-text-fill: -color-fg-muted;*/
 }
 
 
@@ -277,8 +260,8 @@
 
 }
 .role-detail .phantom .main-prop .icon{
-    -fx-background-radius: 5.0;
-    -fx-padding: 5.0;
+    -fx-background-radius: 6px;
+    -fx-padding: 5px;
 }
 .role-detail .phantom .main-prop .icon.ssr{
     -fx-background-color: linear-gradient(from 100.0% 0.0% to 100.0% 100.0%, #fad9578c 0.0%, #f7d23be8 100.0%);
@@ -292,9 +275,9 @@
 }
 .role-detail .phantom .main-prop .icon > .cost{
     -fx-background-color: #292222;
-    -fx-padding: 3;
-    -fx-background-radius: 3;
-    -fx-text-fill: white;
+    -fx-padding: 3px;
+    -fx-background-radius: 4px;
+    -fx-text-fill: -color-fg-emphasis;
 }
 
 
@@ -329,13 +312,13 @@
     -fx-font-size: 16;
     -fx-pref-width: 200;
     -fx-font-weight: bold;
-    -fx-text-fill: #434343;
+    -fx-text-fill: -color-fg-muted;
 }
 .role-detail .phantom .sub-prop .sub-prop1 .thumb{
-    -fx-fill: #434343;
+    -fx-fill: -color-fg-muted;
 }
 .role-detail .phantom .sub-prop .sub-prop1 .thumb.sss {
-     -fx-fill: #ffec16;
+     -fx-fill: -root-rank-sss;
  }
 .role-detail .phantom .sub-prop .sub-prop1 .thumb.ss {
     -fx-fill: #00dde8;
@@ -344,7 +327,7 @@
 .role-detail .phantom .sub-prop .sub-prop2{
     -fx-font-size: 16;
     -fx-font-weight: bold;
-    -fx-text-fill: #434343;
+    -fx-text-fill: -color-fg-muted;
 }
 
 
@@ -363,8 +346,8 @@
 }
 .role-detail .role-list-view .list-cell > .role-detail-cell{
     -fx-padding: 4,20,4,20;
-    -fx-spacing: 15;
-    -fx-background-radius: 5;
+    -fx-spacing: 15px;
+    -fx-background-radius: 6px;
 }
 
 .role-detail .role-list-view .list-cell:hover > .role-detail-cell,
