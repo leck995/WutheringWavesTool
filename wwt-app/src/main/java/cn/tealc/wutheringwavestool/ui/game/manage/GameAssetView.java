@@ -157,10 +157,10 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         resourceProgressTextLabel.textProperty().bind(viewModel.progressTextProperty());
         resourceTipLabel.textProperty().bind(viewModel.tipProperty());
         assetActionTipLabel.textProperty().bind(viewModel.tipProperty());
-        downloadProgressBar.progressProperty().bind(viewModel.progressProperty());
-        downloadSpeedLabel.textProperty().bind(viewModel.downloadSpeedProperty());
-        downloadProgressTextLabel.textProperty().bind(viewModel.progressTextProperty());
-        downloadTipLabel.textProperty().bind(viewModel.tipProperty());
+        downloadProgressBar.progressProperty().bind(viewModel.downloadProgressProperty());
+        downloadSpeedLabel.textProperty().bind(viewModel.downloadDownloadSpeedProperty());
+        downloadProgressTextLabel.textProperty().bind(viewModel.downloadProgressTextProperty());
+        downloadTipLabel.textProperty().bind(viewModel.downloadTipProperty());
         viewModel.currentGameSourceProperty().addListener((observable, oldSource, newSource) ->
                 updateCurrentServerLabel(newSource));
         updateCurrentServerLabel(viewModel.currentGameSourceProperty().get());

@@ -1,15 +1,14 @@
 package cn.tealc.wutheringwavestool.service;
 
-import cn.tealc.wwt.game.resource.GameResourceInstallService;
-import cn.tealc.wwt.game.resource.GameResourceRelease;
-import cn.tealc.wwt.game.resource.DownloadOptions;
-import cn.tealc.wwt.game.resource.ResourceOperationListener;
-import cn.tealc.wwt.game.resource.ResourceUpdateOperation;
-import cn.tealc.wwt.game.resource.model.ResourceOperationState;
+import cn.tealc.wwt.game.resource.ResourceCompletionListener;
+import cn.tealc.wwt.game.resource.ResourceProgressListener;
+import cn.tealc.wwt.game.resource.model.ResourceCheckResult;
+import cn.tealc.wwt.game.resource.model.ResourceCheckState;
+import cn.tealc.wwt.game.resource.model.ResourceOperationPhase;
+import cn.tealc.wwt.game.resource.model.ResourceOperationResult;
 import cn.tealc.wwt.game.resource.model.ResourceProgress;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
-import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.google.inject.Inject;
@@ -27,12 +26,15 @@ import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.nio.file.Path;
 import java.util.Locale;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * JavaFX adapter for the resource-core installation API. It owns presentation state and
- * application-specific process checks; the core owns manifest planning and file updates.
+ * JavaFX adapter for the game-resource update pipeline.
+ *
+ * <p>内部驱动老链路 {@link GameUpdateService}（差分合成更新），对外保留统一的
+ * 呈现状态机（状态、版本、进度、速度、各控件可见性），供 Home 与资源管理界面复用。</p>
  */
 @Singleton
 public class GameResourceUpdateCoordinator {
@@ -43,7 +45,10 @@ public class GameResourceUpdateCoordinator {
         APPLYING, COMPLETED, FAILED, CANCELED
     }
 
-    private final GameResourceInstallService installService;
+    private static final double EMA_ALPHA = 0.3;
+    private static final long SAMPLE_INTERVAL_NANOS = 500_000_000L;
+
+    private final GameUpdateService updateService;
     private final TaskManageService taskManageService;
 
     private final ReadOnlyObjectWrapper<UpdateState> state = new ReadOnlyObjectWrapper<>(UpdateState.IDLE);
@@ -65,14 +70,17 @@ public class GameResourceUpdateCoordinator {
     private final ReadOnlyBooleanWrapper operating = new ReadOnlyBooleanWrapper(false);
 
     private volatile Task<?> activeTask;
-    private volatile ResourceUpdateOperation activeOperation;
-    private GameResourceRelease remoteRelease;
+    private ResourceCheckResult checkResult;
     private boolean startAfterCheck;
 
+    // 速率平滑采样（老链路进度回调驱动）
+    private final long[] speedSample = {System.nanoTime(), 0L};
+    private final double[] emaSpeed = {0};
+
     @Inject
-    public GameResourceUpdateCoordinator(GameResourceInstallService installService,
+    public GameResourceUpdateCoordinator(GameUpdateService updateService,
             TaskManageService taskManageService) {
-        this.installService = installService;
+        this.updateService = updateService;
         this.taskManageService = taskManageService;
         actionText.set(LanguageManager.getString("ui.home.button.start_update"));
     }
@@ -86,22 +94,19 @@ public class GameResourceUpdateCoordinator {
             return;
         }
         if (GameResourcesManager.getGameExeBase() == null) {
-            remoteRelease = null;
+            checkResult = null;
             setState(UpdateState.IDLE, "", "");
             return;
         }
 
-        SourceType configuredSource = Config.setting().getGameRootDirSource();
-        SourceType source = configuredSource != null ? configuredSource : SourceType.DEFAULT;
         setState(UpdateState.CHECKING,
                 LanguageManager.getString("ui.home.resource.checking"),
                 LanguageManager.getString("ui.home.resource.checking_detail"));
-        Task<GameResourceRelease> task = new Task<>() {
+        Task<ResourceCheckResult> task = new Task<>() {
             @Override
-            protected GameResourceRelease call() {
+            protected ResourceCheckResult call() {
                 updateTitle(LanguageManager.getString("ui.home.resource.task"));
-                return installService.check(source.toGameDownloadSource(), getGameDir(),
-                        Config.setting().getGameInstalledVersion());
+                return updateService.checkUpdate();
             }
         };
         activeTask = task;
@@ -125,13 +130,13 @@ public class GameResourceUpdateCoordinator {
         if (activeTask != null) {
             return;
         }
-        if (remoteRelease == null) {
+        if (checkResult == null) {
             startAfterCheck = true;
             checkForUpdates();
             return;
         }
-        if (remoteRelease.installedVersion().equalsIgnoreCase(remoteRelease.latestVersion())) {
-            showUpToDate(remoteRelease.installedVersion());
+        if (checkResult.installedVersion().equalsIgnoreCase(checkResult.latestVersion())) {
+            showUpToDate(checkResult.installedVersion());
             return;
         }
         if (GameAppListener.getInstance().isRunning()) {
@@ -141,7 +146,7 @@ public class GameResourceUpdateCoordinator {
             return;
         }
 
-        ResourceUpdateTask task = new ResourceUpdateTask(remoteRelease);
+        UpdateTask task = new UpdateTask(checkResult);
         activeTask = task;
         progress.unbind();
         progress.bind(task.progressProperty());
@@ -160,8 +165,8 @@ public class GameResourceUpdateCoordinator {
     }
 
     public void retry() {
-        if (remoteRelease != null
-                && !remoteRelease.installedVersion().equalsIgnoreCase(remoteRelease.latestVersion())) {
+        if (checkResult != null
+                && !checkResult.installedVersion().equalsIgnoreCase(checkResult.latestVersion())) {
             startUpdate();
         } else {
             checkForUpdates();
@@ -169,14 +174,17 @@ public class GameResourceUpdateCoordinator {
     }
 
     public void pause() {
-        if (state.get() == UpdateState.DOWNLOADING && activeOperation != null) {
-            activeOperation.pause();
+        if (state.get() == UpdateState.DOWNLOADING) {
+            updateService.pause();
+            setState(UpdateState.PAUSED,
+                    LanguageManager.getString("ui.home.resource.update_paused"),
+                    "");
         }
     }
 
     public void resume() {
-        if (state.get() == UpdateState.PAUSED && activeOperation != null) {
-            activeOperation.resume();
+        if (state.get() == UpdateState.PAUSED) {
+            updateService.resume();
         }
     }
 
@@ -184,36 +192,43 @@ public class GameResourceUpdateCoordinator {
         if (activeTask == null || state.get() == UpdateState.APPLYING) {
             return;
         }
-        ResourceUpdateOperation operation = activeOperation;
-        if (operation != null) {
-            operation.cancel();
-        }
+        updateService.stop();
         activeTask.cancel(true);
     }
 
-    private void completeCheck(Task<GameResourceRelease> task) {
+    private void completeCheck(Task<ResourceCheckResult> task) {
         if (!finishTask(task)) {
             return;
         }
-        remoteRelease = task.getValue();
-        currentVersion.set(remoteRelease.installedVersion());
-        latestVersion.set(remoteRelease.latestVersion());
-        if (remoteRelease.installedVersion().equalsIgnoreCase(remoteRelease.latestVersion())) {
+        ResourceCheckResult result = task.getValue();
+        if (result == null || !result.isSuccessful()) {
             startAfterCheck = false;
-            showUpToDate(remoteRelease.installedVersion());
+            setState(UpdateState.FAILED,
+                    LanguageManager.getString("ui.home.resource.check_failed"),
+                    LanguageManager.getString("ui.home.resource.check_failed_detail"));
+            return;
+        }
+        checkResult = result;
+        currentVersion.set(hasText(result.installedVersion()) ? result.installedVersion() : "-");
+        latestVersion.set(hasText(result.latestVersion()) ? result.latestVersion() : "-");
+        boolean upToDate = result.state() == ResourceCheckState.UP_TO_DATE
+                || result.installedVersion().equalsIgnoreCase(result.latestVersion());
+        if (upToDate) {
+            startAfterCheck = false;
+            showUpToDate(result.installedVersion());
             return;
         }
         setState(UpdateState.UPDATE_AVAILABLE,
                 LanguageManager.getString("ui.home.resource.update_available"),
                 String.format(LanguageManager.getString("ui.home.resource.version_diff"),
-                        remoteRelease.installedVersion(), remoteRelease.latestVersion()));
+                        result.installedVersion(), result.latestVersion()));
         if (startAfterCheck) {
             startAfterCheck = false;
             startUpdate();
         }
     }
 
-    private void failCheck(Task<GameResourceRelease> task) {
+    private void failCheck(Task<ResourceCheckResult> task) {
         if (!finishTask(task)) {
             return;
         }
@@ -224,25 +239,26 @@ public class GameResourceUpdateCoordinator {
                 LanguageManager.getString("ui.home.resource.check_failed_detail"));
     }
 
-    private void completeUpdate(ResourceUpdateTask task) {
+    private void completeUpdate(UpdateTask task) {
         if (!finishTask(task)) {
             return;
         }
         progress.unbind();
         progress.set(1);
         progressText.set("100%");
-        GameResourceRelease completedRelease = task.getValue();
-        String installedVersion = completedRelease.latestVersion();
-        currentVersion.set(installedVersion);
-        latestVersion.set(installedVersion);
-        cacheInstalledVersion(installedVersion);
-        remoteRelease = completedRelease;
+        // 老链路更新成功后本地版本即最新版本
+        String newVersion = checkResult != null && hasText(checkResult.latestVersion())
+                ? checkResult.latestVersion()
+                : currentVersion.get();
+        cacheInstalledVersion(newVersion);
+        currentVersion.set(newVersion);
+        latestVersion.set(newVersion);
         setState(UpdateState.COMPLETED,
                 LanguageManager.getString("ui.home.resource.update_complete"),
-                String.format(LanguageManager.getString("ui.home.resource.current_version"), installedVersion));
+                String.format(LanguageManager.getString("ui.home.resource.current_version"), newVersion));
     }
 
-    private void failUpdate(ResourceUpdateTask task) {
+    private void failUpdate(UpdateTask task) {
         if (!finishTask(task)) {
             return;
         }
@@ -256,7 +272,7 @@ public class GameResourceUpdateCoordinator {
                 LanguageManager.getString("ui.home.resource.update_failed"), message);
     }
 
-    private void cancelUpdate(ResourceUpdateTask task) {
+    private void cancelUpdate(UpdateTask task) {
         if (!finishTask(task)) {
             return;
         }
@@ -279,7 +295,6 @@ public class GameResourceUpdateCoordinator {
             return false;
         }
         activeTask = null;
-        activeOperation = null;
         return true;
     }
 
@@ -323,14 +338,6 @@ public class GameResourceUpdateCoordinator {
         return value == UpdateState.CHECKING || isProgressState(value);
     }
 
-    private static Path getGameDir() {
-        var gameDir = GameResourcesManager.getGameDir();
-        if (gameDir == null) {
-            throw new IllegalStateException("游戏目录未设置");
-        }
-        return gameDir.toPath().toAbsolutePath().normalize();
-    }
-
     private void cacheInstalledVersion(String version) {
         try {
             Config.setting().setGameInstalledVersion(version);
@@ -340,100 +347,83 @@ public class GameResourceUpdateCoordinator {
         }
     }
 
-    private final class ResourceUpdateTask extends Task<GameResourceRelease> {
-        private static final long SAMPLE_INTERVAL_NANOS = 500_000_000L;
-        private static final double EMA_ALPHA = 0.3;
-        private final GameResourceRelease initialRelease;
-        private final long[] speedSample = {System.nanoTime(), 0L};
-        private final double[] speed = {0};
+    /** 驱动老链路 {@link GameUpdateService#runUpdate}，并把 legacy 进度映射到 JavaFX 状态机。 */
+    private final class UpdateTask extends Task<ResourceOperationResult> {
+        private final ResourceCheckResult initialResult;
 
-        private ResourceUpdateTask(GameResourceRelease initialRelease) {
-            this.initialRelease = initialRelease;
+        private UpdateTask(ResourceCheckResult initialResult) {
+            this.initialResult = initialResult;
         }
 
-@Override
-            protected GameResourceRelease call() throws Exception {
-                updateTitle(LanguageManager.getString("ui.home.resource.update_task"));
-                ResourceUpdateOperation operation = installService.createUpdate(getGameDir(), initialRelease,
-                        new ResourceOperationListener() {
-                            @Override
-                            public void onStateChanged(ResourceOperationState value) {
-                                handleOperationState(value);
-                            }
-
-                            @Override
-                            public void onProgress(ResourceProgress value) {
-                                handleProgress(value);
-                            }
-                        }, downloadOptions(), customCacheRoot());
-            activeOperation = operation;
-            if (isCancelled()) {
-                operation.cancel();
+        @Override
+        protected ResourceOperationResult call() throws InterruptedException {
+            updateTitle(LanguageManager.getString("ui.home.resource.update_task"));
+            AtomicReference<ResourceOperationResult> resultRef = new AtomicReference<>();
+            CountDownLatch latch = new CountDownLatch(1);
+            ResourceProgressListener progressListener = this::handleLegacyProgress;
+            ResourceCompletionListener completionListener = result -> {
+                resultRef.set(result);
+                latch.countDown();
+            };
+            updateService.runUpdate(initialResult, progressListener, completionListener);
+            latch.await();
+            ResourceOperationResult result = resultRef.get();
+            if (result == null) {
+                throw new IllegalStateException("更新未返回结果");
             }
-            try {
-                return operation.execute();
-            } finally {
-                if (activeOperation == operation) {
-                    activeOperation = null;
-                }
+            if (!result.successful()) {
+                throw new IllegalStateException(hasText(result.errorMessage())
+                        ? result.errorMessage() : "更新失败");
             }
+            return result;
         }
 
-        private void handleOperationState(ResourceOperationState value) {
-            switch (value) {
-                case PREPARING -> phase(UpdateState.PREPARING,
-                        LanguageManager.getString("ui.home.resource.preparing"),
-                        LanguageManager.getString("ui.home.resource.preparing_detail"));
-                case DOWNLOADING -> phase(UpdateState.DOWNLOADING,
+        private void handleLegacyProgress(ResourceProgress value) {
+            UpdateState progressState = mapProgressState(value.operationPhase());
+            if (progressState == UpdateState.DOWNLOADING && state.get() != UpdateState.DOWNLOADING) {
+                setState(UpdateState.DOWNLOADING,
                         LanguageManager.getString("ui.home.resource.downloading"),
                         LanguageManager.getString("ui.home.resource.download_start"));
-                case PAUSED -> phase(UpdateState.PAUSED,
-                        LanguageManager.getString("ui.home.resource.update_paused"), detailText.get());
-                case APPLYING -> {
-                    if (GameAppListener.getInstance().isRunning()) {
-                        throw new IllegalStateException(LanguageManager.getString("ui.home.resource.close_game"));
-                    }
-                    phase(UpdateState.APPLYING,
-                            LanguageManager.getString("ui.home.resource.applying"),
-                            LanguageManager.getString("ui.home.resource.applying_detail"));
-                }
-                case CANCELED -> setState(UpdateState.CANCELED,
-                        LanguageManager.getString("ui.game_manager.asset.stopped"),
-                        LanguageManager.getString("ui.home.resource.update_canceled_detail"));
-                case FAILED, COMPLETED -> {
-                    // Task completion supplies final status and error details.
-                }
+            } else if (progressState == UpdateState.APPLYING
+                    && state.get() != UpdateState.APPLYING) {
+                setState(UpdateState.APPLYING,
+                        LanguageManager.getString("ui.home.resource.applying"),
+                        LanguageManager.getString("ui.home.resource.applying_detail"));
             }
-        }
 
-        private void handleProgress(ResourceProgress value) {
             long completed = value.completedBytes();
             long total = value.totalBytes();
-            updateProgress(completed, total);
-            long now = System.nanoTime();
-            long elapsed = now - speedSample[0];
-            if (elapsed >= SAMPLE_INTERVAL_NANOS) {
-                double instantSpeed = Math.max(0, (completed - speedSample[1])
-                        / (elapsed / 1_000_000_000.0));
-                // EMA_now = alpha * instant + (1 - alpha) * EMA_prev，首次直接用瞬时值作初值。
-                speed[0] = (speed[0] == 0)
-                        ? instantSpeed
-                        : EMA_ALPHA * instantSpeed + (1 - EMA_ALPHA) * speed[0];
-                speedSample[0] = now;
-                speedSample[1] = completed;
-                updateSpeedText(formatBytes((long) Math.max(0, speed[0])) + "/s");
+            if (total > 0) {
+                // Note: completed may exceed total (e.g. placeholder), clamp via Task anyway.
+                updateProgress(completed, total);
+            } else {
+                updateProgress(-1, 0);
+            }
+            if (progressState == UpdateState.DOWNLOADING) {
+                long now = System.nanoTime();
+                long elapsed = now - speedSample[0];
+                if (elapsed >= SAMPLE_INTERVAL_NANOS) {
+                    double instant = Math.max(0, (completed - speedSample[1])
+                            / (elapsed / 1_000_000_000.0));
+                    emaSpeed[0] = (emaSpeed[0] == 0) ? instant
+                            : EMA_ALPHA * instant + (1 - EMA_ALPHA) * emaSpeed[0];
+                    speedSample[0] = now;
+                    speedSample[1] = completed;
+                    updateSpeedText(formatBytes((long) Math.max(0, emaSpeed[0])) + "/s");
+                }
             }
             updateMessage(String.format(Locale.ROOT, "%s / %s  ·  %s/s",
                     formatBytes(completed), formatBytes(total),
-                    formatBytes((long) Math.max(0, speed[0]))));
+                    formatBytes((long) Math.max(0, emaSpeed[0]))));
         }
 
-        private void phase(UpdateState updateState, String status, String detail) {
-            if (updateState == UpdateState.APPLYING) {
-                updateProgress(-1, -1);
-            }
-            updateMessage(detail);
-            setState(updateState, status, detail);
+        private UpdateState mapProgressState(ResourceOperationPhase phase) {
+            return switch (phase) {
+                case VERIFYING -> UpdateState.PREPARING;
+                case DOWNLOADING -> UpdateState.DOWNLOADING;
+                case APPLYING -> UpdateState.APPLYING;
+                default -> UpdateState.PREPARING;
+            };
         }
     }
 
@@ -466,17 +456,6 @@ public class GameResourceUpdateCoordinator {
 
     private static boolean hasText(String value) {
         return value != null && !value.isBlank();
-    }
-
-    private static DownloadOptions downloadOptions() {
-        return new DownloadOptions(Config.setting().getDownloadParallelCount(),
-                Config.setting().getDownloadSpeedLimitBytesPerSecond());
-    }
-
-    /** 用户自定义下载缓存根目录，留空返回 null（回落默认 cacheRoot）。 */
-    private static Path customCacheRoot() {
-        String custom = Config.setting().getCustomDownloadCacheDir();
-        return (custom != null && !custom.isBlank()) ? Path.of(custom) : null;
     }
 
     public ReadOnlyObjectProperty<UpdateState> stateProperty() { return state.getReadOnlyProperty(); }

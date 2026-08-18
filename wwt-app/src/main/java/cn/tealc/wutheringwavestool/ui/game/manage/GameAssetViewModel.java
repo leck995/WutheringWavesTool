@@ -166,6 +166,12 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     private final ObjectProperty<SourceType> downloadSource =
             new SimpleObjectProperty<>(SourceType.DEFAULT);
 
+    // 全量下载独立的进度展示属性，与资源操作（更新/修复/预下载）隔离，避免互相污染。
+    private final DoubleProperty downloadProgress = new SimpleDoubleProperty(0);
+    private final StringProperty downloadProgressText = new SimpleStringProperty("0%");
+    private final StringProperty downloadDownloadSpeed = new SimpleStringProperty("");
+    private final StringProperty downloadTip = new SimpleStringProperty("");
+
     private ResourceCheckResult checkResult;
 
     private long operationSequence;
@@ -601,7 +607,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                 LanguageManager.getString("ui.game_manager.asset.done"),
                 LanguageManager.getString("ui.game_manager.asset.fail"),
                 () -> {
-                    tip.set("正在登记" + downloadSourceName(selectedSource) + "游戏目录");
+                    downloadTip.set("正在登记" + downloadSourceName(selectedSource) + "游戏目录");
                     installationManager.configureInstallation(selectedSource, saveDir.toPath(), true);
                     String installedVersion = installService.readInstalledVersion(saveDir.toPath());
                     if (hasText(installedVersion)) {
@@ -610,7 +616,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                     Config.setting().save();
                     serverSwitchCoordinator.refresh();
                     refreshInstalledState();
-                    tip.set(downloadSourceName(selectedSource) + "游戏目录已登记");
+                    downloadTip.set(downloadSourceName(selectedSource) + "游戏目录已登记");
                 });
     }
 
@@ -807,8 +813,14 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             }
         }
         operationState.set(OperationState.PAUSED);
-        downloadSpeed.set("");
-        tip.set("资源操作已暂停");
+        boolean isDownload = activeOperation == OperationType.DOWNLOAD;
+        if (isDownload) {
+            downloadDownloadSpeed.set("");
+            downloadTip.set("资源操作已暂停");
+        } else {
+            downloadSpeed.set("");
+            tip.set("资源操作已暂停");
+        }
     }
 
     public void resume() {
@@ -831,7 +843,12 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             }
         }
         operationState.set(OperationState.RUNNING);
-        tip.set(resumeDetail(activeOperation));
+        boolean isDownload = activeOperation == OperationType.DOWNLOAD;
+        if (isDownload) {
+            downloadTip.set(resumeDetail(activeOperation));
+        } else {
+            tip.set(resumeDetail(activeOperation));
+        }
     }
 
     public void stop() {
@@ -843,8 +860,14 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         long operationId = activeOperationId;
         Task<?> task = activeTask;
         operationState.set(OperationState.STOPPING);
-        downloadSpeed.set("");
-        tip.set("正在停止资源操作");
+        boolean isDownload = activeOperation == OperationType.DOWNLOAD;
+        if (isDownload) {
+            downloadDownloadSpeed.set("");
+            downloadTip.set("正在停止资源操作");
+        } else {
+            downloadSpeed.set("");
+            tip.set("正在停止资源操作");
+        }
         try {
             switch (activeOperation) {
                 case DOWNLOAD -> {
@@ -888,8 +911,17 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         stopAvailable.set(true);
         operationState.set(OperationState.RUNNING);
         status.set(statusText);
-        downloadSpeed.set("");
-        tip.set("");
+        if (operation == OperationType.DOWNLOAD) {
+            downloadProgress.set(0);
+            downloadProgressText.set("0%");
+            downloadDownloadSpeed.set("");
+            downloadTip.set("");
+            downloadSpeed.set("");
+            tip.set("");
+        } else {
+            downloadSpeed.set("");
+            tip.set("");
+        }
         progress.set(0);
         progressText.set("0%");
         return operationId;
@@ -942,9 +974,13 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         operationState.set(OperationState.IDLE);
         status.set(resultText);
         downloadSpeed.set("");
+        downloadDownloadSpeed.set("");
+        downloadTip.set("");
         if (resetProgress) {
             progress.set(0);
             progressText.set("0%");
+            downloadProgress.set(0);
+            downloadProgressText.set("0%");
         }
         return true;
     }
@@ -984,21 +1020,28 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         Platform.runLater(this::checkUpdate);
     }
 
-    /** 将底层工作线程的进度收敛到 FX 线程，并丢弃过期操作的回调。 */
+    /** 将底层工作线程的进度收敛到 FX 线程，并丢弃过期操作的回调。全量下载与资源操作分流到各自属性。 */
     private void updateProgressByData(long operationId, long done, long total) {
         if (total <= 0) {
             return;
         }
+        boolean isDownload = activeOperation == OperationType.DOWNLOAD;
         double value = Math.min(1.0, Math.max(0.0, (double) done / total));
         String text = String.format("%.1f%%", value * 100);
         Runnable update = () -> {
             if (activeOperationId != operationId
                     || operationState.get() == OperationState.IDLE
+                    || operationState.get() == OperationState.PAUSED
                     || operationState.get() == OperationState.STOPPING) {
                 return;
             }
-            progress.set(value);
-            progressText.set(text);
+            if (isDownload) {
+                downloadProgress.set(value);
+                downloadProgressText.set(text);
+            } else {
+                progress.set(value);
+                progressText.set(text);
+            }
         };
         if (Platform.isFxApplicationThread()) {
             update.run();
@@ -1011,13 +1054,19 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         if (!hasText(detail)) {
             return;
         }
+        boolean isDownload = activeOperation == OperationType.DOWNLOAD;
         Runnable update = () -> {
             if (activeOperationId != operationId
                     || operationState.get() == OperationState.IDLE
+                    || operationState.get() == OperationState.PAUSED
                     || operationState.get() == OperationState.STOPPING) {
                 return;
             }
-            tip.set(detail);
+            if (isDownload) {
+                downloadTip.set(detail);
+            } else {
+                tip.set(detail);
+            }
         };
         if (Platform.isFxApplicationThread()) {
             update.run();
@@ -1027,13 +1076,19 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     }
 
     private void updateDownloadSpeed(long operationId, String speed) {
+        boolean isDownload = activeOperation == OperationType.DOWNLOAD;
         Runnable update = () -> {
             if (activeOperationId != operationId
                     || operationState.get() == OperationState.IDLE
+                    || operationState.get() == OperationState.PAUSED
                     || operationState.get() == OperationState.STOPPING) {
                 return;
             }
-            downloadSpeed.set(speed != null ? speed : "");
+            if (isDownload) {
+                downloadDownloadSpeed.set(speed != null ? speed : "");
+            } else {
+                downloadSpeed.set(speed != null ? speed : "");
+            }
         };
         if (Platform.isFxApplicationThread()) {
             update.run();
@@ -1219,6 +1274,22 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     public StringProperty tipProperty() {
         return tip;
+    }
+
+    public DoubleProperty downloadProgressProperty() {
+        return downloadProgress;
+    }
+
+    public StringProperty downloadProgressTextProperty() {
+        return downloadProgressText;
+    }
+
+    public StringProperty downloadDownloadSpeedProperty() {
+        return downloadDownloadSpeed;
+    }
+
+    public StringProperty downloadTipProperty() {
+        return downloadTip;
     }
 
     public StringProperty downloadDirProperty() {
