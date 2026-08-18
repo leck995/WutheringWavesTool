@@ -94,7 +94,7 @@
                      <children>
                         <HBox alignment="CENTER_LEFT" spacing="8.0">
                            <children>
-                              <Label styleClass="stat-section-title" text="抽取次数排行" />
+                              <Label styleClass="stat-section-title" text="抽取排行" />
                               <Pane HBox.hgrow="ALWAYS" />
                               <ComboBox fx:id="rarityCombo" maxWidth="80.0" styleClass="filter-combo" />
                               <HBox styleClass="filter-group">
