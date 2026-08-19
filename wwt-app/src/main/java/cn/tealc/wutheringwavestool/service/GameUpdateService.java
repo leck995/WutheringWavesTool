@@ -88,18 +88,33 @@ public class GameUpdateService {
         return cached != null ? cached : "";
     }
 
+    /** 读取指定游戏目录已登记的安装版本（launcherDownloadConfig.json 的 version）。 */
+    public String getInstalledVersion(Path gameDirectory) {
+        try {
+            String installed = resourceCore.installedVersion(resourceContextFor(gameDirectory));
+            return installed != null ? installed : "";
+        } catch (RuntimeException e) {
+            LOG.debug("读取已装机版本失败: {}", gameDirectory, e);
+            return "";
+        }
+    }
+
     private static ResourceContext resourceContext() {
         File gameDirectory = GameResourcesManager.getGameDir();
         if (gameDirectory == null) {
             throw new IllegalStateException("Game directory is not configured");
         }
+        return resourceContextFor(gameDirectory.toPath());
+    }
+
+    private static ResourceContext resourceContextFor(Path gameDirectory) {
         String customCache = Config.setting().getCustomDownloadCacheDir();
         Path cacheDir = (customCache != null && !customCache.isBlank())
                 ? Path.of(customCache) : null;
         SourceType sourceType = Config.setting().getGameRootDirSource();
         GameDownloadSource source = (sourceType != null ? sourceType : SourceType.DEFAULT)
                 .toGameDownloadSource();
-        return new ResourceContext(gameDirectory.toPath(), Path.of("."), cacheDir, source);
+        return new ResourceContext(gameDirectory, Path.of("."), cacheDir, source);
     }
 
     private static void persistVersion(String version) {

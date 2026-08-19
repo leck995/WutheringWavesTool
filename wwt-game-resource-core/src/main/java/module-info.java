@@ -11,9 +11,6 @@ module cn.tealc.wwt.game.resource.core {
 
     exports cn.tealc.wwt.game.resource;
     exports cn.tealc.wwt.game.resource.model;
-    exports cn.tealc.wwt.game.resource.model.game;
-    exports cn.tealc.wwt.game.resource.model.launcher;
-    exports cn.tealc.wwt.game.resource.error;
     exports cn.tealc.wwt.game.resource.util;
 
 }
