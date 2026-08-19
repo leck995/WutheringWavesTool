@@ -16,6 +16,7 @@ import cn.tealc.wwt.game.resource.GameDownloadSource;
 import cn.tealc.wwt.game.resource.model.ResourceCheckResult;
 import cn.tealc.wwt.game.resource.model.ResourceCheckState;
 import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.wutheringwavestool.service.ManagedTask;
 import cn.tealc.wutheringwavestool.service.TaskManageService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
@@ -24,7 +25,9 @@ import com.google.inject.Inject;
 import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.SceneLifecycle;
 import javafx.animation.PauseTransition;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -64,7 +67,6 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     private GameInstallationManager installationManager;
     @Inject
     private TaskManageService taskManageService;
-    private GameResourceUpdateTask resourceUpdateTask;
     private ResourceCheckResult checkResult;
     private final SimpleObjectProperty<GameResourceUpdateTask.UpdateState> resourceUpdateState =
             new SimpleObjectProperty<>(GameResourceUpdateTask.UpdateState.IDLE);
@@ -74,6 +76,14 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     private final SimpleBooleanProperty resourceStatusVisible = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty resourceRetryVisible = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty updateActionVisible = new SimpleBooleanProperty(false);
+    private final SimpleDoubleProperty resourceProgress = new SimpleDoubleProperty(0);
+    private final SimpleStringProperty resourceProgressText = new SimpleStringProperty("0%");
+    private final SimpleBooleanProperty resourceProgressVisible = new SimpleBooleanProperty(false);
+    private final SimpleBooleanProperty resourcePauseVisible = new SimpleBooleanProperty(false);
+    private final SimpleBooleanProperty resourceResumeVisible = new SimpleBooleanProperty(false);
+    private final SimpleBooleanProperty resourceCancelVisible = new SimpleBooleanProperty(false);
+    /** 当前已绑定进度的更新任务，避免重复绑定 listener 与遗漏首次状态同步。 */
+    private GameResourceUpdateTask boundUpdateTask;
     private SimpleStringProperty gameTimeText = new SimpleStringProperty();
     private SimpleStringProperty gameTimeTipText = new SimpleStringProperty();
     private SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
@@ -104,12 +114,24 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     public void onViewAdded() {
         serverSwitchCoordinator.currentSourceProperty().addListener(serverSourceListener);
         serverSwitchCoordinator.refresh();
+        // 回到首页时，若已有进行中的更新任务（可能由资源管理页发起），直接接管其进度展示。
+        GameResourceUpdateTask running = currentUpdateTask();
+        if (running != null && isOperating(running.getPhase())) {
+            return;
+        }
         checkGameResourceUpdate();
     }
 
     @Override
     public void onViewRemoved() {
         serverSwitchCoordinator.currentSourceProperty().removeListener(serverSourceListener);
+    }
+
+    private static boolean isOperating(GameResourceUpdateTask.UpdateState state) {
+        return state == GameResourceUpdateTask.UpdateState.PREPARING
+                || state == GameResourceUpdateTask.UpdateState.DOWNLOADING
+                || state == GameResourceUpdateTask.UpdateState.PAUSED
+                || state == GameResourceUpdateTask.UpdateState.APPLYING;
     }
 
     /** 首页创建后后台检查远端资源版本，不阻塞页面和游戏启动。 */
@@ -256,41 +278,86 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
         if (checkResult == null) {
             return;
         }
-        updateTask().setCheckResult(checkResult);
-        updateTask().executeUpdate();
+        GameResourceUpdateTask task = currentUpdateTask();
+        if (task == null) {
+            task = new GameResourceUpdateTask(updateService);
+            task.setCheckResult(checkResult);
+            taskManageService.submit(GameResourceUpdateTask.TASK_ID,
+                    LanguageManager.getString("ui.home.resource.update_task"),
+                    task, task, ManagedTask.TaskCategory.UPDATE);
+        }
     }
 
     public void retryResourceUpdate() {
-        runCheck();
+        checkGameResourceUpdate();
     }
 
     public void pauseResourceUpdate() {
-        updateTask().pauseUpdate();
+        GameResourceUpdateTask task = currentUpdateTask();
+        if (task != null) {
+            task.pauseUpdate();
+        }
     }
 
     public void resumeResourceUpdate() {
-        updateTask().resumeUpdate();
+        GameResourceUpdateTask task = currentUpdateTask();
+        if (task != null) {
+            task.resumeUpdate();
+        }
     }
 
     public void cancelResourceUpdate() {
-        updateTask().cancelUpdate();
+        GameResourceUpdateTask task = currentUpdateTask();
+        if (task != null) {
+            task.cancelUpdate();
+        }
     }
 
-    private GameResourceUpdateTask updateTask() {
-        if (resourceUpdateTask == null) {
-            resourceUpdateTask = new GameResourceUpdateTask(updateService);
-            resourceUpdateTask.phaseProperty().addListener((observable, oldValue, newValue) -> {
-                if (newValue != null) {
-                    resourceUpdateState.set(newValue);
-                }
-            });
-            resourceUpdateTask.statusTextProperty().addListener((o, a, n) -> resourceStatusText.set(n));
-            resourceUpdateTask.detailTextProperty().addListener((o, a, n) -> resourceVersionText.set(n));
-            resourceUpdateTask.retryVisibleProperty().addListener((o, a, n) -> resourceRetryVisible.set(n));
-            resourceUpdateTask.statusVisibleProperty().addListener((o, a, n) -> resourceStatusVisible.set(n));
-            resourceUpdateState.set(resourceUpdateTask.getPhase());
+    /**
+     * 从 {@link TaskManageService} 查询当前更新任务（通过固定 id 复用），
+     * 首次遇到时绑定其进度/状态到本 VM 的属性，使两个界面共享同一任务。
+     */
+    private GameResourceUpdateTask currentUpdateTask() {
+        ManagedTask managed = taskManageService.get(GameResourceUpdateTask.TASK_ID);
+        if (managed == null) {
+            return null;
         }
-        return resourceUpdateTask;
+        GameResourceUpdateTask task = (GameResourceUpdateTask) managed.getTask();
+        if (task != boundUpdateTask) {
+            bindUpdateTask(task);
+        }
+        return task;
+    }
+
+    private void bindUpdateTask(GameResourceUpdateTask task) {
+        boundUpdateTask = task;
+        task.phaseProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                resourceUpdateState.set(newValue);
+            }
+        });
+        task.statusTextProperty().addListener((o, a, n) -> resourceStatusText.set(n));
+        task.detailTextProperty().addListener((o, a, n) -> resourceVersionText.set(n));
+        task.retryVisibleProperty().addListener((o, a, n) -> resourceRetryVisible.set(n));
+        task.statusVisibleProperty().addListener((o, a, n) -> resourceStatusVisible.set(n));
+        task.progressProperty().addListener((o, a, n) -> resourceProgress.set(n.doubleValue()));
+        task.progressTextProperty().addListener((o, a, n) -> resourceProgressText.set(n));
+        task.progressVisibleProperty().addListener((o, a, n) -> resourceProgressVisible.set(n));
+        task.pauseVisibleProperty().addListener((o, a, n) -> resourcePauseVisible.set(n));
+        task.resumeVisibleProperty().addListener((o, a, n) -> resourceResumeVisible.set(n));
+        task.cancelVisibleProperty().addListener((o, a, n) -> resourceCancelVisible.set(n));
+        // 同步已发生的状态（切页或已进行中的任务）。
+        resourceUpdateState.set(task.getPhase());
+        resourceStatusText.set(task.statusTextProperty().get());
+        resourceVersionText.set(task.detailTextProperty().get());
+        resourceRetryVisible.set(task.retryVisibleProperty().get());
+        resourceStatusVisible.set(task.statusVisibleProperty().get());
+        resourceProgress.set(task.getProgress());
+        resourceProgressText.set(task.progressTextProperty().get());
+        resourceProgressVisible.set(task.progressVisibleProperty().get());
+        resourcePauseVisible.set(task.pauseVisibleProperty().get());
+        resourceResumeVisible.set(task.resumeVisibleProperty().get());
+        resourceCancelVisible.set(task.cancelVisibleProperty().get());
     }
 
     private static boolean hasText(String value) {
@@ -516,26 +583,26 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     }
 
     public ReadOnlyDoubleProperty resourceProgressProperty() {
-        return updateTask().progressProperty();
+        return resourceProgress;
     }
 
     public ReadOnlyStringProperty resourceProgressTextProperty() {
-        return updateTask().progressTextProperty();
+        return resourceProgressText;
     }
 
     public ReadOnlyBooleanProperty resourceProgressVisibleProperty() {
-        return updateTask().progressVisibleProperty();
+        return resourceProgressVisible;
     }
 
     public ReadOnlyBooleanProperty resourcePauseVisibleProperty() {
-        return updateTask().pauseVisibleProperty();
+        return resourcePauseVisible;
     }
 
     public ReadOnlyBooleanProperty resourceResumeVisibleProperty() {
-        return updateTask().resumeVisibleProperty();
+        return resourceResumeVisible;
     }
 
     public ReadOnlyBooleanProperty resourceCancelVisibleProperty() {
-        return updateTask().cancelVisibleProperty();
+        return resourceCancelVisible;
     }
 }

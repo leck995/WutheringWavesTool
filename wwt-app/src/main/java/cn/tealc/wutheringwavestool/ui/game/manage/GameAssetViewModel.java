@@ -16,6 +16,8 @@ import cn.tealc.wutheringwavestool.thread.game.download.GameResourceUpdateTask;
 import cn.tealc.wutheringwavestool.service.GameInstallationManager;
 import cn.tealc.wutheringwavestool.service.GameServerSwitchCoordinator;
 import cn.tealc.wutheringwavestool.service.GameUpdateService;
+import cn.tealc.wutheringwavestool.service.ManagedTask;
+import cn.tealc.wutheringwavestool.service.TaskControl;
 import cn.tealc.wutheringwavestool.service.TaskManageService;
 import cn.tealc.wutheringwavestool.thread.game.download.GameFullDownloadTask;
 import cn.tealc.wutheringwavestool.thread.game.download.GamePreDownloadTask;
@@ -192,10 +194,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     }
 
     public void initialize() {
-        if (updateTask == null) {
-            updateTask = new GameResourceUpdateTask(updateService);
-        }
-        syncResourceUpdateState(updateTask.phaseProperty().get());
+        currentUpdateTask();
         serverSwitchCoordinator.refresh();
     }
 
@@ -258,8 +257,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     @Override
     public void onViewAdded() {
         serverSwitchCoordinator.refresh();
-        attachCoordinatorListeners();
-        syncResourceUpdateState(updateTask.phaseProperty().get());
+        currentUpdateTask();
         SourceType configuredSource = Config.setting().gameRootDirSourceProperty().get();
         downloadSource.set(normalizeDownloadSource(configuredSource));
         if (downloadDir.get() == null || downloadDir.get().isBlank()) {
@@ -270,20 +268,38 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         }
     }
 
-    private void attachCoordinatorListeners() {
-        if (coordinatorListenersAttached) {
-            return;
+    /**
+     * 从 {@link TaskManageService} 查询当前更新任务（固定 id 复用），
+     * 若任务实例变化则重绑进度监听，并把最新阶段同步到本界面的操作状态。
+     */
+    private GameResourceUpdateTask currentUpdateTask() {
+        ManagedTask managed = taskManageService.get(GameResourceUpdateTask.TASK_ID);
+        GameResourceUpdateTask task = managed != null ? (GameResourceUpdateTask) managed.getTask() : null;
+        if (task != updateTask) {
+            rebindCoordinator(task);
+            updateTask = task;
         }
-        updateTask.phaseProperty().addListener(coordinatorStateListener);
-        updateTask.progressProperty().addListener(coordinatorProgressListener);
-        updateTask.progressTextProperty().addListener(coordinatorProgressTextListener);
-        updateTask.speedTextProperty().addListener(coordinatorSpeedListener);
-        updateTask.detailTextProperty().addListener(coordinatorDetailListener);
-        coordinatorListenersAttached = true;
+        if (task != null) {
+            syncResourceUpdateState(task.phaseProperty().get());
+        }
+        return task;
+    }
+
+    private void rebindCoordinator(GameResourceUpdateTask task) {
+        detachCoordinatorListeners();
+        if (task != null) {
+            task.phaseProperty().addListener(coordinatorStateListener);
+            task.progressProperty().addListener(coordinatorProgressListener);
+            task.progressTextProperty().addListener(coordinatorProgressTextListener);
+            task.speedTextProperty().addListener(coordinatorSpeedListener);
+            task.detailTextProperty().addListener(coordinatorDetailListener);
+        }
+        coordinatorListenersAttached = task != null;
     }
 
     private void detachCoordinatorListeners() {
-        if (!coordinatorListenersAttached) {
+        if (!coordinatorListenersAttached || updateTask == null) {
+            coordinatorListenersAttached = false;
             return;
         }
         updateTask.phaseProperty().removeListener(coordinatorStateListener);
@@ -376,7 +392,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             status.set(LanguageManager.getString(success
                     ? "ui.game_manager.asset.ready"
                     : "ui.game_manager.asset.check_fail"));
-            syncResourceUpdateState(updateTask.phaseProperty().get());
+            syncUpdateStateFromCurrentTask();
         });
         task.setOnFailed(event -> {
             if (!finishCheck(checkId, task)) {
@@ -385,7 +401,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             LOG.warn("检查游戏更新失败", task.getException());
             clearCheckResult();
             status.set(LanguageManager.getString("ui.game_manager.asset.check_fail"));
-            syncResourceUpdateState(updateTask.phaseProperty().get());
+            syncUpdateStateFromCurrentTask();
         });
         task.setOnCancelled(event -> finishCheck(checkId, task));
         taskManageService.execute(task);
@@ -442,6 +458,14 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         showRepair.set(false);
         showPreDownload.set(false);
         tip.set("");
+    }
+
+    /** 同步更新任务阶段到界面操作状态，无进行中的任务时调用。 */
+    private void syncUpdateStateFromCurrentTask() {
+        GameResourceUpdateTask task = currentUpdateTask();
+        if (task != null) {
+            syncResourceUpdateState(task.phaseProperty().get());
+        }
     }
 
     private void syncResourceUpdateState(GameResourceUpdateTask.UpdateState state) {
@@ -593,11 +617,16 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             warnCheckFirst();
             return;
         }
-        if (updateTask == null) {
-            updateTask = new GameResourceUpdateTask(updateService);
+        GameResourceUpdateTask task = currentUpdateTask();
+        if (task == null) {
+            task = new GameResourceUpdateTask(updateService);
+            updateTask = task;
+            rebindCoordinator(task);
+            task.setCheckResult(checkResult);
+            taskManageService.submit(GameResourceUpdateTask.TASK_ID,
+                    LanguageManager.getString("ui.game_manager.asset.update"),
+                    task, task, ManagedTask.TaskCategory.UPDATE);
         }
-        updateTask.setCheckResult(checkResult);
-        updateTask.executeUpdate();
     }
 
     /** 校验并修复游戏文件。 */
@@ -680,7 +709,12 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                 }
                 download.manager.pause();
             }
-            case UPDATE -> updateTask.pauseUpdate();
+            case UPDATE -> {
+                GameResourceUpdateTask task = currentUpdateTask();
+                if (task != null) {
+                    task.pauseUpdate();
+                }
+            }
             case PRE_DOWNLOAD -> updateService.pausePreDownload();
             case REPAIR -> updateService.pauseRepair();
             case NONE -> {
@@ -715,7 +749,12 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                 }
                 download.manager.resume();
             }
-            case UPDATE -> updateTask.resumeUpdate();
+            case UPDATE -> {
+                GameResourceUpdateTask task = currentUpdateTask();
+                if (task != null) {
+                    task.resumeUpdate();
+                }
+            }
             case PRE_DOWNLOAD -> updateService.resumePreDownload();
             case REPAIR -> updateService.resumeRepair();
             case NONE -> {
@@ -761,7 +800,12 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                         download.manager.stop();
                     }
                 }
-                case UPDATE -> updateTask.cancelUpdate();
+                case UPDATE -> {
+                    GameResourceUpdateTask updateTask = currentUpdateTask();
+                    if (updateTask != null) {
+                        updateTask.cancelUpdate();
+                    }
+                }
                 case PRE_DOWNLOAD -> updateService.stopPreDownload();
                 case REPAIR -> updateService.stopRepair();
                 case NONE -> {
@@ -829,7 +873,27 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             tip.set(failureText + detail);
             finishOperation(operationId, task, failureText + detail);
         });
-        taskManageService.execute(task);
+        TaskControl control = task instanceof TaskControl ? (TaskControl) task : null;
+        ManagedTask.TaskCategory category = classify(task);
+        taskManageService.submit(managedId(task), managedName(task), task, control, category);
+    }
+
+    private static String managedId(Task<?> task) {
+        return task.getClass().getSimpleName();
+    }
+
+    private static String managedName(Task<?> task) {
+        if (task instanceof GameFullDownloadTask) return LanguageManager.getString("ui.game_manager.asset.download");
+        if (task instanceof cn.tealc.wutheringwavestool.thread.game.download.GameRepairDownloadTask) return "校验修复";
+        if (task instanceof cn.tealc.wutheringwavestool.thread.game.download.GamePreDownloadTask) return "预下载";
+        return task.getClass().getSimpleName();
+    }
+
+    private static ManagedTask.TaskCategory classify(Task<?> task) {
+        if (task instanceof GameFullDownloadTask) return ManagedTask.TaskCategory.DOWNLOAD;
+        if (task instanceof cn.tealc.wutheringwavestool.thread.game.download.GameRepairDownloadTask) return ManagedTask.TaskCategory.REPAIR;
+        if (task instanceof cn.tealc.wutheringwavestool.thread.game.download.GamePreDownloadTask) return ManagedTask.TaskCategory.PREDOWNLOAD;
+        return ManagedTask.TaskCategory.OTHER;
     }
 
     private boolean finishOperation(long operationId, Task<?> task, String resultText) {

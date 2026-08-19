@@ -6,6 +6,7 @@ import cn.tealc.wwt.game.resource.model.ResourceCheckResult;
 import cn.tealc.wwt.game.resource.model.ResourceOperationResult;
 import cn.tealc.wwt.game.resource.model.ResourceProgress;
 import cn.tealc.wutheringwavestool.service.GameUpdateService;
+import cn.tealc.wutheringwavestool.service.TaskControl;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** 校验修复任务：驱动 {@link GameUpdateService#repair} 校验并补下载缺失文件，进度经 Task 上抛。 */
-public class GameRepairDownloadTask extends AbstractGameDownloadTask<ResourceOperationResult> {
+public class GameRepairDownloadTask extends AbstractGameDownloadTask<ResourceOperationResult>
+        implements TaskControl {
     private static final Logger LOG = LoggerFactory.getLogger(GameRepairDownloadTask.class);
 
     private final GameUpdateService updateService;
@@ -64,5 +66,13 @@ public class GameRepairDownloadTask extends AbstractGameDownloadTask<ResourceOpe
     public boolean cancel(boolean mayInterruptIfRunning) {
         updateService.stopRepair();
         return super.cancel(mayInterruptIfRunning);
+    }
+
+    // ---------------- TaskControl ----------------
+
+    @Override
+    public boolean cancelTask() {
+        cancel(true);
+        return true;
     }
 }

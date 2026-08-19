@@ -7,6 +7,7 @@ import cn.tealc.wwt.game.resource.model.DownloadState;
 import cn.tealc.wwt.game.resource.model.game.FileInfo;
 import cn.tealc.wwt.game.resource.model.launcher.UpdateData;
 import cn.tealc.wutheringwavestool.model.SourceType;
+import cn.tealc.wutheringwavestool.service.TaskControl;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** 全量下载任务：拉取清单 → 阻塞下载 → 注册安装。进度经 Task 的 progress/title/message 上抛。 */
-public class GameFullDownloadTask extends AbstractGameDownloadTask<Void> {
+public class GameFullDownloadTask extends AbstractGameDownloadTask<Void> implements TaskControl {
     private static final Logger LOG = LoggerFactory.getLogger(GameFullDownloadTask.class);
 
     private final GameResourceDownloadService downloadService;
@@ -112,12 +113,25 @@ public class GameFullDownloadTask extends AbstractGameDownloadTask<Void> {
         }
     }
 
-    public void resumeTask() {
+    // ---------------- TaskControl ----------------
+
+    @Override
+    public boolean pauseTask() { pause(); return true; }
+
+    @Override
+    public boolean resumeTask() {
         DownloadManager mgr = manager;
         if (mgr != null) {
             mgr.resume();
         }
+        return true;
     }
+
+    @Override
+    public boolean cancelTask() { cancel(true); return true; }
+
+    @Override
+    public boolean supportsPause() { return true; }
 
     public Path getSaveDir() {
         return saveDir.toPath();

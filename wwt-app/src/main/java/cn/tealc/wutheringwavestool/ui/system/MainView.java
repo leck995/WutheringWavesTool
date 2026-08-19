@@ -8,6 +8,7 @@ import cn.tealc.wutheringwavestool.WwtApp;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.AppConstants;
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.service.ManagedTask;
 import cn.tealc.wutheringwavestool.service.TaskManageService;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import javafx.concurrent.Task;
@@ -272,7 +273,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         rotateTransition.setInterpolator(javafx.animation.Interpolator.LINEAR);
 
         // 列表非空时显示按钮
-        taskManageService.getTasks().addListener((javafx.collections.ListChangeListener<Task<?>>) change -> {
+        taskManageService.getTasks().addListener((javafx.collections.ListChangeListener<ManagedTask>) change -> {
             Platform.runLater(() -> downloadBtn.setVisible(!taskManageService.getTasks().isEmpty()));
         });
         // 有活跃下载时旋转
@@ -308,7 +309,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         popupTaskListBox.getStyleClass().add("task-list");
         popupContent.getChildren().add(popupTaskListBox);
 
-        taskManageService.getTasks().addListener((javafx.collections.ListChangeListener<Task<?>>) change -> {
+        taskManageService.getTasks().addListener((javafx.collections.ListChangeListener<ManagedTask>) change -> {
             Platform.runLater(this::rebuildPopupTasks);
         });
 
@@ -328,19 +329,20 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
 
     private void rebuildPopupTasks() {
         popupTaskListBox.getChildren().clear();
-        ObservableList<Task<?>> tasks = taskManageService.getTasks();
+        ObservableList<ManagedTask> tasks = taskManageService.getTasks();
         if (tasks.isEmpty()) {
             Label emptyLabel = new Label(LanguageManager.getString("ui.download.progress.empty"));
             emptyLabel.getStyleClass().add("empty-label");
             popupTaskListBox.getChildren().add(emptyLabel);
         } else {
-            for (Task<?> task : tasks) {
+            for (ManagedTask task : tasks) {
                 popupTaskListBox.getChildren().add(createTaskRow(task));
             }
         }
     }
 
-    private Node createTaskRow(Task<?> task) {
+    private Node createTaskRow(ManagedTask managed) {
+        Task<?> task = managed.getTask();
         VBox row = new VBox();
         row.getStyleClass().add("task-row");
 

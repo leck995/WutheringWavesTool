@@ -128,8 +128,7 @@ public class DataSourceModule extends AbstractModule {
 
     @Provides
     @Singleton
-    GameServerSwitchService provideGameServerSwitchService(
-            GameResourceDownloadService downloadService, ObjectMapper objectMapper) {
-        return new GameServerSwitchService(downloadService, objectMapper);
+    GameServerSwitchService provideGameServerSwitchService(ObjectMapper objectMapper) {
+        return new GameServerSwitchService(objectMapper);
     }
 }

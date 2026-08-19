@@ -1,8 +1,17 @@
 package cn.tealc.wwt.game.resource;
 
-import cn.tealc.wwt.game.resource.model.DownloadState;
-import cn.tealc.wwt.game.resource.model.game.FileInfo;
-import cn.tealc.wwt.game.resource.model.launcher.UpdateData;
+import cn.tealc.wwt.game.resource.internal.legacy.download.CDNDownloadTask;
+import cn.tealc.wwt.game.resource.internal.legacy.download.CDNDownloadTaskBuilder;
+import cn.tealc.wwt.game.resource.internal.legacy.download.DownloadState;
+import cn.tealc.wwt.game.resource.internal.legacy.model.CdnConfig;
+import cn.tealc.wwt.game.resource.internal.legacy.model.DownloadInfo;
+import cn.tealc.wwt.game.resource.internal.legacy.model.FileInfo;
+import cn.tealc.wwt.game.resource.internal.legacy.model.GameServerConfig;
+import cn.tealc.wwt.game.resource.internal.legacy.model.IndexFile;
+import cn.tealc.wwt.game.resource.internal.legacy.util.HttpUtils;
+import cn.tealc.wwt.game.resource.internal.legacy.util.JsonUtils;
+import cn.tealc.wwt.game.resource.internal.legacy.util.ResourceHelper;
+import cn.tealc.wwt.game.resource.internal.legacy.util.UrlUtils;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,11 +66,9 @@ public final class GameServerSwitchService {
     private static final String BILIBILI_APP_ID = "10004";
     private static final String GLOBAL_APP_ID = "50004";
 
-    private final GameResourceDownloadService downloadService;
     private final ObjectMapper objectMapper;
 
-    public GameServerSwitchService(GameResourceDownloadService downloadService, ObjectMapper objectMapper) {
-        this.downloadService = downloadService;
+    public GameServerSwitchService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
     }
 
@@ -253,51 +260,88 @@ public final class GameServerSwitchService {
     }
 
     private DownloadSelection loadRequiredFiles(Path gameRoot, GameDownloadSource source) throws IOException {
-        GameDownloadResponse<UpdateData> updateResponse = downloadService.getLatestUpdate(source);
-        if (!updateResponse.isSuccessful() || updateResponse.getData() == null) {
-            throw new IOException("获取服务器更新配置失败：" + updateResponse.getMessage());
+        cn.tealc.wwt.game.resource.internal.legacy.model.LauncherConfig launcher =
+                LauncherConfigs.forSource(source);
+        GameServerConfig serverConfig = fetchServerConfig(launcher);
+        if (serverConfig == null || serverConfig.defaultConfig == null
+                || serverConfig.defaultConfig.config == null) {
+            throw new IOException("获取服务器更新配置失败");
         }
-        UpdateData updateData = updateResponse.getData();
-        GameDownloadResponse<List<FileInfo>> resourceResponse = downloadService.getResourceList(updateData);
-        if (!resourceResponse.isSuccessful() || resourceResponse.getData() == null) {
-            throw new IOException("获取服务器资源清单失败：" + resourceResponse.getMessage());
-        }
-        List<FileInfo> files = resourceResponse.getData().stream()
+        List<FileInfo> allFiles = fetchResourceList(serverConfig);
+        List<FileInfo> files = allFiles.stream()
                 .filter(GameServerSwitchService::isRequiredComponent)
-                .sorted(Comparator.comparing(FileInfo::getDest))
+                .sorted(Comparator.comparing(file -> file.path))
                 .toList();
         if (files.stream().noneMatch(file -> GAME_EXECUTABLE.toString().replace('\\', '/')
-                .equals(normalizeResourcePath(file.getDest())))) {
+                .equals(normalizeResourcePath(file.path)))) {
             throw new IOException("服务器资源清单缺少 Client-Win64-Shipping.exe");
         }
-        if (files.stream().noneMatch(file -> normalizeResourcePath(file.getDest()).startsWith(SDK_PREFIX))) {
+        if (files.stream().noneMatch(file -> normalizeResourcePath(file.path).startsWith(SDK_PREFIX))) {
             throw new IOException("服务器资源清单缺少 KrPcSdk_Mainland 资源");
         }
-        if (files.stream().noneMatch(file -> normalizeResourcePath(file.getDest()).startsWith(ANTI_CHEAT_PREFIX))) {
+        if (files.stream().noneMatch(file -> normalizeResourcePath(file.path).startsWith(ANTI_CHEAT_PREFIX))) {
             throw new IOException("服务器资源清单缺少 AntiCheatExpert 资源");
         }
         List<FileInfo> downloadFiles = selectFilesToDownload(gameRoot, files);
-        long totalBytes = downloadFiles.stream().map(FileInfo::getSize).filter(size -> size != null)
-                .mapToLong(Long::longValue).sum();
-        return new DownloadSelection(updateData, files, downloadFiles,
-                updateData.getVersion() != null ? updateData.getVersion() : "", totalBytes);
+        long totalBytes = downloadFiles.stream().mapToLong(file -> file.size).sum();
+        String version = serverConfig.defaultConfig.config.version;
+        return new DownloadSelection(serverConfig, files, downloadFiles,
+                version != null ? version : "", totalBytes);
+    }
+
+    private GameServerConfig fetchServerConfig(
+            cn.tealc.wwt.game.resource.internal.legacy.model.LauncherConfig launcher) {
+        String json = HttpUtils.getStringWithBackUpUrl(launcher.configUrl, launcher.backUpConfigUrl,
+                10, 10_000L, null, null).data;
+        if (json == null || json.isBlank()) {
+            return null;
+        }
+        return JsonUtils.safeDeserialize(json, GameServerConfig.class);
+    }
+
+    private List<FileInfo> fetchResourceList(GameServerConfig serverConfig) throws IOException {
+        String resources = serverConfig.defaultConfig.resources;
+        if (resources == null || resources.isBlank()) {
+            throw new IOException("服务器配置缺少资源清单地址");
+        }
+        List<CdnConfig> cdns = serverConfig.defaultConfig.cdnList;
+        if (cdns == null || cdns.isEmpty()) {
+            throw new IOException("服务器配置缺少 CDN 列表");
+        }
+        String url = UrlUtils.appendPath(cdns.get(0).url, resources);
+        String json = HttpUtils.getString(url, 15_000L).data;
+        if (json == null || json.isBlank()) {
+            throw new IOException("资源清单为空");
+        }
+        IndexFile indexFile = JsonUtils.safeDeserialize(json, IndexFile.class);
+        if (indexFile == null || indexFile.getResource() == null) {
+            throw new IOException("资源清单解析失败");
+        }
+        return indexFile.getResource();
     }
 
     private void downloadSelection(Path stagePayload, DownloadSelection selection,
             ServerSwitchProgressListener listener) throws IOException {
-        DownloadManager manager = downloadService.createDownloadManager(stagePayload, selection.updateData(),
-                selection.downloadFiles());
+        List<DownloadInfo> downloadInfos = ResourceHelper
+                .transformFileInfoListToDownloadInfoList(selection.downloadFiles());
+        String basePath = selection.serverConfig().defaultConfig.resourcesBasePath;
+        CDNDownloadTask task = new CDNDownloadTaskBuilder(downloadInfos,
+                selection.serverConfig().defaultConfig.cdnList)
+                .withBasePath(basePath)
+                .withBaseDestPath(stagePayload.toString())
+                .withMaxRetryCount(5)
+                .build();
         AtomicReference<DownloadState> finalState = new AtomicReference<>();
         AtomicReference<String> failure = new AtomicReference<>();
-        manager.setStateListener((state, message) -> {
+        task.setStateCallback((state, message) -> {
             finalState.set(state);
             if (message != null && !message.isBlank()) {
                 failure.set(message);
             }
         });
-        manager.setProgressListener((completed, total) -> listener.onProgress(ServerSwitchPhase.DOWNLOADING,
+        task.setProgressCallback((completed, total) -> listener.onProgress(ServerSwitchPhase.DOWNLOADING,
                 completed, total, "正在下载必要文件"));
-        manager.run();
+        task.run();
         if (finalState.get() != DownloadState.COMPLETE) {
             throw new IOException(failure.get() != null ? failure.get() : "必要文件下载失败");
         }
@@ -441,10 +485,10 @@ public final class GameServerSwitchService {
             DownloadSelection selection) throws IOException {
         java.util.Set<String> downloadedPaths = new java.util.HashSet<>();
         for (FileInfo file : selection.downloadFiles()) {
-            downloadedPaths.add(normalizeResourcePath(file.getDest()));
+            downloadedPaths.add(normalizeResourcePath(file.path));
         }
         for (FileInfo file : selection.files()) {
-            String resourcePath = normalizeResourcePath(file.getDest());
+            String resourcePath = normalizeResourcePath(file.path);
             if (downloadedPaths.contains(resourcePath)) {
                 continue;
             }
@@ -460,19 +504,19 @@ public final class GameServerSwitchService {
     }
 
     private static boolean matchesLocalFile(Path root, FileInfo file) throws IOException {
-        if (file == null || file.getDest() == null || file.getSize() == null || file.getSize() < 0) {
+        if (file == null || file.path == null || file.size < 0) {
             return false;
         }
-        String resourcePath = normalizeResourcePath(file.getDest());
+        String resourcePath = normalizeResourcePath(file.path);
         if (!isSafeResourcePath(resourcePath)) {
             return false;
         }
         Path target = resolveResourcePath(root, resourcePath);
-        if (!Files.isRegularFile(target) || Files.size(target) != file.getSize()) {
+        if (!Files.isRegularFile(target) || Files.size(target) != file.size) {
             return false;
         }
-        return file.getMd5() == null || file.getMd5().isBlank()
-                || file.getMd5().equalsIgnoreCase(md5(target));
+        return file.md5 == null || file.md5.isBlank()
+                || file.md5.equalsIgnoreCase(md5(target));
     }
 
 
@@ -614,10 +658,10 @@ public final class GameServerSwitchService {
     }
 
     private static boolean isRequiredComponent(FileInfo file) {
-        if (file == null || file.getDest() == null || file.getSize() == null || file.getSize() < 0) {
+        if (file == null || file.path == null || file.size < 0) {
             return false;
         }
-        String path = normalizeResourcePath(file.getDest());
+        String path = normalizeResourcePath(file.path);
         if (!isSafeResourcePath(path)) {
             return false;
         }
@@ -626,8 +670,8 @@ public final class GameServerSwitchService {
     }
 
     private static List<CachedFile> toCachedFiles(List<FileInfo> files) {
-        return files.stream().map(file -> new CachedFile(normalizeResourcePath(file.getDest()),
-                file.getSize() != null ? file.getSize() : 0, file.getMd5())).toList();
+        return files.stream().map(file -> new CachedFile(normalizeResourcePath(file.path),
+                file.size, file.md5)).toList();
     }
 
     private static Path resolveResourcePath(Path root, String path) throws IOException {
@@ -882,7 +926,7 @@ public final class GameServerSwitchService {
     private record MoveRecord(String from, String to) {
     }
 
-    private record DownloadSelection(UpdateData updateData, List<FileInfo> files, List<FileInfo> downloadFiles,
+    private record DownloadSelection(GameServerConfig serverConfig, List<FileInfo> files, List<FileInfo> downloadFiles,
             String version, long totalBytes) {
     }
 }
