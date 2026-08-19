@@ -2,12 +2,14 @@ package cn.tealc.wutheringwavestool.service;
 
 import cn.tealc.wwt.game.resource.GameResourceUpdateService;
 import cn.tealc.wwt.game.resource.DownloadOptions;
+import cn.tealc.wwt.game.resource.GameDownloadSource;
 import cn.tealc.wwt.game.resource.ResourceCompletionListener;
 import cn.tealc.wwt.game.resource.ResourceContext;
 import cn.tealc.wwt.game.resource.ResourceProgressListener;
 import cn.tealc.wwt.game.resource.model.ResourceCheckResult;
 import cn.tealc.wwt.game.resource.model.ResourceCheckState;
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import com.google.inject.Singleton;
 import org.slf4j.Logger;
@@ -94,7 +96,10 @@ public class GameUpdateService {
         String customCache = Config.setting().getCustomDownloadCacheDir();
         Path cacheDir = (customCache != null && !customCache.isBlank())
                 ? Path.of(customCache) : null;
-        return new ResourceContext(gameDirectory.toPath(), Path.of("."), cacheDir);
+        SourceType sourceType = Config.setting().getGameRootDirSource();
+        GameDownloadSource source = (sourceType != null ? sourceType : SourceType.DEFAULT)
+                .toGameDownloadSource();
+        return new ResourceContext(gameDirectory.toPath(), Path.of("."), cacheDir, source);
     }
 
     private static void persistVersion(String version) {

@@ -1,6 +1,5 @@
 package cn.tealc.wwt.game.resource;
 
-import cn.tealc.wwt.game.resource.internal.legacy.config.KRAppConfLoader;
 import cn.tealc.wwt.game.resource.internal.legacy.config.ResourceConfigManager;
 import cn.tealc.wwt.game.resource.internal.legacy.flow.ResUpdateModule;
 import cn.tealc.wwt.game.resource.internal.legacy.model.CheckUpdateResult;
@@ -34,7 +33,6 @@ import java.util.UUID;
 public final class GameResourceUpdateService {
     private static final Logger LOG = LoggerFactory.getLogger(GameResourceUpdateService.class);
     private static final String HPATCHZ_RESOURCE = "/kr/hpatchz.exe";
-    private static final String KR_APP_CONF_RESOURCE = "/kr/KRApp.conf";
 
     private LegacySession session;
 
@@ -200,8 +198,7 @@ public final class GameResourceUpdateService {
         }
         try {
             extractRuntimeFiles(context.workingDirectory());
-            Path configPath = context.workingDirectory().resolve("KRApp.conf");
-            LauncherConfig config = KRAppConfLoader.loadFromKRAppConf(configPath.toString());
+            LauncherConfig config = LauncherConfigs.forSource(context.source());
             ResourceConfigManager configManager = new ResourceConfigManager(
                     config, context.gameDirectory().toString());
             configManager.setCustomCacheDir(context.cacheDirectory().toString());
@@ -215,7 +212,6 @@ public final class GameResourceUpdateService {
     private static void extractRuntimeFiles(Path workingDirectory) throws IOException {
         Files.createDirectories(workingDirectory);
         extract(HPATCHZ_RESOURCE, workingDirectory.resolve("hpatchz.exe"));
-        extract(KR_APP_CONF_RESOURCE, workingDirectory.resolve("KRApp.conf"));
     }
 
     private static void extract(String resource, Path target) throws IOException {
