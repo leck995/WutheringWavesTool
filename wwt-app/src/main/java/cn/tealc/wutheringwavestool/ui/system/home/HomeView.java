@@ -7,7 +7,7 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.service.GameResourceUpdateCoordinator.UpdateState;
+import cn.tealc.wutheringwavestool.thread.game.download.GameResourceUpdateTask.UpdateState;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.ui.item.HeaderImageSelectView;
 import cn.tealc.wutheringwavestool.ui.item.PlayTimeAlertItemView;

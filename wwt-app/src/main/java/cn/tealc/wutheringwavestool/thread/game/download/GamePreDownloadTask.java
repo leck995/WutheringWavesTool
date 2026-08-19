@@ -10,12 +10,11 @@ import javafx.concurrent.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
 /** 预下载任务：驱动 {@link GameUpdateService#preDownload} 下载下一版本资源，进度经 Task 上抛。 */
-public class GamePreDownloadTask extends Task<ResourceOperationResult> {
+public class GamePreDownloadTask extends AbstractGameDownloadTask<ResourceOperationResult> {
     private static final Logger LOG = LoggerFactory.getLogger(GamePreDownloadTask.class);
 
     private final GameUpdateService updateService;
@@ -58,27 +57,12 @@ public class GamePreDownloadTask extends Task<ResourceOperationResult> {
         } else {
             updateProgress(-1, 0);
         }
-        updateMessage(String.format(Locale.ROOT, "%s / %s",
-                formatBytes(completed), formatBytes(total)));
+        updateMessage(progressMessage(completed, total, ""));
     }
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
         updateService.stopPreDownload();
         return super.cancel(mayInterruptIfRunning);
-    }
-
-    private static String formatBytes(long bytes) {
-        if (bytes < 1024) {
-            return bytes + " B";
-        }
-        double value = bytes;
-        String[] units = {"KB", "MB", "GB", "TB"};
-        int unit = -1;
-        do {
-            value /= 1024;
-            unit++;
-        } while (value >= 1024 && unit < units.length - 1);
-        return String.format(Locale.ROOT, "%.1f %s", value, units[unit]);
     }
 }

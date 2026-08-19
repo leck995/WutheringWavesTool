@@ -3,15 +3,20 @@ package cn.tealc.wutheringwavestool.ui.system.home;
 import cn.tealc.wutheringwavestool.WwtApp;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
-import cn.tealc.wutheringwavestool.service.GameResourceUpdateCoordinator;
 import cn.tealc.wutheringwavestool.service.GameInstallationManager;
 import cn.tealc.wutheringwavestool.service.GameServerSwitchCoordinator;
 import cn.tealc.wutheringwavestool.service.GameTimeService;
+import cn.tealc.wutheringwavestool.service.GameUpdateService;
+import cn.tealc.wutheringwavestool.thread.game.download.GameResourceCheckTask;
+import cn.tealc.wutheringwavestool.thread.game.download.GameResourceUpdateTask;
 import cn.tealc.wutheringwavestool.jna.GameAppListener;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wwt.game.resource.GameDownloadSource;
+import cn.tealc.wwt.game.resource.model.ResourceCheckResult;
+import cn.tealc.wwt.game.resource.model.ResourceCheckState;
 import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.wutheringwavestool.service.TaskManageService;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
@@ -20,6 +25,7 @@ import de.saxsys.mvvmfx.MvvmFX;
 import de.saxsys.mvvmfx.SceneLifecycle;
 import javafx.animation.PauseTransition;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.ReadOnlyBooleanProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
@@ -51,11 +57,23 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     @Inject
     private GameTimeService gameTimeService;
     @Inject
-    private GameResourceUpdateCoordinator resourceUpdateCoordinator;
+    private GameUpdateService updateService;
     @Inject
     private GameServerSwitchCoordinator serverSwitchCoordinator;
     @Inject
     private GameInstallationManager installationManager;
+    @Inject
+    private TaskManageService taskManageService;
+    private GameResourceUpdateTask resourceUpdateTask;
+    private ResourceCheckResult checkResult;
+    private final SimpleObjectProperty<GameResourceUpdateTask.UpdateState> resourceUpdateState =
+            new SimpleObjectProperty<>(GameResourceUpdateTask.UpdateState.IDLE);
+    private final SimpleStringProperty resourceStatusText = new SimpleStringProperty();
+    private final SimpleStringProperty resourceVersionText = new SimpleStringProperty();
+    private final SimpleStringProperty updateActionText = new SimpleStringProperty();
+    private final SimpleBooleanProperty resourceStatusVisible = new SimpleBooleanProperty(false);
+    private final SimpleBooleanProperty resourceRetryVisible = new SimpleBooleanProperty(false);
+    private final SimpleBooleanProperty updateActionVisible = new SimpleBooleanProperty(false);
     private SimpleStringProperty gameTimeText = new SimpleStringProperty();
     private SimpleStringProperty gameTimeTipText = new SimpleStringProperty();
     private SimpleBooleanProperty startGameBtnDisabled = new SimpleBooleanProperty(false);
@@ -92,13 +110,51 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     @Override
     public void onViewRemoved() {
         serverSwitchCoordinator.currentSourceProperty().removeListener(serverSourceListener);
-        // 更新任务由全局协调器持有，离开首页后继续执行。
     }
 
     /** 首页创建后后台检查远端资源版本，不阻塞页面和游戏启动。 */
     public void checkGameResourceUpdate() {
-        resourceUpdateCoordinator.checkForUpdates();
+        GameResourceCheckTask task = new GameResourceCheckTask(updateService);
+        resourceUpdateState.set(GameResourceUpdateTask.UpdateState.CHECKING);
+        resourceStatusText.set(LanguageManager.getString("ui.home.resource.checking"));
+        resourceStatusVisible.set(true);
+        task.setOnSucceeded(event -> {
+            ResourceCheckResult result = task.getValue();
+            checkResult = result;
+            if (result == null || !result.isSuccessful()) {
+                resourceUpdateState.set(GameResourceUpdateTask.UpdateState.FAILED);
+                resourceStatusText.set(LanguageManager.getString("ui.home.resource.check_failed"));
+                return;
+            }
+            String current = hasText(result.installedVersion()) ? result.installedVersion() : "-";
+            String latest = hasText(result.latestVersion()) ? result.latestVersion() : "-";
+            boolean upToDate = result.state() == ResourceCheckState.UP_TO_DATE
+                    || current.equalsIgnoreCase(latest);
+            resourceUpdateState.set(upToDate
+                    ? GameResourceUpdateTask.UpdateState.UP_TO_DATE
+                    : GameResourceUpdateTask.UpdateState.UPDATE_AVAILABLE);
+            resourceStatusVisible.set(true);
+            updateActionVisible.set(!upToDate);
+            if (!upToDate) {
+                updateActionText.set(String.format(
+                        LanguageManager.getString("ui.home.button.update_to"), latest));
+            }
+            resourceVersionText.set(String.format(
+                    LanguageManager.getString("ui.home.resource.current_version"),
+                    upToDate ? current : latest));
+            resourceStatusText.set(upToDate
+                    ? LanguageManager.getString("ui.home.resource.up_to_date")
+                    : LanguageManager.getString("ui.home.resource.update_available"));
+        });
+        task.setOnFailed(event -> {
+            LOG.warn("检查游戏资源更新失败", task.getException());
+            checkResult = null;
+            resourceUpdateState.set(GameResourceUpdateTask.UpdateState.FAILED);
+            resourceStatusText.set(LanguageManager.getString("ui.home.resource.check_failed"));
+        });
+        taskManageService.execute(task);
     }
+
 
     public void switchServer(SourceType target) {
         serverSwitchCoordinator.switchTo(target);
@@ -197,23 +253,48 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
 
 
     public void startUpdate() {
-        resourceUpdateCoordinator.startUpdate();
+        if (checkResult == null) {
+            return;
+        }
+        updateTask().setCheckResult(checkResult);
+        updateTask().executeUpdate();
     }
 
     public void retryResourceUpdate() {
-        resourceUpdateCoordinator.retry();
+        runCheck();
     }
 
     public void pauseResourceUpdate() {
-        resourceUpdateCoordinator.pause();
+        updateTask().pauseUpdate();
     }
 
     public void resumeResourceUpdate() {
-        resourceUpdateCoordinator.resume();
+        updateTask().resumeUpdate();
     }
 
     public void cancelResourceUpdate() {
-        resourceUpdateCoordinator.cancel();
+        updateTask().cancelUpdate();
+    }
+
+    private GameResourceUpdateTask updateTask() {
+        if (resourceUpdateTask == null) {
+            resourceUpdateTask = new GameResourceUpdateTask(updateService);
+            resourceUpdateTask.phaseProperty().addListener((observable, oldValue, newValue) -> {
+                if (newValue != null) {
+                    resourceUpdateState.set(newValue);
+                }
+            });
+            resourceUpdateTask.statusTextProperty().addListener((o, a, n) -> resourceStatusText.set(n));
+            resourceUpdateTask.detailTextProperty().addListener((o, a, n) -> resourceVersionText.set(n));
+            resourceUpdateTask.retryVisibleProperty().addListener((o, a, n) -> resourceRetryVisible.set(n));
+            resourceUpdateTask.statusVisibleProperty().addListener((o, a, n) -> resourceStatusVisible.set(n));
+            resourceUpdateState.set(resourceUpdateTask.getPhase());
+        }
+        return resourceUpdateTask;
+    }
+
+    private static boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
     /**
      * 签到并启动鸣潮
@@ -406,55 +487,55 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
         return startGameBtnDisabled;
     }
 
-    public ReadOnlyObjectProperty<GameResourceUpdateCoordinator.UpdateState> resourceUpdateStateProperty() {
-        return resourceUpdateCoordinator.stateProperty();
+    public ReadOnlyObjectProperty<GameResourceUpdateTask.UpdateState> resourceUpdateStateProperty() {
+        return resourceUpdateState;
     }
 
     public ReadOnlyBooleanProperty resourceStatusVisibleProperty() {
-        return resourceUpdateCoordinator.statusVisibleProperty();
+        return resourceStatusVisible;
     }
 
     public ReadOnlyBooleanProperty resourceRetryVisibleProperty() {
-        return resourceUpdateCoordinator.retryVisibleProperty();
+        return resourceRetryVisible;
     }
 
     public ReadOnlyStringProperty resourceStatusTextProperty() {
-        return resourceUpdateCoordinator.statusTextProperty();
+        return resourceStatusText;
     }
 
     public ReadOnlyStringProperty resourceVersionTextProperty() {
-        return resourceUpdateCoordinator.detailTextProperty();
+        return resourceVersionText;
     }
 
     public ReadOnlyStringProperty updateActionTextProperty() {
-        return resourceUpdateCoordinator.actionTextProperty();
+        return updateActionText;
     }
 
     public ReadOnlyBooleanProperty updateActionVisibleProperty() {
-        return resourceUpdateCoordinator.updateActionVisibleProperty();
+        return updateActionVisible;
     }
 
     public ReadOnlyDoubleProperty resourceProgressProperty() {
-        return resourceUpdateCoordinator.progressProperty();
+        return updateTask().progressProperty();
     }
 
     public ReadOnlyStringProperty resourceProgressTextProperty() {
-        return resourceUpdateCoordinator.progressTextProperty();
+        return updateTask().progressTextProperty();
     }
 
     public ReadOnlyBooleanProperty resourceProgressVisibleProperty() {
-        return resourceUpdateCoordinator.progressVisibleProperty();
+        return updateTask().progressVisibleProperty();
     }
 
     public ReadOnlyBooleanProperty resourcePauseVisibleProperty() {
-        return resourceUpdateCoordinator.pauseVisibleProperty();
+        return updateTask().pauseVisibleProperty();
     }
 
     public ReadOnlyBooleanProperty resourceResumeVisibleProperty() {
-        return resourceUpdateCoordinator.resumeVisibleProperty();
+        return updateTask().resumeVisibleProperty();
     }
 
     public ReadOnlyBooleanProperty resourceCancelVisibleProperty() {
-        return resourceUpdateCoordinator.cancelVisibleProperty();
+        return updateTask().cancelVisibleProperty();
     }
 }
