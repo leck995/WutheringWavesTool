@@ -453,6 +453,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         }
         boolean needsUpdate = result.isUpdateAvailable()
                 || result.state() == ResourceCheckState.REPAIR_REQUIRED;
+        showUpdate.set(needsUpdate);
         showRepair.set(result.isRepairAvailable());
         showPreDownload.set(result.hasUpdatePlan() && updateService.isPreDownloadAvailable(result));
         if (result.state() == ResourceCheckState.REPAIR_REQUIRED) {
