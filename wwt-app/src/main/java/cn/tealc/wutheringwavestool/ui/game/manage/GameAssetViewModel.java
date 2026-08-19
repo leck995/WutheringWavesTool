@@ -701,7 +701,9 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                 operationState.set(OperationState.PAUSED);
             }
             case COMPLETED, FAILED, CANCELED -> {
-                detachOperation();
+                // 运行态复位与 onSuccess 统一由 attachOperation 的 state 监听负责，
+                // 这里只收起下载专属区的视觉表现，避免与 state 监听竞争导致 onSuccess 丢失。
+                fullDownloadOperating.set(false);
             }
             case IDLE -> {
             }
