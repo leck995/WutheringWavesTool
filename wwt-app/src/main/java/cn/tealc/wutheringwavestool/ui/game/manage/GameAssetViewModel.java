@@ -4,7 +4,6 @@ import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.SourceType;
-import cn.tealc.wutheringwavestool.thread.game.download.GameResourceUpdateTask;
 import cn.tealc.wutheringwavestool.service.GameInstallationManager;
 import cn.tealc.wutheringwavestool.service.GameServerSwitchCoordinator;
 import cn.tealc.wutheringwavestool.service.GameUpdateService;
@@ -14,6 +13,7 @@ import cn.tealc.wutheringwavestool.service.TaskManageService;
 import cn.tealc.wutheringwavestool.thread.game.download.GameFullDownloadTask;
 import cn.tealc.wutheringwavestool.thread.game.download.GamePreDownloadTask;
 import cn.tealc.wutheringwavestool.thread.game.download.GameRepairDownloadTask;
+import cn.tealc.wutheringwavestool.thread.game.download.GameResourceUpdateTask;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
@@ -39,20 +39,22 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.concurrent.Task;
+import javafx.concurrent.Worker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.List;
 
 /**
- * 统一「游戏资源管理」ViewModel：全量下载 + 增量更新 + 预下载 + 校验修复合一。
+ * 「游戏资源管理」ViewModel：全量下载 + 增量更新 + 预下载 + 校验修复合一。
  *
- * <p>未安装时提供全量下载；已安装时自动检查更新，并据此提供更新、预下载和校验修复。</p>
+ * <p>操作状态不在此处自行维护状态机，而是以「当前操作任务」为唯一事实来源：
+ * 暂停/恢复/停止直接转发给 {@link TaskControl}；进度、速度、文案、显隐均由对应 Task 的
+ * 只读属性驱动，本类只做镜像绑定与按任务类型区分「下载专属区 / 资源操作区」。</p>
  */
 public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle {
     private static final Logger LOG = LoggerFactory.getLogger(GameAssetViewModel.class);
-    private static final long NO_OPERATION = -1;
+    private static final long NO_CHECK = -1;
 
     public enum OperationState {
         IDLE,
@@ -61,24 +63,19 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         STOPPING
     }
 
-    private enum OperationType {
-        NONE,
-        DOWNLOAD,
-        UPDATE,
-        PRE_DOWNLOAD,
-        REPAIR
-    }
-
     @Inject
     private GameUpdateService updateService;
     @Inject
     private TaskManageService taskManageService;
-    private GameResourceUpdateTask updateTask;
-    private GameFullDownloadTask fullDownloadTask;
     @Inject
     private GameServerSwitchCoordinator serverSwitchCoordinator;
     @Inject
     private GameInstallationManager installationManager;
+
+    /** 当前正在执行的操作任务；null 表示空闲。是否暂停由其 phase 属性表达。 */
+    private Task<?> activeTask;
+    private GameResourceUpdateTask updateTask;
+    private GameFullDownloadTask fullDownloadTask;
 
     private final BooleanProperty operating = new SimpleBooleanProperty(false);
     private final BooleanProperty pauseAvailable = new SimpleBooleanProperty(false);
@@ -98,54 +95,52 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     private final BooleanProperty showRepair = new SimpleBooleanProperty(false);
     private final BooleanProperty showPreDownload = new SimpleBooleanProperty(false);
 
+    // 资源操作区进度（更新/修复/预下载）。
     private final DoubleProperty progress = new SimpleDoubleProperty(0);
     private final StringProperty progressText = new SimpleStringProperty("0%");
     private final StringProperty downloadSpeed = new SimpleStringProperty("");
     private final StringProperty tip = new SimpleStringProperty("");
-    private final StringProperty downloadDir = new SimpleStringProperty();
-    private final ObjectProperty<SourceType> downloadSource =
-            new SimpleObjectProperty<>(SourceType.DEFAULT);
 
-    // 全量下载独立的进度展示属性，与资源操作（更新/修复/预下载）隔离，避免互相污染。
+    // 下载专属区进度（全量下载）。
     private final DoubleProperty downloadProgress = new SimpleDoubleProperty(0);
     private final StringProperty downloadProgressText = new SimpleStringProperty("0%");
     private final StringProperty downloadDownloadSpeed = new SimpleStringProperty("");
     private final StringProperty downloadTip = new SimpleStringProperty("");
 
+    private final StringProperty downloadDir = new SimpleStringProperty();
+    private final ObjectProperty<SourceType> downloadSource =
+            new SimpleObjectProperty<>(SourceType.DEFAULT);
+
     private ResourceCheckResult checkResult;
 
-    private long operationSequence;
-    private volatile long activeOperationId = NO_OPERATION;
-    private volatile Task<?> activeTask;
-    private OperationType activeOperation = OperationType.NONE;
-
     private long checkSequence;
-    private long activeCheckId = NO_OPERATION;
+    private long activeCheckId = NO_CHECK;
     private Task<ResourceCheckResult> checkTask;
+
     private boolean coordinatorListenersAttached;
     private final ChangeListener<GameResourceUpdateTask.UpdateState> coordinatorStateListener =
-            (observable, oldState, newState) -> syncResourceUpdateState(newState);
+            (observable, oldState, newState) -> syncUpdateState(newState);
     private final ChangeListener<Number> coordinatorProgressListener =
             (observable, oldValue, newValue) -> {
-                if (activeOperation == OperationType.UPDATE) {
+                if (activeTask instanceof GameResourceUpdateTask) {
                     progress.set(newValue.doubleValue());
                 }
             };
     private final ChangeListener<String> coordinatorProgressTextListener =
             (observable, oldValue, newValue) -> {
-                if (activeOperation == OperationType.UPDATE) {
+                if (activeTask instanceof GameResourceUpdateTask) {
                     progressText.set(newValue);
                 }
             };
     private final ChangeListener<String> coordinatorSpeedListener =
             (observable, oldValue, newValue) -> {
-                if (activeOperation == OperationType.UPDATE) {
+                if (activeTask instanceof GameResourceUpdateTask) {
                     downloadSpeed.set(newValue);
                 }
             };
     private final ChangeListener<String> coordinatorDetailListener =
             (observable, oldValue, newValue) -> {
-                if (activeOperation == OperationType.UPDATE) {
+                if (activeTask instanceof GameResourceUpdateTask) {
                     tip.set(newValue);
                 }
             };
@@ -168,6 +163,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         currentUpdateTask();
         serverSwitchCoordinator.refresh();
     }
+
+    // ==================== 服务器切换 ====================
 
     public boolean changeServer(SourceType source) {
         if (source != SourceType.DEFAULT && source != SourceType.BILIBILI) {
@@ -193,47 +190,13 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         serverSwitchCoordinator.refresh();
     }
 
-    public ReadOnlyObjectProperty<SourceType> currentGameSourceProperty() {
-        return Config.setting().gameRootDirSourceProperty();
-    }
-
-    public ReadOnlyBooleanProperty serverSwitchOperatingProperty() {
-        return serverSwitchCoordinator.operatingProperty();
-    }
-
-    public ReadOnlyBooleanProperty mainlandServerSwitchReadyProperty() {
-        return serverSwitchCoordinator.mainlandTargetReadyProperty();
-    }
-
-    public ReadOnlyBooleanProperty bilibiliServerSwitchReadyProperty() {
-        return serverSwitchCoordinator.bilibiliTargetReadyProperty();
-    }
-
-    public ReadOnlyBooleanProperty serverSwitchAvailableProperty() {
-        return serverSwitchCoordinator.switchAvailableProperty();
-    }
-
-    public ReadOnlyDoubleProperty serverSwitchProgressProperty() {
-        return serverSwitchCoordinator.progressProperty();
-    }
-
-    public ReadOnlyStringProperty serverSwitchStatusTextProperty() {
-        return serverSwitchCoordinator.statusTextProperty();
-    }
-
-    public ReadOnlyStringProperty serverSwitchDetailTextProperty() {
-        return serverSwitchCoordinator.detailTextProperty();
-    }
+    // ==================== 生命周期 ====================
 
     @Override
     public void onViewAdded() {
         serverSwitchCoordinator.refresh();
         currentUpdateTask();
-        // 重新进入页面时，若存在进行中的全量下载任务，恢复其进度展示。
-        GameFullDownloadTask full = currentFullDownloadTask();
-        if (full != null && isFullDownloadRunning(full.phaseProperty().get())) {
-            syncFullDownloadState(full.phaseProperty().get());
-        }
+        restoreFullDownloadIfRunning();
         SourceType configuredSource = Config.setting().gameRootDirSourceProperty().get();
         downloadSource.set(normalizeDownloadSource(configuredSource));
         if (downloadDir.get() == null || downloadDir.get().isBlank()) {
@@ -244,111 +207,181 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         }
     }
 
-    private static boolean isFullDownloadRunning(GameFullDownloadTask.Phase phase) {
-        return phase == GameFullDownloadTask.Phase.CHECKING
-                || phase == GameFullDownloadTask.Phase.DOWNLOADING
-                || phase == GameFullDownloadTask.Phase.VERIFYING
-                || phase == GameFullDownloadTask.Phase.APPLYING
-                || phase == GameFullDownloadTask.Phase.PAUSED;
-    }
-
-    /**
-     * 从 {@link TaskManageService} 查询当前更新任务（固定 id 复用），
-     * 若任务实例变化则重绑进度监听，并把最新阶段同步到本界面的操作状态。
-     */
-    private GameResourceUpdateTask currentUpdateTask() {
-        ManagedTask managed = taskManageService.get(GameResourceUpdateTask.TASK_ID);
-        GameResourceUpdateTask task = managed != null ? (GameResourceUpdateTask) managed.getTask() : null;
-        if (task != updateTask) {
-            rebindCoordinator(task);
-            updateTask = task;
-        }
-        if (task != null) {
-            syncResourceUpdateState(task.phaseProperty().get());
-        }
-        return task;
-    }
-
-    private void rebindCoordinator(GameResourceUpdateTask task) {
+    @Override
+    public void onViewRemoved() {
+        cancelCheckTask();
         detachCoordinatorListeners();
-        if (task != null) {
-            task.phaseProperty().addListener(coordinatorStateListener);
-            task.progressProperty().addListener(coordinatorProgressListener);
-            task.progressTextProperty().addListener(coordinatorProgressTextListener);
-            task.speedTextProperty().addListener(coordinatorSpeedListener);
-            task.detailTextProperty().addListener(coordinatorDetailListener);
-        }
-        coordinatorListenersAttached = task != null;
     }
 
-    private void detachCoordinatorListeners() {
-        if (!coordinatorListenersAttached || updateTask == null) {
-            coordinatorListenersAttached = false;
+    // ==================== 全量下载 ====================
+
+    /** 全量下载：登记下载目录后启动 {@link GameFullDownloadTask}。 */
+    public void download() {
+        if (operating.get()) {
             return;
         }
-        updateTask.phaseProperty().removeListener(coordinatorStateListener);
-        updateTask.progressProperty().removeListener(coordinatorProgressListener);
-        updateTask.progressTextProperty().removeListener(coordinatorProgressTextListener);
-        updateTask.speedTextProperty().removeListener(coordinatorSpeedListener);
-        updateTask.detailTextProperty().removeListener(coordinatorDetailListener);
-        coordinatorListenersAttached = false;
-    }
-
-    private void refreshInstalledState() {
-        refreshFullDownloadState();
-
-        boolean activeInstallationInstalled = isActiveInstallationInstalled();
-        if (!activeInstallationInstalled) {
-            cancelCheckTask();
-            checkResult = null;
-            currentVersion.set("-");
-            latestVersion.set("-");
-            tip.set("");
-            showRepair.set(false);
-            showUpdate.set(false);
-            showPreDownload.set(false);
-            status.set(LanguageManager.getString("ui.game_manager.asset.not_installed"));
+        String dir = downloadDir.get();
+        if (dir == null || dir.isBlank()) {
+            warnNoDownloadDir();
+            return;
+        }
+        File saveDir = new File(dir);
+        if ((!saveDir.exists() && !saveDir.mkdirs()) || !saveDir.isDirectory() || !saveDir.canWrite()) {
+            warnNoDownloadDir();
             return;
         }
 
-        // 已安装但缺少 launcherDownloadConfig.json（未登记版本）时，仍执行更新检查，
-        // 以便获取最新版本并开放校验修复（修复流程会自行重建该文件）。
-        boolean activeInstallationRegistered = GameResourcesManager.getGameDir() != null
-                && hasText(updateService.getInstalledVersion(GameResourcesManager.getGameDir().toPath()));
-        tip.set(activeInstallationRegistered ? "" : LanguageManager
-                .getString("ui.game_manager.asset.registration_detail"));
-        status.set(LanguageManager.getString("ui.game_manager.asset.checking"));
-        checkUpdate();
+        SourceType selectedSource = downloadSource.get();
+        // 登记并激活目录：清空已装版本，使 legacy 检查进入 STATE_NEED_DOWNLOAD（全量下载）。
+        installationManager.configureInstallation(selectedSource, saveDir.toPath(), true);
+        Config.setting().setGameInstalledVersion("");
+        Config.setting().save();
+        serverSwitchCoordinator.refresh();
+
+        cancelCheckTask();
+        GameFullDownloadTask task = currentFullDownloadTask();
+        if (task == null) {
+            task = new GameFullDownloadTask(updateService);
+            fullDownloadTask = task;
+            bindFullDownloadTask(task);
+            taskManageService.submit(GameFullDownloadTask.TASK_ID,
+                    LanguageManager.getString("ui.game_manager.asset.download"),
+                    task, task, ManagedTask.TaskCategory.DOWNLOAD);
+        }
+        attachOperation(task, true, this::refreshInstalledState);
+        syncFullDownloadState(task.phaseProperty().get());
     }
 
-    /** 仅根据全量下载来源刷新右侧下载入口，不影响当前服务器的资源状态。 */
-    private void refreshFullDownloadState() {
-        boolean downloadTargetInstalled = installationManager.isConfigured(downloadSource.get());
-        boolean downloadTargetRegistered = installationManager
-                .gameDirectory(GameInstallationManager.editionOf(downloadSource.get()))
-                .map(path -> hasText(updateService.getInstalledVersion(path)))
-                .orElse(false);
-        showDownloadSourceHint.set(downloadTargetInstalled || downloadTargetRegistered);
-        // 国际服使用已配置的独立游戏目录，不在资源管理中重新全量下载。
-        boolean shouldShowFullDownload = downloadSource.get() != SourceType.GLOBAL || !downloadTargetInstalled;
-        showDownload.set(shouldShowFullDownload && (!downloadTargetInstalled || !downloadTargetRegistered));
+    // ==================== 增量更新 ====================
+
+    /** 启动增量更新（已安装版本的 patch 更新）。 */
+    public void update() {
+        if (operating.get()) {
+            return;
+        }
+        if (checkResult == null) {
+            warnCheckFirst();
+            return;
+        }
+        GameResourceUpdateTask task = currentUpdateTask();
+        if (task == null) {
+            task = new GameResourceUpdateTask(updateService);
+            updateTask = task;
+            rebindCoordinator(task);
+            task.setCheckResult(checkResult);
+            taskManageService.submit(GameResourceUpdateTask.TASK_ID,
+                    LanguageManager.getString("ui.game_manager.asset.update"),
+                    task, task, ManagedTask.TaskCategory.UPDATE);
+        }
+        attachOperation(task, false, null);
+        syncUpdateState(task.phaseProperty().get());
     }
 
-    private String readInstalledVersion() {
-        try {
-            String version = updateService.getInstalledVersion();
-            return version != null ? version : "";
-        } catch (Exception e) {
-            LOG.warn("读取已安装版本失败", e);
-            return "";
+    // ==================== 校验修复 ====================
+
+    public void repair() {
+        if (operating.get()) {
+            return;
+        }
+        if (checkResult == null || !checkResult.isRepairAvailable()) {
+            warnCheckFirst();
+            return;
+        }
+        status.set(LanguageManager.getString("ui.game_manager.asset.repairing"));
+        GameRepairDownloadTask task = new GameRepairDownloadTask(updateService, checkResult);
+        bindResourceTask(task);
+        attachOperation(task, false, this::refreshAfterAssetChange);
+        taskManageService.submit(managedId(task), managedName(task), task, task,
+                ManagedTask.TaskCategory.REPAIR);
+    }
+
+    // ==================== 预下载 ====================
+
+    public void preDownload() {
+        if (operating.get()) {
+            return;
+        }
+        ResourceCheckResult result = checkResult;
+        if (result == null || !result.hasUpdatePlan() || !updateService.isPreDownloadAvailable(result)) {
+            warnCheckFirst();
+            return;
+        }
+        status.set(LanguageManager.getString("ui.game_manager.asset.predownloading"));
+        GamePreDownloadTask task = new GamePreDownloadTask(updateService, result);
+        bindResourceTask(task);
+        attachOperation(task, false, this::refreshAfterAssetChange);
+        taskManageService.submit(managedId(task), managedName(task), task, task,
+                ManagedTask.TaskCategory.PREDOWNLOAD);
+    }
+
+    // ==================== 统一操作生命周期 ====================
+
+    /** 挂接一个操作任务：设置运行态，并在任务终结时复位。 */
+    private void attachOperation(Task<?> task, boolean download, Runnable onSuccess) {
+        boolean canPause = task instanceof TaskControl control && control.supportsPause();
+        activeTask = task;
+        operating.set(true);
+        fullDownloadOperating.set(download);
+        resourceOperationOperating.set(!download);
+        pauseAvailable.set(canPause);
+        stopAvailable.set(true);
+        operationState.set(OperationState.RUNNING);
+        task.stateProperty().addListener((observable, oldState, newState) -> {
+            if (newState == Worker.State.SUCCEEDED) {
+                if (activeTask == task) {
+                    detachOperation();
+                    if (onSuccess != null) {
+                        onSuccess.run();
+                    }
+                }
+            } else if (newState == Worker.State.FAILED || newState == Worker.State.CANCELLED) {
+                if (activeTask == task) {
+                    detachOperation();
+                }
+            }
+        });
+    }
+
+    private void detachOperation() {
+        activeTask = null;
+        operating.set(false);
+        fullDownloadOperating.set(false);
+        resourceOperationOperating.set(false);
+        pauseAvailable.set(false);
+        stopAvailable.set(false);
+        operationState.set(OperationState.IDLE);
+        downloadSpeed.set("");
+        downloadDownloadSpeed.set("");
+    }
+
+    // ==================== 控制：统一转发给当前任务 ====================
+
+    public void pause() {
+        if (activeTask instanceof TaskControl control && control.supportsPause()
+                && operationState.get() == OperationState.RUNNING) {
+            control.pauseTask();
         }
     }
 
-    private String defaultDownloadDir() {
-        return installationManager.gameDirectory(GameInstallationManager.editionOf(downloadSource.get()))
-                .map(path -> path.toString())
-                .orElse("");
+    public void resume() {
+        if (activeTask instanceof TaskControl control && control.supportsPause()
+                && operationState.get() == OperationState.PAUSED) {
+            control.resumeTask();
+        }
     }
+
+    public void stop() {
+        Task<?> task = activeTask;
+        if (task == null || !operating.get() || !stopAvailable.get()) {
+            return;
+        }
+        operationState.set(OperationState.STOPPING);
+        if (task instanceof TaskControl control) {
+            control.cancelTask();
+        }
+    }
+
+    // ==================== 检查更新 ====================
 
     /** 重新检查游戏版本；运行资源操作时忽略重复检查。 */
     public void checkUpdate() {
@@ -356,7 +389,6 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                 || GameResourcesManager.getGameExeBase() == null) {
             return;
         }
-
         long checkId = ++checkSequence;
         activeCheckId = checkId;
         status.set(LanguageManager.getString("ui.game_manager.asset.checking"));
@@ -395,13 +427,13 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         if (activeCheckId != checkId || checkTask != task) {
             return false;
         }
-        activeCheckId = NO_OPERATION;
+        activeCheckId = NO_CHECK;
         checkTask = null;
         return true;
     }
 
     private void cancelCheckTask() {
-        activeCheckId = NO_OPERATION;
+        activeCheckId = NO_CHECK;
         Task<ResourceCheckResult> task = checkTask;
         checkTask = null;
         if (task != null) {
@@ -414,13 +446,11 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             clearCheckResult();
             return false;
         }
-
         checkResult = result;
         latestVersion.set(hasText(result.latestVersion()) ? result.latestVersion() : "-");
         if (hasText(result.installedVersion())) {
             currentVersion.set(result.installedVersion());
         }
-
         boolean needsUpdate = result.isUpdateAvailable()
                 || result.state() == ResourceCheckState.REPAIR_REQUIRED;
         showRepair.set(result.isRepairAvailable());
@@ -444,30 +474,126 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         tip.set("");
     }
 
-    /** 同步更新任务阶段到界面操作状态，无进行中的任务时调用。 */
-    private void syncUpdateStateFromCurrentTask() {
-        GameResourceUpdateTask task = currentUpdateTask();
-        if (task != null) {
-            syncResourceUpdateState(task.phaseProperty().get());
+    // ==================== 安装状态刷新 ====================
+
+    private void refreshInstalledState() {
+        refreshFullDownloadState();
+
+        boolean activeInstallationInstalled = isActiveInstallationInstalled();
+        if (!activeInstallationInstalled) {
+            cancelCheckTask();
+            checkResult = null;
+            currentVersion.set("-");
+            latestVersion.set("-");
+            tip.set("");
+            showRepair.set(false);
+            showUpdate.set(false);
+            showPreDownload.set(false);
+            status.set(LanguageManager.getString("ui.game_manager.asset.not_installed"));
+            return;
+        }
+
+        boolean activeInstallationRegistered = GameResourcesManager.getGameDir() != null
+                && hasText(updateService.getInstalledVersion(GameResourcesManager.getGameDir().toPath()));
+        tip.set(activeInstallationRegistered ? "" : LanguageManager
+                .getString("ui.game_manager.asset.registration_detail"));
+        status.set(LanguageManager.getString("ui.game_manager.asset.checking"));
+        checkUpdate();
+    }
+
+    /** 仅根据全量下载来源刷新右侧下载入口，不影响当前服务器的资源状态。 */
+    private void refreshFullDownloadState() {
+        boolean downloadTargetInstalled = installationManager.isConfigured(downloadSource.get());
+        boolean downloadTargetRegistered = installationManager
+                .gameDirectory(GameInstallationManager.editionOf(downloadSource.get()))
+                .map(path -> hasText(updateService.getInstalledVersion(path)))
+                .orElse(false);
+        showDownloadSourceHint.set(downloadTargetInstalled || downloadTargetRegistered);
+        boolean shouldShowFullDownload = downloadSource.get() != SourceType.GLOBAL || !downloadTargetInstalled;
+        showDownload.set(shouldShowFullDownload && (!downloadTargetInstalled || !downloadTargetRegistered));
+    }
+
+    private void refreshAfterAssetChange() {
+        String installedVersion = readInstalledVersion();
+        if (!installedVersion.isBlank()) {
+            currentVersion.set(installedVersion);
+        }
+        Platform.runLater(this::checkUpdate);
+    }
+
+    private String readInstalledVersion() {
+        try {
+            String version = updateService.getInstalledVersion();
+            return version != null ? version : "";
+        } catch (Exception e) {
+            LOG.warn("读取已安装版本失败", e);
+            return "";
         }
     }
 
-    private void syncResourceUpdateState(GameResourceUpdateTask.UpdateState state) {
+    private String defaultDownloadDir() {
+        return installationManager.gameDirectory(GameInstallationManager.editionOf(downloadSource.get()))
+                .map(path -> path.toString())
+                .orElse("");
+    }
+
+    // ==================== 更新任务（coordinator）镜像 ====================
+
+    private GameResourceUpdateTask currentUpdateTask() {
+        ManagedTask managed = taskManageService.get(GameResourceUpdateTask.TASK_ID);
+        GameResourceUpdateTask task = managed != null ? (GameResourceUpdateTask) managed.getTask() : null;
+        if (task != updateTask) {
+            rebindCoordinator(task);
+            updateTask = task;
+        }
+        if (task != null) {
+            syncUpdateState(task.phaseProperty().get());
+        }
+        return task;
+    }
+
+    private void rebindCoordinator(GameResourceUpdateTask task) {
+        detachCoordinatorListeners();
+        if (task != null) {
+            task.phaseProperty().addListener(coordinatorStateListener);
+            task.progressProperty().addListener(coordinatorProgressListener);
+            task.progressTextProperty().addListener(coordinatorProgressTextListener);
+            task.speedTextProperty().addListener(coordinatorSpeedListener);
+            task.detailTextProperty().addListener(coordinatorDetailListener);
+        }
+        coordinatorListenersAttached = task != null;
+    }
+
+    private void detachCoordinatorListeners() {
+        if (!coordinatorListenersAttached || updateTask == null) {
+            coordinatorListenersAttached = false;
+            return;
+        }
+        updateTask.phaseProperty().removeListener(coordinatorStateListener);
+        updateTask.progressProperty().removeListener(coordinatorProgressListener);
+        updateTask.progressTextProperty().removeListener(coordinatorProgressTextListener);
+        updateTask.speedTextProperty().removeListener(coordinatorSpeedListener);
+        updateTask.detailTextProperty().removeListener(coordinatorDetailListener);
+        coordinatorListenersAttached = false;
+    }
+
+    private void syncUpdateStateFromCurrentTask() {
+        GameResourceUpdateTask task = currentUpdateTask();
+        if (task != null) {
+            syncUpdateState(task.phaseProperty().get());
+        }
+    }
+
+    private void syncUpdateState(GameResourceUpdateTask.UpdateState state) {
         if (!isActiveInstallationInstalled()) {
             return;
         }
-        boolean updateRunning = switch (state) {
-            case PREPARING, DOWNLOADING, PAUSED, APPLYING -> true;
-            default -> false;
-        };
+        boolean updateRunning = state == GameResourceUpdateTask.UpdateState.PREPARING
+                || state == GameResourceUpdateTask.UpdateState.DOWNLOADING
+                || state == GameResourceUpdateTask.UpdateState.PAUSED
+                || state == GameResourceUpdateTask.UpdateState.APPLYING;
         if (updateRunning) {
-            if (activeOperation != OperationType.NONE && activeOperation != OperationType.UPDATE) {
-                return;
-            }
-            cancelCheckTask();
-            activeTask = null;
-            activeOperationId = NO_OPERATION;
-            activeOperation = OperationType.UPDATE;
+            activeTask = updateTask;
             operating.set(true);
             fullDownloadOperating.set(false);
             resourceOperationOperating.set(true);
@@ -485,16 +611,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             return;
         }
 
-        if (activeOperation == OperationType.UPDATE) {
-            activeOperation = OperationType.NONE;
-            activeOperationId = NO_OPERATION;
-            activeTask = null;
-            operating.set(false);
-            resourceOperationOperating.set(false);
-            pauseAvailable.set(false);
-            stopAvailable.set(false);
-            operationState.set(OperationState.IDLE);
-            downloadSpeed.set("");
+        if (activeTask == updateTask) {
+            detachOperation();
         }
 
         switch (state) {
@@ -522,84 +640,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         }
     }
 
-/** 全量下载：登记下载目录后启动 {@link GameFullDownloadTask}，走 legacy 的 STATE_NEED_DOWNLOAD 全量下载分支。 */
-    public void download() {
-        if (operating.get()) {
-            return;
-        }
-        String dir = downloadDir.get();
-        if (dir == null || dir.isBlank()) {
-            warnNoDownloadDir();
-            return;
-        }
+    // ==================== 全量下载镜像 ====================
 
-        File saveDir = new File(dir);
-        if ((!saveDir.exists() && !saveDir.mkdirs()) || !saveDir.isDirectory() || !saveDir.canWrite()) {
-            warnNoDownloadDir();
-            return;
-        }
-
-        SourceType selectedSource = downloadSource.get();
-        // 登记并激活目录：清空已装版本，使 legacy 检查进入 STATE_NEED_DOWNLOAD（全量下载）。
-        installationManager.configureInstallation(selectedSource, saveDir.toPath(), true);
-        Config.setting().setGameInstalledVersion("");
-        Config.setting().save();
-        serverSwitchCoordinator.refresh();
-
-        cancelCheckTask();
-        GameFullDownloadTask task = currentFullDownloadTask();
-        long operationId = ++operationSequence;
-        if (task == null) {
-            task = new GameFullDownloadTask(updateService);
-            fullDownloadTask = task;
-            bindFullDownloadTask(task);
-            taskManageService.submit(GameFullDownloadTask.TASK_ID,
-                    LanguageManager.getString("ui.game_manager.asset.download"),
-                    task, task, ManagedTask.TaskCategory.DOWNLOAD);
-        }
-        final GameFullDownloadTask active = task;
-        activeOperationId = operationId;
-        activeTask = active;
-        activeOperation = OperationType.DOWNLOAD;
-        task.setOnSucceeded(event -> {
-            if (isCurrentTask(operationId, active)) {
-                activeOperation = OperationType.NONE;
-                activeOperationId = NO_OPERATION;
-                activeTask = null;
-                refreshInstalledState();
-            }
-        });
-        task.setOnFailed(event -> {
-            if (isCurrentTask(operationId, active)) {
-                activeOperation = OperationType.NONE;
-                activeOperationId = NO_OPERATION;
-                activeTask = null;
-            }
-        });
-        task.setOnCancelled(event -> {
-            if (isCurrentTask(operationId, active)) {
-                activeOperation = OperationType.NONE;
-                activeOperationId = NO_OPERATION;
-                activeTask = null;
-            }
-        });
-        beginFullDownloadState(task);
-    }
-
-    /**
-     * 设置全量下载运行态（区别于资源操作区）。进入块状下载阶段时调用，
-     * 由 {@link GameFullDownloadTask#phaseProperty()} 变化经 {@link #syncFullDownloadState}
-     * 持续驱动暂停/恢复/停止可用性与进度展示。
-     */
-    private void beginFullDownloadState(GameFullDownloadTask task) {
-        operating.set(true);
-        resourceOperationOperating.set(false);
-        pauseAvailable.set(true);
-        stopAvailable.set(true);
-        syncFullDownloadState(task.phaseProperty().get());
-    }
-
-    /** 从任务管理器按固定 id 复用全量下载任务（重新进入页面时恢复进度展示）。 */
     private GameFullDownloadTask currentFullDownloadTask() {
         ManagedTask managed = taskManageService.get(GameFullDownloadTask.TASK_ID);
         GameFullDownloadTask task = managed != null ? (GameFullDownloadTask) managed.getTask() : null;
@@ -612,7 +654,22 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         return task;
     }
 
-    /** 将全量下载任务的进度/阶段属性绑定到下载专属区块。 */
+    private void restoreFullDownloadIfRunning() {
+        GameFullDownloadTask full = currentFullDownloadTask();
+        if (full != null && isFullDownloadRunning(full.phaseProperty().get())) {
+            activeTask = full;
+            syncFullDownloadState(full.phaseProperty().get());
+        }
+    }
+
+    private static boolean isFullDownloadRunning(GameFullDownloadTask.Phase phase) {
+        return phase == GameFullDownloadTask.Phase.CHECKING
+                || phase == GameFullDownloadTask.Phase.DOWNLOADING
+                || phase == GameFullDownloadTask.Phase.VERIFYING
+                || phase == GameFullDownloadTask.Phase.APPLYING
+                || phase == GameFullDownloadTask.Phase.PAUSED;
+    }
+
     private void bindFullDownloadTask(GameFullDownloadTask task) {
         task.progressProperty().addListener((observable, oldValue, newValue) -> {
             double v = newValue != null ? newValue.doubleValue() : 0;
@@ -633,87 +690,32 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         }
         switch (phase) {
             case CHECKING, DOWNLOADING, VERIFYING, APPLYING -> {
+                activeTask = fullDownloadTask;
+                operating.set(true);
                 fullDownloadOperating.set(true);
                 resourceOperationOperating.set(false);
-                operating.set(true);
-                activeOperation = OperationType.DOWNLOAD;
                 pauseAvailable.set(phase == GameFullDownloadTask.Phase.DOWNLOADING);
                 stopAvailable.set(phase != GameFullDownloadTask.Phase.APPLYING);
                 operationState.set(OperationState.RUNNING);
             }
             case PAUSED -> {
+                activeTask = fullDownloadTask;
+                operating.set(true);
                 fullDownloadOperating.set(true);
                 resourceOperationOperating.set(false);
-                operating.set(true);
-                activeOperation = OperationType.DOWNLOAD;
                 pauseAvailable.set(false);
                 stopAvailable.set(true);
                 operationState.set(OperationState.PAUSED);
             }
             case COMPLETED, FAILED, CANCELED -> {
-                fullDownloadOperating.set(false);
-                resourceOperationOperating.set(false);
-                if (activeOperation == OperationType.DOWNLOAD) {
-                    activeOperation = OperationType.NONE;
-                    activeOperationId = NO_OPERATION;
-                    activeTask = null;
-                }
-                operating.set(false);
-                pauseAvailable.set(false);
-                stopAvailable.set(false);
-                operationState.set(OperationState.IDLE);
-                downloadDownloadSpeed.set("");
+                detachOperation();
             }
             case IDLE -> {
             }
         }
     }
 
-    /** 启动增量更新。 */
-    public void update() {
-        if (operating.get()) {
-            return;
-        }
-        if (checkResult == null) {
-            warnCheckFirst();
-            return;
-        }
-        GameResourceUpdateTask task = currentUpdateTask();
-        if (task == null) {
-            task = new GameResourceUpdateTask(updateService);
-            updateTask = task;
-            rebindCoordinator(task);
-            task.setCheckResult(checkResult);
-            taskManageService.submit(GameResourceUpdateTask.TASK_ID,
-                    LanguageManager.getString("ui.game_manager.asset.update"),
-                    task, task, ManagedTask.TaskCategory.UPDATE);
-        }
-    }
-
-    /** 校验并修复游戏文件。 */
-    public void repair() {
-        if (operating.get()) {
-            return;
-        }
-        if (checkResult == null || !checkResult.isRepairAvailable()) {
-            warnCheckFirst();
-            return;
-        }
-
-        long operationId = beginOperation(
-                OperationType.REPAIR,
-                LanguageManager.getString("ui.game_manager.asset.repairing"));
-        GameRepairDownloadTask task = new GameRepairDownloadTask(updateService, checkResult);
-        bindResourceTask(task);
-        executeOperation(
-                operationId,
-                task,
-                LanguageManager.getString("ui.game_manager.asset.repair_done"),
-                LanguageManager.getString("ui.game_manager.asset.repair_fail"),
-                this::refreshAfterAssetChange);
-    }
-
-    /** 将资源操作 Task(修复/预下载) 的进度/文案绑定到左侧共享属性。 */
+    /** 将资源操作 Task(修复/预下载) 的进度/文案绑定到资源操作区属性。 */
     private void bindResourceTask(Task<?> task) {
         task.progressProperty().addListener((observable, oldValue, newValue) -> {
             double v = newValue != null ? newValue.doubleValue() : 0;
@@ -729,242 +731,16 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         });
     }
 
-    /** 下载下一版本的预下载资源。 */
-    public void preDownload() {
-        if (operating.get()) {
-            return;
-        }
-        ResourceCheckResult result = checkResult;
-        if (result == null || !result.hasUpdatePlan() || !updateService.isPreDownloadAvailable(result)) {
-            warnCheckFirst();
-            return;
-        }
-
-        long operationId = beginOperation(
-                OperationType.PRE_DOWNLOAD,
-                LanguageManager.getString("ui.game_manager.asset.predownloading"));
-        GamePreDownloadTask task = new GamePreDownloadTask(updateService, result);
-        bindResourceTask(task);
-        executeOperation(
-                operationId,
-                task,
-                LanguageManager.getString("ui.game_manager.asset.predownload_done"),
-                LanguageManager.getString("ui.game_manager.asset.fail"),
-                this::refreshAfterAssetChange);
-    }
-
-    public void pause() {
-        if (operationState.get() != OperationState.RUNNING || !pauseAvailable.get()) {
-            return;
-        }
-        switch (activeOperation) {
-            case DOWNLOAD -> {
-                GameFullDownloadTask full = currentFullDownloadTask();
-                if (full != null) {
-                    full.pauseTask();
-                }
-            }
-            case UPDATE -> {
-                GameResourceUpdateTask task = currentUpdateTask();
-                if (task != null) {
-                    task.pauseTask();
-                }
-            }
-            case PRE_DOWNLOAD -> updateService.pausePreDownload();
-            case REPAIR -> updateService.pauseRepair();
-            case NONE -> {
-                return;
-            }
-        }
-        operationState.set(OperationState.PAUSED);
-        if (activeOperation == OperationType.DOWNLOAD) {
-            downloadDownloadSpeed.set("");
-            downloadTip.set("资源操作已暂停");
-        } else {
-            downloadSpeed.set("");
-            tip.set("资源操作已暂停");
-        }
-    }
-
-    public void resume() {
-        if (operationState.get() != OperationState.PAUSED) {
-            return;
-        }
-        switch (activeOperation) {
-            case DOWNLOAD -> {
-                GameFullDownloadTask full = currentFullDownloadTask();
-                if (full != null) {
-                    full.resumeTask();
-                }
-            }
-            case UPDATE -> {
-                GameResourceUpdateTask task = currentUpdateTask();
-                if (task != null) {
-                    task.resumeTask();
-                }
-            }
-            case PRE_DOWNLOAD -> updateService.resumePreDownload();
-            case REPAIR -> updateService.resumeRepair();
-            case NONE -> {
-                return;
-            }
-        }
-        operationState.set(OperationState.RUNNING);
-        if (activeOperation == OperationType.DOWNLOAD) {
-            downloadTip.set("正在继续下载资源");
-        } else {
-            tip.set(resumeDetail(activeOperation));
-        }
-    }
-
-    public void stop() {
-        if (!operating.get() || !stopAvailable.get()
-                || operationState.get() == OperationState.STOPPING) {
-            return;
-        }
-
-        long operationId = activeOperationId;
-        Task<?> task = activeTask;
-        operationState.set(OperationState.STOPPING);
-        downloadSpeed.set("");
-        tip.set("正在停止资源操作");
-        try {
-            switch (activeOperation) {
-                case DOWNLOAD -> {
-                    GameFullDownloadTask full = currentFullDownloadTask();
-                    if (full != null) {
-                        full.cancelTask();
-                    }
-                }
-                case UPDATE -> {
-                    GameResourceUpdateTask updateTask = currentUpdateTask();
-                    if (updateTask != null) {
-                        updateTask.cancelTask();
-                    }
-                }
-                case PRE_DOWNLOAD -> updateService.stopPreDownload();
-                case REPAIR -> updateService.stopRepair();
-                case NONE -> {
-                }
-            }
-        } catch (RuntimeException e) {
-            LOG.warn("停止资源操作失败", e);
-        } finally {
-            if (task != null && isCurrentTask(operationId, task)) {
-                task.cancel(true);
-            }
-        }
-    }
-
-    private long beginOperation(OperationType operation, String statusText) {
-        cancelCheckTask();
-        long operationId = ++operationSequence;
-        activeOperationId = operationId;
-        activeOperation = operation;
-        operating.set(true);
-        resourceOperationOperating.set(true);
-        pauseAvailable.set(operation != OperationType.UPDATE && operation != OperationType.REPAIR);
-        stopAvailable.set(true);
-        operationState.set(OperationState.RUNNING);
-        status.set(statusText);
-        downloadSpeed.set("");
-        tip.set("");
-        progress.set(0);
-        progressText.set("0%");
-        return operationId;
-    }
-
-    private void executeOperation(
-            long operationId,
-            Task<?> task,
-            String successText,
-            String failureText,
-            Runnable afterSuccess) {
-        activeTask = task;
-        task.setOnSucceeded(event -> {
-            if (finishOperation(operationId, task, successText) && afterSuccess != null) {
-                afterSuccess.run();
-            }
-        });
-        task.setOnCancelled(event -> finishOperation(
-                operationId,
-                task,
-                LanguageManager.getString("ui.game_manager.asset.stopped"),
-                true));
-        task.setOnFailed(event -> {
-            Throwable exception = task.getException();
-            String detail = exception != null && hasText(exception.getMessage())
-                    ? ": " + exception.getMessage()
-                    : "";
-            tip.set(failureText + detail);
-            finishOperation(operationId, task, failureText + detail);
-        });
-        TaskControl control = task instanceof TaskControl ? (TaskControl) task : null;
-        ManagedTask.TaskCategory category = classify(task);
-        taskManageService.submit(managedId(task), managedName(task), task, control, category);
-    }
+    // ==================== 工具 ====================
 
     private static String managedId(Task<?> task) {
         return task.getClass().getSimpleName();
     }
 
     private static String managedName(Task<?> task) {
-        if (task instanceof cn.tealc.wutheringwavestool.thread.game.download.GameRepairDownloadTask) return "校验修复";
-        if (task instanceof cn.tealc.wutheringwavestool.thread.game.download.GamePreDownloadTask) return "预下载";
+        if (task instanceof GameRepairDownloadTask) return "校验修复";
+        if (task instanceof GamePreDownloadTask) return "预下载";
         return task.getClass().getSimpleName();
-    }
-
-    private static ManagedTask.TaskCategory classify(Task<?> task) {
-        if (task instanceof cn.tealc.wutheringwavestool.thread.game.download.GameRepairDownloadTask) return ManagedTask.TaskCategory.REPAIR;
-        if (task instanceof cn.tealc.wutheringwavestool.thread.game.download.GamePreDownloadTask) return ManagedTask.TaskCategory.PREDOWNLOAD;
-        return ManagedTask.TaskCategory.OTHER;
-    }
-
-    private boolean finishOperation(long operationId, Task<?> task, String resultText) {
-        return finishOperation(operationId, task, resultText, false);
-    }
-
-    private boolean finishOperation(long operationId, Task<?> task, String resultText, boolean resetProgress) {
-        if (!isCurrentTask(operationId, task)) {
-            return false;
-        }
-        activeTask = null;
-        activeOperationId = NO_OPERATION;
-        activeOperation = OperationType.NONE;
-        operating.set(false);
-        resourceOperationOperating.set(false);
-        pauseAvailable.set(false);
-        stopAvailable.set(false);
-        operationState.set(OperationState.IDLE);
-        status.set(resultText);
-        downloadSpeed.set("");
-        if (resetProgress) {
-            progress.set(0);
-            progressText.set("0%");
-        }
-        return true;
-    }
-
-    private boolean isCurrentTask(long operationId, Task<?> task) {
-        return activeOperationId == operationId && activeTask == task;
-    }
-
-    private void refreshAfterAssetChange() {
-        String installedVersion = readInstalledVersion();
-        if (!installedVersion.isBlank()) {
-            currentVersion.set(installedVersion);
-        }
-        Platform.runLater(this::checkUpdate);
-    }
-
-    private static String resumeDetail(OperationType operation) {
-        return switch (operation) {
-            case DOWNLOAD -> "正在继续下载资源";
-            case REPAIR -> "正在继续校验修复游戏文件";
-            case PRE_DOWNLOAD -> "正在继续预下载资源";
-            case UPDATE -> "正在继续更新游戏资源";
-            case NONE -> "";
-        };
     }
 
     private void warnNoDownloadDir() {
@@ -995,6 +771,8 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         downloadDir.set(dir);
     }
 
+    // ==================== 对外属性 ====================
+
     public BooleanProperty operatingProperty() {
         return operating;
     }
@@ -1017,6 +795,38 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     public ReadOnlyObjectProperty<OperationState> operationStateProperty() {
         return operationState.getReadOnlyProperty();
+    }
+
+    public ReadOnlyObjectProperty<SourceType> currentGameSourceProperty() {
+        return Config.setting().gameRootDirSourceProperty();
+    }
+
+    public ReadOnlyBooleanProperty serverSwitchOperatingProperty() {
+        return serverSwitchCoordinator.operatingProperty();
+    }
+
+    public ReadOnlyBooleanProperty mainlandServerSwitchReadyProperty() {
+        return serverSwitchCoordinator.mainlandTargetReadyProperty();
+    }
+
+    public ReadOnlyBooleanProperty bilibiliServerSwitchReadyProperty() {
+        return serverSwitchCoordinator.bilibiliTargetReadyProperty();
+    }
+
+    public ReadOnlyBooleanProperty serverSwitchAvailableProperty() {
+        return serverSwitchCoordinator.switchAvailableProperty();
+    }
+
+    public ReadOnlyDoubleProperty serverSwitchProgressProperty() {
+        return serverSwitchCoordinator.progressProperty();
+    }
+
+    public ReadOnlyStringProperty serverSwitchStatusTextProperty() {
+        return serverSwitchCoordinator.statusTextProperty();
+    }
+
+    public ReadOnlyStringProperty serverSwitchDetailTextProperty() {
+        return serverSwitchCoordinator.detailTextProperty();
     }
 
     public StringProperty currentVersionProperty() {
@@ -1116,11 +926,5 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     public void setCustomDownloadCacheDir(String cacheDir) {
         Config.setting().setCustomDownloadCacheDir(cacheDir);
         Config.setting().save();
-    }
-
-    @Override
-    public void onViewRemoved() {
-        cancelCheckTask();
-        detachCoordinatorListeners();
     }
 }

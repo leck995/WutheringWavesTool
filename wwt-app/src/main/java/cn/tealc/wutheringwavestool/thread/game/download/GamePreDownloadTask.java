@@ -71,25 +71,8 @@ public class GamePreDownloadTask extends AbstractGameDownloadTask<ResourceOperat
     // ---------------- TaskControl ----------------
 
     @Override
-    public boolean pauseTask() {
-        updateService.pausePreDownload();
-        return true;
-    }
-
-    @Override
-    public boolean resumeTask() {
-        updateService.resumePreDownload();
-        return true;
-    }
-
-    @Override
     public boolean cancelTask() {
         cancel(true);
-        return true;
-    }
-
-    @Override
-    public boolean supportsPause() {
         return true;
     }
 }

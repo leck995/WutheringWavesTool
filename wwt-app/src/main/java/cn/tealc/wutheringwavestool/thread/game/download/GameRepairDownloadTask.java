@@ -71,25 +71,8 @@ public class GameRepairDownloadTask extends AbstractGameDownloadTask<ResourceOpe
     // ---------------- TaskControl ----------------
 
     @Override
-    public boolean pauseTask() {
-        updateService.pauseRepair();
-        return true;
-    }
-
-    @Override
-    public boolean resumeTask() {
-        updateService.resumeRepair();
-        return true;
-    }
-
-    @Override
     public boolean cancelTask() {
         cancel(true);
-        return true;
-    }
-
-    @Override
-    public boolean supportsPause() {
         return true;
     }
 }
