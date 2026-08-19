@@ -295,21 +295,21 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     public void pauseResourceUpdate() {
         GameResourceUpdateTask task = currentUpdateTask();
         if (task != null) {
-            task.pauseUpdate();
+            task.pauseTask();
         }
     }
 
     public void resumeResourceUpdate() {
         GameResourceUpdateTask task = currentUpdateTask();
         if (task != null) {
-            task.resumeUpdate();
+            task.resumeTask();
         }
     }
 
     public void cancelResourceUpdate() {
         GameResourceUpdateTask task = currentUpdateTask();
         if (task != null) {
-            task.cancelUpdate();
+            task.cancelTask();
         }
     }
 

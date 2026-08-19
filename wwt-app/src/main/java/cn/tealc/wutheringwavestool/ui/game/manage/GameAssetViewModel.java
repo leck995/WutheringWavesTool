@@ -761,13 +761,13 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             case DOWNLOAD -> {
                 GameFullDownloadTask full = currentFullDownloadTask();
                 if (full != null) {
-                    full.pause();
+                    full.pauseTask();
                 }
             }
             case UPDATE -> {
                 GameResourceUpdateTask task = currentUpdateTask();
                 if (task != null) {
-                    task.pauseUpdate();
+                    task.pauseTask();
                 }
             }
             case PRE_DOWNLOAD -> updateService.pausePreDownload();
@@ -794,13 +794,13 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             case DOWNLOAD -> {
                 GameFullDownloadTask full = currentFullDownloadTask();
                 if (full != null) {
-                    full.resume();
+                    full.resumeTask();
                 }
             }
             case UPDATE -> {
                 GameResourceUpdateTask task = currentUpdateTask();
                 if (task != null) {
-                    task.resumeUpdate();
+                    task.resumeTask();
                 }
             }
             case PRE_DOWNLOAD -> updateService.resumePreDownload();
@@ -839,7 +839,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                 case UPDATE -> {
                     GameResourceUpdateTask updateTask = currentUpdateTask();
                     if (updateTask != null) {
-                        updateTask.cancelUpdate();
+                        updateTask.cancelTask();
                     }
                 }
                 case PRE_DOWNLOAD -> updateService.stopPreDownload();

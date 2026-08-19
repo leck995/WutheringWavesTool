@@ -154,30 +154,6 @@ public class GameResourceUpdateTask extends AbstractGameDownloadTask<ResourceOpe
         }
     }
 
-    // ---------------- 操作 ----------------
-
-    public void pauseUpdate() {
-        if (phase.get() == UpdateState.DOWNLOADING) {
-            updateService.pause();
-            setPhase(UpdateState.PAUSED,
-                    LanguageManager.getString("ui.home.resource.update_paused"), "");
-        }
-    }
-
-    public void resumeUpdate() {
-        if (phase.get() == UpdateState.PAUSED) {
-            updateService.resume();
-        }
-    }
-
-    public void cancelUpdate() {
-        if (phase.get() == UpdateState.APPLYING) {
-            return;
-        }
-        updateService.stop();
-        cancel(true);
-    }
-
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
         updateService.stop();
@@ -189,7 +165,9 @@ public class GameResourceUpdateTask extends AbstractGameDownloadTask<ResourceOpe
     @Override
     public boolean pauseTask() {
         if (phase.get() == UpdateState.DOWNLOADING) {
-            pauseUpdate();
+            updateService.pause();
+            setPhase(UpdateState.PAUSED,
+                    LanguageManager.getString("ui.home.resource.update_paused"), "");
             return true;
         }
         return false;
@@ -198,7 +176,7 @@ public class GameResourceUpdateTask extends AbstractGameDownloadTask<ResourceOpe
     @Override
     public boolean resumeTask() {
         if (phase.get() == UpdateState.PAUSED) {
-            resumeUpdate();
+            updateService.resume();
             return true;
         }
         return false;
@@ -206,7 +184,11 @@ public class GameResourceUpdateTask extends AbstractGameDownloadTask<ResourceOpe
 
     @Override
     public boolean cancelTask() {
-        cancelUpdate();
+        if (phase.get() == UpdateState.APPLYING) {
+            return true;
+        }
+        updateService.stop();
+        cancel(true);
         return true;
     }
 

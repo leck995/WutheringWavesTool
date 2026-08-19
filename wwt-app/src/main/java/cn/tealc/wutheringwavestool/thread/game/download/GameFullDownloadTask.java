@@ -148,20 +148,6 @@ public class GameFullDownloadTask extends AbstractGameDownloadTask<ResourceOpera
 
     // ---------------- 操作 ----------------
 
-    public void pause() {
-        if (phase.get() == Phase.DOWNLOADING) {
-            updateService.pause();
-            onFx(() -> phase.set(Phase.PAUSED));
-        }
-    }
-
-    public void resume() {
-        if (phase.get() == Phase.PAUSED) {
-            updateService.resume();
-            onFx(() -> phase.set(Phase.DOWNLOADING));
-        }
-    }
-
     @Override
     public boolean cancel(boolean mayInterruptIfRunning) {
         updateService.stop();
@@ -172,20 +158,25 @@ public class GameFullDownloadTask extends AbstractGameDownloadTask<ResourceOpera
 
     @Override
     public boolean pauseTask() {
-        pause();
+        if (phase.get() == Phase.DOWNLOADING) {
+            updateService.pause();
+            onFx(() -> phase.set(Phase.PAUSED));
+        }
         return true;
     }
 
     @Override
     public boolean resumeTask() {
-        resume();
+        if (phase.get() == Phase.PAUSED) {
+            updateService.resume();
+            onFx(() -> phase.set(Phase.DOWNLOADING));
+        }
         return true;
     }
 
     @Override
     public boolean cancelTask() {
-        cancel(true);
-        return true;
+        return cancel(true);
     }
 
     @Override
