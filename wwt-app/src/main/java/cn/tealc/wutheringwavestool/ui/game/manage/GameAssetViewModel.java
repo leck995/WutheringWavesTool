@@ -153,7 +153,6 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                 return;
             }
             if (!operating.get()) {
-                downloadDir.set(defaultDownloadDir());
                 refreshFullDownloadState();
             }
         });
@@ -199,9 +198,6 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         restoreFullDownloadIfRunning();
         SourceType configuredSource = Config.setting().gameRootDirSourceProperty().get();
         downloadSource.set(normalizeDownloadSource(configuredSource));
-        if (downloadDir.get() == null || downloadDir.get().isBlank()) {
-            downloadDir.set(defaultDownloadDir());
-        }
         if (!operating.get()) {
             refreshInstalledState();
         }
@@ -228,6 +224,12 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         File saveDir = new File(dir);
         if ((!saveDir.exists() && !saveDir.mkdirs()) || !saveDir.isDirectory() || !saveDir.canWrite()) {
             warnNoDownloadDir();
+            return;
+        }
+        // 全量下载仅允许全新空目录：目标目录若已有安装登记，则提示改选空目录。
+        if (hasText(updateService.getInstalledVersion(saveDir.toPath()))) {
+            NotificationManager.message(MessageInfo.warning(
+                    LanguageManager.getString("ui.game_manager.asset.dir_not_empty")));
             return;
         }
 
@@ -501,7 +503,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         checkUpdate();
     }
 
-    /** 仅根据全量下载来源刷新右侧下载入口，不影响当前服务器的资源状态。 */
+    /** 刷新全量下载入口：下载按钮始终可见，仅在已安装时展示来源提示。 */
     private void refreshFullDownloadState() {
         boolean downloadTargetInstalled = installationManager.isConfigured(downloadSource.get());
         boolean downloadTargetRegistered = installationManager
@@ -509,8 +511,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                 .map(path -> hasText(updateService.getInstalledVersion(path)))
                 .orElse(false);
         showDownloadSourceHint.set(downloadTargetInstalled || downloadTargetRegistered);
-        boolean shouldShowFullDownload = downloadSource.get() != SourceType.GLOBAL || !downloadTargetInstalled;
-        showDownload.set(shouldShowFullDownload && (!downloadTargetInstalled || !downloadTargetRegistered));
+        showDownload.set(true);
     }
 
     private void refreshAfterAssetChange() {
@@ -529,12 +530,6 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             LOG.warn("读取已安装版本失败", e);
             return "";
         }
-    }
-
-    private String defaultDownloadDir() {
-        return installationManager.gameDirectory(GameInstallationManager.editionOf(downloadSource.get()))
-                .map(path -> path.toString())
-                .orElse("");
     }
 
     // ==================== 更新任务（coordinator）镜像 ====================

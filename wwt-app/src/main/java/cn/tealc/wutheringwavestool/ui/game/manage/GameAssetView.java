@@ -330,7 +330,7 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
                 .create()
                 .title(LanguageManager.getString("ui.game_manager.asset.download_cache"))
                 .message(LanguageManager.getString("ui.game_manager.base.server_switch.redownload_confirm"))
-                .button("确定",event ->  viewModel.redownloadServerFiles(source))
+                .button("确定",null,true,event ->  viewModel.redownloadServerFiles(source))
                 .cancel()
                 .build();
         NotificationManager.dialog(layout);
@@ -343,7 +343,7 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
                 .create()
                 .title(LanguageManager.getString("ui.game_manager.asset.download_cache"))
                 .message(LanguageManager.getString("ui.game_manager.base.server_switch.delete_confirm"))
-                .button("确定",event -> viewModel.deleteServerCache(source))
+                .button("确定",null,true,event -> viewModel.deleteServerCache(source))
                 .cancel()
                 .build();
         NotificationManager.dialog(layout);
