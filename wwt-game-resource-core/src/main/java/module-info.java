@@ -6,7 +6,6 @@ module cn.tealc.wwt.game.resource.core {
     requires org.slf4j;
 
     opens cn.tealc.wwt.game.resource to com.fasterxml.jackson.databind;
-    opens cn.tealc.wwt.game.resource.internal to com.fasterxml.jackson.databind;
     opens cn.tealc.wwt.game.resource.internal.legacy.model to com.fasterxml.jackson.databind;
 
     exports cn.tealc.wwt.game.resource;

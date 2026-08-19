@@ -3,7 +3,7 @@ package cn.tealc.wwt.game.resource;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import cn.tealc.wwt.game.resource.model.game.FileInfo;
+import cn.tealc.wwt.game.resource.internal.legacy.model.FileInfo;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -42,13 +42,13 @@ class GameServerSwitchServiceTest {
 
         assertEquals(java.util.List.of(changed.toString().replace('\\', '/'), missing.toString().replace('\\', '/')),
                 GameServerSwitchService.selectFilesToDownload(game, java.util.List.of(sameFile, changedFile, missingFile))
-                        .stream().map(FileInfo::getDest).toList());
+                        .stream().map(file -> file.path).toList());
     }
 
     @Test
     void switchesBothDirectionsAndPreservesLauncherVersion() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        GameServerSwitchService service = new GameServerSwitchService(null, mapper);
+        GameServerSwitchService service = new GameServerSwitchService(mapper);
         Path game = temporaryDirectory.resolve("game");
 
         write(game.resolve(EXECUTABLE), "mainland-exe");
@@ -103,7 +103,7 @@ class GameServerSwitchServiceTest {
     @Test
     void switchesWithSizeValidatedCacheWithoutRehashingEveryFile() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        GameServerSwitchService service = new GameServerSwitchService(null, mapper);
+        GameServerSwitchService service = new GameServerSwitchService(mapper);
         Path game = temporaryDirectory.resolve("fast-switch-game");
 
         write(game.resolve(EXECUTABLE), "mainland-exe");
@@ -136,7 +136,7 @@ class GameServerSwitchServiceTest {
     @Test
     void detectsGlobalServerFromAppIdAndSdkDirectory() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        GameServerSwitchService service = new GameServerSwitchService(null, mapper);
+        GameServerSwitchService service = new GameServerSwitchService(mapper);
         Path game = temporaryDirectory.resolve("global-game");
 
         write(game.resolve(GLOBAL_SDK).resolve("KRSDK.dll"), "global-sdk");
@@ -148,7 +148,7 @@ class GameServerSwitchServiceTest {
     @Test
     void fallsBackToSdkDirectoryWhenLauncherConfigIsMissing() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        GameServerSwitchService service = new GameServerSwitchService(null, mapper);
+        GameServerSwitchService service = new GameServerSwitchService(mapper);
         Path game = temporaryDirectory.resolve("legacy-game");
 
         write(game.resolve(SDK).resolve("KRSDK.dll"), "mainland-sdk");
@@ -159,7 +159,7 @@ class GameServerSwitchServiceTest {
     @Test
     void rejectsConflictingLauncherConfigAndSdkDirectory() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        GameServerSwitchService service = new GameServerSwitchService(null, mapper);
+        GameServerSwitchService service = new GameServerSwitchService(mapper);
         Path game = temporaryDirectory.resolve("conflicting-game");
 
         write(game.resolve(GLOBAL_SDK).resolve("KRSDK.dll"), "global-sdk");
@@ -172,7 +172,7 @@ class GameServerSwitchServiceTest {
     @Test
     void deletesOnlySelectedCacheAndKeepsActiveGameFiles() throws Exception {
         ObjectMapper mapper = new ObjectMapper();
-        GameServerSwitchService service = new GameServerSwitchService(null, mapper);
+        GameServerSwitchService service = new GameServerSwitchService(mapper);
         Path game = temporaryDirectory.resolve("game");
 
         write(game.resolve(EXECUTABLE), "active-mainland");
@@ -198,9 +198,9 @@ class GameServerSwitchServiceTest {
 
     private static FileInfo fileInfo(Path path, long size, String md5) {
         FileInfo file = new FileInfo();
-        file.setDest(path.toString().replace('\\', '/'));
-        file.setSize(size);
-        file.setMd5(md5);
+        file.path = path.toString().replace('\\', '/');
+        file.size = size;
+        file.md5 = md5;
         return file;
     }
 
