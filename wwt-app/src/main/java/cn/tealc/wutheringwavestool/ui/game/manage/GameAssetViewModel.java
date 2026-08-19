@@ -696,7 +696,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                 operating.set(true);
                 fullDownloadOperating.set(true);
                 resourceOperationOperating.set(false);
-                pauseAvailable.set(false);
+                pauseAvailable.set(true);
                 stopAvailable.set(true);
                 operationState.set(OperationState.PAUSED);
             }

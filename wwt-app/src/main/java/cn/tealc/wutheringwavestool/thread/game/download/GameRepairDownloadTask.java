@@ -59,7 +59,7 @@ public class GameRepairDownloadTask extends AbstractGameDownloadTask<ResourceOpe
         } else {
             updateProgress(-1, 0);
         }
-        updateMessage(progressMessage(completed, total, ""));
+        updateMessage(progressMessage(completed, total));
     }
 
     @Override

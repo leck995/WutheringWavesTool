@@ -137,7 +137,7 @@ public class GameResourceUpdateTask extends AbstractGameDownloadTask<ResourceOpe
         }
         String speed = (stage == UpdateState.DOWNLOADING)
                 ? updateEmaSpeed(completed, speedSample, emaSpeed) : "";
-        updateMessage(progressMessage(completed, total, speed));
+        updateMessage(progressMessage(completed, total));
         onFx(() -> {
             this.speedText.set(speed);
             double p = getProgress() >= 0 ? getProgress() : 0;

@@ -50,9 +50,8 @@ public abstract class AbstractGameDownloadTask<T> extends Task<T> {
         return "";
     }
 
-    /** 组合进度消息：已完成 / 总量 · 速率。 */
-    protected static String progressMessage(long completed, long total, String speedText) {
-        return String.format(Locale.ROOT, "%s / %s" + (speedText.isEmpty() ? "" : "  ·  " + speedText),
-                formatBytes(completed), formatBytes(total));
+    /** 组合进度消息：已完成 / 总量。 */
+    protected static String progressMessage(long completed, long total) {
+        return String.format(Locale.ROOT, "%s / %s", formatBytes(completed), formatBytes(total));
     }
 }

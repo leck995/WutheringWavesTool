@@ -118,7 +118,7 @@ public class GameFullDownloadTask extends AbstractGameDownloadTask<ResourceOpera
             speedText.set(speed);
             double p = getProgress() >= 0 ? getProgress() : 0;
             progressText.set(String.format(Locale.ROOT, "%.1f%%", p * 100));
-            detailText.set(progressMessage(completed, total, speed));
+            detailText.set(progressMessage(completed, total));
         });
     }
 
@@ -160,7 +160,7 @@ public class GameFullDownloadTask extends AbstractGameDownloadTask<ResourceOpera
     public boolean pauseTask() {
         if (phase.get() == Phase.DOWNLOADING) {
             updateService.pause();
-            onFx(() -> phase.set(Phase.PAUSED));
+            setPhase(Phase.PAUSED, null);
         }
         return true;
     }
@@ -169,7 +169,7 @@ public class GameFullDownloadTask extends AbstractGameDownloadTask<ResourceOpera
     public boolean resumeTask() {
         if (phase.get() == Phase.PAUSED) {
             updateService.resume();
-            onFx(() -> phase.set(Phase.DOWNLOADING));
+            setPhase(Phase.DOWNLOADING, null);
         }
         return true;
     }
