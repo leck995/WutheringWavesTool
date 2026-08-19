@@ -94,6 +94,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     private final BooleanProperty showUpdate = new SimpleBooleanProperty(false);
     private final BooleanProperty showRepair = new SimpleBooleanProperty(false);
     private final BooleanProperty showPreDownload = new SimpleBooleanProperty(false);
+    private final BooleanProperty preDownloadComplete = new SimpleBooleanProperty(false);
 
     // 资源操作区进度（更新/修复/预下载）。
     private final DoubleProperty progress = new SimpleDoubleProperty(0);
@@ -302,7 +303,14 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             return;
         }
         ResourceCheckResult result = checkResult;
-        if (result == null || !result.hasUpdatePlan() || !updateService.isPreDownloadAvailable(result)) {
+        if (result == null) {
+            warnCheckFirst();
+            return;
+        }
+        if (result.isPreDownloadComplete()) {
+            return;
+        }
+        if (!result.hasUpdatePlan() || !updateService.isPreDownloadAvailable(result)) {
             warnCheckFirst();
             return;
         }
@@ -455,7 +463,10 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                 || result.state() == ResourceCheckState.REPAIR_REQUIRED;
         showUpdate.set(needsUpdate);
         showRepair.set(result.isRepairAvailable());
-        showPreDownload.set(result.hasUpdatePlan() && updateService.isPreDownloadAvailable(result));
+        boolean pdComplete = result.isPreDownloadComplete();
+        boolean pdAvailable = result.hasUpdatePlan() && updateService.isPreDownloadAvailable(result);
+        preDownloadComplete.set(pdComplete);
+        showPreDownload.set(pdAvailable || pdComplete);
         if (result.state() == ResourceCheckState.REPAIR_REQUIRED) {
             tip.set(LanguageManager.getString("ui.game_manager.asset.tip_repair"));
         } else {
@@ -472,6 +483,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         showUpdate.set(false);
         showRepair.set(false);
         showPreDownload.set(false);
+        preDownloadComplete.set(false);
         tip.set("");
     }
 
@@ -490,6 +502,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             showRepair.set(false);
             showUpdate.set(false);
             showPreDownload.set(false);
+            preDownloadComplete.set(false);
             status.set(LanguageManager.getString("ui.game_manager.asset.not_installed"));
             return;
         }
@@ -851,6 +864,10 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     public BooleanProperty showPreDownloadProperty() {
         return showPreDownload;
+    }
+
+    public BooleanProperty preDownloadCompleteProperty() {
+        return preDownloadComplete;
     }
 
     public DoubleProperty progressProperty() {

@@ -210,7 +210,11 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         downloadBtn.disableProperty().bind(resourceOrCacheOperating);
         updateBtn.disableProperty().bind(resourceOrCacheOperating);
         repairBtn.disableProperty().bind(resourceOrCacheOperating);
-        preDownloadBtn.disableProperty().bind(resourceOrCacheOperating);
+        preDownloadBtn.disableProperty().bind(resourceOrCacheOperating
+                .or(viewModel.preDownloadCompleteProperty()));
+        preDownloadBtn.textProperty().bind(Bindings.when(viewModel.preDownloadCompleteProperty())
+                .then(LanguageManager.getString("ui.game_manager.asset.predownload_done"))
+                .otherwise(LanguageManager.getString("ui.game_manager.asset.predownload")));
         mainlandSourceRadio.disableProperty().bind(resourceOrCacheOperating);
         bilibiliSourceRadio.disableProperty().bind(resourceOrCacheOperating);
         globalSourceRadio.disableProperty().bind(resourceOrCacheOperating);
