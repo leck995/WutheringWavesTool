@@ -107,7 +107,6 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     private final StringProperty downloadDownloadSpeed = new SimpleStringProperty("");
     private final StringProperty downloadTip = new SimpleStringProperty("");
 
-    private final StringProperty downloadDir = new SimpleStringProperty();
     private final ObjectProperty<SourceType> downloadSource =
             new SimpleObjectProperty<>(SourceType.DEFAULT);
 
@@ -211,12 +210,11 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     // ==================== 全量下载 ====================
 
-    /** 全量下载：登记下载目录后启动 {@link GameFullDownloadTask}。 */
-    public void download() {
+    /** 全量下载：校验空目录后登记并启动 {@link GameFullDownloadTask}。 */
+    public void download(String dir) {
         if (operating.get()) {
             return;
         }
-        String dir = downloadDir.get();
         if (dir == null || dir.isBlank()) {
             warnNoDownloadDir();
             return;
@@ -762,10 +760,6 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                 ? source : SourceType.DEFAULT;
     }
 
-    public void setDownloadDir(String dir) {
-        downloadDir.set(dir);
-    }
-
     // ==================== 对外属性 ====================
 
     public BooleanProperty operatingProperty() {
@@ -886,10 +880,6 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     public StringProperty downloadTipProperty() {
         return downloadTip;
-    }
-
-    public StringProperty downloadDirProperty() {
-        return downloadDir;
     }
 
     public IntegerProperty downloadParallelCountProperty() {

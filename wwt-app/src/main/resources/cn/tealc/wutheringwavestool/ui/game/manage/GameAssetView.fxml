@@ -223,27 +223,6 @@
                                        </HBox>
                                     </children>
                                  </VBox>
-                                 <VBox fx:id="directorySection" spacing="9.0">
-                                    <children>
-                                       <Label styleClass="asset-form-label" text="%ui.game_manager.asset.dir" />
-                                       <StackPane maxWidth="350.0" prefWidth="350.0" styleClass="input-group">
-                                          <children>
-                                             <TextField fx:id="downloadDirField" prefWidth="250.0"
-                                                        promptText="%ui.game_manager.asset.dir_tip" />
-                                             <Button fx:id="chooseDirBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
-                                                     onAction="#chooseDownloadDir"
-                                                     StackPane.alignment="CENTER_RIGHT">
-                                                <tooltip>
-                                                   <Tooltip text="%ui.game_manager.asset.dir" />
-                                                </tooltip>
-                                                <graphic>
-                                                   <FontIcon iconLiteral="mdoal-folder_open" iconSize="19" />
-                                                </graphic>
-                                             </Button>
-                                          </children>
-                                       </StackPane>
-                                    </children>
-                                 </VBox>
                                  <VBox spacing="9.0">
                                     <children>
                                        <Label styleClass="asset-form-label" text="%ui.game_manager.asset.cache_dir" />

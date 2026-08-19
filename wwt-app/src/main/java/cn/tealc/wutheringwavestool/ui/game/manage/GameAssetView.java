@@ -38,8 +38,6 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     @FXML
     private StackPane assetRoot;
     @FXML
-    private VBox directorySection;
-    @FXML
     private Label downloadSourceHintLabel;
     @FXML
     private VBox resourceProgressSection;
@@ -65,8 +63,6 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     private Label statusLabel;
     @FXML
     private Label currentServerLabel;
-    @FXML
-    private TextField downloadDirField;
     @FXML
     private TextField downloadCacheDirField;
     @FXML
@@ -125,8 +121,6 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     @FXML
     private Button downloadStopBtn;
     @FXML
-    private Button chooseDirBtn;
-    @FXML
     private VBox cacheOperationFeedback;
     @FXML
     private Label cacheStatusLabel;
@@ -164,7 +158,6 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         viewModel.currentGameSourceProperty().addListener((observable, oldSource, newSource) ->
                 updateCurrentServerLabel(newSource));
         updateCurrentServerLabel(viewModel.currentGameSourceProperty().get());
-        downloadDirField.textProperty().bindBidirectional(viewModel.downloadDirProperty());
         downloadCacheDirField.textProperty().bindBidirectional(viewModel.customDownloadCacheDirProperty());
         downloadCacheDirField.focusedProperty().addListener((observable, wasFocused, isFocused) -> {
             if (!isFocused) {
@@ -186,7 +179,6 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         bindVisibility(updateBtn, viewModel.showUpdateProperty());
         bindVisibility(repairBtn, viewModel.showRepairProperty());
         bindVisibility(preDownloadBtn, viewModel.showPreDownloadProperty());
-        bindVisibility(directorySection, viewModel.showDownloadProperty());
         bindVisibility(downloadSourceHintLabel, viewModel.showDownloadSourceHintProperty());
         bindVisibility(resourceProgressSection, viewModel.resourceOperationOperatingProperty());
         bindVisibility(downloadProgressSection, viewModel.fullDownloadOperatingProperty());
@@ -222,8 +214,6 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         mainlandSourceRadio.disableProperty().bind(resourceOrCacheOperating);
         bilibiliSourceRadio.disableProperty().bind(resourceOrCacheOperating);
         globalSourceRadio.disableProperty().bind(resourceOrCacheOperating);
-        downloadDirField.disableProperty().bind(resourceOrCacheOperating);
-        chooseDirBtn.disableProperty().bind(resourceOrCacheOperating);
         downloadCacheDirField.disableProperty().bind(resourceOrCacheOperating);
         chooseCacheDirBtn.disableProperty().bind(resourceOrCacheOperating);
         resourcePauseBtn.disableProperty().bind(Bindings.notEqual(
@@ -383,19 +373,12 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     }
 
     @FXML
-    void chooseDownloadDir(ActionEvent event) {
+    void download(ActionEvent event) {
         DirectoryChooser chooser = new DirectoryChooser();
         chooser.setTitle(LanguageManager.getString("ui.game_manager.asset.dir"));
-        String cwd = viewModel.downloadDirProperty().get();
-        if (cwd != null && !cwd.isBlank()) {
-            File f = new File(cwd);
-            if (f.isDirectory()) {
-                chooser.setInitialDirectory(f);
-            }
-        }
-        File selected = chooser.showDialog(downloadDirField.getScene().getWindow());
+        File selected = chooser.showDialog(assetRoot.getScene().getWindow());
         if (selected != null) {
-            viewModel.setDownloadDir(selected.getAbsolutePath());
+            viewModel.download(selected.getAbsolutePath());
         }
     }
 
@@ -414,11 +397,6 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         if (selected != null) {
             viewModel.setCustomDownloadCacheDir(selected.getAbsolutePath());
         }
-    }
-
-    @FXML
-    void download(ActionEvent event) {
-        viewModel.download();
     }
 
     @FXML
