@@ -32,7 +32,7 @@ public class SelectedPlayerByKujiequView extends JFXDialogLayout implements Java
     public SelectedPlayerByKujiequView() {
         setPrefSize(450,350);
         Label title = new Label("选择账号");
-        title.getStyleClass().add(Styles.TITLE_2);
+        title.getStyleClass().add(Styles.TITLE_3);
         setHeading(title);
 
         listview = new ListView<>();
