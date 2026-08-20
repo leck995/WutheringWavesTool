@@ -14,10 +14,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import org.kordamp.ikonli.javafx.FontIcon?>
 
-<StackPane prefHeight="600.0" prefWidth="1000.0" styleClass="game-base-setting"
-           stylesheets="@../../../css/game/manage/GameBaseSetting.css"
-           xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1"
-           fx:controller="cn.tealc.wutheringwavestool.ui.game.manage.GameBaseSettingView">
+<StackPane prefHeight="600.0" prefWidth="1000.0" styleClass="game-base-setting" stylesheets="@../../../css/game/manage/GameBaseSetting.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.game.manage.GameBaseSettingView">
    <children>
       <ScrollPane fitToHeight="true" fitToWidth="true" hbarPolicy="NEVER">
          <content>
@@ -26,6 +23,7 @@
                   <VBox prefHeight="200.0" prefWidth="100.0" spacing="15.0" styleClass="left" HBox.hgrow="SOMETIMES">
                      <children>
                         <Label styleClass="title-3" text="%ui.game_manager.base.installation_config" />
+                        <Label styleClass="title-4" text="选择服务器" />
                         <ComboBox fx:id="installationSelector" maxWidth="350.0" prefWidth="350.0" styleClass="installation-selector" />
                         <VBox prefWidth="100.0" spacing="10.0">
                            <children>
@@ -44,7 +42,7 @@
                                     <RadioButton fx:id="gameStartAppRadioDefault" mnemonicParsing="false" onAction="#setAppPathMode" selected="true" text="%ui.setting.default.app_path.radio01" userData="default">
                                        <toggleGroup><ToggleGroup fx:id="gameStartAppType" /></toggleGroup>
                                     </RadioButton>
-                                    <RadioButton mnemonicParsing="false" onAction="#setAppPathMode" text="%ui.setting.default.app_path.radio02" userData="custom" toggleGroup="$gameStartAppType" />
+                                    <RadioButton mnemonicParsing="false" onAction="#setAppPathMode" text="%ui.setting.default.app_path.radio02" toggleGroup="$gameStartAppType" userData="custom" />
                                  </children>
                               </HBox>
                               <StackPane fx:id="gameStartAppGroup" maxWidth="350.0" styleClass="input-group">
@@ -87,7 +85,7 @@
                      </children>
                      <HBox.margin><Insets /></HBox.margin>
                   </VBox>
-                  <VBox minWidth="350.0" prefWidth="350.0" maxWidth="350.0" spacing="12.0" styleClass="server-switch-section" HBox.hgrow="NEVER">
+                  <VBox maxWidth="350.0" minWidth="350.0" prefWidth="350.0" spacing="12.0" styleClass="server-switch-section" HBox.hgrow="NEVER">
                      <children>
                         <Label styleClass="title-3" text="%ui.game_manager.base.server_switch" />
                         <Label fx:id="currentServerLabel" styleClass="text-subtle" />
