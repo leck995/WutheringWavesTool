@@ -1,0 +1,82 @@
+/* ===== AccountUpdateView 弹窗 ===== */
+.account-dialog {
+    -fx-background-color: -color-bg-default;
+    -fx-background-radius: 12px;
+    -fx-padding: 24px;
+    -fx-spacing: 16px;
+    -fx-pref-width: 420px;
+}
+
+.account-dialog .segmented {
+    -fx-padding: 0 0 4 0;
+}
+.account-dialog .segment-btn {
+    -fx-background-radius: 0;
+    -fx-border-radius: 0;
+    -fx-border-width: 1 0 1 0;
+    -fx-border-color: -color-border-default;
+    -fx-background-color: -color-bg-subtle;
+}
+.account-dialog .segment-btn:first {
+    -fx-background-radius: 6 0 0 6;
+    -fx-border-radius: 6 0 0 6;
+    -fx-border-width: 1 0 1 1;
+}
+.account-dialog .segment-btn:last {
+    -fx-background-radius: 0 6 6 0;
+    -fx-border-radius: 0 6 6 0;
+    -fx-border-width: 1 1 1 0;
+}
+.account-dialog .segment-btn:selected {
+    -fx-background-color: -color-accent-emphasis;
+    -fx-text-fill: -color-fg-emphasis;
+}
+
+.account-dialog .form-row {
+    -fx-alignment: center-left;
+    -fx-spacing: 12px;
+}
+.account-dialog .form-label {
+    -fx-pref-width: 72px;
+    -fx-min-width: 72px;
+    -fx-alignment: center-right;
+    -fx-text-fill: -color-fg-muted;
+}
+.account-dialog .form-actions {
+    -fx-padding: 8 0 4 0;
+}
+.account-dialog .form-footer {
+    -fx-padding: 8 0 0 0;
+    -fx-alignment: center;
+}
+.account-dialog .form-hint {
+    -fx-text-fill: -color-fg-muted;
+    -fx-font-size: 0.85em;
+    -fx-text-alignment: center;
+}
+
+/* 验证码输入框 + 获取按钮内联组 */
+.account-dialog .code-group {
+    -fx-background-color: -color-bg-subtle;
+    -fx-background-radius: 6px;
+    -fx-border-color: -color-border-default;
+    -fx-border-radius: 6px;
+    -fx-border-width: 1px;
+    -fx-padding: 0;
+}
+.account-dialog .code-group .text-field {
+    -fx-background-color: transparent;
+    -fx-background-radius: 6 0 0 6;
+    -fx-border-width: 0;
+}
+.account-dialog .code-group .code-btn {
+    -fx-background-color: transparent;
+    -fx-background-radius: 0 6 6 0;
+    -fx-border-width: 0 0 0 1;
+    -fx-border-color: -color-border-default;
+    -fx-pref-width: 72px;
+}
+.account-dialog .code-group .code-btn:disabled {
+    -fx-opacity: 0.6;
+}
+

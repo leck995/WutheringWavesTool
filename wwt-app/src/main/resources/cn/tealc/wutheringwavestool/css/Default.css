@@ -67,7 +67,7 @@
 }
 
 /* —— 胶囊输入框（替代 5 处 input-group 重复）—— */
-.input-group {
+.input-group.transparent {
     -fx-background-radius: 20px;
     -fx-min-height: 38px;
     -fx-pref-height: 38px;
@@ -75,18 +75,18 @@
     -fx-background-color: -color-bg-default-60;
     -fx-alignment: center-left;
 }
-.input-group > .text-field {
+.input-group.transparent > .text-field {
     -fx-background-color: transparent;
     -fx-padding: 0 40px 0 0;
 }
-.input-group:hover {
+.input-group.transparent:hover {
     -fx-background-color: -color-bg-default-90;
 }
-.input-group > .button {
+.input-group.transparent > .button {
     -fx-background-color: transparent;
     -fx-padding: 8px;
 }
-.input-group > .button:hover .ikonli-font-icon {
+.input-group.transparent > .button:hover .ikonli-font-icon {
     -fx-icon-color: -color-accent-emphasis;
 }
 
@@ -221,6 +221,11 @@
     -fx-font-weight: BOLD;
     -fx-padding: 18 24 18 24;
 }
+.jfx-dialog-layout > .jfx-layout-heading .title{
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bolder;
+}
+
 .jfx-dialog-layout > .jfx-layout-actions {
      -fx-padding: 12;
  }

@@ -59,7 +59,7 @@
                                           <Label fx:id="currentVersionLabel" maxWidth="1.7976931348623157E308" styleClass="version-value" text="-" textOverrun="ELLIPSIS" />
                                        </children>
                                     </VBox>
-                                    <VBox spacing="5.0" styleClass="version-item,version-item-latest" GridPane.columnIndex="1">
+                                    <VBox spacing="5.0" styleClass="version-item,version-item-latest" translateX="-45.0" GridPane.columnIndex="1">
                                        <children>
                                           <Label styleClass="version-caption" text="%ui.game_manager.asset.latest" />
                                           <Label fx:id="latestVersionLabel" maxWidth="1.7976931348623157E308" styleClass="version-value" text="-" textOverrun="ELLIPSIS" />

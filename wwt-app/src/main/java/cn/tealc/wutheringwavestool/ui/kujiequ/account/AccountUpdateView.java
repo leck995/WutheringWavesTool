@@ -1,5 +1,6 @@
 package cn.tealc.wutheringwavestool.ui.kujiequ.account;
 
+import atlantafx.base.controls.ToggleSwitch;
 import atlantafx.base.theme.Styles;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.base.AppConstants;
@@ -21,6 +22,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.VBox;
 import javafx.stage.Window;
 import org.slf4j.Logger;
@@ -50,28 +52,19 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
     private TextField loginCodeField;
 
     @FXML
-    private CheckBox loginMainAccountCheckBox;
+    private ToggleSwitch loginMainAccountCheckBox;
 
     @FXML
     private TextField loginPhoneFiled;
 
     @FXML
-    private RadioButton loginSourceRadioBox;
-
-    @FXML
     private VBox loginTab;
 
     @FXML
-    private CheckBox mainAccountCheckBox;
-
-    @FXML
-    private RadioButton mobileRadioBox;
+    private ToggleSwitch mainAccountCheckBox;
 
     @FXML
     private Button okBtn;
-
-    @FXML
-    private ToggleGroup sourcesToggleGroup;
 
     @FXML
     private Label titleLabel;
@@ -80,22 +73,41 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
     private TextField tokenField;
     @FXML
     private TextField didField;
-    @FXML
-    private RadioButton webRadioBox;
 
     @FXML
     private Button getCodeBtn;
+
+    @FXML
+    private ToggleButton tokenTabBtn;
+
+    @FXML
+    private ToggleButton smsTabBtn;
+
+    @FXML
+    private ToggleGroup tabToggleGroup;
 
 
     public void initialize() {
         addTab.visibleProperty().bind(viewModel.loginTabVisibleProperty().not());
         loginTab.visibleProperty().bind(viewModel.loginTabVisibleProperty());
 
+        // 顶部 Tab 切换：loginTabVisible=false → Token 模式, true → 短信模式
+        viewModel.loginTabVisibleProperty().addListener((obs, old, isLogin) -> {
+            if (isLogin) {
+                smsTabBtn.setSelected(true);
+            } else {
+                tokenTabBtn.setSelected(true);
+            }
+        });
+        if (viewModel.isLoginTabVisible()) {
+            smsTabBtn.setSelected(true);
+        } else {
+            tokenTabBtn.setSelected(true);
+        }
 
         titleLabel.textProperty().bind(viewModel.titleProperty());
         mainAccountCheckBox.selectedProperty().bindBidirectional(viewModel.mainAccountProperty());
-        mobileRadioBox.selectedProperty().bindBidirectional(viewModel.mobileSourceProperty());
-        webRadioBox.setSelected(!viewModel.isMobileSource());
+        viewModel.mobileSourceProperty().set(true); // 固定移动端（web 端已弃用）
         tokenField.textProperty().bindBidirectional(viewModel.tokenProperty());
         didField.textProperty().bindBidirectional(viewModel.didProperty());
         BooleanBinding isTokenAndDidEmpty = Bindings.createBooleanBinding(
@@ -108,7 +120,6 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
 
         loginPhoneFiled.textProperty().bindBidirectional(viewModel.phoneProperty());
         loginCodeField.textProperty().bindBidirectional(viewModel.codeProperty());
-        loginSourceRadioBox.selectedProperty().bindBidirectional(viewModel.mobileSourceProperty());
         loginMainAccountCheckBox.selectedProperty().bindBidirectional(viewModel.mainAccountProperty());
         BooleanBinding isPhoneAndCodeEmpty = Bindings.createBooleanBinding(
                 () -> loginPhoneFiled.getText().isEmpty() || loginPhoneFiled.getText().length() != 11 || loginCodeField.getText().isEmpty(),
@@ -243,13 +254,22 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
     @FXML
     void toAdd(ActionEvent event) {
         viewModel.setLoginTabVisible(false);
-        mobileRadioBox.setSelected(true);
     }
 
     @FXML
     void toLogin(ActionEvent event) {
         viewModel.setLoginTabVisible(true);
         loginMainAccountCheckBox.setSelected(true);
+    }
+
+    @FXML
+    void switchToToken(ActionEvent event) {
+        viewModel.setLoginTabVisible(false);
+    }
+
+    @FXML
+    void switchToSms(ActionEvent event) {
+        viewModel.setLoginTabVisible(true);
     }
 
 

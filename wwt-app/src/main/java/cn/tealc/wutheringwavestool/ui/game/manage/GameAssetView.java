@@ -1,6 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.game.manage;
 
 import atlantafx.base.controls.ToggleSwitch;
+import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.ui.component.dialog.NewDialog;
 import cn.tealc.wutheringwavestool.util.AlterBuilder;
@@ -237,55 +238,58 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
 
     @FXML
     void openDownloadSettings(ActionEvent event) {
-        VBox content = new VBox(10.0);
-        content.setPrefWidth(420.0);
-
-        // 下载缓存目录
+        // ===== 分区 1：下载缓存目录 =====
         Label cacheTitle = new Label(LanguageManager.getString("ui.game_manager.asset.cache_dir"));
-        cacheTitle.getStyleClass().add("asset-form-label");
+        cacheTitle.getStyleClass().add("section-title");
 
         TextField cacheField = new TextField();
         cacheField.setPromptText(LanguageManager.getString("ui.game_manager.asset.cache_dir_tip"));
         cacheField.textProperty().bindBidirectional(viewModel.customDownloadCacheDirProperty());
-        cacheField.setMaxWidth(Double.MAX_VALUE);
+        HBox.setHgrow(cacheField, Priority.ALWAYS);
 
         Button browse = new Button(LanguageManager.getString("ui.game_manager.asset.browse"),
                 new FontIcon(Material2OutlinedAL.FOLDER_OPEN));
+        browse.getStyleClass().addAll(Styles.BUTTON_OUTLINED);
         HBox cacheRow = new HBox(8.0, cacheField, browse);
+        cacheRow.getStyleClass().add("setting-row");
         cacheRow.setAlignment(Pos.CENTER_LEFT);
-        HBox.setHgrow(cacheField, Priority.ALWAYS);
 
         Label cacheHint = new Label(LanguageManager.getString("ui.game_manager.asset.cache_dir_hint"));
-        cacheHint.getStyleClass().add("text-tip");
+        cacheHint.getStyleClass().add("section-hint");
         cacheHint.setWrapText(true);
 
-        Separator sep = new Separator();
+        VBox cacheSection = new VBox(8.0, cacheTitle, cacheRow, cacheHint);
+        cacheSection.getStyleClass().add("download-settings-section");
 
-        // 下载策略
+        // ===== 分区 2：下载策略 =====
         Label policyTitle = new Label(LanguageManager.getString("ui.game_manager.asset.download_policy"));
-        policyTitle.getStyleClass().add("asset-form-label");
+        policyTitle.getStyleClass().add("section-title");
 
+        // 并行数
         int configuredParallel = Math.clamp(viewModel.downloadParallelCountProperty().get(), 1, 16);
         Spinner<Integer> parallelSpinner = new Spinner<>();
         parallelSpinner.setValueFactory(
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 16, configuredParallel));
         parallelSpinner.setEditable(false);
+        parallelSpinner.getStyleClass().add(Styles.SMALL);
         parallelSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 viewModel.setDownloadParallelCount(newValue);
             }
         });
-        Label parallelLabel = new Label(LanguageManager.getString("ui.game_manager.asset.parallel"));
-        parallelLabel.getStyleClass().add("download-policy-label");
         Label parallelUnit = new Label(LanguageManager.getString("ui.game_manager.asset.parallel_unit"));
-        parallelUnit.getStyleClass().add("text-tip");
-        HBox parallelRow = new HBox(6.0, parallelLabel, parallelSpinner, parallelUnit);
+        parallelUnit.getStyleClass().add("section-hint");
+        HBox parallelRow = new HBox(8.0,
+                new Label(LanguageManager.getString("ui.game_manager.asset.parallel")),
+                parallelSpinner, parallelUnit);
+        parallelRow.getStyleClass().add("setting-row");
         parallelRow.setAlignment(Pos.CENTER_LEFT);
 
+        // 限速
         long configuredLimit = viewModel.downloadSpeedLimitBytesPerSecondProperty().get();
         double initialLimit = configuredLimit > 0 ? configuredLimit / (1024D * 1024D) : 10D;
-        ToggleSwitch switchOn = new ToggleSwitch();
-        switchOn.setSelected(configuredLimit > 0);
+        ToggleSwitch speedSwitch = new ToggleSwitch();
+        speedSwitch.setSelected(configuredLimit > 0);
 
         Spinner<Double> speedSpinner = new Spinner<>();
         SpinnerValueFactory.DoubleSpinnerValueFactory speedValues =
@@ -307,27 +311,35 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         });
         speedSpinner.setValueFactory(speedValues);
         speedSpinner.setEditable(true);
+        speedSpinner.getStyleClass().add(Styles.SMALL);
+        speedSpinner.disableProperty().bind(speedSwitch.selectedProperty().not());
 
-        switchOn.selectedProperty().addListener((observable, oldValue, enabled) -> {
+        speedSwitch.selectedProperty().addListener((observable, oldValue, enabled) -> {
             long bytes = enabled && speedValues.getValue() != null
                     ? Math.max(1, Math.round(speedValues.getValue() * 1024 * 1024)) : 0;
             viewModel.setDownloadSpeedLimitBytesPerSecond(bytes);
         });
         speedSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (switchOn.isSelected() && newValue != null) {
+            if (speedSwitch.isSelected() && newValue != null) {
                 viewModel.setDownloadSpeedLimitBytesPerSecond(
                         Math.max(1, Math.round(newValue * 1024 * 1024)));
             }
         });
 
-        Label speedLabel = new Label(LanguageManager.getString("ui.game_manager.asset.speed_limit"));
-        speedLabel.getStyleClass().add("download-policy-label");
         Label mbLabel = new Label("MB/s");
-        mbLabel.getStyleClass().add("text-tip");
-        HBox speedRow = new HBox(6.0, speedLabel, switchOn, speedSpinner, mbLabel);
+        mbLabel.getStyleClass().add("section-hint");
+        HBox speedRow = new HBox(8.0,
+                new Label(LanguageManager.getString("ui.game_manager.asset.speed_limit")),
+                speedSwitch, speedSpinner, mbLabel);
+        speedRow.getStyleClass().add("setting-row");
         speedRow.setAlignment(Pos.CENTER_LEFT);
 
-        content.getChildren().addAll(cacheTitle, cacheRow, cacheHint, sep, policyTitle, parallelRow, speedRow);
+        VBox policySection = new VBox(10.0, policyTitle, parallelRow, speedRow);
+        policySection.getStyleClass().add("download-settings-section");
+
+        VBox content = new VBox(16.0, cacheSection, policySection);
+        content.getStyleClass().add("download-settings");
+        content.setPrefWidth(440.0);
 
         browse.setOnAction(e -> {
             DirectoryChooser chooser = new DirectoryChooser();
@@ -348,6 +360,12 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         NewDialog<Void> dialog = new NewDialog<>(
                 LanguageManager.getString("ui.game_manager.asset.download_settings"), content,
                 ButtonType.OK);
+        java.net.URL assetCss = GameAssetView.class.getResource(
+                "/cn/tealc/wutheringwavestool/css/game/manage/GameAsset.css");
+        if (assetCss != null) {
+            dialog.getDialogPane().getStylesheets().add(assetCss.toExternalForm());
+        }
+        dialog.initOwner(assetRoot.getScene().getWindow());
         dialog.showAndWait();
     }
 

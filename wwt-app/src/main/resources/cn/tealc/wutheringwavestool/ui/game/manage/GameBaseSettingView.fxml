@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
@@ -28,13 +29,17 @@
                         <VBox prefWidth="100.0" spacing="10.0">
                            <children>
                               <Label styleClass="title-4" text="%ui.game_manager.base.game_dir" />
-                              <StackPane maxWidth="350.0" styleClass="input-group">
+                              <StackPane maxWidth="350.0">
                                  <children>
                                     <TextField fx:id="gameDirField" prefWidth="250.0" />
                                     <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#chooseGameDirectory" StackPane.alignment="CENTER_RIGHT">
                                        <graphic><FontIcon iconLiteral="mdoal-folder_open" /></graphic>
                                     </Button>
                                  </children>
+                                 <styleClass>
+                                    <String fx:value="input-group" />
+                                    <String fx:value="transparent" />
+                                 </styleClass>
                               </StackPane>
                               <Label styleClass="title-4" text="%ui.setting.default.app_path" />
                               <HBox spacing="15.0">
@@ -45,22 +50,30 @@
                                     <RadioButton mnemonicParsing="false" onAction="#setAppPathMode" text="%ui.setting.default.app_path.radio02" toggleGroup="$gameStartAppType" userData="custom" />
                                  </children>
                               </HBox>
-                              <StackPane fx:id="gameStartAppGroup" maxWidth="350.0" styleClass="input-group">
+                              <StackPane fx:id="gameStartAppGroup" maxWidth="350.0">
                                  <children>
                                     <TextField fx:id="gameStartAppField" prefWidth="250.0" />
                                     <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#chooseStartApp" StackPane.alignment="CENTER_RIGHT">
                                        <graphic><FontIcon iconLiteral="mdoal-folder" /></graphic>
                                     </Button>
                                  </children>
+                                 <styleClass>
+                                    <String fx:value="input-group" />
+                                    <String fx:value="transparent" />
+                                 </styleClass>
                               </StackPane>
                               <Label styleClass="title-4" text="%ui.setting.default.app_updater" />
-                              <StackPane maxWidth="350.0" styleClass="input-group">
+                              <StackPane maxWidth="350.0">
                                  <children>
                                     <TextField fx:id="gameOfficialLauncherField" prefWidth="250.0" promptText="%ui.setting.default.app_updater.tip" />
                                     <Button contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#chooseLauncher" StackPane.alignment="CENTER_RIGHT">
                                        <graphic><FontIcon iconLiteral="mdoal-folder" /></graphic>
                                     </Button>
                                  </children>
+                                 <styleClass>
+                                    <String fx:value="input-group" />
+                                    <String fx:value="transparent" />
+                                 </styleClass>
                               </StackPane>
                            </children>
                         </VBox>
@@ -76,8 +89,12 @@
                                     <RadioButton mnemonicParsing="false" onAction="#setDX" text="DX12" toggleGroup="$gameDxToggleGroup" />
                                  </children>
                               </HBox>
-                              <StackPane maxWidth="350.0" minHeight="38.0" styleClass="input-group">
+                              <StackPane maxWidth="350.0" minHeight="38.0">
                                  <children><TextField fx:id="paramField" prefWidth="250.0" promptText="%ui.game_manager.base.params.add" /></children>
+                                 <styleClass>
+                                    <String fx:value="input-group" />
+                                    <String fx:value="transparent" />
+                                 </styleClass>
                               </StackPane>
                               <ListView fx:id="paramListView" maxWidth="350.0" minHeight="150.0" prefHeight="200.0" prefWidth="350.0" styleClass="param-list-view" />
                            </children>

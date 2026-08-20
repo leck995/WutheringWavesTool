@@ -77,7 +77,7 @@
 .game-asset-view .version-overview {
     -fx-padding: 8px 0 18px 0;
     -fx-border-color: transparent transparent -color-border-muted transparent;
-    -fx-border-width: 0 0 1px 0;
+    -fx-border-width: 0 0 0 0;
 }
 
 .game-asset-view .overview-icon-box {
@@ -260,7 +260,7 @@
 .game-asset-view .asset-column {
     -fx-background-color: -color-bg-default-40;
     -fx-background-radius: 12px;
-    -fx-border-color: -color-border-muted;
+
     -fx-border-radius: 12px;
     -fx-border-width: 1px;
     -fx-padding: 18px;
@@ -270,7 +270,7 @@
 .game-asset-view .download-column .asset-section,
 .game-asset-view .download-column .action-section {
     -fx-padding: 0 0 16px 0;
-    -fx-border-width: 0 0 1px 0;
+    -fx-border-width: 0 0 0 0;
 }
 
 .game-asset-view .download-column .action-section {
@@ -340,4 +340,43 @@
 
 .game-asset-view .danger-action {
     -fx-text-fill: -color-danger-fg;
+}
+
+
+/* ===== 下载设置弹窗 ===== */
+
+.download-settings {
+    -fx-spacing: 16px;
+    -fx-padding: 4px;
+}
+
+.download-settings-section {
+    -fx-background-color: -color-bg-subtle;
+    -fx-background-radius: 10px;
+    -fx-padding: 16px;
+    -fx-spacing: 10px;
+}
+
+.download-settings-section .section-title {
+    -fx-font-size: 1.05em;
+    -fx-font-weight: bold;
+    -fx-text-fill: -color-fg-default;
+}
+
+.download-settings-section .section-hint {
+    -fx-font-size: 0.82em;
+    -fx-text-fill: -color-fg-muted;
+}
+
+.download-settings-section .setting-row {
+    -fx-alignment: center-left;
+    -fx-spacing: 10px;
+}
+.download-settings-section .setting-row > .label:first {
+    -fx-pref-width: 80px;
+    -fx-min-width: 80px;
+    -fx-text-fill: -color-fg-muted;
+}
+.download-settings-section .setting-row .text-field {
+    -fx-background-radius: 6px;
 }

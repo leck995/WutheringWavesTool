@@ -7,7 +7,7 @@
 .home .right .role,
 .home .right .game-time {
     -fx-background-color: -color-bg-default-90;
-    -fx-background-radius: 6px;  /* 统一圆角（原 5px → 6px） */
+    -fx-background-radius: 12px;  /* 统一圆角（原 5px → 6px） */
     -fx-padding: 7px 10px 7px 10px;
     -fx-pref-width: 20em;
     -fx-pref-height: 4.5em;
@@ -102,7 +102,7 @@
     -fx-min-height: 4.25em;
     -fx-padding: 10px 12px;
     -fx-background-color: -color-bg-default-90;
-    -fx-background-radius: 6px;  /* 统一 6px */
+    -fx-background-radius: 12px;
     -fx-border-color: -color-border-muted;
     -fx-border-radius: 6px;
     -fx-border-width: 1px;

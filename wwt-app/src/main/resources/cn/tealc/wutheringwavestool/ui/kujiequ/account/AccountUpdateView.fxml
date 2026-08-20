@@ -1,135 +1,113 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import atlantafx.base.controls.ToggleSwitch?>
+<?import atlantafx.base.layout.InputGroup?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.control.ToggleGroup?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<VBox styleClass="tea-dialog" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.account.AccountUpdateView">
+<VBox styleClass="account-dialog" stylesheets="@../../../css/kujiequ/Account.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.tealc.wutheringwavestool.ui.kujiequ.account.AccountUpdateView">
    <children>
-      <StackPane prefHeight="400.0" prefWidth="400.0" styleClass="tea-dialog">
+      <Label fx:id="titleLabel" styleClass="title-3" />
+
+      <HBox alignment="CENTER" spacing="0.0" styleClass="segmented">
          <children>
-            <VBox fx:id="addTab" maxHeight="360.0" maxWidth="400.0" prefHeight="360.0" prefWidth="400.0" spacing="20.0" visible="false">
+            <ToggleButton fx:id="smsTabBtn" mnemonicParsing="false" onAction="#switchToSms" styleClass="left-pill" text="验证码登录">
+               <toggleGroup>
+                  <ToggleGroup fx:id="tabToggleGroup" />
+               </toggleGroup></ToggleButton>
+            <ToggleButton fx:id="tokenTabBtn" mnemonicParsing="false" onAction="#switchToToken" styleClass="right-pill" text="Token登录" toggleGroup="$tabToggleGroup" />
+         </children>
+      </HBox>
+
+      <StackPane fx:id="contentStack">
+         <children>
+            <!-- ========== Token 输入表单 ========== -->
+            <VBox fx:id="addTab" alignment="TOP_CENTER" spacing="14.0" visible="false">
                <children>
-                  <Label fx:id="titleLabel" styleClass="title-2" text="添加库街区Token" />
-                  <GridPane alignment="CENTER_LEFT" hgap="20.0" prefHeight="150.0" vgap="8.0">
-                    <columnConstraints>
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="477.0" minWidth="10.0" prefWidth="104.0" />
-                      <ColumnConstraints hgrow="SOMETIMES" maxWidth="546.0" minWidth="10.0" prefWidth="276.0" />
-                    </columnConstraints>
-                    <rowConstraints>
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                    </rowConstraints>
+                  <InputGroup alignment="CENTER">
                      <children>
-                        <Label text="Token" GridPane.halignment="RIGHT" />
-                        <TextField fx:id="tokenField" maxWidth="250.0" promptText="输入Token" GridPane.columnIndex="1" GridPane.halignment="LEFT" />
-                        <Label text="Did" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-                        <TextField fx:id="didField" maxWidth="250.0" prefHeight="250.0" promptText="输入Did" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label text="来源" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-                        <HBox alignment="CENTER_LEFT" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
-                           <children>
-                              <RadioButton fx:id="mobileRadioBox" mnemonicParsing="false" selected="true" text="移动端">
-                                 <toggleGroup>
-                                    <ToggleGroup fx:id="sourcesToggleGroup" />
-                                 </toggleGroup>
-                              </RadioButton>
-                              <RadioButton fx:id="webRadioBox" disable="true" mnemonicParsing="false" text="网页端(弃用)" toggleGroup="$sourcesToggleGroup" />
-                           </children>
-                        </HBox>
-                        <Label text="主账号" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
-                        <CheckBox fx:id="mainAccountCheckBox" mnemonicParsing="false" text="设为主帐号" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label prefWidth="75.0" text="Token" />
+                        <TextField fx:id="tokenField" maxWidth="225.0" prefWidth="200.0" promptText="输入库街区 Token" HBox.hgrow="ALWAYS" />
                      </children>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                  </GridPane>
-                  <HBox alignment="CENTER" spacing="20.0">
+                  </InputGroup>
+                  <InputGroup alignment="CENTER">
+                     <children>
+                        <Label prefWidth="75.0" text="Did" />
+                        <TextField fx:id="didField" maxWidth="225.0" prefWidth="200.0" promptText="输入设备码 Did" HBox.hgrow="ALWAYS" />
+                     </children>
+                  </InputGroup>
+                  <InputGroup alignment="CENTER">
+                     <children>
+                        <Label prefWidth="75.0" text="主账号" />
+                        <ToggleSwitch fx:id="mainAccountCheckBox" labelPosition="RIGHT" maxWidth="225.0" prefWidth="225.0" text="设为主账号" translateX="35.0" />
+                     </children>
+                  </InputGroup>
+                  <HBox alignment="CENTER" spacing="14.0" styleClass="form-actions">
                      <children>
                         <Button fx:id="okBtn" defaultButton="true" mnemonicParsing="false" onAction="#onSubmit" styleClass="accent" text="确定" />
                         <Button fx:id="cancelBtn" cancelButton="true" mnemonicParsing="false" onAction="#onCancel" text="取消" />
                      </children>
                   </HBox>
-                  <VBox alignment="CENTER" spacing="2.0">
+                  <VBox alignment="CENTER" spacing="4.0" styleClass="form-footer">
                      <children>
-                        <HBox alignment="CENTER" spacing="10.0">
+                        <HBox alignment="CENTER" spacing="12.0">
                            <children>
-                              <Hyperlink onAction="#browserGuide" text="点此查看教程" />
-                              <Hyperlink layoutX="10.0" layoutY="10.0" onAction="#toLogin" text="验证码登录" />
+                              <Hyperlink onAction="#browserGuide" text="查看 Token 获取教程" />
                            </children>
                         </HBox>
-                        <Label styleClass="text-muted" text="必须设置一个主账号" />
-                        <Label layoutX="137.0" layoutY="10.0" styleClass="text-muted" text="网页端Token将逐渐弃用，推荐使用移动端Token" />
+                        <Label styleClass="form-hint" text="必须设置一个主账号；只支持移动端 Token" wrapText="true" />
                      </children>
                   </VBox>
                </children>
-               <padding>
-                  <Insets left="10.0" right="10.0" top="10.0" />
-               </padding>
             </VBox>
-            <VBox fx:id="loginTab" layoutX="10.0" layoutY="30.0" maxHeight="360.0" maxWidth="400.0" prefHeight="360.0" prefWidth="400.0" spacing="20.0">
+
+            <!-- ========== 短信验证码表单 ========== -->
+            <VBox fx:id="loginTab" spacing="14.0">
                <children>
-                  <Label styleClass="title-2" text="验证码登录" />
-                  <GridPane alignment="CENTER_LEFT" hgap="20.0" prefHeight="150.0" vgap="8.0">
-                     <columnConstraints>
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="477.0" minWidth="10.0" prefWidth="104.0" />
-                        <ColumnConstraints hgrow="SOMETIMES" maxWidth="546.0" minWidth="10.0" prefWidth="276.0" />
-                     </columnConstraints>
-                     <rowConstraints>
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                     </rowConstraints>
+                  <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="form-row" />
+                  <InputGroup alignment="CENTER" layoutX="10.0" layoutY="75.0" prefWidth="400.0">
                      <children>
-                        <Label text="手机号" GridPane.halignment="RIGHT" />
-                        <TextField fx:id="loginPhoneFiled" maxWidth="250.0" promptText="输入手机号" GridPane.columnIndex="1" GridPane.halignment="LEFT" />
-                        <Label text="验证码" GridPane.halignment="RIGHT" GridPane.rowIndex="1" />
-                        <HBox GridPane.columnIndex="1" GridPane.rowIndex="1">
-                           <children>
-                              <TextField fx:id="loginCodeField" maxWidth="250.0" prefWidth="180.0" promptText="输入验证码" />
-                              <Button fx:id="getCodeBtn" mnemonicParsing="false" onAction="#sendLoginCode" prefWidth="70.0" text="发送" />
-                           </children>
-                        </HBox>
-                        <Label layoutX="62.0" layoutY="76.0" text="类型" GridPane.halignment="RIGHT" GridPane.rowIndex="2" />
-                        <RadioButton fx:id="loginSourceRadioBox" disable="true" mnemonicParsing="false" text="移动端" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Label text="主账号" GridPane.halignment="RIGHT" GridPane.rowIndex="3" />
-                        <CheckBox fx:id="loginMainAccountCheckBox" mnemonicParsing="false" text="设为主帐号" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label styleClass="form-label" text="手机号" />
+                        <TextField fx:id="loginPhoneFiled" prefWidth="202.0" promptText="输入 11 位手机号" />
                      </children>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                  </GridPane>
-                  <HBox alignment="CENTER" spacing="20.0">
+                  </InputGroup>
+                  <InputGroup alignment="CENTER" prefWidth="400.0">
+                     <children>
+                        <Label styleClass="form-label" text="验证码" />
+                        <TextField fx:id="loginCodeField" prefWidth="150.0" promptText="输入验证码" />
+                        <Button fx:id="getCodeBtn" mnemonicParsing="false" onAction="#sendLoginCode" styleClass="code-btn" text="获取" />
+                     </children>
+                  </InputGroup>
+                  <InputGroup alignment="CENTER">
+                     <children>
+                        <Label styleClass="form-label" text="主账号" />
+                        <ToggleSwitch fx:id="loginMainAccountCheckBox" alignment="TOP_LEFT" labelPosition="RIGHT" prefWidth="202.0" text="设为主账号" translateX="25.0" />
+                     </children></InputGroup>
+                  <HBox alignment="CENTER" spacing="14.0" styleClass="form-actions">
                      <children>
                         <Button fx:id="loginBtn" defaultButton="true" mnemonicParsing="false" onAction="#onLogin" styleClass="accent" text="登录" />
                         <Button cancelButton="true" mnemonicParsing="false" onAction="#onCancel" text="取消" />
                      </children>
                   </HBox>
-                  <VBox alignment="CENTER" spacing="5.0">
+                  <VBox alignment="CENTER" spacing="4.0" styleClass="form-footer">
                      <children>
-                        <Label styleClass="text-muted" text="验证码登录会导致库街区APP，机器人等退出登录，若多端登录且不会互顶，请使用Token。" wrapText="true" />
-                        <Hyperlink onAction="#toAdd" text="点此直接输入Token" />
+                        <Label styleClass="form-hint" text="验证码登录会导致库街区 APP / 机器人退出登录，若多端登录且不会互顶，请使用 Token。" wrapText="true" />
                      </children>
                   </VBox>
                </children>
-               <padding>
-                  <Insets left="10.0" right="10.0" top="10.0" />
-               </padding>
             </VBox>
          </children>
       </StackPane>
    </children>
+   <padding>
+      <Insets bottom="24.0" left="24.0" right="24.0" top="24.0" />
+   </padding>
 </VBox>

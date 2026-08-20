@@ -522,29 +522,6 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
     }
 
     private void showExitDialog() {
-    /*    JFXDialogLayout dialogLayout = new JFXDialogLayout();
-        Label title = new Label(LanguageManager.getString("ui.main.exit.header"));
-        title.getStyleClass().add("title-2");
-        dialogLayout.setHeading(title);
-        Label tip = new Label(LanguageManager.getString("ui.main.exit.body"));
-        dialogLayout.setBody(tip);
-
-        Button exitBtn = new Button(LanguageManager.getString("ui.main.exit.btn01"));
-        Button iconBtn = new Button(LanguageManager.getString("ui.main.exit.btn02"));
-        Button cancelBtn = new Button(LanguageManager.getString("ui.main.exit.btn03"));
-
-        dialogLayout.setActions(iconBtn, exitBtn, cancelBtn);
-        JFXDialog jfxDialog = new JFXDialog(root, dialogLayout, JFXDialog.DialogTransition.CENTER);
-
-        exitBtn.setOnAction(event -> {
-            WwtApp.exit();
-        });
-        iconBtn.setOnAction(event -> {
-            WwtApp.getWindow().hide();
-            jfxDialog.close();
-        });      cancelBtn.setOnAction(event -> jfxDialog.close());
-        jfxDialog.show();*/
-
         JFXDialogLayout dialogLayout = AlterBuilder.create()
                 .title(LanguageManager.getString("ui.main.exit.header"))
                 .message(LanguageManager.getString("ui.main.exit.body"))
@@ -554,8 +531,6 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
                 .build();
         dialogLayout.getActions().getFirst().getStyleClass().add(Styles.FLAT);
         NotificationManager.alert(dialogLayout);
-
-
     }
 
 

@@ -8,15 +8,47 @@
 .game-base-setting .server-switch-section {
     -fx-padding: 0 0 0 24px;
 }
-
+.game-base-setting .radio-button {
+    -fx-background-color: transparent;
+}
 /* installation-selector 样式由 Default.css .combo-box-base 公共类统一提供 */
 
 .game-base-setting .title-4 {
     -fx-font-size: 1.05em;
     -fx-font-weight: normal;
 }
+
+.game-base-setting .left .param-list-view {
+    -fx-background-color: -color-bg-default-40;
+    -fx-background-radius: 6px;
+    -fx-border-color: transparent;
+    -fx-padding: 5;
+}
+.game-base-setting .left .param-list-view .list-cell {
+    -fx-padding: 2px 2px 2px 0;
+}
+.game-base-setting .left .param-list-view .list-cell,
+.game-base-setting .left .param-list-view .list-cell:selected {
+    -fx-background-color: transparent;
+}
+.game-base-setting .left .param-list-view .list-cell .delete-btn:hover {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+.game-base-setting .left .param-list-view .list-cell .delete-btn .ikonli-font-icon {
+    -fx-icon-color: -color-fg-default;
+    -fx-fill: -color-fg-default;
+    -fx-icon-size: 18px;
+}
+.game-base-setting .left .param-list-view .list-cell .delete-btn:hover .ikonli-font-icon {
+    -fx-icon-color: -color-danger-fg;
+    -fx-fill: -color-danger-fg;
+}
+
+.game-base-setting .right .func-btn {
+    -fx-background-color: -color-bg-default-60;
+}
+
 .game-base-setting .radio-button {
     -fx-background-color: transparent;
 }
-
-
