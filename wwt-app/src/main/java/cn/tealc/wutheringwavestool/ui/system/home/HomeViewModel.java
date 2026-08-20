@@ -218,6 +218,10 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
         return serverSwitchCoordinator.bilibiliTargetReadyProperty();
     }
 
+    public ReadOnlyBooleanProperty globalTargetReadyProperty() {
+        return serverSwitchCoordinator.globalTargetReadyProperty();
+    }
+
     public ReadOnlyStringProperty serverSwitchStatusTextProperty() {
         return serverSwitchCoordinator.statusTextProperty();
     }

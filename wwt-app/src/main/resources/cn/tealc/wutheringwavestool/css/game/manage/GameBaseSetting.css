@@ -19,28 +19,4 @@
     -fx-background-color: transparent;
 }
 
-.game-base-setting .param-list-view {
-    -fx-background-color: -color-bg-default-40;
-    -fx-background-radius: 6px;
-    -fx-border-color: transparent;
-}
-.game-base-setting .param-list-view .list-cell {
-    -fx-padding: 2px 2px 2px 0;
-}
-.game-base-setting .param-list-view .list-cell,
-.game-base-setting .param-list-view .list-cell:selected {
-    -fx-background-color: transparent;
-}
-.game-base-setting .param-list-view .list-cell .delete-btn:hover {
-    -fx-background-color: transparent;
-    -fx-cursor: hand;
-}
-.game-base-setting .param-list-view .list-cell .delete-btn .ikonli-font-icon {
-    -fx-icon-color: -color-fg-default;
-    -fx-fill: -color-fg-default;
-    -fx-icon-size: 18px;
-}
-.game-base-setting .param-list-view .list-cell .delete-btn:hover .ikonli-font-icon {
-    -fx-icon-color: -color-danger-fg;
-    -fx-fill: -color-danger-fg;
-}
+

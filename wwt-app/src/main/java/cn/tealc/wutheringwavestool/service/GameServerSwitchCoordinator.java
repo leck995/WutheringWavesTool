@@ -47,6 +47,7 @@ public final class GameServerSwitchCoordinator {
     private final ReadOnlyBooleanWrapper bilibiliCacheReady = new ReadOnlyBooleanWrapper(false);
     private final ReadOnlyBooleanWrapper mainlandTargetReady = new ReadOnlyBooleanWrapper(true);
     private final ReadOnlyBooleanWrapper bilibiliTargetReady = new ReadOnlyBooleanWrapper(true);
+    private final ReadOnlyBooleanWrapper globalTargetReady = new ReadOnlyBooleanWrapper(true);
 
     private volatile ServerSwitchTask activeTask;
     private ServerSwitchStatus lastStatus;
@@ -64,6 +65,7 @@ public final class GameServerSwitchCoordinator {
         refreshChinaStatus();
         GameInstallation activeInstallation = installationManager.activeInstallation();
         Path gameDirectory = getGameDirectoryOrNull();
+        globalTargetReady.set(installationManager.isConfigured(GameEdition.GLOBAL));
         if (activeInstallation == null || gameDirectory == null) {
             clearActiveStatus("请先选择游戏安装目录", "");
             return;
@@ -410,6 +412,9 @@ public final class GameServerSwitchCoordinator {
     }
     public ReadOnlyBooleanProperty bilibiliTargetReadyProperty() {
         return bilibiliTargetReady.getReadOnlyProperty();
+    }
+    public ReadOnlyBooleanProperty globalTargetReadyProperty() {
+        return globalTargetReady.getReadOnlyProperty();
     }
     public ReadOnlyDoubleProperty progressProperty() { return progress.getReadOnlyProperty(); }
     public ReadOnlyObjectProperty<GameDownloadSource> currentSourceProperty() {

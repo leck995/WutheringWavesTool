@@ -282,3 +282,537 @@
 .headbar .trailing > .system-func > .max-btn.full-exit > .ikonli-font-icon{
     -fx-icon-code: mdral-fullscreen_exit;
 }
+
+
+/* ==========================================================================
+   ScrollBar 基础样式
+   统一隐藏增减按钮，透明背景，hover 显示 thumb，8px 细条。
+   被以下业务 CSS 覆盖过（用户可酌情删除覆盖）：
+     Setting.css .setting .scroll-bar
+     CardPool.css .list-view > .virtual-flow > .scroll-bar
+     CardPool.css .detail-child .scroll-pane .scroll-bar
+     CardPool.css .table-view .virtual-flow .scroll-bar
+     Tower.css .tower .difficulty-list-view .scroll-bar
+     Tower.css .tower .right .scroll-bar
+     Tower.css .new-tower .tower-scroll .scroll-bar
+     Tower.css .new-tower .tower-nav-list .scroll-bar / .history-list .scroll-bar
+     OwnRoleDetail.css .role-detail .role-list-view .scroll-bar
+   ========================================================================== */
+.scroll-bar {
+    -fx-background-color: transparent;
+}
+.scroll-bar > .thumb {
+    -fx-background-color: -color-bg-default;
+    -fx-background-radius: 4px;
+    -fx-background-insets: 1;
+}
+.scroll-bar > .track {
+    -fx-background-color: transparent;
+    -fx-border-radius: 0;
+}
+.scroll-bar > .increment-button,
+.scroll-bar > .decrement-button {
+    visibility: hidden;
+    -fx-managed: false;
+}
+.scroll-bar > .increment-button > .increment-arrow,
+.scroll-bar > .decrement-button > .decrement-arrow {
+    -fx-shape: " ";
+    -fx-padding: 0;
+}
+.scroll-bar:horizontal {
+    -fx-pref-height: 8px;
+}
+.scroll-bar:vertical {
+    -fx-pref-width: 8px;
+}
+.scroll-bar:hover,
+.scroll-bar:pressed,
+.scroll-bar:focused {
+    -fx-opacity: 1;
+}
+
+/* ScrollPane */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
+    -fx-padding: 0;
+}
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+.scroll-pane > .corner {
+    -fx-background-color: -color-border-subtle;
+    -fx-opacity: 0.5;
+}
+.scroll-pane:disabled > .scroll-bar {
+    -fx-opacity: 0.25;
+}
+
+
+/* ==========================================================================
+   ListView 基础样式
+   被以下业务 CSS 覆盖过：
+     CardPool.css .list-view / .detail-child .ssr-list-view / .common-child .list-view
+     CardPool.css .stat-view .list-view
+     Setting.css .setting .left .param-list-view
+     Tower.css .tower .difficulty-list-view
+     Tower.css .new-tower .tower-nav-list / .new-tower .history-list
+     GameAdvanceSetting.css .game-setting .left .param-list-view
+     GameBaseSetting.css .game-base-setting .param-list-view
+     OwnRoleDetail.css .role-detail .role-list-view
+     Sign.css .sign > .history > .list-view
+     Account.css .kujiequ-account .list-view
+     RedemptionCode.css .redemption-code .list-view
+   ========================================================================== */
+.list-view {
+    -color-cell-bg: -color-bg-default;
+    -color-cell-fg: -color-fg-default;
+    -color-cell-bg-selected: -color-base-1;
+    -color-cell-fg-selected: -color-fg-default;
+    -color-cell-bg-selected-focused: -color-base-1;
+    -color-cell-fg-selected-focused: -color-fg-default;
+    -color-cell-bg-odd: -color-bg-subtle;
+    -color-cell-border: -color-border-default;
+    -color-disclosure: -color-fg-muted;
+    -fx-border-color: -color-cell-border;
+    -fx-border-width: 1px;
+    -fx-border-radius: 0;
+}
+.list-view > .virtual-flow > .corner {
+    -fx-background-color: -color-cell-border;
+    -fx-opacity: 0.4;
+}
+.list-view > .virtual-flow:disabled {
+    -fx-opacity: 0.4;
+}
+.list-view.edge-to-edge {
+    -fx-border-width: 0;
+}
+.list-view .list-cell {
+    -fx-background-color: -color-cell-bg;
+    -fx-text-fill: -color-cell-fg;
+    -fx-padding: 0 0.5em 0 0.5em;
+    -fx-cell-size: 2.8em;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: transparent;
+}
+.list-view.bordered .list-cell {
+    -fx-border-color: -color-cell-border;
+}
+.list-view.bordered .list-cell:empty {
+    -fx-border-color: transparent;
+}
+.list-view.dense .list-cell {
+    -fx-cell-size: 2em;
+}
+.list-view.striped .list-cell {
+    -fx-border-width: 0;
+}
+.list-view.striped .list-cell:filled:odd {
+    -fx-background-color: -color-cell-bg-odd;
+}
+
+
+/* ==========================================================================
+   TableView 基础样式
+   被以下业务 CSS 覆盖过：
+     CardPool.css .table-view
+     Cloud.css .table-view / .tree-table-view
+     GameTime.css .gametime .record-table .table-row-cell
+   ========================================================================== */
+.table-view {
+    -color-cell-bg: -color-bg-default;
+    -color-cell-fg: -color-fg-default;
+    -color-cell-bg-selected: -color-base-1;
+    -color-cell-fg-selected: -color-fg-default;
+    -color-cell-bg-selected-focused: -color-base-1;
+    -color-cell-fg-selected-focused: -color-fg-default;
+    -color-cell-bg-odd: -color-bg-subtle;
+    -color-cell-border: -color-border-default;
+    -color-disclosure: -color-fg-muted;
+    -fx-border-color: -color-cell-border;
+    -fx-border-width: 1px;
+    -fx-border-radius: 0;
+    -color-header-bg: -color-bg-subtle;
+    -color-header-fg: -color-fg-default;
+}
+.table-view > .virtual-flow > .corner {
+    -fx-background-color: -color-cell-border;
+    -fx-opacity: 0.4;
+}
+.table-view > .virtual-flow:disabled {
+    -fx-opacity: 0.4;
+}
+.table-view.edge-to-edge {
+    -fx-border-width: 0;
+}
+.table-view.bordered > .column-header-background .column-header {
+    -fx-background-color: -color-cell-border, -color-header-bg;
+    -fx-background-insets: 0, 0 1 0 0;
+}
+.table-view > .column-header-background {
+    -fx-background-color: -color-cell-border, -color-header-bg;
+    -fx-background-insets: 0, 0 0 1 0;
+}
+.table-view > .column-header-background .column-header {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-size: 40px;
+    -fx-padding: 0;
+    -fx-font-weight: bold;
+    -fx-border-color: -color-cell-border;
+    -fx-border-width: 0 1 1 0;
+}
+.table-view > .column-header-background .column-header .label {
+    -fx-text-fill: -color-header-fg;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 0.5em 0 0.5em;
+}
+.table-view > .column-header-background .column-header GridPane {
+    -fx-padding: 0 4px 0 0;
+}
+.table-view > .column-header-background .column-header .arrow {
+    -fx-background-color: -color-header-fg;
+    -fx-padding: 3px 4px 3px 4px;
+    -fx-shape: "M 0 0 h 7 l -3.5 4 z";
+}
+.table-view > .column-header-background .column-header .sort-order-dots-container {
+    -fx-padding: 2px 0 2px 0;
+}
+.table-view > .column-header-background .column-header .sort-order-dots-container > .sort-order-dot {
+    -fx-background-color: -color-header-fg;
+    -fx-padding: 0.115em;
+    -fx-background-radius: 0.115em;
+}
+.table-view > .column-header-background .column-header .sort-order {
+    -fx-padding: 0 0 0 2px;
+}
+.table-view > .column-header-background > .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: -color-cell-border;
+    -fx-border-width: 0 0 1 0;
+}
+.table-view > .column-header-background > .show-hide-columns-button {
+    -fx-border-color: -color-cell-border;
+    -fx-border-width: 0 0 1 0;
+    -fx-cursor: hand;
+}
+.table-view > .column-header-background > .show-hide-columns-button > .show-hide-column-image {
+    -fx-background-color: -color-header-fg;
+    -fx-shape: "M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z";
+    -fx-scale-shape: true;
+    -fx-padding: 0.4em 0.115em 0.4em 0.115em;
+}
+.table-view .column-resize-line {
+    -fx-background-color: -color-accent-emphasis;
+    -fx-padding: 0 1 0 1;
+}
+.table-view .column-drag-header {
+    -fx-background-color: -color-accent-muted;
+}
+.table-view .column-overlay {
+    -fx-background-color: -color-accent-muted;
+}
+.table-view .placeholder > .label {
+    -fx-font-size: 1.25em;
+}
+.table-view.bordered .table-row-cell > .table-cell {
+    -fx-border-color: transparent -color-cell-border transparent transparent;
+}
+.table-view.bordered .table-row-cell > .table-cell:empty {
+    -fx-border-color: transparent;
+}
+.table-view.dense > .column-header-background .column-header {
+    -fx-size: 34px;
+}
+.table-view.dense .table-row-cell {
+    -fx-cell-size: 2em;
+}
+.table-view.striped .table-row-cell {
+    -fx-background-insets: 0;
+}
+.table-view.striped.bordered .table-row-cell {
+    -fx-background-insets: 0, 0 0 1 0;
+}
+.table-view.striped .table-row-cell:filled:odd {
+    -fx-background-color: -color-cell-border, -color-cell-bg-odd;
+}
+.table-view.no-header > .column-header-background {
+    -fx-max-height: 0;
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+}
+.table-view .table-row-cell {
+    -fx-background-color: -color-cell-border, -color-cell-bg;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: 0;
+    -fx-cell-size: 2.8em;
+}
+.table-view .table-row-cell:empty {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+.table-view .table-row-cell:empty > .table-cell {
+    -fx-border-color: transparent;
+}
+.table-view .table-row-cell > .table-cell {
+    -fx-padding: 0 0.5em 0 0.5em;
+    -fx-text-fill: -color-cell-fg;
+    -fx-alignment: BASELINE_LEFT;
+}
+.table-view .table-row-cell > .table-cell.table-column.align-left {
+    -fx-alignment: BASELINE_LEFT;
+}
+.table-view .table-row-cell > .table-cell.table-column.align-center {
+    -fx-alignment: BASELINE_CENTER;
+}
+.table-view .table-row-cell > .table-cell.table-column.align-right {
+    -fx-alignment: BASELINE_RIGHT;
+}
+.table-view:constrained-resize > .virtual-flow > .clipped-container > .sheet > .table-row-cell > .table-cell:last-visible,
+.tree-table-view:constrained-resize > .virtual-flow > .clipped-container > .sheet > .tree-table-row-cell > .tree-table-cell:last-visible {
+    -fx-border-color: transparent;
+}
+.table-view .table-row-cell > .table-cell.check-box-table-cell,
+.table-view .table-row-cell > .table-cell.font-icon-table-cell,
+.tree-table-view .tree-table-row-cell > .tree-table-cell.check-box-tree-table-cell {
+    -fx-alignment: BASELINE_LEFT;
+}
+
+
+/* ==========================================================================
+   TreeView 基础样式
+   被以下业务 CSS 覆盖过：
+     (无独立覆盖，跟随 light.css/dark.css 默认)
+   ========================================================================== */
+.tree-view {
+    -color-cell-bg: -color-bg-default;
+    -color-cell-fg: -color-fg-default;
+    -color-cell-bg-selected: -color-base-1;
+    -color-cell-fg-selected: -color-fg-default;
+    -color-cell-bg-selected-focused: -color-base-1;
+    -color-cell-fg-selected-focused: -color-fg-default;
+    -color-cell-bg-odd: -color-bg-subtle;
+    -color-cell-border: -color-border-default;
+    -color-disclosure: -color-fg-muted;
+    -fx-border-color: -color-cell-border;
+    -fx-border-width: 1px;
+    -fx-border-radius: 0;
+}
+.tree-view > .virtual-flow > .corner {
+    -fx-background-color: -color-cell-border;
+    -fx-opacity: 0.4;
+}
+.tree-view > .virtual-flow:disabled {
+    -fx-opacity: 0.4;
+}
+.tree-view.edge-to-edge {
+    -fx-border-width: 0;
+}
+.tree-view.dense .tree-cell {
+    -fx-padding: 0.25em 0 0.25em 0;
+}
+.tree-view.alt-icon .tree-cell > .tree-disclosure-node {
+    -fx-padding: 0.3em 0.5em 0 0.5em;
+}
+.tree-view.alt-icon .tree-cell > .tree-disclosure-node > .arrow {
+    -fx-shape: "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z";
+    -fx-scale-shape: false;
+    -fx-padding: 0.333333em;
+}
+.tree-view.alt-icon .tree-cell:expanded > .tree-disclosure-node > .arrow {
+    -fx-shape: "M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z";
+    -fx-scale-shape: false;
+    -fx-padding: 0.333333em;
+}
+
+.tree-cell {
+    -fx-background-color: -color-cell-bg;
+    -fx-text-fill: -color-cell-fg;
+    -fx-padding: 0.5em 0 0.5em 0;
+    -fx-indent: 1.2em;
+}
+.tree-cell > .tree-disclosure-node {
+    -fx-padding: 0.35em 0.5em 0 0.5em;
+    -fx-background-color: transparent;
+}
+.tree-cell > .tree-disclosure-node > .arrow,
+.tree-table-row-cell > .tree-disclosure-node > .arrow {
+    -fx-shape: "M10 17l5-5-5-5v10z";
+    -fx-scale-shape: false;
+    -fx-background-color: -color-disclosure;
+    -fx-padding: 0.333333em 0.229em 0.333333em 0.229em;
+}
+.tree-cell:expanded > .tree-disclosure-node > .arrow,
+.tree-table-row-cell:expanded > .tree-disclosure-node > .arrow {
+    -fx-shape: "M7 10l5 5 5-5z";
+    -fx-scale-shape: false;
+}
+
+/* TreeTableView */
+.tree-table-view {
+    -color-cell-bg: -color-bg-default;
+    -color-cell-fg: -color-fg-default;
+    -color-cell-bg-selected: -color-base-1;
+    -color-cell-fg-selected: -color-fg-default;
+    -color-cell-bg-selected-focused: -color-base-1;
+    -color-cell-fg-selected-focused: -color-fg-default;
+    -color-cell-bg-odd: -color-bg-subtle;
+    -color-cell-border: -color-border-default;
+    -color-disclosure: -color-fg-muted;
+    -fx-border-color: -color-cell-border;
+    -fx-border-width: 1px;
+    -fx-border-radius: 0;
+    -color-header-bg: -color-bg-subtle;
+    -color-header-fg: -color-fg-default;
+}
+.tree-table-view > .virtual-flow > .corner {
+    -fx-background-color: -color-cell-border;
+    -fx-opacity: 0.4;
+}
+.tree-table-view > .virtual-flow:disabled {
+    -fx-opacity: 0.4;
+}
+.tree-table-view.edge-to-edge {
+    -fx-border-width: 0;
+}
+.tree-table-view.bordered > .column-header-background .column-header {
+    -fx-background-color: -color-cell-border, -color-header-bg;
+    -fx-background-insets: 0, 0 1 0 0;
+}
+.tree-table-view > .column-header-background {
+    -fx-background-color: -color-cell-border, -color-header-bg;
+    -fx-background-insets: 0, 0 0 1 0;
+}
+.tree-table-view > .column-header-background .column-header {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-size: 40px;
+    -fx-padding: 0;
+    -fx-font-weight: bold;
+    -fx-border-color: -color-cell-border;
+    -fx-border-width: 0 1 1 0;
+}
+.tree-table-view > .column-header-background .column-header .label {
+    -fx-text-fill: -color-header-fg;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 0 0.5em 0 0.5em;
+}
+.tree-table-view > .column-header-background .column-header GridPane {
+    -fx-padding: 0 4px 0 0;
+}
+.tree-table-view > .column-header-background .column-header .arrow {
+    -fx-background-color: -color-header-fg;
+    -fx-padding: 3px 4px 3px 4px;
+    -fx-shape: "M 0 0 h 7 l -3.5 4 z";
+}
+.tree-table-view > .column-header-background .column-header .sort-order-dots-container {
+    -fx-padding: 2px 0 2px 0;
+}
+.tree-table-view > .column-header-background .column-header .sort-order-dots-container > .sort-order-dot {
+    -fx-background-color: -color-header-fg;
+    -fx-padding: 0.115em;
+    -fx-background-radius: 0.115em;
+}
+.tree-table-view > .column-header-background .column-header .sort-order {
+    -fx-padding: 0 0 0 2px;
+}
+.tree-table-view > .column-header-background > .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: -color-cell-border;
+    -fx-border-width: 0 0 1 0;
+}
+.tree-table-view > .column-header-background > .show-hide-columns-button {
+    -fx-border-color: -color-cell-border;
+    -fx-border-width: 0 0 1 0;
+    -fx-cursor: hand;
+}
+.tree-table-view > .column-header-background > .show-hide-columns-button > .show-hide-column-image {
+    -fx-background-color: -color-header-fg;
+    -fx-shape: "M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z";
+    -fx-scale-shape: true;
+    -fx-padding: 0.4em 0.115em 0.4em 0.115em;
+}
+.tree-table-view .column-resize-line {
+    -fx-background-color: -color-accent-emphasis;
+    -fx-padding: 0 1 0 1;
+}
+.tree-table-view .column-drag-header {
+    -fx-background-color: -color-accent-muted;
+}
+.tree-table-view .column-overlay {
+    -fx-background-color: -color-accent-muted;
+}
+.tree-table-view .placeholder > .label {
+    -fx-font-size: 1.25em;
+}
+.tree-table-view.bordered .tree-table-row-cell > .tree-table-cell {
+    -fx-border-color: transparent -color-cell-border transparent transparent;
+}
+.tree-table-view.bordered .tree-table-row-cell > .tree-table-cell:empty {
+    -fx-border-color: transparent;
+}
+.tree-table-view.dense > .column-header-background .column-header {
+    -fx-size: 34px;
+}
+.tree-table-view.dense .tree-table-row-cell {
+    -fx-cell-size: 2em;
+}
+.tree-table-view.dense .tree-table-row-cell > .tree-disclosure-node {
+    -fx-padding: 0.6em 0.5em 0 0.5em;
+}
+.tree-table-view.striped .tree-table-row-cell {
+    -fx-background-insets: 0;
+}
+.tree-table-view.striped.bordered .tree-table-row-cell {
+    -fx-background-insets: 0, 0 0 1 0;
+}
+.tree-table-view.striped .tree-table-row-cell:filled:odd {
+    -fx-background-color: -color-cell-border, -color-cell-bg-odd;
+}
+.tree-table-view.no-header > .column-header-background {
+    -fx-max-height: 0;
+    -fx-pref-height: 0;
+    -fx-min-height: 0;
+}
+.tree-table-view .tree-table-row-cell {
+    -fx-background-color: -color-cell-border, -color-cell-bg;
+    -fx-background-insets: 0, 0 0 1 0;
+    -fx-padding: 0;
+    -fx-cell-size: 2.8em;
+    -fx-indent: 1em;
+}
+.tree-table-view .tree-table-row-cell:empty {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+.tree-table-view .tree-table-row-cell > .tree-disclosure-node {
+    -fx-padding: 1em 0.5em 0 0.5em;
+    -fx-background-color: transparent;
+}
+.tree-table-view .tree-table-row-cell > .tree-table-cell {
+    -fx-padding: 0 0.5em 0 0.5em;
+    -fx-text-fill: -color-cell-fg;
+    -fx-alignment: BASELINE_LEFT;
+}
+.tree-table-view .tree-table-row-cell > .tree-table-cell.table-column.align-left {
+    -fx-alignment: BASELINE_LEFT;
+}
+.tree-table-view .tree-table-row-cell > .tree-table-cell.table-column.align-center {
+    -fx-alignment: BASELINE_CENTER;
+}
+.tree-table-view .tree-table-row-cell > .tree-table-cell.table-column.align-right {
+    -fx-alignment: BASELINE_RIGHT;
+}
+.tree-table-view.alt-icon .tree-table-row-cell > .tree-disclosure-node > .arrow {
+    -fx-shape: "M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z";
+    -fx-scale-shape: false;
+    -fx-padding: 0.333333em;
+}
+.tree-table-view.alt-icon .tree-table-row-cell:expanded > .tree-disclosure-node > .arrow {
+    -fx-shape: "M16.59 8.59L12 13.17 7.41 8.59 6 10l6 6 6-6z";
+    -fx-scale-shape: false;
+    -fx-padding: 0.333333em;
+}

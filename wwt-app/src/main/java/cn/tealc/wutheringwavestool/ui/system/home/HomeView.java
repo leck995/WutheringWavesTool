@@ -171,7 +171,8 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
                 .or(Bindings.equal(viewModel.currentGameSourceProperty(), SourceType.BILIBILI))
                 .or(viewModel.bilibiliTargetReadyProperty().not()));
         serverSwitchGlobalItem.disableProperty().bind(viewModel.serverSwitchOperatingProperty()
-                .or(Bindings.equal(viewModel.currentGameSourceProperty(), SourceType.GLOBAL)));
+                .or(Bindings.equal(viewModel.currentGameSourceProperty(), SourceType.GLOBAL))
+                .or(viewModel.globalTargetReadyProperty().not()));
         serverSwitchMenu.setOnShowing(event -> updateServerSwitchSelection());
         updateServerSwitchSelection();
 
