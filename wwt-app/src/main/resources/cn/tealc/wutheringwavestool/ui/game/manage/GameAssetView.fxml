@@ -198,7 +198,22 @@
                         <children>
                            <VBox spacing="12.0" styleClass="asset-section">
                               <children>
-                                 <Label styleClass="asset-section-title" text="%ui.game_manager.asset.full_download" />
+                                 <HBox alignment="CENTER_LEFT">
+                                    <children>
+                                       <Label styleClass="asset-section-title" text="%ui.game_manager.asset.full_download" />
+                                       <Region HBox.hgrow="ALWAYS" />
+                                       <Button fx:id="downloadSettingsBtn" contentDisplay="GRAPHIC_ONLY"
+                                               mnemonicParsing="false" onAction="#openDownloadSettings"
+                                               styleClass="flat,asset-control-button">
+                                          <tooltip>
+                                             <Tooltip text="%ui.game_manager.asset.download_settings" />
+                                          </tooltip>
+                                          <graphic>
+                                             <FontIcon iconLiteral="mdoal-settings" iconSize="19" />
+                                          </graphic>
+                                       </Button>
+                                    </children>
+                                 </HBox>
                                  <VBox spacing="9.0">
                                     <children>
                                        <Label styleClass="asset-form-label" text="%ui.game_manager.asset.full_download_source" />
@@ -223,55 +238,10 @@
                                        </HBox>
                                     </children>
                                  </VBox>
-                                 <VBox spacing="9.0">
-                                    <children>
-                                       <Label styleClass="asset-form-label" text="%ui.game_manager.asset.cache_dir" />
-                                       <StackPane maxWidth="350.0" prefWidth="350.0" styleClass="input-group">
-                                          <children>
-                                             <TextField fx:id="downloadCacheDirField" prefWidth="250.0"
-                                                        promptText="%ui.game_manager.asset.cache_dir_tip" />
-                                             <Button fx:id="chooseCacheDirBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false"
-                                                     onAction="#chooseDownloadCacheDir"
-                                                     StackPane.alignment="CENTER_RIGHT">
-                                                <tooltip>
-                                                   <Tooltip text="%ui.game_manager.asset.cache_dir" />
-                                                </tooltip>
-                                                <graphic>
-                                                   <FontIcon iconLiteral="mdoal-folder_open" iconSize="19" />
-                                                </graphic>
-                                             </Button>
-                                          </children>
-                                       </StackPane>
-                                    </children>
-                                 </VBox>
                                  <Label fx:id="downloadSourceHintLabel" maxWidth="1.7976931348623157E308"
                                         styleClass="text-tip,download-source-hint"
                                         text="%ui.game_manager.asset.download_existing_hint"
                                         textOverrun="ELLIPSIS" wrapText="false" />
-                                 <VBox spacing="10.0" styleClass="download-policy-section">
-                                    <children>
-                                       <Label styleClass="asset-form-label" text="%ui.game_manager.asset.download_policy" />
-                                       <HBox alignment="CENTER_LEFT" spacing="8.0">
-                                          <children>
-                                             <HBox alignment="CENTER_LEFT" spacing="6.0" styleClass="download-policy-row">
-                                                <children>
-                                                  <Label styleClass="download-policy-label" text="%ui.game_manager.asset.parallel" />
-                                                   <Spinner fx:id="parallelSpinner" editable="false" prefWidth="72.0" />
-                                                   <Label styleClass="text-tip" text="%ui.game_manager.asset.parallel_unit" />
-                                                </children>
-                                             </HBox>
-                                             <HBox alignment="CENTER_LEFT" spacing="6.0" styleClass="download-policy-row">
-                                                <children>
-                                                   <Label styleClass="download-policy-label" text="%ui.game_manager.asset.speed_limit" />
-                                                   <ToggleSwitch fx:id="speedLimitSwitch" />
-                                                   <Spinner fx:id="speedLimitSpinner" editable="true" prefWidth="84.0" />
-                                                   <Label styleClass="text-tip" text="MB/s" />
-                                                </children>
-                                             </HBox>
-                                          </children>
-                                       </HBox>
-                                    </children>
-                                 </VBox>
                                  <HBox alignment="CENTER_LEFT" spacing="10.0" styleClass="action-row">
                                     <children>
                                        <Button fx:id="downloadBtn" contentDisplay="LEFT" graphicTextGap="8.0"

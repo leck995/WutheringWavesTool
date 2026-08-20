@@ -2,6 +2,7 @@ package cn.tealc.wutheringwavestool.ui.game.manage;
 
 import atlantafx.base.controls.ToggleSwitch;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
+import cn.tealc.wutheringwavestool.ui.component.dialog.NewDialog;
 import cn.tealc.wutheringwavestool.util.DialogBuilder;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.model.SourceType;
@@ -12,12 +13,16 @@ import javafx.css.PseudoClass;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.DirectoryChooser;
+import org.kordamp.ikonli.javafx.FontIcon;
+import org.kordamp.ikonli.material2.Material2OutlinedAL;
 
 import java.io.File;
 import java.net.URL;
@@ -64,10 +69,6 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     @FXML
     private Label currentServerLabel;
     @FXML
-    private TextField downloadCacheDirField;
-    @FXML
-    private Button chooseCacheDirBtn;
-    @FXML
     private RadioButton mainlandSourceRadio;
     @FXML
     private RadioButton bilibiliSourceRadio;
@@ -91,13 +92,9 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     private Label resourceTipLabel;
     @FXML
     private Label downloadTipLabel;
-    @FXML
-    private Spinner<Integer> parallelSpinner;
-    @FXML
-    private ToggleSwitch speedLimitSwitch;
-    @FXML
-    private Spinner<Double> speedLimitSpinner;
 
+    @FXML
+    private Button downloadSettingsBtn;
     @FXML
     private Button downloadBtn;
     @FXML
@@ -158,12 +155,6 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         viewModel.currentGameSourceProperty().addListener((observable, oldSource, newSource) ->
                 updateCurrentServerLabel(newSource));
         updateCurrentServerLabel(viewModel.currentGameSourceProperty().get());
-        downloadCacheDirField.textProperty().bindBidirectional(viewModel.customDownloadCacheDirProperty());
-        downloadCacheDirField.focusedProperty().addListener((observable, wasFocused, isFocused) -> {
-            if (!isFocused) {
-                viewModel.setCustomDownloadCacheDir(downloadCacheDirField.getText());
-            }
-        });
         viewModel.downloadSourceProperty().addListener((observable, oldSource, newSource) ->
                 selectDownloadSource(newSource));
         downloadSourceToggle.selectedToggleProperty().addListener((observable, oldToggle, newToggle) -> {
@@ -172,7 +163,6 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
             }
         });
         selectDownloadSource(viewModel.downloadSourceProperty().get());
-        initDownloadPolicy();
 
         // 按钮显隐
         bindVisibility(downloadBtn, viewModel.showDownloadProperty());
@@ -218,8 +208,6 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         mainlandSourceRadio.disableProperty().bind(resourceOrCacheOperating);
         bilibiliSourceRadio.disableProperty().bind(resourceOrCacheOperating);
         globalSourceRadio.disableProperty().bind(resourceOrCacheOperating);
-        downloadCacheDirField.disableProperty().bind(resourceOrCacheOperating);
-        chooseCacheDirBtn.disableProperty().bind(resourceOrCacheOperating);
         resourcePauseBtn.disableProperty().bind(Bindings.notEqual(
                 viewModel.operationStateProperty(), GameAssetViewModel.OperationState.RUNNING)
                 .or(viewModel.pauseAvailableProperty().not()));
@@ -247,20 +235,59 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         initDownloadCache();
     }
 
-    private void initDownloadPolicy() {
+    @FXML
+    void openDownloadSettings(ActionEvent event) {
+        VBox content = new VBox(10.0);
+        content.setPrefWidth(420.0);
+
+        // 下载缓存目录
+        Label cacheTitle = new Label(LanguageManager.getString("ui.game_manager.asset.cache_dir"));
+        cacheTitle.getStyleClass().add("asset-form-label");
+
+        TextField cacheField = new TextField();
+        cacheField.setPromptText(LanguageManager.getString("ui.game_manager.asset.cache_dir_tip"));
+        cacheField.textProperty().bindBidirectional(viewModel.customDownloadCacheDirProperty());
+        cacheField.setMaxWidth(Double.MAX_VALUE);
+
+        Button browse = new Button(LanguageManager.getString("ui.game_manager.asset.browse"),
+                new FontIcon(Material2OutlinedAL.FOLDER_OPEN));
+        HBox cacheRow = new HBox(8.0, cacheField, browse);
+        cacheRow.setAlignment(Pos.CENTER_LEFT);
+        HBox.setHgrow(cacheField, Priority.ALWAYS);
+
+        Label cacheHint = new Label(LanguageManager.getString("ui.game_manager.asset.cache_dir_hint"));
+        cacheHint.getStyleClass().add("text-tip");
+        cacheHint.setWrapText(true);
+
+        Separator sep = new Separator();
+
+        // 下载策略
+        Label policyTitle = new Label(LanguageManager.getString("ui.game_manager.asset.download_policy"));
+        policyTitle.getStyleClass().add("asset-form-label");
+
         int configuredParallel = Math.clamp(viewModel.downloadParallelCountProperty().get(), 1, 16);
-        SpinnerValueFactory.IntegerSpinnerValueFactory parallelValues =
-                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 16, configuredParallel);
-        parallelSpinner.setValueFactory(parallelValues);
-        parallelValues.valueProperty().addListener((observable, oldValue, newValue) -> {
+        Spinner<Integer> parallelSpinner = new Spinner<>();
+        parallelSpinner.setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(1, 16, configuredParallel));
+        parallelSpinner.setEditable(false);
+        parallelSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
                 viewModel.setDownloadParallelCount(newValue);
             }
         });
+        Label parallelLabel = new Label(LanguageManager.getString("ui.game_manager.asset.parallel"));
+        parallelLabel.getStyleClass().add("download-policy-label");
+        Label parallelUnit = new Label(LanguageManager.getString("ui.game_manager.asset.parallel_unit"));
+        parallelUnit.getStyleClass().add("text-tip");
+        HBox parallelRow = new HBox(6.0, parallelLabel, parallelSpinner, parallelUnit);
+        parallelRow.setAlignment(Pos.CENTER_LEFT);
 
         long configuredLimit = viewModel.downloadSpeedLimitBytesPerSecondProperty().get();
-        double initialLimit = configuredLimit > 0
-                ? configuredLimit / (1024D * 1024D) : 10D;
+        double initialLimit = configuredLimit > 0 ? configuredLimit / (1024D * 1024D) : 10D;
+        ToggleSwitch switchOn = new ToggleSwitch();
+        switchOn.setSelected(configuredLimit > 0);
+
+        Spinner<Double> speedSpinner = new Spinner<>();
         SpinnerValueFactory.DoubleSpinnerValueFactory speedValues =
                 new SpinnerValueFactory.DoubleSpinnerValueFactory(0.1, 1000, initialLimit, 0.1);
         speedValues.setConverter(new javafx.util.StringConverter<>() {
@@ -278,27 +305,50 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
                 }
             }
         });
-        speedLimitSpinner.setValueFactory(speedValues);
-        speedLimitSwitch.setSelected(configuredLimit > 0);
-        speedLimitSwitch.selectedProperty().addListener((observable, oldValue, enabled) ->
-                updateSpeedLimit(enabled, speedValues.getValue()));
-        speedValues.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (speedLimitSwitch.isSelected() && newValue != null) {
-                updateSpeedLimit(true, newValue);
+        speedSpinner.setValueFactory(speedValues);
+        speedSpinner.setEditable(true);
+
+        switchOn.selectedProperty().addListener((observable, oldValue, enabled) -> {
+            long bytes = enabled && speedValues.getValue() != null
+                    ? Math.max(1, Math.round(speedValues.getValue() * 1024 * 1024)) : 0;
+            viewModel.setDownloadSpeedLimitBytesPerSecond(bytes);
+        });
+        speedSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (switchOn.isSelected() && newValue != null) {
+                viewModel.setDownloadSpeedLimitBytesPerSecond(
+                        Math.max(1, Math.round(newValue * 1024 * 1024)));
             }
         });
 
-        var resourceOrCacheOperating = viewModel.operatingProperty().or(viewModel.serverSwitchOperatingProperty());
-        parallelSpinner.disableProperty().bind(resourceOrCacheOperating);
-        speedLimitSwitch.disableProperty().bind(resourceOrCacheOperating);
-        speedLimitSpinner.disableProperty().bind(resourceOrCacheOperating
-                .or(speedLimitSwitch.selectedProperty().not()));
-    }
+        Label speedLabel = new Label(LanguageManager.getString("ui.game_manager.asset.speed_limit"));
+        speedLabel.getStyleClass().add("download-policy-label");
+        Label mbLabel = new Label("MB/s");
+        mbLabel.getStyleClass().add("text-tip");
+        HBox speedRow = new HBox(6.0, speedLabel, switchOn, speedSpinner, mbLabel);
+        speedRow.setAlignment(Pos.CENTER_LEFT);
 
-    private void updateSpeedLimit(boolean enabled, Double megabytesPerSecond) {
-        long bytesPerSecond = enabled && megabytesPerSecond != null
-                ? Math.max(1, Math.round(megabytesPerSecond * 1024 * 1024)) : 0;
-        viewModel.setDownloadSpeedLimitBytesPerSecond(bytesPerSecond);
+        content.getChildren().addAll(cacheTitle, cacheRow, cacheHint, sep, policyTitle, parallelRow, speedRow);
+
+        browse.setOnAction(e -> {
+            DirectoryChooser chooser = new DirectoryChooser();
+            chooser.setTitle(LanguageManager.getString("ui.game_manager.asset.cache_dir"));
+            String cwd = viewModel.customDownloadCacheDirProperty().get();
+            if (cwd != null && !cwd.isBlank()) {
+                File f = new File(cwd);
+                if (f.isDirectory()) {
+                    chooser.setInitialDirectory(f);
+                }
+            }
+            File selected = chooser.showDialog(assetRoot.getScene().getWindow());
+            if (selected != null) {
+                viewModel.setCustomDownloadCacheDir(selected.getAbsolutePath());
+            }
+        });
+
+        NewDialog<Void> dialog = new NewDialog<>(
+                LanguageManager.getString("ui.game_manager.asset.download_settings"), content,
+                ButtonType.OK);
+        dialog.showAndWait();
     }
 
     private void initDownloadCache() {
@@ -383,23 +433,6 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         File selected = chooser.showDialog(assetRoot.getScene().getWindow());
         if (selected != null) {
             viewModel.download(selected.getAbsolutePath());
-        }
-    }
-
-    @FXML
-    void chooseDownloadCacheDir(ActionEvent event) {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle(LanguageManager.getString("ui.game_manager.asset.cache_dir"));
-        String cwd = viewModel.customDownloadCacheDirProperty().get();
-        if (cwd != null && !cwd.isBlank()) {
-            File f = new File(cwd);
-            if (f.isDirectory()) {
-                chooser.setInitialDirectory(f);
-            }
-        }
-        File selected = chooser.showDialog(downloadCacheDirField.getScene().getWindow());
-        if (selected != null) {
-            viewModel.setCustomDownloadCacheDir(selected.getAbsolutePath());
         }
     }
 
