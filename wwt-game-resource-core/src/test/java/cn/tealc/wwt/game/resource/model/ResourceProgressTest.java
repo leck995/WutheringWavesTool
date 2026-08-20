@@ -10,7 +10,11 @@ class ResourceProgressTest {
     void mapsLegacyProgressStatesToPublicPhases() {
         assertEquals(ResourceOperationPhase.VERIFYING, progress(0).operationPhase());
         assertEquals(ResourceOperationPhase.DOWNLOADING, progress(1).operationPhase());
+        assertEquals(ResourceOperationPhase.APPLYING, progress(2).operationPhase());
+        assertEquals(ResourceOperationPhase.VERIFYING, progress(3).operationPhase());
+        assertEquals(ResourceOperationPhase.DOWNLOADING, progress(4).operationPhase());
         assertEquals(ResourceOperationPhase.APPLYING, progress(5).operationPhase());
+        assertEquals(ResourceOperationPhase.APPLYING, progress(6).operationPhase());
         assertEquals(ResourceOperationPhase.VERIFYING, progress(9).operationPhase());
         assertEquals(ResourceOperationPhase.UNKNOWN, progress(99).operationPhase());
     }

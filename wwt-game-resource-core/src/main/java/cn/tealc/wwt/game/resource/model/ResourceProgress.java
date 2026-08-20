@@ -10,9 +10,9 @@ public record ResourceProgress(int nativeState, long completedBytes, long totalB
     /** Maps stable legacy state codes to the public operation phases. */
     public ResourceOperationPhase operationPhase() {
         return switch (nativeState) {
-            case 0, 9 -> ResourceOperationPhase.VERIFYING;
-            case 1 -> ResourceOperationPhase.DOWNLOADING;
-            case 5 -> ResourceOperationPhase.APPLYING;
+            case 0, 3, 9 -> ResourceOperationPhase.VERIFYING;
+            case 1, 4 -> ResourceOperationPhase.DOWNLOADING;
+            case 2, 5, 6 -> ResourceOperationPhase.APPLYING;
             default -> ResourceOperationPhase.UNKNOWN;
         };
     }
