@@ -198,9 +198,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         restoreFullDownloadIfRunning();
         SourceType configuredSource = Config.setting().gameRootDirSourceProperty().get();
         downloadSource.set(normalizeDownloadSource(configuredSource));
-        if (!operating.get()) {
-            refreshInstalledState();
-        }
+        refreshInstalledState();
     }
 
     @Override
@@ -274,7 +272,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                     LanguageManager.getString("ui.game_manager.asset.update"),
                     task, task, ManagedTask.TaskCategory.UPDATE);
         }
-        attachOperation(task, false, null);
+        attachOperation(task, false, this::refreshAfterAssetChange);
         syncUpdateState(task.phaseProperty().get());
     }
 
