@@ -7,7 +7,7 @@ import cn.tealc.wutheringwavestool.model.CloudFileItem;
 import cn.tealc.wutheringwavestool.model.CloudUploadItem;
 import cn.tealc.wutheringwavestool.service.ConfigService;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
-import cn.tealc.wutheringwavestool.util.DialogBuilder;
+import cn.tealc.wutheringwavestool.util.AlterBuilder;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
 import de.saxsys.mvvmfx.InjectViewModel;
@@ -168,15 +168,8 @@ public class CloudBackupView extends BaseDialog implements FxmlView<CloudBackupV
 
 
     private void showUseTip(){
-        Button button = new Button("我已知晓");
-        button.setCancelButton(true);
-        button.getStyleClass().add(Styles.ACCENT);
-        button.setOnAction(event -> {
-            ConfigService configService = AppInjector.getInstance(ConfigService.class);
-            configService.set("CLOUD_BUCKUP_TIP",true);
-        });
-
-        JFXDialogLayout dialogLayout = DialogBuilder.create()
+        JFXDialogLayout dialogLayout = AlterBuilder.create()
+                .info()
                 .title("关于云备份")
                 .message("""
                         这是一个测试功能，加上服务器性能令人捉急，目前仅对赞助过助手的用户开放使用，后续将视服务器稳定性判断是否对所有人开放。
@@ -188,10 +181,13 @@ public class CloudBackupView extends BaseDialog implements FxmlView<CloudBackupV
                         
                         由于处于测试阶段，且受服务器网络影响，可能会存在响应慢，错误等情况，敬请谅解。
                         """)
-                .buttons(button)
+                .ok("我已知晓",event -> {
+                    ConfigService configService = AppInjector.getInstance(ConfigService.class);
+                    configService.set("CLOUD_BUCKUP_TIP", true);
+                })
                 .cancel()
                 .build();
-        NotificationManager.dialog(dialogLayout);
+        NotificationManager.alert(dialogLayout);
     }
 
 
@@ -199,37 +195,26 @@ public class CloudBackupView extends BaseDialog implements FxmlView<CloudBackupV
         String name = item.getOriginalName();
         int idx = name.indexOf('-');
         String player = idx > 0 ? name.substring(0, idx) : name;
-        Button button = new Button("下载");
-        button.setCancelButton(true);
-        button.getStyleClass().add(Styles.ACCENT);
-        button.setOnAction(event -> {
-            viewModel.downloadJson(item);
-        });
-        JFXDialogLayout dialogLayout = DialogBuilder.create()
-                .title(String.format("确认下载 %s 的备份吗？", player))
-                .message("该操作会下载并覆盖本地记录")
-                .buttons(button)
+        JFXDialogLayout dialogLayout = AlterBuilder.create()
+                .title("提醒")
+                .message(String.format("确认下载 %s 的备份吗？该操作会下载并覆盖本地记录", player))
+                .ok(event ->  viewModel.downloadJson(item))
                 .cancel()
                 .build();
-        NotificationManager.dialog(dialogLayout);
+        NotificationManager.alert(dialogLayout);
     }
 
     public void showUploadDialog(CloudUploadItem item){
         String player = item.getPlayerId();
-        Button button = new Button("上传");
-        button.setCancelButton(true);
-        button.getStyleClass().add(Styles.ACCENT);
-        button.setOnAction(event -> {
-            viewModel.uploadJson(item);
-        });
 
-        JFXDialogLayout dialogLayout = DialogBuilder.create()
-                .title(String.format("确认上传 %s 的抽卡数据吗？", player))
-                .message("同一个游戏账号的数据，每60分钟只允许上传一次")
-                .buttons(button)
+        JFXDialogLayout dialogLayout = AlterBuilder.create()
+                .info()
+                .title("提醒")
+                .message(String.format("确认上传 %s 的抽卡数据吗？同一个游戏账号的数据，每60分钟只允许上传一次", player))
+                .ok("上传", event -> viewModel.uploadJson(item))
                 .cancel()
                 .build();
-        NotificationManager.dialog(dialogLayout);
+        NotificationManager.alert(dialogLayout);
     }
 
 
@@ -238,18 +223,13 @@ public class CloudBackupView extends BaseDialog implements FxmlView<CloudBackupV
         int idx = name.indexOf('-');
         String player = idx > 0 ? name.substring(0, idx) : name;
 
-        Button button = new Button("删除");
-        button.setCancelButton(true);
-        button.getStyleClass().add(Styles.DANGER);
-        button.setOnAction(event -> {
-            viewModel.deleteJson(item);
-        });
-        JFXDialogLayout dialogLayout = DialogBuilder.create()
-                .title(String.format("确认删除 %s 的备份吗？", player))
-                .message("注意该操作不可逆")
-                .buttons(button)
+        JFXDialogLayout dialogLayout = AlterBuilder.create()
+                .danger()
+                .title("警告")
+                .message(String.format("确认删除 %s 的备份吗？", player))
+                .ok("删除", event -> viewModel.deleteJson(item))
                 .cancel()
                 .build();
-        NotificationManager.dialog(dialogLayout);
+        NotificationManager.alert(dialogLayout);
     }
 }

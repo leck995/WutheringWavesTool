@@ -7,7 +7,7 @@ import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.game.GameTime;
 import cn.tealc.wutheringwavestool.ui.component.EmptyTipPane;
-import cn.tealc.wutheringwavestool.util.DialogBuilder;
+import cn.tealc.wutheringwavestool.util.AlterBuilder;
 import cn.tealc.wutheringwavestool.util.LocalResourcesManager;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.FxmlView;
@@ -193,16 +193,17 @@ public class GameTimeView implements FxmlView<GameTimeViewModel>, Initializable 
                 deleteBtn.getStyleClass().addAll(Styles.DANGER, Styles.SMALL,Styles.FLAT);
                 deleteBtn.setGraphic(new FontIcon(Material2AL.DELETE_OUTLINE));
                 deleteBtn.setOnAction(e -> {
-                    JFXDialogLayout dialogLayout = DialogBuilder.create()
-                            .title("确认删除吗？")
-                            .message("数据将不可恢复")
-                            .button("删除", event -> {
+                    JFXDialogLayout dialogLayout = AlterBuilder.create()
+                            .danger()
+                            .title("警告")
+                            .message("确认删除吗？")
+                            .ok("删除",event -> {
                                 GameTime item = getTableView().getItems().get(getIndex());
                                 viewModel.deleteRecord(item);
                             })
                             .cancel()
                             .build();
-                    NotificationManager.dialog(dialogLayout);
+                    NotificationManager.alert(dialogLayout);
                 });
             }
             @Override

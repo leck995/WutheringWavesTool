@@ -1,6 +1,5 @@
 package cn.tealc.wutheringwavestool.ui.system;
 
-import atlantafx.base.controls.Message;
 import atlantafx.base.theme.Styles;
 import atlantafx.base.util.Animations;
 import cn.tealc.teafx.utils.AnchorPaneUtil;
@@ -8,18 +7,19 @@ import cn.tealc.wutheringwavestool.WwtApp;
 import cn.tealc.wutheringwavestool.FXResourcesLoader;
 import cn.tealc.wutheringwavestool.base.AppConstants;
 import cn.tealc.wutheringwavestool.base.Config;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.service.ManagedTask;
 import cn.tealc.wutheringwavestool.service.TaskManageService;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.util.AlterBuilder;
 import javafx.concurrent.Task;
 import cn.tealc.teafx.utils.message.MessageInfo;
-import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.model.release.Release;
 import cn.tealc.wutheringwavestool.model.system.NavData;
 import cn.tealc.wutheringwavestool.thread.system.ui.MainBackgroundTask;
 import cn.tealc.wutheringwavestool.ui.gacha.CardAnalysisBaseView;
 import cn.tealc.wutheringwavestool.ui.gacha.CardAnalysisBaseViewModel;
-import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
+import cn.tealc.wutheringwavestool.ui.component.OverlayLayer;
 import cn.tealc.wutheringwavestool.ui.system.home.HomeView;
 import cn.tealc.wutheringwavestool.ui.system.home.HomeViewModel;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
@@ -32,7 +32,6 @@ import javafx.animation.*;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -90,8 +89,6 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
     private Button closeBtn;
     @FXML
     private StackPane root;
-    @FXML
-    private VBox messagePane;
 
     private GaussianBlur bgGaussianBlur;
     @FXML
@@ -144,27 +141,14 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         initBackground();
         initNav();
         initGlobalEvent();
+        // dialog / message / alert 展示统一委托给 OverlayLayer
+        root.getChildren().add(new OverlayLayer(root));
         Platform.runLater(this::initContent);
     }
 
     private void initGlobalEvent() {
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.NOTIFICATION_SHOW_UPDATE, ((s, objects) -> {
             showUpdateView((Release) objects[0]);
-        }));
-        MvvmFX.getNotificationCenter().subscribe(NotificationKey.MESSAGE, ((s, objects) -> {
-            showMessage((MessageInfo) objects[0]);
-        }));
-        MvvmFX.getNotificationCenter().subscribe(NotificationKey.DIALOG, ((s, objects) -> {
-            if (objects[0] instanceof JFXDialogLayout node) {
-                showDialog(node);
-            } else {
-                Pane panes = (Pane) objects[0];
-                if (objects[1] != null && objects[1] instanceof BaseDialog dialog) {
-                    showDialog(panes, dialog);
-                } else {
-                    showDialog(panes);
-                }
-            }
         }));
         MvvmFX.getNotificationCenter().subscribe(NotificationKey.CHANGE_BG, ((s, objects) -> {
             updateBg();
@@ -517,25 +501,6 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
     }
 
 
-    private void showDialog(JFXDialogLayout container) {
-        JFXDialog dialog = new JFXDialog(root, container, JFXDialog.DialogTransition.CENTER);
-        for (Node action : container.getActions()) {
-            if (action instanceof Button button) {
-                if (button.isCancelButton()) {
-                    EventHandler<ActionEvent> onAction = button.getOnAction();
-
-                    button.setOnAction(event -> {
-                        dialog.close();
-                        if (onAction != null){
-                            onAction.handle(event);
-                        }
-                    });
-                }
-            }
-        }
-        dialog.show();
-    }
-
     private void showUpdateView(Release release) {
         ViewTuple<UpdateView, UpdateViewModel> viewTuple = FluentViewLoader.fxmlView(UpdateView.class).viewModel(new UpdateViewModel(release)).load();
         StackPane view = (StackPane) viewTuple.getView();
@@ -547,48 +512,8 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
     }
 
 
-    private void showDialog(Pane pane) {
-        JFXDialog dialog = new JFXDialog(root, pane, JFXDialog.DialogTransition.CENTER);
-        dialog.show();
-    }
-
-    private void showDialog(Pane pane, BaseDialog baseDialog) {
-        JFXDialog dialog = new JFXDialog(root, pane, JFXDialog.DialogTransition.CENTER);
-        baseDialog.setDialog(dialog);
-        dialog.show();
-    }
-
-    private void showMessage(MessageInfo info) {
-        if (messagePane.getChildren().size() > 7) {
-            messagePane.getChildren().removeFirst();
-        }
-        Message message = createMessage(info);
-        message.setOnClose(e -> {
-            var out = Animations.slideOutRight(message, Duration.millis(250));
-            out.setOnFinished(f -> messagePane.getChildren().remove(message));
-            out.playFromStart();
-        });
-        Platform.runLater(() -> {
-            messagePane.getChildren().add(message);
-            message.setTranslateX(300);
-            Timeline timeline = new Timeline(new KeyFrame(Duration.millis(250), new KeyValue(message.translateXProperty(), 0)));
-            timeline.play();
-        });
-        if (info.getAutoClose()) {
-            Timeline fiveSecondsWonder = new Timeline(new KeyFrame(info.getShowTime(), new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent event) {
-                    var out = Animations.slideOutRight(message, Duration.millis(250));
-                    out.setOnFinished(f -> messagePane.getChildren().remove(message));
-                    out.playFromStart();
-                }
-            }));
-            fiveSecondsWonder.play();
-        }
-    }
-
-
     public void close() {
+
         switch (Config.setting().getCloseEvent()) {
             case 0 -> showExitDialog();
             case 1 -> WwtApp.exit();
@@ -597,7 +522,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
     }
 
     private void showExitDialog() {
-        JFXDialogLayout dialogLayout = new JFXDialogLayout();
+    /*    JFXDialogLayout dialogLayout = new JFXDialogLayout();
         Label title = new Label(LanguageManager.getString("ui.main.exit.header"));
         title.getStyleClass().add("title-2");
         dialogLayout.setHeading(title);
@@ -617,10 +542,20 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         iconBtn.setOnAction(event -> {
             WwtApp.getWindow().hide();
             jfxDialog.close();
-        });
+        });      cancelBtn.setOnAction(event -> jfxDialog.close());
+        jfxDialog.show();*/
 
-        cancelBtn.setOnAction(event -> jfxDialog.close());
-        jfxDialog.show();
+        JFXDialogLayout dialogLayout = AlterBuilder.create()
+                .title(LanguageManager.getString("ui.main.exit.header"))
+                .message(LanguageManager.getString("ui.main.exit.body"))
+                .button(LanguageManager.getString("ui.main.exit.btn02"), AlterBuilder.ButtonStyle.SUCCESS,event -> WwtApp.getWindow().hide())
+                .button(LanguageManager.getString("ui.main.exit.btn01"), AlterBuilder.ButtonStyle.DANGER,event ->  WwtApp.exit())
+                .cancel()
+                .build();
+        dialogLayout.getActions().getFirst().getStyleClass().add(Styles.FLAT);
+        NotificationManager.alert(dialogLayout);
+
+
     }
 
 
@@ -692,48 +627,6 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         t.play();
     }
 
-    private Message createMessage(MessageInfo messageInfo) {
-        Message message = null;
-        switch (messageInfo.getType()) {
-            case SUCCESS -> {
-                message = new Message(
-                        messageInfo.getTitle().equals(MessageInfo.SUCCESS) ? null : messageInfo.getTitle(),
-                        messageInfo.getMessage(),
-                        new FontIcon(Material2AL.CHECK_CIRCLE)
-                );
-                message.getStyleClass().addAll(Styles.SUCCESS, "glass-message");
-            }
-            case WARNING -> {
-                message = new Message(
-                        messageInfo.getTitle().equals(MessageInfo.WARNING) ? null : messageInfo.getTitle(),
-                        messageInfo.getMessage(),
-                        new FontIcon(Material2MZ.WARNING)
-                );
-                message.getStyleClass().addAll(Styles.WARNING, "glass-message");
-            }
-            case INFO -> {
-                message = new Message(
-                        messageInfo.getTitle().equals(MessageInfo.INFO) ? null : messageInfo.getTitle(),
-                        messageInfo.getMessage(),
-
-                        new FontIcon(Material2AL.INFO)
-                );
-                message.getStyleClass().addAll(Styles.ACCENT, "glass-message");
-            }
-            case ERROR -> {
-                message = new Message(
-                        messageInfo.getTitle().equals(MessageInfo.ERROR) ? null : messageInfo.getTitle(),
-                        messageInfo.getMessage(),
-                        new FontIcon(Material2AL.HIGHLIGHT_OFF)
-                );
-                message.getStyleClass().addAll(Styles.DANGER, "glass-message");
-            }
-        }
-
-        message.setPrefSize(300.0, 60.0);
-        message.setMaxSize(300.0, 80.0);
-        return message;
-    }
     public void startNavAnim() {
         Platform.runLater(()->{
             child.setOpacity(1);

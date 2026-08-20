@@ -3,8 +3,10 @@ package cn.tealc.wutheringwavestool.ui.component;
 import atlantafx.base.layout.InputGroup;
 import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
+import cn.tealc.wutheringwavestool.util.AlterBuilder;
 import com.kuro.kujiequ.model.sign.SignUserInfo;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.jfoenixN.controls.JFXDialogLayout;
@@ -80,24 +82,14 @@ public class SignUserCell extends ListCell<UserInfo> {
     }
 
     private void delete(){
-        JFXDialogLayout dialogLayout = new JFXDialogLayout();
-        Label title=new Label("确认");
-        title.getStyleClass().add(Styles.TITLE_2);
-        dialogLayout.setHeading(title);
-        Label content=new Label(String.format("确认删除用户ID: %s 的数据吗",getItem().getUserId()));
-        dialogLayout.setBody(content);
-        Button saveBtn=new Button("确认");
-        saveBtn.getStyleClass().add(Styles.ACCENT);
-        Button cancelBtn=new Button("取消");
-        cancelBtn.setCancelButton(true);
-
-        saveBtn.setOnAction(event1 -> {
-            MvvmFX.getNotificationCenter().publish(NotificationKey.SIGN_USER_DELETE,getItem());
-            cancelBtn.fireEvent(event1); //这里是为了触发cancelBtn的事件，从而关闭窗口，属实另辟途径（自夸）
-        });
-        dialogLayout.setActions(saveBtn, cancelBtn);
-
-        MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
+        JFXDialogLayout dialogLayout = AlterBuilder.create()
+                .danger()
+                .title("确认")
+                .message(String.format("确认删除用户ID: %s 的数据吗", getItem().getUserId()))
+                .ok(event -> MvvmFX.getNotificationCenter().publish(NotificationKey.SIGN_USER_DELETE, getItem()))
+                .cancel()
+                .build();
+        NotificationManager.alert(dialogLayout);
     }
 
     private void update(){

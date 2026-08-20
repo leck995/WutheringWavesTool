@@ -2,6 +2,7 @@ package cn.tealc.wutheringwavestool.ui.kujiequ.account;
 
 import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import com.kuro.kujiequ.model.sign.UserInfo;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;
@@ -21,6 +22,7 @@ import org.kordamp.ikonli.material2.Material2AL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import cn.tealc.wutheringwavestool.util.AlterBuilder;
 import java.net.URL;
 import java.util.ResourceBundle;
 
@@ -104,24 +106,14 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
         }
 
         private void delete(){
-            JFXDialogLayout dialogLayout = new JFXDialogLayout();
-            Label title=new Label("确认");
-            title.getStyleClass().add(Styles.TITLE_2);
-            dialogLayout.setHeading(title);
-            Label content=new Label(String.format("确认删除用户ID: %s 的数据吗",getItem().getUserId()));
-            dialogLayout.setBody(content);
-            Button saveBtn=new Button("确认");
-            saveBtn.getStyleClass().add(Styles.ACCENT);
-            Button cancelBtn=new Button("取消");
-            cancelBtn.setCancelButton(true);
-
-            saveBtn.setOnAction(event1 -> {
-                viewModel.deleteUser(getIndex(),getItem());
-                cancelBtn.fireEvent(event1); //这里是为了触发cancelBtn的事件，从而关闭窗口，属实另辟途径（自夸）
-            });
-            dialogLayout.setActions(saveBtn, cancelBtn);
-            MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG,dialogLayout);
-
+            JFXDialogLayout dialogLayout = AlterBuilder.create()
+                    .danger()
+                    .title("警告")
+                    .message(String.format("确认删除用户ID: %s 的数据吗", getItem().getUserId()))
+                    .ok("确认", event -> viewModel.deleteUser(getIndex(), getItem()))
+                    .cancel()
+                    .build();
+            NotificationManager.alert(dialogLayout);
         }
 
         private void update(){

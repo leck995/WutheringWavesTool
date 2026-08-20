@@ -4,8 +4,10 @@ import atlantafx.base.controls.ToggleSwitch;
 import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.Config;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
+import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
+import cn.tealc.wutheringwavestool.util.AlterBuilder;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.jfoenixN.controls.JFXDialogLayout;
@@ -79,29 +81,15 @@ public class GameAdvanceSettingView implements FxmlView<GameAdvanceSettingViewMo
     void showWarning(MouseEvent event) {
         if (userAdvanceSettingSwitch.isSelected()) {
             userAdvanceSettingSwitch.setSelected(false);
-            Label title = new Label(LanguageManager.getString("ui.common.warning"));
-            title.getStyleClass().add(Styles.TITLE_2);
-            Label tip1 = new Label(LanguageManager.getString("ui.game_manager.advance.warning.tip"));
-            tip1.setWrapText(true);
-            tip1.setPrefWidth(350);
-            tip1.setMinHeight(80);
-            VBox center = new VBox(5.0, tip1);
-            Button okBtn = new Button(LanguageManager.getString("ui.game_manager.advance.warning.ok"));
-            okBtn.getStyleClass().add(Styles.DANGER);
-
-            Button cancelBtn = new Button(LanguageManager.getString("ui.common.cancel"));
-            cancelBtn.setCancelButton(true);
-
-            okBtn.setOnAction(actionEvent -> {
-                userAdvanceSettingSwitch.setSelected(true);
-                cancelBtn.fireEvent(actionEvent);
-            });
-            JFXDialogLayout dialogLayout = new JFXDialogLayout();
-            dialogLayout.setHeading(title);
-            dialogLayout.setBody(center);
-            dialogLayout.setActions(okBtn, cancelBtn);
-            dialogLayout.setPrefSize(400, 300);
-            MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, dialogLayout);
+            JFXDialogLayout dialogLayout = AlterBuilder.create()
+                    .danger()
+                    .title(LanguageManager.getString("ui.common.warning"))
+                    .message(LanguageManager.getString("ui.game_manager.advance.warning.tip"))
+                    .ok(LanguageManager.getString("ui.game_manager.advance.warning.ok"),
+                            actionEvent -> userAdvanceSettingSwitch.setSelected(true))
+                    .cancel()
+                    .build();
+            NotificationManager.alert(dialogLayout);
         }
     }
 

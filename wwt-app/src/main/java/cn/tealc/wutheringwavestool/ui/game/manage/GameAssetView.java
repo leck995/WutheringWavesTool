@@ -3,7 +3,7 @@ package cn.tealc.wutheringwavestool.ui.game.manage;
 import atlantafx.base.controls.ToggleSwitch;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.ui.component.dialog.NewDialog;
-import cn.tealc.wutheringwavestool.util.DialogBuilder;
+import cn.tealc.wutheringwavestool.util.AlterBuilder;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import com.jfoenixN.controls.JFXDialogLayout;
@@ -370,27 +370,25 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     }
 
     private void confirmRedownload(SourceType source) {
-        JFXDialogLayout layout = DialogBuilder
-                .create()
+        JFXDialogLayout layout = AlterBuilder.create()
+                .warning()
                 .title(LanguageManager.getString("ui.game_manager.asset.download_cache"))
                 .message(LanguageManager.getString("ui.game_manager.base.server_switch.redownload_confirm"))
-                .button("确定",null,true,event ->  viewModel.redownloadServerFiles(source))
+                .ok(event -> viewModel.redownloadServerFiles(source))
                 .cancel()
                 .build();
-        NotificationManager.dialog(layout);
+        NotificationManager.alert(layout);
     }
 
     private void confirmDeleteCache(SourceType source) {
-
-
-        JFXDialogLayout layout = DialogBuilder
-                .create()
+        JFXDialogLayout layout = AlterBuilder.create()
+                .danger()
                 .title(LanguageManager.getString("ui.game_manager.asset.download_cache"))
                 .message(LanguageManager.getString("ui.game_manager.base.server_switch.delete_confirm"))
-                .button("确定",null,true,event -> viewModel.deleteServerCache(source))
+                .ok(event -> viewModel.deleteServerCache(source))
                 .cancel()
                 .build();
-        NotificationManager.dialog(layout);
+        NotificationManager.alert(layout);
     }
 
     private void bindVisibility(Node node, javafx.beans.value.ObservableBooleanValue visible) {

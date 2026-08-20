@@ -105,7 +105,6 @@
                   </VBox>
                </children>
             </HBox>
-            <VBox fx:id="messagePane" spacing="5.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="60.0" />
          </children>
       </AnchorPane>
    </children>

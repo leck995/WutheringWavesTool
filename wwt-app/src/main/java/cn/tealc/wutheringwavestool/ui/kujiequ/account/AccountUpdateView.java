@@ -6,6 +6,7 @@ import cn.tealc.wutheringwavestool.base.AppConstants;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
+import cn.tealc.wutheringwavestool.util.AlterBuilder;
 import com.jfoenixN.controls.JFXDialogLayout;
 import cn.tealc.wutheringwavestool.ui.kujiequ.web.GeetestCaptchaDialog;
 import com.kuro.kujiequ.KujiequManager;
@@ -214,35 +215,29 @@ public class AccountUpdateView extends BaseDialog implements FxmlView<AccountUpd
     }
 
     private void showSmsFailDialog() {
-        Label titleLabel = new Label("获取验证码");
-        titleLabel.getStyleClass().add("title-2");
-
-        Label contentLabel = new Label("""
-                助手无法发送验证码，请采用以下方法获取验证码。
-                
-                第一种方法：
-                    点击下方按钮前往网页版库街区，输入手机号登录，获取到验证码(收到验证码即停止)；
-                第二种方法：
-                    打开库街区APP，输入手机号登录，获取到验证码(收到验证码即停止);
-                
-                将获取到验证码在助手中输入并登录。
-                """);
-        Button openBrowserBtn = new Button("前往库街区");
-        openBrowserBtn.setOnAction(event1 -> {
-            try {
-                Desktop.getDesktop().browse(URI.create("https://www.kurobbs.com/mc/home/9"));
-            } catch (IOException e) {
-                log.info("跳转错误", e);
-            }
-        });
-
-        Button cancelBtn = new Button("关闭");
-        cancelBtn.setCancelButton(true);
-        JFXDialogLayout layout = new JFXDialogLayout();
-        layout.setHeading(titleLabel);
-        layout.setBody(contentLabel);
-        layout.setActions(openBrowserBtn, cancelBtn);
-        NotificationManager.publish(NotificationKey.DIALOG, layout);
+        JFXDialogLayout layout = AlterBuilder.create()
+                .warning()
+                .title("获取验证码")
+                .message("""
+                        助手无法发送验证码，请采用以下方法获取验证码。
+                        
+                        第一种方法：
+                            点击下方按钮前往网页版库街区，输入手机号登录，获取到验证码(收到验证码即停止)；
+                        第二种方法：
+                            打开库街区APP，输入手机号登录，获取到验证码(收到验证码即停止);
+                        
+                        将获取到验证码在助手中输入并登录。
+                        """)
+                .ok("前往库街区", event1 -> {
+                    try {
+                        Desktop.getDesktop().browse(URI.create("https://www.kurobbs.com/mc/home/9"));
+                    } catch (IOException e) {
+                        log.info("跳转错误", e);
+                    }
+                })
+                .cancel()
+                .build();
+        NotificationManager.alert(layout);
     }
 
     @FXML

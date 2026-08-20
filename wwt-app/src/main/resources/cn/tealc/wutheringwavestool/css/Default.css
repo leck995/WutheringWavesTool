@@ -212,10 +212,18 @@
 .jfx-dialog-layout {
     -fx-text-fill: -color-fg-default;
     -fx-background-radius: 10px;
-    -fx-padding: 8px;
+    -fx-padding: 0px;
     -fx-background-color: -color-bg-default;
 }
 
+.jfx-dialog-layout > .jfx-layout-heading {
+    -fx-alignment: center-left;
+    -fx-font-weight: BOLD;
+    -fx-padding: 18 24 18 24;
+}
+.jfx-dialog-layout > .jfx-layout-actions {
+     -fx-padding: 12;
+ }
 
 .tea-dialog{
     -fx-background-color: -color-bg-default;
@@ -816,3 +824,67 @@
     -fx-scale-shape: false;
     -fx-padding: 0.333333em;
 }
+
+
+
+.jfx-alter .title{
+    -fx-font-size: 1.2em;
+    -fx-font-weight: bolder;
+}
+.jfx-alter > .jfx-layout-actions .button {
+    -fx-pref-height: 30;
+    -fx-max-height: 30;
+    -fx-min-width: 64;
+    -fx-padding: 5 8 5 8;
+}
+.jfx-alter > .jfx-layout-body .label {
+    -fx-text-fill: #757575;
+    -fx-font-size: 1.1em;
+    -fx-wrap-text: true;
+}
+
+
+
+
+/* body 图标默认中性色，各 AlertType 类型覆盖 */
+.jfx-alter .alter-builder-icon {
+    -fx-icon-color: -color-fg-muted;
+    -fx-font-size: 1.6em;
+}
+.jfx-alter.info .alter-builder-icon {
+    -fx-icon-color: -color-accent-fg;
+}
+.jfx-alter.warning .alter-builder-icon {
+    -fx-icon-color: -color-warning-fg;
+}
+.jfx-alter.danger .alter-builder-icon {
+    -fx-icon-color: -color-danger-fg;
+}
+.jfx-alter.success .alter-builder-icon {
+    -fx-icon-color: -color-success-fg;
+}
+
+/* AtlantaFX 原生按钮无 warning 着色规则，此处补齐，结构与 .button.danger 对齐 */
+.jfx-alter .button.warning {
+    -color-button-bg: -color-warning-emphasis;
+    -color-button-fg: -color-fg-emphasis;
+    -color-button-border: -color-warning-emphasis;
+    -color-button-bg-hover: -color-warning-emphasis;
+    -color-button-fg-hover: -color-fg-emphasis;
+    -color-button-border-hover: -color-warning-emphasis;
+    -color-button-bg-pressed: -color-warning-emphasis;
+    -color-button-fg-pressed: -color-fg-emphasis;
+    -color-button-border-pressed: transparent;
+}
+.jfx-alter .button.warning.button-outlined {
+    -color-button-bg: -color-bg-default;
+    -color-button-fg: -color-warning-fg;
+    -color-button-bg-hover: -color-warning-emphasis;
+    -color-button-fg-hover: -color-fg-emphasis;
+}
+.jfx-alter .button.warning.flat {
+    -color-button-fg: -color-warning-fg;
+    -color-button-bg-hover: -color-warning-subtle;
+}
+
+

@@ -10,7 +10,7 @@ import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.plugin.FxPluginManager;
 import cn.tealc.wutheringwavestool.ui.component.BaseDialog;
-import cn.tealc.wutheringwavestool.util.DialogBuilder;
+import cn.tealc.wutheringwavestool.util.AlterBuilder;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;
@@ -84,17 +84,15 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
         String title = String.format("游戏账号 %s 有最新的数据，是否进行云备份？", viewModel.getPlayer());
         String message = "由于服务器开销限制，每一个游戏玩家账号60分钟内只允许上传一次（多账号单独计算），请最好在无新数据后上传";
 
-        JFXDialogLayout build = DialogBuilder
-                .create()
+        JFXDialogLayout build = AlterBuilder.create()
+                .info()
                 .title(title)
                 .message(message)
-                .button("上传", null,true,event -> {
-                    viewModel.uploadGachaFile();
-                })
-                .cancel("取消").build();
+                .button("上传", true, event -> viewModel.uploadGachaFile())
+                .cancel("取消")
+                .build();
 
         NotificationManager.dialog(build);
-
     }
 
 
@@ -125,22 +123,14 @@ public class CardAnalysisBaseView implements FxmlView<CardAnalysisBaseViewModel>
     @FXML
     void delete(ActionEvent event) {
         if (!playerComboBox.getItems().isEmpty()) {
-            JFXDialogLayout layout = new JFXDialogLayout();
-            Label title = new Label(LanguageManager.getString("ui.common.warning"));
-            title.getStyleClass().add(Styles.TITLE_2);
-            layout.setHeading(title);
-            Label tip = new Label(String.format(LanguageManager.getString("ui.analysis.delete.tip.content"), viewModel.getPlayer()));
-            layout.setBody(tip);
-            Button okBtn = new Button(LanguageManager.getString("ui.common.ok"));
-            okBtn.getStyleClass().add(Styles.DANGER);
-            Button cancelBtn = new Button(LanguageManager.getString("ui.common.cancel"));
-            okBtn.setOnAction(event1 -> {
-                viewModel.delete();
-                cancelBtn.fireEvent(event1);
-            });
-            cancelBtn.setCancelButton(true);
-            layout.setActions(okBtn, cancelBtn);
-            MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, layout);
+            JFXDialogLayout layout = AlterBuilder.create()
+                    .danger()
+                    .title(LanguageManager.getString("ui.common.warning"))
+                    .message(String.format(LanguageManager.getString("ui.analysis.delete.tip.content"), viewModel.getPlayer()))
+                    .ok(LanguageManager.getString("ui.common.ok"), e -> viewModel.delete())
+                    .cancel()
+                    .build();
+            NotificationManager.alert(layout);
         }
     }
 
