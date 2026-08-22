@@ -503,6 +503,11 @@ public class DownloadTask {
             // - Non-retryable → FAILED with CHECK_MD5_FAILED
             // - Retryable → text="" → treated as mismatch → delete + RetryEnqueue
             // - MD5 mismatch → delete + RetryEnqueue (NO CanRetry, only retry count)
+            if (stopFlag.get()) {
+                state = DownloadState.CANCELED;
+                notifyState(DownloadState.CANCELED, null);
+                return;
+            }
             boolean md5Ok;
             try {
                 md5Ok = verifyFileMd5(destFile);
@@ -834,6 +839,11 @@ public class DownloadTask {
         // and the per-chunk loop below skips existing chunks with matching size.
         int outerRetry = 0;
         while (true) {
+            if (stopFlag.get()) {
+                state = DownloadState.CANCELED;
+                notifyState(DownloadState.CANCELED, null);
+                return;
+            }
             downloadedBytes = 0;
 
             // Download each chunk with retry on MD5 mismatch.
@@ -884,6 +894,11 @@ public class DownloadTask {
 
                 int chunkRetry = 0;
                 while (true) {
+                    if (stopFlag.get()) {
+                        state = DownloadState.CANCELED;
+                        notifyState(DownloadState.CANCELED, null);
+                        return;
+                    }
                     lastErrorCode = 0;
                     lastCSharpErrorCode = 0;
                     try {
@@ -982,6 +997,11 @@ public class DownloadTask {
                 FileUtils.ensureDir(PathUtils.getParentDir(destPath));
                 try (FileOutputStream fos = new FileOutputStream(mergedFile)) {
                     for (int i = 0; i < chunks.size(); i++) {
+                        if (stopFlag.get()) {
+                            state = DownloadState.CANCELED;
+                            notifyState(DownloadState.CANCELED, null);
+                            return;
+                        }
                         String chunkFile = PathUtils.combine(chunkDir, "chunk_" + i);
                         try (FileInputStream fis = new FileInputStream(chunkFile)) {
                             byte[] buffer = new byte[READ_BUFFER_SIZE];

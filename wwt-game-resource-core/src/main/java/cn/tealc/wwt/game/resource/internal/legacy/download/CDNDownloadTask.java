@@ -39,6 +39,8 @@ public class CDNDownloadTask {
     private final String baseDestPath;
     private final AtomicBoolean pauseFlag = new AtomicBoolean(false);
     private final AtomicBoolean stopFlag = new AtomicBoolean(false);
+    /** 下载线程池引用，供 stop() 强制中断。 */
+    private volatile ExecutorService currentPool;
     private ProgressCallback progressCallback;
     private StateCallback stateCallback;
     private DownloadTask.Md5CheckProgressCallback md5CheckProgressCallback;
@@ -248,6 +250,10 @@ public class CDNDownloadTask {
             for (DownloadTask task : allTasks) {
                 task.stop();
             }
+        }
+        ExecutorService pool = currentPool;
+        if (pool != null) {
+            pool.shutdownNow();
         }
     }
 
@@ -634,6 +640,7 @@ public class CDNDownloadTask {
             t.setDaemon(true);
             return t;
         });
+        currentPool = pool;
 
         state = DownloadState.DOWNLOADING;
 
@@ -722,6 +729,7 @@ public class CDNDownloadTask {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+        currentPool = null;
 
         synchronized (allTasks) {
             allTasks.clear();

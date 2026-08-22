@@ -231,7 +231,6 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         progressText.unbind();
         if (task != null) {
             progress.bind(task.progressProperty());
-            // progressText 由 progress 派生
             progressText.bind(javafx.beans.binding.Bindings.createStringBinding(
                     () -> {
                         double p = task.getProgress();
@@ -241,10 +240,18 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             progress.set(0);
             progressText.set("0%");
         }
-        // 提示
+        // 操作阶段提示（进度条下方）：合并 Task title 和 message（阶段 + 进度数据）
         tip.unbind();
         if (task != null) {
-            tip.bind(task.messageProperty());
+            tip.bind(javafx.beans.binding.Bindings.createStringBinding(
+                    () -> {
+                        String t = task.getTitle();
+                        String m = task.getMessage();
+                        if (t == null || t.isBlank()) return m != null ? m : "";
+                        if (m == null || m.isBlank()) return t;
+                        return t + "  " + m;
+                    },
+                    task.titleProperty(), task.messageProperty()));
         } else {
             tip.set("");
         }
@@ -255,10 +262,10 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         } else {
             downloadSpeed.set("");
         }
-        // 状态
+        // 状态摘要：不再绑定 Task title，改为静态文本
         status.unbind();
         if (task != null) {
-            status.bind(task.titleProperty());
+            status.set("资源操作中");
         }
     }
 
@@ -276,9 +283,18 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             downloadProgress.set(0);
             downloadProgressText.set("0%");
         }
+        // 操作阶段提示（进度条下方）：合并 Task title 和 message（阶段 + 进度数据）
         downloadTip.unbind();
         if (task != null) {
-            downloadTip.bind(task.messageProperty());
+            downloadTip.bind(javafx.beans.binding.Bindings.createStringBinding(
+                    () -> {
+                        String t = task.getTitle();
+                        String m = task.getMessage();
+                        if (t == null || t.isBlank()) return m != null ? m : "";
+                        if (m == null || m.isBlank()) return t;
+                        return t + "  " + m;
+                    },
+                    task.titleProperty(), task.messageProperty()));
         } else {
             downloadTip.set("");
         }
@@ -287,6 +303,10 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             downloadDownloadSpeed.bind(g.speedTextProperty());
         } else {
             downloadDownloadSpeed.set("");
+        }
+        // 状态摘要：不再绑定 Task title，改为静态文本
+        if (task != null) {
+            status.set("下载中");
         }
     }
 
@@ -311,12 +331,17 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         if (task != activeResourceTask.get()) return; // stale
         switch (state) {
             case SUCCEEDED -> {
+                status.set("资源操作完成");
                 activeResourceTask.set(null);
                 refreshAfterAssetChange();
             }
-            case CANCELLED -> activeResourceTask.set(null);
+            case CANCELLED -> {
+                status.set("资源操作已取消");
+                activeResourceTask.set(null);
+            }
             case FAILED -> {
                 // 保留在 activeResourceTask 中展示失败信息，允许重试
+                status.set("资源操作失败");
                 retryAvailable.set(true);
                 pauseAvailable.set(false);
                 stopAvailable.set(false);
@@ -340,11 +365,16 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         if (task != activeDownloadTask.get()) return;
         switch (state) {
             case SUCCEEDED -> {
+                status.set("下载完成");
                 activeDownloadTask.set(null);
                 refreshInstalledState();
             }
-            case CANCELLED -> activeDownloadTask.set(null);
+            case CANCELLED -> {
+                status.set("下载已取消");
+                activeDownloadTask.set(null);
+            }
             case FAILED -> {
+                status.set("下载失败");
                 retryAvailable.set(true);
                 pauseAvailable.set(false);
                 stopAvailable.set(false);
@@ -587,17 +617,23 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     // ==================== 控制：统一转发给当前任务 ====================
 
+    /** 暂停当前任务，成功后更新操作状态。 */
     public void pause() {
         Task<?> task = activeResourceTask.get() != null ? activeResourceTask.get() : activeDownloadTask.get();
         if (task instanceof TaskControl tc && tc.supportsPause() && task.isRunning()) {
-            tc.pauseTask();
+            if (tc.pauseTask()) {
+                operationState.set(OperationState.PAUSED);
+            }
         }
     }
 
+    /** 恢复当前任务，成功后更新操作状态。 */
     public void resume() {
         Task<?> task = activeResourceTask.get() != null ? activeResourceTask.get() : activeDownloadTask.get();
         if (task instanceof TaskControl tc && tc.supportsPause() && task.isRunning()) {
-            tc.resumeTask();
+            if (tc.resumeTask()) {
+                operationState.set(OperationState.RUNNING);
+            }
         }
     }
 
