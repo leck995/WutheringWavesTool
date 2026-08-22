@@ -5,28 +5,10 @@
   var STYLE_ID = "webkujiequ-hide-ui-chrome";
   // Kuro H5 chrome to strip in embedded WebView
   var SELECTORS = [
-    ".action-area",
-    "div.action-area",
-    "[class~='action-area']",
-    ".navbar-unit",
-    "div.navbar-unit",
-    "[class~='navbar-unit']",
+
   ];
   var CSS =
-    "" +
-    "/* Hide Kuro H5 chrome (action bar / navbar) in embedded WebView */" +
-    SELECTORS.join(",") +
-    " {" +
-    "  display: none !important;" +
-    "  visibility: hidden !important;" +
-    "  pointer-events: none !important;" +
-    "  height: 0 !important;" +
-    "  max-height: 0 !important;" +
-    "  overflow: hidden !important;" +
-    "  margin: 0 !important;" +
-    "  padding: 0 !important;" +
-    "  opacity: 0 !important;" +
-    "}";
+    "";
 
   function injectCss() {
     try {
@@ -46,7 +28,7 @@
   }
 
   function removeNodes() {
-    try {
+/*    try {
       var list = document.querySelectorAll(".action-area, .navbar-unit, .van-sticky, .header-area, .extra-area");
       for (var i = 0; i < list.length; i++) {
         var n = list[i];
@@ -56,7 +38,7 @@
       }
     } catch (e2) {
       console.warn("[webkujiequ] hide-ui-chrome remove failed", e2);
-    }
+    }*/
   }
 
   function apply() {
@@ -76,8 +58,8 @@
 
   try {
     var obs = new MutationObserver(function () {
-      if (!document.getElementById(STYLE_ID)) injectCss();
-      if (document.querySelector(".action-area, .navbar-unit")) removeNodes();
+   /*   if (!document.getElementById(STYLE_ID)) injectCss();
+      if (document.querySelector(".action-area, .navbar-unit")) removeNodes();*/
     });
     obs.observe(document.documentElement, { childList: true, subtree: true });
   } catch (e3) {}
