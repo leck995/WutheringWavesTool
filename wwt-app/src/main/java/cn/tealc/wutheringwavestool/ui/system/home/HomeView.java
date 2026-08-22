@@ -7,7 +7,7 @@ import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.teafx.utils.message.MessageType;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
-import cn.tealc.wutheringwavestool.thread.game.download.GameResourceUpdateTask.UpdateState;
+import cn.tealc.wutheringwavestool.ui.system.home.HomeViewModel.ResourceUpdateState;
 import cn.tealc.wutheringwavestool.model.SourceType;
 import cn.tealc.wutheringwavestool.ui.item.HeaderImageSelectView;
 import cn.tealc.wutheringwavestool.ui.item.PlayTimeAlertItemView;
@@ -115,7 +115,7 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
     public void initialize(URL url, ResourceBundle resourceBundle) {
         startGameBtn.disableProperty().bind(viewModel.startGameBtnDisabledProperty().or(
                 Bindings.equal(viewModel.resourceUpdateStateProperty(),
-                        UpdateState.APPLYING)).or(viewModel.serverSwitchOperatingProperty()));
+                        ResourceUpdateState.APPLYING)).or(viewModel.serverSwitchOperatingProperty()));
         startUpdateBtn.disableProperty().bind(viewModel.serverSwitchOperatingProperty());
         startUpdateBtn.textProperty().bind(viewModel.updateActionTextProperty());
         bindVisibility(startUpdateBtn, viewModel.updateActionVisibleProperty());
@@ -252,14 +252,14 @@ public class HomeView implements Initializable, FxmlView<HomeViewModel> {
         }
     }
 
-    private void updateResourceStatusStyle(UpdateState state) {
-        boolean checking = state == UpdateState.CHECKING || state == UpdateState.PREPARING;
-        boolean upToDate = state == UpdateState.UP_TO_DATE || state == UpdateState.COMPLETED;
-        boolean updateAvailable = state == UpdateState.UPDATE_AVAILABLE;
-        boolean failed = state == UpdateState.FAILED || state == UpdateState.CANCELED;
-        boolean operating = state == UpdateState.PREPARING || state == UpdateState.DOWNLOADING
-                || state == UpdateState.APPLYING;
-        boolean paused = state == UpdateState.PAUSED;
+    private void updateResourceStatusStyle(ResourceUpdateState state) {
+        boolean checking = state == ResourceUpdateState.CHECKING || state == ResourceUpdateState.PREPARING;
+        boolean upToDate = state == ResourceUpdateState.UP_TO_DATE || state == ResourceUpdateState.COMPLETED;
+        boolean updateAvailable = state == ResourceUpdateState.UPDATE_AVAILABLE;
+        boolean failed = state == ResourceUpdateState.FAILED || state == ResourceUpdateState.CANCELED;
+        boolean operating = state == ResourceUpdateState.PREPARING || state == ResourceUpdateState.DOWNLOADING
+                || state == ResourceUpdateState.APPLYING;
+        boolean paused = state == ResourceUpdateState.PAUSED;
 
         resourceStatusPane.pseudoClassStateChanged(CHECKING, checking);
         resourceStatusPane.pseudoClassStateChanged(UP_TO_DATE, upToDate);

@@ -9,14 +9,7 @@ import cn.tealc.wwt.game.resource.model.ResourceProgress;
 import cn.tealc.wutheringwavestool.service.GameUpdateService;
 import cn.tealc.wutheringwavestool.service.TaskControl;
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyBooleanProperty;
-import javafx.beans.property.ReadOnlyBooleanWrapper;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.ReadOnlyStringProperty;
-import javafx.beans.property.ReadOnlyStringWrapper;
 
-import java.util.Locale;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -36,20 +29,7 @@ public class GameFullDownloadTask extends AbstractGameDownloadTask<ResourceOpera
     /** 全局唯一 id，资源管理界面通过它复用同一个全量下载任务。 */
     public static final String TASK_ID = "game-full-download";
 
-    /** 全量下载阶段。 */
-    public enum Phase {
-        IDLE, CHECKING, DOWNLOADING, VERIFYING, APPLYING, PAUSED, COMPLETED, FAILED, CANCELED
-    }
-
     private final GameUpdateService updateService;
-
-    private final ReadOnlyObjectWrapper<Phase> phase = new ReadOnlyObjectWrapper<>(Phase.IDLE);
-    private final ReadOnlyStringWrapper progressText = new ReadOnlyStringWrapper("0%");
-    private final ReadOnlyStringWrapper speedText = new ReadOnlyStringWrapper("");
-    private final ReadOnlyStringWrapper detailText = new ReadOnlyStringWrapper("");
-    private final ReadOnlyBooleanWrapper pauseVisible = new ReadOnlyBooleanWrapper(false);
-    private final ReadOnlyBooleanWrapper resumeVisible = new ReadOnlyBooleanWrapper(false);
-    private final ReadOnlyBooleanWrapper cancelVisible = new ReadOnlyBooleanWrapper(false);
 
     private final long[] speedSample = {System.nanoTime(), 0L};
     private final double[] emaSpeed = {0};
@@ -61,22 +41,21 @@ public class GameFullDownloadTask extends AbstractGameDownloadTask<ResourceOpera
     @Override
     protected ResourceOperationResult call() throws Exception {
         try {
-            setPhase(Phase.CHECKING, "正在检查更新");
+            updateTitle("正在检查更新");
             ResourceCheckResult checkResult = updateService.checkUpdate();
             if (checkResult == null || !checkResult.isSuccessful()) {
                 throw new IllegalStateException("检查游戏更新失败");
             }
             return runFullDownload(checkResult);
         } catch (Exception e) {
-            // 失败时把原因写入 detailText，供失败面板/重试界面展示。
             final String message = hasText(e.getMessage()) ? e.getMessage() : "全量下载失败";
-            onFx(() -> detailText.set(message));
+            onFx(() -> updateMessage(message));
             throw e;
         }
     }
 
     private ResourceOperationResult runFullDownload(ResourceCheckResult checkResult) throws Exception {
-        setPhase(Phase.DOWNLOADING, "正在下载游戏资源");
+        updateTitle("正在下载游戏资源");
         CountDownLatch latch = new CountDownLatch(1);
         AtomicReference<ResourceOperationResult> resultRef = new AtomicReference<>();
         ResourceProgressListener progressListener = this::handleProgress;
@@ -95,21 +74,19 @@ public class GameFullDownloadTask extends AbstractGameDownloadTask<ResourceOpera
                     hasText(result.errorMessage()) ? result.errorMessage() : "全量下载失败"));
         }
         updateProgress(1, 1);
-        setPhase(Phase.COMPLETED, "下载完成");
+        updateTitle("下载完成");
+        updateMessage("");
         return result;
     }
 
     private void handleProgress(ResourceProgress value) {
         ResourceOperationPhase opPhase = value.operationPhase();
-        Phase stage = mapPhase(opPhase);
-        // 阶段切换时同步 phase（含暂停状态保持）。
-        if (stage == Phase.DOWNLOADING && phase.get() != Phase.DOWNLOADING
-                && phase.get() != Phase.PAUSED) {
-            setPhase(Phase.DOWNLOADING, "正在下载游戏资源");
-        } else if (stage == Phase.VERIFYING && phase.get() != Phase.VERIFYING) {
-            setPhase(Phase.VERIFYING, "正在校验文件");
-        } else if (stage == Phase.APPLYING && phase.get() != Phase.APPLYING) {
-            setPhase(Phase.APPLYING, "正在合成文件");
+        if (opPhase == ResourceOperationPhase.VERIFYING) {
+            updateTitle("正在校验文件");
+        } else if (opPhase == ResourceOperationPhase.APPLYING) {
+            updateTitle("正在合成文件");
+        } else if (opPhase == ResourceOperationPhase.DOWNLOADING && !isPaused()) {
+            updateTitle("正在下载游戏资源");
         }
 
         long completed = value.completedBytes();
@@ -119,38 +96,13 @@ public class GameFullDownloadTask extends AbstractGameDownloadTask<ResourceOpera
         } else {
             updateProgress(-1, 0);
         }
-        String speed = (stage == Phase.DOWNLOADING && phase.get() == Phase.DOWNLOADING)
+        String speed = (opPhase == ResourceOperationPhase.DOWNLOADING && !isPaused())
                 ? updateEmaSpeed(completed, speedSample, emaSpeed) : "";
+        String msg = progressMessage(completed, total);
         onFx(() -> {
             speedText.set(speed);
-            double p = getProgress() >= 0 ? getProgress() : 0;
-            progressText.set(String.format(Locale.ROOT, "%.1f%%", p * 100));
-            detailText.set(progressMessage(completed, total));
+            updateMessage(msg);
         });
-    }
-
-    private void setPhase(Phase newPhase, String detail) {
-        onFx(() -> {
-            onPhaseChanged(newPhase, detail);
-        });
-    }
-
-    /** 在 FX 线程内更新 phase 派生的只读属性。 */
-    private void onPhaseChanged(Phase newPhase, String detail) {
-        phase.set(newPhase);
-        if (detail != null) {
-            detailText.set(detail);
-        }
-        boolean progressing = newPhase == Phase.CHECKING || newPhase == Phase.DOWNLOADING
-                || newPhase == Phase.VERIFYING || newPhase == Phase.APPLYING
-                || newPhase == Phase.PAUSED;
-        pauseVisible.set(newPhase == Phase.DOWNLOADING);
-        resumeVisible.set(newPhase == Phase.PAUSED);
-        cancelVisible.set(progressing);
-        if (!progressing) {
-            progressText.set(newPhase == Phase.COMPLETED ? "100%" : "0%");
-            speedText.set("");
-        }
     }
 
     // ---------------- 操作 ----------------
@@ -165,20 +117,28 @@ public class GameFullDownloadTask extends AbstractGameDownloadTask<ResourceOpera
 
     @Override
     public boolean pauseTask() {
-        if (phase.get() == Phase.DOWNLOADING) {
+        if (isRunning() && !isPaused()) {
             updateService.pause();
-            setPhase(Phase.PAUSED, null);
+            onFx(() -> {
+                paused.set(true);
+                updateTitle("已暂停");
+            });
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
     public boolean resumeTask() {
-        if (phase.get() == Phase.PAUSED) {
+        if (isPaused()) {
             updateService.resume();
-            setPhase(Phase.DOWNLOADING, null);
+            onFx(() -> {
+                paused.set(false);
+                updateTitle("正在下载游戏资源");
+            });
+            return true;
         }
-        return true;
+        return false;
     }
 
     @Override
@@ -191,60 +151,9 @@ public class GameFullDownloadTask extends AbstractGameDownloadTask<ResourceOpera
         return true;
     }
 
-    // ---------------- 面向资源管理界面暴露的只读属性 ----------------
-
-    public ReadOnlyObjectProperty<Phase> phaseProperty() {
-        return phase.getReadOnlyProperty();
-    }
-
-    public Phase getPhase() {
-        return phase.get();
-    }
-
-    public ReadOnlyStringProperty progressTextProperty() {
-        return progressText.getReadOnlyProperty();
-    }
-
-    public ReadOnlyStringProperty speedTextProperty() {
-        return speedText.getReadOnlyProperty();
-    }
-
-    public ReadOnlyStringProperty detailTextProperty() {
-        return detailText.getReadOnlyProperty();
-    }
-
-    public ReadOnlyBooleanProperty pauseVisibleProperty() {
-        return pauseVisible.getReadOnlyProperty();
-    }
-
-    public ReadOnlyBooleanProperty resumeVisibleProperty() {
-        return resumeVisible.getReadOnlyProperty();
-    }
-
-    public ReadOnlyBooleanProperty cancelVisibleProperty() {
-        return cancelVisible.getReadOnlyProperty();
-    }
-
     // ---------------- 工具 ----------------
-
-    private static Phase mapPhase(ResourceOperationPhase phase) {
-        return switch (phase) {
-            case VERIFYING -> Phase.VERIFYING;
-            case DOWNLOADING -> Phase.DOWNLOADING;
-            case APPLYING -> Phase.APPLYING;
-            default -> Phase.DOWNLOADING;
-        };
-    }
 
     private static boolean hasText(String value) {
         return value != null && !value.isBlank();
-    }
-
-    private static void onFx(Runnable runnable) {
-        if (Platform.isFxApplicationThread()) {
-            runnable.run();
-        } else {
-            Platform.runLater(runnable);
-        }
     }
 }

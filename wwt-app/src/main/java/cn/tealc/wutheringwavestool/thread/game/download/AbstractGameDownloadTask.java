@@ -1,5 +1,10 @@
 package cn.tealc.wutheringwavestool.thread.game.download;
 
+import javafx.application.Platform;
+import javafx.beans.property.ReadOnlyBooleanProperty;
+import javafx.beans.property.ReadOnlyBooleanWrapper;
+import javafx.beans.property.ReadOnlyStringProperty;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.concurrent.Task;
 
 import java.util.Locale;
@@ -11,12 +16,23 @@ import java.util.Locale;
  * 子类在 {@link #call()} 中执行下载，并可按需调用 {@link #updateProgress} /
  * {@link #updateMessage} / {@link #updateTitle} 上抛进度。</p>
  *
+ * <p>公共属性：
+ *   <ul>
+ *     <li>{@link #speedTextProperty()} — 下载速度文本（Task 无此内置概念）</li>
+ *     <li>{@link #pausedProperty()} — 暂停状态（暂停时 Task.state 仍为 RUNNING）</li>
+ *   </ul>
+ *   其余进度/状态/文案均使用 Task 内置属性：{@link #progressProperty()}、
+ *   {@link #messageProperty()}、{@link #titleProperty()}、{@link #stateProperty()}。</p>
+ *
  * @param <T> 任务结果类型
  */
 public abstract class AbstractGameDownloadTask<T> extends Task<T> {
 
     protected static final double EMA_ALPHA = 0.3;
     protected static final long SAMPLE_INTERVAL_NANOS = 500_000_000L;
+
+    protected final ReadOnlyStringWrapper speedText = new ReadOnlyStringWrapper("");
+    protected final ReadOnlyBooleanWrapper paused = new ReadOnlyBooleanWrapper(false);
 
     /** 字节格式化：B / KB / MB / GB / TB。 */
     protected static String formatBytes(long bytes) {
@@ -54,4 +70,18 @@ public abstract class AbstractGameDownloadTask<T> extends Task<T> {
     protected static String progressMessage(long completed, long total) {
         return String.format(Locale.ROOT, "%s / %s", formatBytes(completed), formatBytes(total));
     }
+
+    protected static void onFx(Runnable runnable) {
+        if (Platform.isFxApplicationThread()) {
+            runnable.run();
+        } else {
+            Platform.runLater(runnable);
+        }
+    }
+
+    // ---------------- 公共只读属性 ----------------
+
+    public ReadOnlyStringProperty speedTextProperty() { return speedText.getReadOnlyProperty(); }
+    public ReadOnlyBooleanProperty pausedProperty() { return paused.getReadOnlyProperty(); }
+    public boolean isPaused() { return paused.get(); }
 }

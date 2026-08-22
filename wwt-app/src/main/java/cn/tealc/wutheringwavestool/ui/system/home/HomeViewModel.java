@@ -35,6 +35,7 @@ import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.ReadOnlyStringProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.concurrent.Worker;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -57,6 +58,13 @@ import java.util.stream.Stream;
 public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     private static final Logger LOG = LoggerFactory.getLogger(HomeViewModel.class);
 
+    /** 首页资源更新状态枚举（CSS 伪类驱动）。从 Task 内置属性派生。 */
+    public enum ResourceUpdateState {
+        IDLE, CHECKING, UP_TO_DATE, UPDATE_AVAILABLE,
+        PREPARING, DOWNLOADING, PAUSED, APPLYING,
+        COMPLETED, FAILED, CANCELED
+    }
+
     @Inject
     private GameTimeService gameTimeService;
     @Inject
@@ -68,8 +76,8 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     @Inject
     private TaskManageService taskManageService;
     private ResourceCheckResult checkResult;
-    private final SimpleObjectProperty<GameResourceUpdateTask.UpdateState> resourceUpdateState =
-            new SimpleObjectProperty<>(GameResourceUpdateTask.UpdateState.IDLE);
+    private final SimpleObjectProperty<ResourceUpdateState> resourceUpdateState =
+            new SimpleObjectProperty<>(ResourceUpdateState.IDLE);
     private final SimpleStringProperty resourceStatusText = new SimpleStringProperty();
     private final SimpleStringProperty resourceVersionText = new SimpleStringProperty();
     private final SimpleStringProperty updateActionText = new SimpleStringProperty();
@@ -82,7 +90,7 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     private final SimpleBooleanProperty resourcePauseVisible = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty resourceResumeVisible = new SimpleBooleanProperty(false);
     private final SimpleBooleanProperty resourceCancelVisible = new SimpleBooleanProperty(false);
-    /** 当前已绑定进度的更新任务，避免重复绑定 listener 与遗漏首次状态同步。 */
+    /** 当前已绑定进度的更新任务，避免重复绑定 listener。 */
     private GameResourceUpdateTask boundUpdateTask;
     private SimpleStringProperty gameTimeText = new SimpleStringProperty();
     private SimpleStringProperty gameTimeTipText = new SimpleStringProperty();
@@ -116,7 +124,7 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
         serverSwitchCoordinator.refresh();
         // 回到首页时，若已有进行中的更新任务（可能由资源管理页发起），直接接管其进度展示。
         GameResourceUpdateTask running = currentUpdateTask();
-        if (running != null && isOperating(running.getPhase())) {
+        if (running != null && running.isRunning()) {
             return;
         }
         checkGameResourceUpdate();
@@ -127,24 +135,17 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
         serverSwitchCoordinator.currentSourceProperty().removeListener(serverSourceListener);
     }
 
-    private static boolean isOperating(GameResourceUpdateTask.UpdateState state) {
-        return state == GameResourceUpdateTask.UpdateState.PREPARING
-                || state == GameResourceUpdateTask.UpdateState.DOWNLOADING
-                || state == GameResourceUpdateTask.UpdateState.PAUSED
-                || state == GameResourceUpdateTask.UpdateState.APPLYING;
-    }
-
     /** 首页创建后后台检查远端资源版本，不阻塞页面和游戏启动。 */
     public void checkGameResourceUpdate() {
         GameResourceCheckTask task = new GameResourceCheckTask(updateService);
-        resourceUpdateState.set(GameResourceUpdateTask.UpdateState.CHECKING);
+        resourceUpdateState.set(ResourceUpdateState.CHECKING);
         resourceStatusText.set(LanguageManager.getString("ui.home.resource.checking"));
         resourceStatusVisible.set(true);
         task.setOnSucceeded(event -> {
             ResourceCheckResult result = task.getValue();
             checkResult = result;
             if (result == null || !result.isSuccessful()) {
-                resourceUpdateState.set(GameResourceUpdateTask.UpdateState.FAILED);
+                resourceUpdateState.set(ResourceUpdateState.FAILED);
                 resourceStatusText.set(LanguageManager.getString("ui.home.resource.check_failed"));
                 return;
             }
@@ -153,8 +154,8 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
             boolean upToDate = result.state() == ResourceCheckState.UP_TO_DATE
                     || current.equalsIgnoreCase(latest);
             resourceUpdateState.set(upToDate
-                    ? GameResourceUpdateTask.UpdateState.UP_TO_DATE
-                    : GameResourceUpdateTask.UpdateState.UPDATE_AVAILABLE);
+                    ? ResourceUpdateState.UP_TO_DATE
+                    : ResourceUpdateState.UPDATE_AVAILABLE);
             resourceStatusVisible.set(true);
             updateActionVisible.set(!upToDate);
             if (!upToDate) {
@@ -171,7 +172,7 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
         task.setOnFailed(event -> {
             LOG.warn("检查游戏资源更新失败", task.getException());
             checkResult = null;
-            resourceUpdateState.set(GameResourceUpdateTask.UpdateState.FAILED);
+            resourceUpdateState.set(ResourceUpdateState.FAILED);
             resourceStatusText.set(LanguageManager.getString("ui.home.resource.check_failed"));
         });
         taskManageService.execute(task);
@@ -245,11 +246,6 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
         }
     }
 
-    /**
-     * @return java.util.List<cn.tealc.wutheringwavestool.model.game.GameTime>
-     * @description: 获取数据库中的当天游玩时长时间
-     * @date: 2024/10/8
-     */
     private List<GameTime> getGameTimes() {
         LocalDate localDate = LocalDate.now();
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
@@ -286,6 +282,7 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
         if (task == null) {
             task = new GameResourceUpdateTask(updateService);
             task.setCheckResult(checkResult);
+            bindUpdateTask(task);
             taskManageService.submit(GameResourceUpdateTask.TASK_ID,
                     LanguageManager.getString("ui.home.resource.update_task"),
                     task, task, ManagedTask.TaskCategory.UPDATE);
@@ -333,35 +330,104 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
         return task;
     }
 
+    /**
+     * 将 Task 内置属性绑定到 VM 属性，从 Task 的 state/title/message/paused/progress 派生所有展示状态。
+     */
     private void bindUpdateTask(GameResourceUpdateTask task) {
         boundUpdateTask = task;
-        task.phaseProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                resourceUpdateState.set(newValue);
+        // 状态派生：监听 state、title、paused 三个属性，统一派生 ResourceUpdateState
+        ChangeListener<Object> stateDeriver = (obs, old, val) -> deriveUpdateState(task);
+        task.stateProperty().addListener(stateDeriver);
+        task.titleProperty().addListener(stateDeriver);
+        task.pausedProperty().addListener(stateDeriver);
+        // 进度、详情、按钮显隐：直接从 Task 属性派生
+        task.progressProperty().addListener((o, a, n) -> {
+            double v = n.doubleValue();
+            if (v >= 0) {
+                resourceProgress.set(v);
+                resourceProgressText.set(String.format("%.1f%%", v * 100));
             }
         });
-        task.statusTextProperty().addListener((o, a, n) -> resourceStatusText.set(n));
-        task.detailTextProperty().addListener((o, a, n) -> resourceVersionText.set(n));
-        task.retryVisibleProperty().addListener((o, a, n) -> resourceRetryVisible.set(n));
-        task.statusVisibleProperty().addListener((o, a, n) -> resourceStatusVisible.set(n));
-        task.progressProperty().addListener((o, a, n) -> resourceProgress.set(n.doubleValue()));
-        task.progressTextProperty().addListener((o, a, n) -> resourceProgressText.set(n));
-        task.progressVisibleProperty().addListener((o, a, n) -> resourceProgressVisible.set(n));
-        task.pauseVisibleProperty().addListener((o, a, n) -> resourcePauseVisible.set(n));
-        task.resumeVisibleProperty().addListener((o, a, n) -> resourceResumeVisible.set(n));
-        task.cancelVisibleProperty().addListener((o, a, n) -> resourceCancelVisible.set(n));
-        // 同步已发生的状态（切页或已进行中的任务）。
-        resourceUpdateState.set(task.getPhase());
-        resourceStatusText.set(task.statusTextProperty().get());
-        resourceVersionText.set(task.detailTextProperty().get());
-        resourceRetryVisible.set(task.retryVisibleProperty().get());
-        resourceStatusVisible.set(task.statusVisibleProperty().get());
-        resourceProgress.set(task.getProgress());
-        resourceProgressText.set(task.progressTextProperty().get());
-        resourceProgressVisible.set(task.progressVisibleProperty().get());
-        resourcePauseVisible.set(task.pauseVisibleProperty().get());
-        resourceResumeVisible.set(task.resumeVisibleProperty().get());
-        resourceCancelVisible.set(task.cancelVisibleProperty().get());
+        task.messageProperty().addListener((o, a, n) -> {
+            if (n != null && !n.isBlank()) {
+                resourceVersionText.set(n);
+            }
+        });
+        // 同步初始值
+        deriveUpdateState(task);
+        resourceProgress.set(task.getProgress() >= 0 ? task.getProgress() : 0);
+        if (task.getMessage() != null && !task.getMessage().isBlank()) {
+            resourceVersionText.set(task.getMessage());
+        }
+    }
+
+    /** 从 Task 的 state + title + paused 派生 ResourceUpdateState。 */
+    private void deriveUpdateState(GameResourceUpdateTask task) {
+        Worker.State state = task.getState();
+        boolean paused = task.isPaused();
+        String title = task.getTitle();
+
+        if (state == Worker.State.SUCCEEDED) {
+            resourceUpdateState.set(ResourceUpdateState.COMPLETED);
+            updateProgressVisibility(false);
+            updateControlVisibility(false, false, false);
+            return;
+        }
+        if (state == Worker.State.FAILED) {
+            resourceUpdateState.set(ResourceUpdateState.FAILED);
+            updateProgressVisibility(false);
+            updateControlVisibility(false, false, false);
+            resourceRetryVisible.set(true);
+            resourceStatusVisible.set(true);
+            resourceStatusText.set(title != null ? title : "");
+            return;
+        }
+        if (state == Worker.State.CANCELLED) {
+            resourceUpdateState.set(ResourceUpdateState.CANCELED);
+            updateProgressVisibility(false);
+            updateControlVisibility(false, false, false);
+            resourceStatusVisible.set(true);
+            resourceStatusText.set(title != null ? title : "");
+            return;
+        }
+
+        // state == RUNNING（或 SCHEDULED/READY）
+        if (paused) {
+            resourceUpdateState.set(ResourceUpdateState.PAUSED);
+            resourceStatusText.set(title != null ? title : "");
+            updateControlVisibility(true, false, true);
+            updateProgressVisibility(true);
+            return;
+        }
+
+        // 根据 title 判断当前阶段
+        ResourceUpdateState derived = ResourceUpdateState.PREPARING;
+        if (title != null) {
+            if (title.contains("检查")) derived = ResourceUpdateState.CHECKING;
+            else if (title.contains("准备")) derived = ResourceUpdateState.PREPARING;
+            else if (title.contains("下载")) derived = ResourceUpdateState.DOWNLOADING;
+            else if (title.contains("合成")) derived = ResourceUpdateState.APPLYING;
+        }
+        resourceUpdateState.set(derived);
+        resourceStatusText.set(title != null ? title : "");
+        boolean isDownloading = derived == ResourceUpdateState.DOWNLOADING;
+        boolean isApplying = derived == ResourceUpdateState.APPLYING;
+        updateControlVisibility(isDownloading, false, !isApplying);
+        updateProgressVisibility(true);
+    }
+
+    private void updateControlVisibility(boolean pause, boolean resume, boolean cancel) {
+        resourcePauseVisible.set(pause);
+        resourceResumeVisible.set(resume);
+        resourceCancelVisible.set(cancel);
+    }
+
+    private void updateProgressVisibility(boolean visible) {
+        resourceProgressVisible.set(visible);
+        if (!visible) {
+            resourceProgress.set(0);
+            resourceProgressText.set("0%");
+        }
     }
 
     private static boolean hasText(String value) {
@@ -438,24 +504,12 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     }
 
 
-    /**
-     * @return void
-     * @description: 启动时隐藏窗口
-     * @param:
-     * @date: 2024/11/16
-     */
     private void hideMainWindow() {
         if (Config.setting().isHideWhenGameStart()) {
             WwtApp.getWindow().hide();
         }
     }
 
-    /**
-     * @return void
-     * @description: 第一个参数必须是启动器的路径
-     * @param: params
-     * @date: 2024/10/17
-     */
     private void runExeByCustom(String... params) {
         Thread.startVirtualThread(() -> {
             String[] command2 = {"cmd.exe", "/c", "start", "\"\""}; //权限不够，提权
@@ -488,12 +542,6 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     }
 
 
-    /**
-     * @return void
-     * @description: 默认启动
-     * @param: exe
-     * @date: 2024/11/16
-     */
     private void runExe(File exe) {
         try {
             GameAppListener.getInstance().setStartFromApp(true);
@@ -509,12 +557,6 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
     }
 
 
-    /**
-     * @return void
-     * @description: 删除游戏日志，用于保证每次启动日志都是最新的，不重复的
-     * @param:
-     * @date: 2024/11/16
-     */
     private void deleteLogFiles() {
         File dir = GameResourcesManager.getGameLogDir();
         if (dir != null) {
@@ -526,7 +568,6 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
                     boolean delete = file.delete();
                     LOG.debug("删除日志文件{},状态：{}", file.getName(),delete);
                 }
-                //Arrays.stream(files).forEach(File::delete);
             }else {
                 LOG.info("无旧日志，跳过");
             }
@@ -558,7 +599,7 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
         return startGameBtnDisabled;
     }
 
-    public ReadOnlyObjectProperty<GameResourceUpdateTask.UpdateState> resourceUpdateStateProperty() {
+    public ReadOnlyObjectProperty<ResourceUpdateState> resourceUpdateStateProperty() {
         return resourceUpdateState;
     }
 
