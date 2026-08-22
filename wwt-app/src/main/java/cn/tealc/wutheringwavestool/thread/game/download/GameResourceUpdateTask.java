@@ -102,8 +102,8 @@ public class GameResourceUpdateTask extends AbstractGameDownloadTask<ResourceOpe
             throw new IllegalStateException("更新未返回结果");
         }
         if (!result.successful()) {
-            throw new IllegalStateException(hasText(result.errorMessage())
-                    ? result.errorMessage() : "更新失败");
+            throw new IllegalStateException(GameUpdateService.friendlyError(result.errorCode(),
+                    hasText(result.errorMessage()) ? result.errorMessage() : "更新失败"));
         }
         String newVersion = hasText(checkResult.latestVersion()) ? checkResult.latestVersion() : "-";
         cacheInstalledVersion(newVersion);

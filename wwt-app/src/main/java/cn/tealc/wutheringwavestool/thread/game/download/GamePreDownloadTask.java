@@ -29,26 +29,33 @@ public class GamePreDownloadTask extends AbstractGameDownloadTask<ResourceOperat
 
     @Override
     protected ResourceOperationResult call() throws Exception {
-        updateTitle("正在预下载资源");
-        AtomicReference<ResourceOperationResult> resultRef = new AtomicReference<>();
-        CountDownLatch latch = new CountDownLatch(1);
-        ResourceProgressListener progressListener = this::handleProgress;
-        ResourceCompletionListener completionListener = result -> {
-            resultRef.set(result);
-            latch.countDown();
-        };
-        updateService.preDownload(checkResult, progressListener, completionListener);
-        latch.await();
-        ResourceOperationResult result = resultRef.get();
-        if (result == null) {
-            throw new IllegalStateException("预下载未返回结果");
+        try {
+            updateTitle("正在预下载资源");
+            AtomicReference<ResourceOperationResult> resultRef = new AtomicReference<>();
+            CountDownLatch latch = new CountDownLatch(1);
+            ResourceProgressListener progressListener = this::handleProgress;
+            ResourceCompletionListener completionListener = result -> {
+                resultRef.set(result);
+                latch.countDown();
+            };
+            updateService.preDownload(checkResult, progressListener, completionListener);
+            latch.await();
+            ResourceOperationResult result = resultRef.get();
+            if (result == null) {
+                throw new IllegalStateException("预下载未返回结果");
+            }
+            if (!result.successful()) {
+                throw new IllegalStateException(GameUpdateService.friendlyError(result.errorCode(),
+                        result.errorMessage() != null && !result.errorMessage().isBlank()
+                                ? result.errorMessage() : "预下载失败"));
+            }
+            updateProgress(1, 1);
+            return result;
+        } catch (Exception e) {
+            // 失败时将原因写入 message，供失败面板展示。
+            updateMessage(hasText(e.getMessage()) ? e.getMessage() : "预下载失败");
+            throw e;
         }
-        if (!result.successful()) {
-            throw new IllegalStateException(result.errorMessage() != null && !result.errorMessage().isBlank()
-                    ? result.errorMessage() : "预下载失败");
-        }
-        updateProgress(1, 1);
-        return result;
     }
 
     private void handleProgress(ResourceProgress value) {
@@ -66,6 +73,10 @@ public class GamePreDownloadTask extends AbstractGameDownloadTask<ResourceOperat
     public boolean cancel(boolean mayInterruptIfRunning) {
         updateService.stopPreDownload();
         return super.cancel(mayInterruptIfRunning);
+    }
+
+    private static boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 
     // ---------------- TaskControl ----------------

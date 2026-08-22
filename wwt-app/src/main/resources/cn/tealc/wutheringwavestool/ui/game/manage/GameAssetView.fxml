@@ -161,6 +161,14 @@
                                                 <FontIcon iconLiteral="mdomz-stop" iconSize="19" />
                                              </graphic>
                                           </Button>
+                                          <Button fx:id="resourceRetryBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#retry" styleClass="flat,asset-control-button">
+                                             <tooltip>
+                                                <Tooltip text="%ui.game_manager.asset.retry" />
+                                             </tooltip>
+                                             <graphic>
+                                                <FontIcon iconLiteral="mdomz-refresh" iconSize="19" />
+                                             </graphic>
+                                          </Button>
                                        </children>
                                      </HBox>
                                   </children>
@@ -259,6 +267,14 @@
                                                       </tooltip>
                                                       <graphic>
                                                          <FontIcon iconLiteral="mdomz-stop" iconSize="19" />
+                                                      </graphic>
+                                                   </Button>
+                                                   <Button fx:id="downloadRetryBtn" contentDisplay="GRAPHIC_ONLY" mnemonicParsing="false" onAction="#retry" styleClass="flat,asset-control-button">
+                                                      <tooltip>
+                                                         <Tooltip text="%ui.game_manager.asset.retry" />
+                                                      </tooltip>
+                                                      <graphic>
+                                                         <FontIcon iconLiteral="mdomz-refresh" iconSize="19" />
                                                       </graphic>
                                                    </Button>
                                                 </children>

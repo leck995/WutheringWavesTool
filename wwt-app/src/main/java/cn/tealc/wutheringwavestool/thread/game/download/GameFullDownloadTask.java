@@ -60,12 +60,19 @@ public class GameFullDownloadTask extends AbstractGameDownloadTask<ResourceOpera
 
     @Override
     protected ResourceOperationResult call() throws Exception {
-        setPhase(Phase.CHECKING, "正在检查更新");
-        ResourceCheckResult checkResult = updateService.checkUpdate();
-        if (checkResult == null || !checkResult.isSuccessful()) {
-            throw new IllegalStateException("检查游戏更新失败");
+        try {
+            setPhase(Phase.CHECKING, "正在检查更新");
+            ResourceCheckResult checkResult = updateService.checkUpdate();
+            if (checkResult == null || !checkResult.isSuccessful()) {
+                throw new IllegalStateException("检查游戏更新失败");
+            }
+            return runFullDownload(checkResult);
+        } catch (Exception e) {
+            // 失败时把原因写入 detailText，供失败面板/重试界面展示。
+            final String message = hasText(e.getMessage()) ? e.getMessage() : "全量下载失败";
+            onFx(() -> detailText.set(message));
+            throw e;
         }
-        return runFullDownload(checkResult);
     }
 
     private ResourceOperationResult runFullDownload(ResourceCheckResult checkResult) throws Exception {
@@ -84,8 +91,8 @@ public class GameFullDownloadTask extends AbstractGameDownloadTask<ResourceOpera
             throw new IllegalStateException("全量下载未返回结果");
         }
         if (!result.successful()) {
-            throw new IllegalStateException(hasText(result.errorMessage())
-                    ? result.errorMessage() : "全量下载失败");
+            throw new IllegalStateException(GameUpdateService.friendlyError(result.errorCode(),
+                    hasText(result.errorMessage()) ? result.errorMessage() : "全量下载失败"));
         }
         updateProgress(1, 1);
         setPhase(Phase.COMPLETED, "下载完成");

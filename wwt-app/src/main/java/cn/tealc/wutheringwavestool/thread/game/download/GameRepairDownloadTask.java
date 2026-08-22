@@ -29,26 +29,33 @@ public class GameRepairDownloadTask extends AbstractGameDownloadTask<ResourceOpe
 
     @Override
     protected ResourceOperationResult call() throws Exception {
-        updateTitle("正在校验修复");
-        AtomicReference<ResourceOperationResult> resultRef = new AtomicReference<>();
-        CountDownLatch latch = new CountDownLatch(1);
-        ResourceProgressListener progressListener = this::handleProgress;
-        ResourceCompletionListener completionListener = result -> {
-            resultRef.set(result);
-            latch.countDown();
-        };
-        updateService.repair(checkResult, progressListener, completionListener);
-        latch.await();
-        ResourceOperationResult result = resultRef.get();
-        if (result == null) {
-            throw new IllegalStateException("校验修复未返回结果");
+        try {
+            updateTitle("正在校验修复");
+            AtomicReference<ResourceOperationResult> resultRef = new AtomicReference<>();
+            CountDownLatch latch = new CountDownLatch(1);
+            ResourceProgressListener progressListener = this::handleProgress;
+            ResourceCompletionListener completionListener = result -> {
+                resultRef.set(result);
+                latch.countDown();
+            };
+            updateService.repair(checkResult, progressListener, completionListener);
+            latch.await();
+            ResourceOperationResult result = resultRef.get();
+            if (result == null) {
+                throw new IllegalStateException("校验修复未返回结果");
+            }
+            if (!result.successful()) {
+                throw new IllegalStateException(GameUpdateService.friendlyError(result.errorCode(),
+                        result.errorMessage() != null && !result.errorMessage().isBlank()
+                                ? result.errorMessage() : "校验修复失败"));
+            }
+            updateProgress(1, 1);
+            return result;
+        } catch (Exception e) {
+            // 失败时将原因写入 message，供失败面板展示。
+            updateMessage(hasText(e.getMessage()) ? e.getMessage() : "校验修复失败");
+            throw e;
         }
-        if (!result.successful()) {
-            throw new IllegalStateException(result.errorMessage() != null && !result.errorMessage().isBlank()
-                    ? result.errorMessage() : "校验修复失败");
-        }
-        updateProgress(1, 1);
-        return result;
     }
 
     private void handleProgress(ResourceProgress value) {
@@ -66,6 +73,10 @@ public class GameRepairDownloadTask extends AbstractGameDownloadTask<ResourceOpe
     public boolean cancel(boolean mayInterruptIfRunning) {
         updateService.stopRepair();
         return super.cancel(mayInterruptIfRunning);
+    }
+
+    private static boolean hasText(String value) {
+        return value != null && !value.isBlank();
     }
 
     // ---------------- TaskControl ----------------

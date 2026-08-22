@@ -3,10 +3,13 @@ package cn.tealc.wutheringwavestool.ui.game.manage;
 import atlantafx.base.controls.ToggleSwitch;
 import atlantafx.base.theme.Styles;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
+import cn.tealc.wutheringwavestool.ui.component.dialog.NewAlter;
 import cn.tealc.wutheringwavestool.ui.component.dialog.NewDialog;
 import cn.tealc.wutheringwavestool.util.AlterBuilder;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
+import cn.tealc.wutheringwavestool.util.NewAlertBuilder;
 import cn.tealc.wutheringwavestool.model.SourceType;
+import cn.tealc.wutheringwavestool.service.GameUpdateService;
 import com.jfoenixN.controls.JFXDialogLayout;
 import de.saxsys.mvvmfx.*;
 import javafx.beans.binding.Bindings;
@@ -113,11 +116,15 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     @FXML
     private Button resourceStopBtn;
     @FXML
+    private Button resourceRetryBtn;
+    @FXML
     private Button downloadPauseBtn;
     @FXML
     private Button downloadResumeBtn;
     @FXML
     private Button downloadStopBtn;
+    @FXML
+    private Button downloadRetryBtn;
     @FXML
     private VBox cacheOperationFeedback;
     @FXML
@@ -174,15 +181,19 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         bindVisibility(resourceProgressSection, viewModel.resourceOperationOperatingProperty());
         bindVisibility(downloadProgressSection, viewModel.fullDownloadOperatingProperty());
         bindVisibility(resourceOperationControls, viewModel.resourceOperationOperatingProperty().and(
-                viewModel.pauseAvailableProperty().or(viewModel.stopAvailableProperty())));
+                viewModel.pauseAvailableProperty().or(viewModel.stopAvailableProperty()).or(
+                        viewModel.retryAvailableProperty())));
         bindVisibility(downloadOperationControls, viewModel.fullDownloadOperatingProperty().and(
-                viewModel.pauseAvailableProperty().or(viewModel.stopAvailableProperty())));
+                viewModel.pauseAvailableProperty().or(viewModel.stopAvailableProperty()).or(
+                        viewModel.retryAvailableProperty())));
         bindVisibility(resourcePauseSeparator, viewModel.pauseAvailableProperty());
         bindVisibility(resourcePauseControls, viewModel.pauseAvailableProperty());
         bindVisibility(resourceStopBtn, viewModel.stopAvailableProperty());
+        bindVisibility(resourceRetryBtn, viewModel.retryAvailableProperty());
         bindVisibility(downloadPauseSeparator, viewModel.pauseAvailableProperty());
         bindVisibility(downloadPauseControls, viewModel.pauseAvailableProperty());
         bindVisibility(downloadStopBtn, viewModel.stopAvailableProperty());
+        bindVisibility(downloadRetryBtn, viewModel.retryAvailableProperty());
         bindVisibility(resourcePauseBtn, Bindings.equal(
                 viewModel.operationStateProperty(), GameAssetViewModel.OperationState.RUNNING)
                 .and(viewModel.pauseAvailableProperty()));
@@ -229,6 +240,8 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
                 Bindings.equal(viewModel.operationStateProperty(), GameAssetViewModel.OperationState.IDLE)
                         .or(Bindings.equal(
                                 viewModel.operationStateProperty(), GameAssetViewModel.OperationState.STOPPING)));
+        resourceRetryBtn.disableProperty().bind(viewModel.retryAvailableProperty().not());
+        downloadRetryBtn.disableProperty().bind(viewModel.retryAvailableProperty().not());
 
         viewModel.operationStateProperty().addListener((observable, oldState, newState) ->
                 updateOperationStateStyle(newState));
@@ -448,23 +461,57 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
         chooser.setTitle(LanguageManager.getString("ui.game_manager.asset.dir"));
         File selected = chooser.showDialog(assetRoot.getScene().getWindow());
         if (selected != null) {
-            viewModel.download(selected.getAbsolutePath());
+            viewModel.checkDiskSpaceAndDownload(selected.getAbsolutePath(), (requiredBytes, freeBytes) ->
+                    showDiskSpaceWarning("ui.game_manager.asset.disk_space_download",
+                            requiredBytes, freeBytes,
+                            () -> viewModel.download(selected.getAbsolutePath())));
         }
     }
 
     @FXML
     void update(ActionEvent event) {
-        viewModel.update();
+        viewModel.checkDiskSpaceAndUpdate((requiredBytes, freeBytes) ->
+                showDiskSpaceWarning("ui.game_manager.asset.disk_space_update",
+                        requiredBytes, freeBytes,
+                        () -> viewModel.update()));
     }
 
     @FXML
     void repair(ActionEvent event) {
-        viewModel.repair();
+        // 修复跳过磁盘空间预检：真实下载清单需 MD5 校验后才能得出，不宜预检阶段重跑。
+        viewModel.checkDiskSpaceAndRepair();
     }
 
     @FXML
     void preDownload(ActionEvent event) {
-        viewModel.preDownload();
+        viewModel.checkDiskSpaceAndPreDownload((requiredBytes, freeBytes) ->
+                showDiskSpaceWarning("ui.game_manager.asset.disk_space_predownload",
+                        requiredBytes, freeBytes,
+                        () -> viewModel.preDownload()));
+    }
+
+    /**
+     * 弹出磁盘空间不足确认对话框（阻塞式，等待用户选择）。
+     * 显示所需空间与当前可用空间，用户点「继续」执行 onContinue，点「取消」则放弃操作。
+     */
+    private void showDiskSpaceWarning(String messageKey, long requiredBytes, long freeBytes,
+            Runnable onContinue) {
+        String template = LanguageManager.getString(messageKey);
+        String message = String.format(template,
+                GameUpdateService.formatBytes(requiredBytes),
+                GameUpdateService.formatBytes(freeBytes));
+        NewAlter alert = NewAlertBuilder.create()
+                .style(NewAlter.AlertStyle.WARNING)
+                .title(LanguageManager.getString("ui.game_manager.asset.disk_space_warning"))
+                .content(message)
+                .owner(assetRoot.getScene().getWindow())
+                .buttons(ButtonType.OK, ButtonType.CANCEL)
+                .build();
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                onContinue.run();
+            }
+        });
     }
 
     @FXML
@@ -480,6 +527,11 @@ public class GameAssetView implements FxmlView<GameAssetViewModel>, Initializabl
     @FXML
     void stop(ActionEvent event) {
         viewModel.stop();
+    }
+
+    @FXML
+    void retry(ActionEvent event) {
+        viewModel.retry();
     }
 
     @FXML

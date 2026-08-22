@@ -44,6 +44,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.util.function.BiConsumer;
 
 /**
  * 「游戏资源管理」ViewModel：全量下载 + 增量更新 + 预下载 + 校验修复合一。
@@ -63,6 +65,14 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         STOPPING
     }
 
+    /** 当前操作的种类，用于失败后的重试路径与失败文案。 */
+    private enum OperationKind {
+        FULL_DOWNLOAD,
+        UPDATE,
+        REPAIR,
+        PREDOWNLOAD
+    }
+
     @Inject
     private GameUpdateService updateService;
     @Inject
@@ -80,6 +90,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
     private final BooleanProperty operating = new SimpleBooleanProperty(false);
     private final BooleanProperty pauseAvailable = new SimpleBooleanProperty(false);
     private final BooleanProperty stopAvailable = new SimpleBooleanProperty(false);
+    private final BooleanProperty retryAvailable = new SimpleBooleanProperty(false);
     private final BooleanProperty fullDownloadOperating = new SimpleBooleanProperty(false);
     private final BooleanProperty resourceOperationOperating = new SimpleBooleanProperty(false);
     private final ReadOnlyObjectWrapper<OperationState> operationState =
@@ -112,6 +123,9 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
             new SimpleObjectProperty<>(SourceType.DEFAULT);
 
     private ResourceCheckResult checkResult;
+    private OperationKind lastFailedKind;
+    /** 全量下载前 checkUpdate + prepareSize 的准备阶段（尚未真正开始下载）。 */
+    private boolean preparingDownload;
 
     private long checkSequence;
     private long activeCheckId = NO_CHECK;
@@ -211,9 +225,11 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     /** 全量下载：校验空目录后登记并启动 {@link GameFullDownloadTask}。 */
     public void download(String dir) {
-        if (operating.get()) {
+        // 准备阶段（checkUpdate+prepareSize）进行中时允许直接进入下载。
+        if (operating.get() && !preparingDownload) {
             return;
         }
+        endFullDownloadPreparing(); // 结束任何残留准备态，避免占用 operating。
         if (dir == null || dir.isBlank()) {
             warnNoDownloadDir();
             return;
@@ -247,12 +263,11 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                     LanguageManager.getString("ui.game_manager.asset.download"),
                     task, task, ManagedTask.TaskCategory.DOWNLOAD);
         }
-        attachOperation(task, true, this::refreshInstalledState);
+        attachOperation(task, true, OperationKind.FULL_DOWNLOAD, this::refreshInstalledState, null);
         syncFullDownloadState(task.phaseProperty().get());
     }
 
     // ==================== 增量更新 ====================
-
     /** 启动增量更新（已安装版本的 patch 更新）。 */
     public void update() {
         if (operating.get()) {
@@ -272,7 +287,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                     LanguageManager.getString("ui.game_manager.asset.update"),
                     task, task, ManagedTask.TaskCategory.UPDATE);
         }
-        attachOperation(task, false, this::refreshAfterAssetChange);
+        attachOperation(task, false, OperationKind.UPDATE, this::refreshAfterAssetChange, null);
         syncUpdateState(task.phaseProperty().get());
     }
 
@@ -289,7 +304,7 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         status.set(LanguageManager.getString("ui.game_manager.asset.repairing"));
         GameRepairDownloadTask task = new GameRepairDownloadTask(updateService, checkResult);
         bindResourceTask(task);
-        attachOperation(task, false, this::refreshAfterAssetChange);
+        attachOperation(task, false, OperationKind.REPAIR, this::refreshAfterAssetChange, null);
         taskManageService.submit(managedId(task), managedName(task), task, task,
                 ManagedTask.TaskCategory.REPAIR);
     }
@@ -315,22 +330,188 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         status.set(LanguageManager.getString("ui.game_manager.asset.predownloading"));
         GamePreDownloadTask task = new GamePreDownloadTask(updateService, result);
         bindResourceTask(task);
-        attachOperation(task, false, this::refreshAfterAssetChange);
+        attachOperation(task, false, OperationKind.PREDOWNLOAD, this::refreshAfterAssetChange, null);
         taskManageService.submit(managedId(task), managedName(task), task, task,
                 ManagedTask.TaskCategory.PREDOWNLOAD);
     }
 
+    // ==================== 磁盘空间校验 ====================
+
+    /**
+     * 磁盘空间校验 + 增量更新。先跑 PrepareTask 获取精确下载大小，校验磁盘空间，
+     * 不足时回调 View 弹确认框（携带所需空间与可用空间）。
+     */
+    public void checkDiskSpaceAndUpdate(BiConsumer<Long, Long> onInsufficient) {
+        if (operating.get() || checkResult == null) {
+            warnCheckFirst();
+            return;
+        }
+        runDiskSpaceCheck(false, this::update, onInsufficient);
+    }
+
+    /**
+     * 校验修复：跳过磁盘空间预检。
+     * 修复的真实下载清单来自 CheckFileTask 的 MD5 校验结果（wrongFileInfos），
+     * 只有校验完成后才能算出真实所需空间；而校验本身耗时很长，不宜在预检阶段重跑。
+     * CDN 层内部仍有空间兜底检查。
+     */
+    public void checkDiskSpaceAndRepair() {
+        repair();
+    }
+
+    /**
+     * 磁盘空间校验 + 预下载。
+     */
+    public void checkDiskSpaceAndPreDownload(BiConsumer<Long, Long> onInsufficient) {
+        if (operating.get() || checkResult == null) {
+            warnCheckFirst();
+            return;
+        }
+        if (checkResult.isPreDownloadComplete()) {
+            return;
+        }
+        if (!checkResult.hasUpdatePlan() || !updateService.isPreDownloadAvailable(checkResult)) {
+            warnCheckFirst();
+            return;
+        }
+        runDiskSpaceCheck(true, this::preDownload, onInsufficient);
+    }
+
+    /**
+     * 磁盘空间校验 + 全量下载。
+     * 全量下载无现成 checkResult，需先 checkUpdate 获取，再 prepare 取大小。
+     * 先复用 download() 的目录校验与安装登记逻辑，再做空间预检。
+     */
+    public void checkDiskSpaceAndDownload(String dir, BiConsumer<Long, Long> onInsufficient) {
+        if (operating.get()) {
+            return;
+        }
+        if (dir == null || dir.isBlank()) {
+            warnNoDownloadDir();
+            return;
+        }
+        File saveDir = new File(dir);
+        if ((!saveDir.exists() && !saveDir.mkdirs()) || !saveDir.isDirectory() || !saveDir.canWrite()) {
+            warnNoDownloadDir();
+            return;
+        }
+        if (hasText(updateService.getInstalledVersion(saveDir.toPath()))) {
+            NotificationManager.message(MessageInfo.warning(
+                    LanguageManager.getString("ui.game_manager.asset.dir_not_empty")));
+            return;
+        }
+        // 全量下载前的准备阶段：checkUpdate + prepareSize 可能耗时较长，先给出 UI 反馈，
+        // 避免「选择目录后无反应」的观感。真正进入下载后再由 download() 接管展示态。
+        beginFullDownloadPreparing();
+        // 登记并激活目录：清空已装版本，使 legacy 检查进入 STATE_NEED_DOWNLOAD（全量下载）。
+        SourceType selectedSource = downloadSource.get();
+        installationManager.configureInstallation(selectedSource, saveDir.toPath(), true);
+        Config.setting().setGameInstalledVersion("");
+        Config.setting().save();
+        serverSwitchCoordinator.refresh();
+        cancelCheckTask();
+        // 全量下载无现成 checkResult，需先 check 再 prepare。
+        Task<ResourceCheckResult> checkTask = new Task<>() {
+            @Override
+            protected ResourceCheckResult call() {
+                return updateService.checkUpdate();
+            }
+        };
+        checkTask.setOnSucceeded(e -> {
+            ResourceCheckResult result = checkTask.getValue();
+            if (result == null || !result.isSuccessful()) {
+                endFullDownloadPreparing();
+                download(dir); // check 失败，直接走现有流程
+                return;
+            }
+            this.checkResult = result;
+            // prepare 阶段仍保持「准备中」展示；空间充足/继续下载时才结束准备态并真正下载。
+            runDiskSpaceCheck(false, () -> {
+                endFullDownloadPreparing();
+                download(dir);
+            }, onInsufficient);
+        });
+        checkTask.setOnFailed(e -> {
+            endFullDownloadPreparing();
+            download(dir);
+        });
+        taskManageService.execute(checkTask);
+    }
+
+    /** 进入全量下载准备阶段：置忙并显示下载区「准备中」，避免准备期间无 UI 反馈。 */
+    private void beginFullDownloadPreparing() {
+        preparingDownload = true;
+        operating.set(true);
+        fullDownloadOperating.set(true);
+        downloadProgress.set(0);
+        downloadProgressText.set("0%");
+        downloadTip.set(LanguageManager.getString("ui.game_manager.asset.prepare_download"));
+        status.set(LanguageManager.getString("ui.game_manager.asset.prepare_download"));
+    }
+
+    /** 结束全量下载准备阶段：复位准备态与下载区展示，交由真正下载接管。 */
+    private void endFullDownloadPreparing() {
+        preparingDownload = false;
+        operating.set(false);
+        fullDownloadOperating.set(false);
+        downloadTip.set("");
+    }
+
+    /**
+     * 公共方法：后台跑 PrepareTask 获取下载大小，校验磁盘空间。
+     *
+     * @param isPreDownload 预下载 vs 更新/修复/全量
+     * @param onSufficient   空间足够时执行（调用现有 update/repair/preDownload/download）
+     * @param onInsufficient 空间不足时回调 View（携带所需空间与可用空间，弹确认框）
+     */
+    private void runDiskSpaceCheck(boolean isPreDownload, Runnable onSufficient,
+            BiConsumer<Long, Long> onInsufficient) {        ResourceCheckResult result = checkResult;
+        Task<Long> checkTask = new Task<>() {
+            @Override
+            protected Long call() {
+                return updateService.prepareSize(result, isPreDownload);
+            }
+        };
+        checkTask.setOnSucceeded(e -> {
+            // 准备阶段（checkUpdate+prepareSize）到此结束；无论空间是否充足都复位，
+            // 避免用户取消弹窗后停留在残留的「准备中」展示。
+            endFullDownloadPreparing();
+            long requiredSize = checkTask.getValue();
+            if (requiredSize <= 0) {
+                onSufficient.run(); // prepare 失败，不阻塞用户
+                return;
+            }
+            long freeSpace = updateService.getCacheAvailableSpace();
+            if (freeSpace >= requiredSize) {
+                onSufficient.run();
+            } else {
+                onInsufficient.accept(requiredSize, freeSpace);
+            }
+        });
+        checkTask.setOnFailed(e -> {
+            endFullDownloadPreparing();
+            onSufficient.run();
+        });
+        taskManageService.execute(checkTask);
+    }
+
     // ==================== 统一操作生命周期 ====================
 
-    /** 挂接一个操作任务：设置运行态，并在任务终结时复位。 */
-    private void attachOperation(Task<?> task, boolean download, Runnable onSuccess) {
+    /**
+     * 挂接一个操作任务：设置运行态；成功时复位并回调，失败/取消时保留失败态以便展示原因与重试按钮。
+     * 失败具体文案由各 Task 上抛（FAILED 阶段 / 异常），此处只负责让面板在失败后停住而非消失。
+     */
+    private void attachOperation(Task<?> task, boolean download, OperationKind kind,
+            Runnable onSuccess, Runnable onFailure) {
         boolean canPause = task instanceof TaskControl control && control.supportsPause();
         activeTask = task;
+        lastFailedKind = null;
         operating.set(true);
         fullDownloadOperating.set(download);
         resourceOperationOperating.set(!download);
         pauseAvailable.set(canPause);
         stopAvailable.set(true);
+        retryAvailable.set(false);
         operationState.set(OperationState.RUNNING);
         task.stateProperty().addListener((observable, oldState, newState) -> {
             if (newState == Worker.State.SUCCEEDED) {
@@ -342,19 +523,47 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                 }
             } else if (newState == Worker.State.FAILED || newState == Worker.State.CANCELLED) {
                 if (activeTask == task) {
-                    detachOperation();
+                    onOperationEnded(kind, download, newState, onFailure);
                 }
             }
         });
     }
 
+    /**
+     * 操作失败/取消后的显示态。FAILED 保留进度区展示失败原因并提供「重试」，由用户主动重试后才复位；
+     * CANCELLED（用户主动停止）直接复位到就绪。
+     */
+    private void onOperationEnded(OperationKind kind, boolean download, Worker.State state,
+            Runnable onFailure) {
+        if (state == Worker.State.CANCELLED) {
+            detachOperation();
+            return;
+        }
+        activeTask = null;
+        lastFailedKind = kind;
+        operating.set(true);
+        fullDownloadOperating.set(download);
+        resourceOperationOperating.set(!download);
+        pauseAvailable.set(false);
+        stopAvailable.set(false);
+        retryAvailable.set(true);
+        operationState.set(OperationState.IDLE);
+        downloadSpeed.set("");
+        downloadDownloadSpeed.set("");
+        if (onFailure != null) {
+            onFailure.run();
+        }
+    }
+
     private void detachOperation() {
         activeTask = null;
+        lastFailedKind = null;
         operating.set(false);
         fullDownloadOperating.set(false);
         resourceOperationOperating.set(false);
         pauseAvailable.set(false);
         stopAvailable.set(false);
+        retryAvailable.set(false);
         operationState.set(OperationState.IDLE);
         downloadSpeed.set("");
         downloadDownloadSpeed.set("");
@@ -385,6 +594,39 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
         if (task instanceof TaskControl control) {
             control.cancelTask();
         }
+    }
+
+    /**
+     * 重试失败的操作。先复位失败显示态，再按失败类型重新发起任务；
+     * 重试是否可执行由 {@link #retryAvailable} 决定（仅在失败的显示态下为 true）。
+     */
+    public void retry() {
+        if (!retryAvailable.get()) {
+            return;
+        }
+        OperationKind kind = lastFailedKind;
+        if (kind == null) {
+            return;
+        }
+        // 退出失败显示态，使 update/repair/preDownload/download 的 operating 校验放行。
+        detachOperation();
+        switch (kind) {
+            case FULL_DOWNLOAD -> retryFullDownload();
+            case UPDATE -> update();
+            case REPAIR -> repair();
+            case PREDOWNLOAD -> preDownload();
+        }
+    }
+
+    /** 全量下载重试：复用已登记的目标目录重新发起下载。 */
+    private void retryFullDownload() {
+        SourceType source = downloadSource.get();
+        Path dir = installationManager.gameDirectory(GameInstallationManager.editionOf(source)).orElse(null);
+        if (dir == null) {
+            warnNoDownloadDir();
+            return;
+        }
+        download(dir.toString());
     }
 
     // ==================== 检查更新 ====================
@@ -633,7 +875,20 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
                     latestVersion.set(newVersion);
                 }
             }
-            case FAILED, CANCELED -> {
+            case FAILED -> {
+                // 失败保留更新操作区：展示原因并提供重试（由 attachOperation 的终态监听统一复位）。
+                showUpdate.set(false);
+                lastFailedKind = OperationKind.UPDATE;
+                operating.set(true);
+                fullDownloadOperating.set(false);
+                resourceOperationOperating.set(true);
+                retryAvailable.set(true);
+                status.set(updateTask.statusTextProperty().get());
+                tip.set(updateTask.detailTextProperty().get());
+                progress.set(updateTask.progressProperty().get());
+                progressText.set(updateTask.progressTextProperty().get());
+            }
+            case CANCELED -> {
                 status.set(updateTask.statusTextProperty().get());
                 tip.set(updateTask.detailTextProperty().get());
                 showUpdate.set(false);
@@ -786,6 +1041,10 @@ public class GameAssetViewModel extends BaseViewModel implements SceneLifecycle 
 
     public BooleanProperty stopAvailableProperty() {
         return stopAvailable;
+    }
+
+    public ReadOnlyBooleanProperty retryAvailableProperty() {
+        return retryAvailable;
     }
 
     public ReadOnlyBooleanProperty fullDownloadOperatingProperty() {

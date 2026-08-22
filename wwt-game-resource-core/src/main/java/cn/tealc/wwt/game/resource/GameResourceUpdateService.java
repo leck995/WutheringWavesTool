@@ -3,10 +3,13 @@ package cn.tealc.wwt.game.resource;
 import cn.tealc.wwt.game.resource.internal.legacy.config.ResourceConfigManager;
 import cn.tealc.wwt.game.resource.internal.legacy.flow.ResUpdateModule;
 import cn.tealc.wwt.game.resource.internal.legacy.model.CheckUpdateResult;
+import cn.tealc.wwt.game.resource.internal.legacy.model.DownloadInfo;
 import cn.tealc.wwt.game.resource.internal.legacy.model.LauncherConfig;
 import cn.tealc.wwt.game.resource.internal.legacy.model.ResStateInfo;
+import cn.tealc.wwt.game.resource.internal.legacy.model.UpdateInfo;
 import cn.tealc.wwt.game.resource.internal.legacy.model.UpdateProgressInfo;
 import cn.tealc.wwt.game.resource.internal.legacy.model.UpdateResult;
+import cn.tealc.wwt.game.resource.internal.legacy.task.PrepareTask;
 import cn.tealc.wwt.game.resource.model.ResourceCheckResult;
 import cn.tealc.wwt.game.resource.model.ResourceCheckState;
 import cn.tealc.wwt.game.resource.model.ResourceOperationResult;
@@ -34,6 +37,34 @@ public final class GameResourceUpdateService {
     private static final Logger LOG = LoggerFactory.getLogger(GameResourceUpdateService.class);
     private static final String HPATCHZ_RESOURCE = "/kr/hpatchz.exe";
 
+    // ==================== 公开错误码 ====================
+    // 下载阶段错误（CDN / 分块下载），对应 internal/legacy/download/DownloadError。
+    public static final int ERROR_NETWORK = 7001001;
+    public static final int ERROR_DOWNLOAD_UNKNOWN = 7001002;
+    public static final int ERROR_DELETE_FILE = 7001003;
+    public static final int ERROR_NOT_SUPPORT_RANGE = 7001004;
+    public static final int ERROR_GET_CONTENT_LENGTH = 7001005;
+    public static final int ERROR_BUILD_CHUNK_TASKS = 7001006;
+    public static final int ERROR_MERGE_CHUNK = 7001007;
+    public static final int ERROR_PARSE_SINGLE_TASK = 7001008;
+    public static final int ERROR_CHECK_MD5 = 7001009;
+    public static final int ERROR_CREATE_FILE_STREAM = 7001011;
+    public static final int ERROR_MAKE_DIR = 7001012;
+    public static final int ERROR_WRITE_FILE = 7001013;
+    public static final int ERROR_CONTENT_ENCODING = 7001014;
+    public static final int ERROR_DISK_SPACE_CHECK = 7001015;
+    public static final int ERROR_STREAM_READ_TIMEOUT = 700106;
+
+    // 应用/合成阶段错误（HRESULT 文件错误 + Patch），对应 internal/legacy/model/UpdateResult 与 PatchExecutor。
+    public static final int ERROR_FILE_OCCUPANCY = -2147024864;
+    public static final int ERROR_DISK_NOT_ENOUGH_SPACE = -2147024784;
+    public static final int ERROR_FILE_PERMISSION_DENY = -2147024891;
+    public static final int ERROR_FILE_MISSING = -2147024894;
+    public static final int ERROR_APPLY_MD5_NOT_MATCH = 7002017;
+    public static final int ERROR_PATCH_UNKNOWN = 7002015;
+    public static final int ERROR_PATCH_ALREADY_RUNNING = 7002016;
+    public static final int ERROR_PATCH_START_FAILED = 7002019;
+
     private LegacySession session;
 
     public synchronized void initialize(ResourceContext context) {
@@ -59,6 +90,41 @@ public final class GameResourceUpdateService {
     public synchronized String installedVersion(ResourceContext context) {
         var config = sessionFor(context).configManager.getDownloadConfig();
         return config != null && config.version != null ? config.version : "";
+    }
+
+    /**
+     * 独立执行 PrepareTask，返回本次下载所需磁盘空间（bytes）。
+     * 调用方需在后台线程中调用此方法（会下载索引文件，阻塞）。
+     *
+     * @param context      资源上下文（与 check/update 同源）
+     * @param checked      check 阶段的 ResourceCheckResult
+     * @param isPreDownload true=用 predownloadUpdateInfo（预下载），false=用 updateInfo（更新/修复/全量）
+     * @return 所需空间字节数；-1 表示 prepare 失败或无可用清单
+     */
+    public long prepareSize(ResourceContext context, ResourceCheckResult checked, boolean isPreDownload) {
+        LegacySession active;
+        CheckUpdateResult legacy;
+        synchronized (this) {
+            active = sessionFor(context);
+            legacy = active.checks.get(checked.checkId());
+        }
+        if (legacy == null) {
+            return -1;
+        }
+        UpdateInfo updateInfo = isPreDownload ? legacy.predownloadUpdateInfo : legacy.updateInfo;
+        if (updateInfo == null) {
+            return -1;
+        }
+        PrepareTask prepareTask = new PrepareTask(active.configManager, updateInfo, isPreDownload);
+        PrepareTask.PrepareResult result = prepareTask.run();
+        if (!result.success || result.downloadInfoList == null) {
+            return -1;
+        }
+        long total = 0;
+        for (DownloadInfo info : result.downloadInfoList) {
+            total += info.fileSize;
+        }
+        return total;
     }
 
     public void update(ResourceContext context, ResourceCheckResult checked,
