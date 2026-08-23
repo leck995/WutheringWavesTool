@@ -479,17 +479,13 @@ public class HomeViewModel extends BaseViewModel implements SceneLifecycle {
             }
 
             if (exe != null) {
-                if (Config.setting().isUserAdvanceGameSettings()) { //使用高级启动设置
-                    List<String> paramsList = new ArrayList<>(installationManager.activeStartUpParams());
-                    if (!paramsList.isEmpty()) {
-                        paramsList.addFirst(exe.getAbsolutePath());
-                        String[] newArray = new String[paramsList.size()];
-                        paramsList.toArray(newArray);
-                        runExeByCustom(newArray);
-                    } else {
-                        runExe(exe);
-                    }
-                } else { //默认启动
+                List<String> paramsList = new ArrayList<>(installationManager.activeStartUpParams());
+                if (!paramsList.isEmpty()) {
+                    paramsList.addFirst(exe.getAbsolutePath());
+                    String[] newArray = new String[paramsList.size()];
+                    paramsList.toArray(newArray);
+                    runExeByCustom(newArray);
+                } else { //无自定义参数时走默认启动
                     runExe(exe);
                 }
                 hideMainWindow();
