@@ -49,9 +49,16 @@ public abstract class AbstractGameDownloadTask<T> extends Task<T> {
         return String.format(Locale.ROOT, "%.1f %s", value, units[unit]);
     }
 
-    /** 计算一次 EMA 平滑后的字节/秒瞬时速率，并返回格式化文本（不足 1 字节/秒返回空串）。 */
+    /** 计算一次 EMA 平滑后的字节/秒瞬时速率，并返回格式化文本（不足 1 字节/秒返回空串）。
+     * 首次调用时仅记录初始基准值，不计算速率，避免续传场景下 completedBytes 远大于 0 导致速率虚高。 */
     protected String updateEmaSpeed(long completedBytes, long[] speedSample, double[] emaSpeed) {
         long now = System.nanoTime();
+        // 首次采样：仅记录基准值，不计算速率
+        if (speedSample[1] == 0 && completedBytes > 0) {
+            speedSample[0] = now;
+            speedSample[1] = completedBytes;
+            return "";
+        }
         long elapsed = now - speedSample[0];
         if (elapsed >= SAMPLE_INTERVAL_NANOS) {
             double instant = Math.max(0,
