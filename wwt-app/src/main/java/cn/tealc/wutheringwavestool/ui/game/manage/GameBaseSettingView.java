@@ -1,7 +1,7 @@
 package cn.tealc.wutheringwavestool.ui.game.manage;
 
 import atlantafx.base.theme.Styles;
-import cn.tealc.teafx.utils.message.MessageInfo;
+import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.model.GameEdition;
 import cn.tealc.wutheringwavestool.model.SourceType;
@@ -22,7 +22,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
 import org.kordamp.ikonli.javafx.FontIcon;
@@ -110,17 +109,8 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
 
     @FXML
     void chooseGameDirectory(ActionEvent event) {
-        DirectoryChooser chooser = new DirectoryChooser();
-        chooser.setTitle(LanguageManager.getString("ui.setting.file.game_dir.title"));
-        File current = currentDirectory(gameDirField.getText());
-        if (current != null) chooser.setInitialDirectory(current);
-        File selected = chooser.showDialog(gameDirField.getScene().getWindow());
-        if (selected == null) return;
-        if (!new File(selected, "Wuthering Waves.exe").isFile()) {
-            NotificationManager.message(MessageInfo.warning(LanguageManager.getString("ui.game_manager.message01")));
-            return;
-        }
-        viewModel.setGameDirectory(selected.toPath());
+        // 跳转到目录选择子页面，由 GameDirChooseView 负责目录校验和服务器来源自动检测
+        NotificationManager.publish(NotificationKey.GAME_MANAGE_TO_CHOOSE);
     }
 
     @FXML
@@ -195,12 +185,6 @@ public class GameBaseSettingView implements FxmlView<GameBaseSettingViewModel>, 
         chooser.setTitle(LanguageManager.getString(titleKey));
         chooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("可执行文件", "*.exe", "*.*"));
         return chooser.showOpenDialog(gameDirField.getScene().getWindow());
-    }
-
-    private static File currentDirectory(String path) {
-        if (path == null || path.isBlank()) return null;
-        File directory = new File(path);
-        return directory.isDirectory() ? directory : null;
     }
 
     private static boolean isCustomMode(ActionEvent event) {
