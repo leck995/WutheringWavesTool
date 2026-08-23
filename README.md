@@ -7,7 +7,7 @@
 [![Java](https://img.shields.io/badge/Java-25-orange.svg)](https://openjdk.org/)
 [![JavaFX](https://img.shields.io/badge/JavaFX-26-blue.svg)](https://openjfx.io/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](#感谢与支持)
-[![Release](https://img.shields.io/badge/Release-v1.5.2-red.svg)](https://github.com/leck995/WutheringWavesTool/releases)
+[![Release](https://img.shields.io/badge/Release-v1.6.0-red.svg)](https://github.com/leck995/WutheringWavesTool/releases)
 
 > 🌊 鸣潮助手是一款鸣潮的第三方 PC 端工具，可替代原生启动器，同时内置抽卡分析、游戏数据管理、资源更新等多个实用功能，致力于改善鸣潮的游戏体验与数据管理。支持国服与国际服。
 

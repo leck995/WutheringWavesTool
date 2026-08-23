@@ -6,7 +6,7 @@
 
     <groupId>cn.tealc</groupId>
     <artifactId>wuthering-waves-tool</artifactId>
-    <version>1.5.2</version>
+    <version>1.6.0</version>
     <packaging>pom</packaging>
     <name>WutheringWavesTool</name>
 

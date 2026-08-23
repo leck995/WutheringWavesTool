@@ -7,7 +7,7 @@
     <parent>
         <groupId>cn.tealc</groupId>
         <artifactId>wuthering-waves-tool</artifactId>
-        <version>1.5.2</version>
+        <version>1.6.0</version>
     </parent>
 
     <artifactId>wwt-game-resource-core</artifactId>
