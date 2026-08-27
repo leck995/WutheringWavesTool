@@ -7,17 +7,10 @@ import cn.tealc.wutheringwavestool.model.Message;
 
 import cn.tealc.wutheringwavestool.model.ResponseBody;
 import cn.tealc.wutheringwavestool.util.FileIO;
+import cn.tealc.wutheringwavestool.util.GachaLogUtil;
 import cn.tealc.wutheringwavestool.util.GameResourcesManager;
 import cn.tealc.wutheringwavestool.util.LanguageManager;
-import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.StandardCharsets;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import javafx.concurrent.Task;
 import org.slf4j.Logger;
@@ -87,9 +80,9 @@ public class CardPoolRequestTask extends Task<ResponseBody<Map<String, List<Card
             if (dir != null) {
                 File gameLogFile = GameResourcesManager.getGameLogFile();
                 if (gameLogFile.exists()) {
-                    String url = getLogFileUrl(gameLogFile);
+                    String url = GachaLogUtil.getLogFileUrl(gameLogFile);
                     if (url != null){
-                        params = getParamFromUrl(url);
+                        params = GachaLogUtil.getParamFromUrl(url);
                         Map<String, List<CardInfo>> data = getData(params);
                         ResponseBody<Map<String, List<CardInfo>>> responseBody = new ResponseBody<>();
                         responseBody.setData(data);
@@ -339,71 +332,6 @@ public class CardPoolRequestTask extends Task<ResponseBody<Map<String, List<Card
             mapper.writerWithDefaultPrettyPrinter().writeValue(dateJson,params);
         } catch (IOException e) {
             throw new RuntimeException(e);
-        }
-    }
-
-    /**
-     * 解密日志文件并从中提取卡池URL
-     */
-    private String getLogFileUrl(File file) {
-        String decrypted = decryptLog(file);
-        if (decrypted == null) {
-            return null;
-        }
-        Pattern pattern = Pattern.compile("https.*/aki/gacha/index.html#/record[?=&\\w\\-]+");
-        Matcher matcher = pattern.matcher(decrypted);
-        String lastMatch = null;
-        while (matcher.find()) {
-            lastMatch = matcher.group(0);
-        }
-        return lastMatch;
-    }
-
-    /**
-     * 从卡池URL中提取请求参数
-     */
-    private Map<String, String> getParamFromUrl(String row) {
-        Map<String, String> parameters = new HashMap<>();
-        String paramRow = row.substring(row.indexOf("?") + 1);
-        String[] strings = paramRow.split("&");
-
-        for (String string : strings) {
-            String[] split = string.split("=");
-            switch (split[0]) {
-                case "player_id" -> parameters.put("playerId", split[1]);
-                case "record_id" -> parameters.put("recordId", split[1]);
-                case "resources_id" -> parameters.put("cardPoolId", split[1]);
-                case "gacha_type" -> parameters.put("cardPoolType", split[1]);
-                case "svr_id" -> parameters.put("serverId", split[1]);
-                case "lang" -> parameters.put("languageCode", split[1]);
-            }
-        }
-        return parameters;
-    }
-
-    /**
-     * 解密 Client.log 文件
-     */
-    private String decryptLog(File file) {
-        try (RandomAccessFile raf = new RandomAccessFile(file, "r");
-             FileChannel channel = raf.getChannel()) {
-            long fileSize = channel.size();
-            ByteBuffer buffer = ByteBuffer.allocate((int) fileSize);
-            channel.read(buffer);
-            buffer.flip();
-            byte[] bytes = buffer.array();
-            for (int i = 0; i < bytes.length; i++) {
-                int b = bytes[i] & 0xFF;
-                if (((b & 0x0F) % 2) == 1) {
-                    bytes[i] = (byte) (b ^ 0xA5);
-                } else {
-                    bytes[i] = (byte) (b ^ 0xEF);
-                }
-            }
-            return new String(bytes, StandardCharsets.UTF_8);
-        } catch (Exception e) {
-            LOG.error("解密日志文件失败: {}", e.getMessage(), e);
-            return null;
         }
     }
 
