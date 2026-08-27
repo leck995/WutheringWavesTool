@@ -506,8 +506,7 @@ public class MainView implements Initializable, FxmlView<MainViewModel> {
         StackPane view = (StackPane) viewTuple.getView();
         view.setBackground(bgPane02.getBackground());
 
-        //必须放在通知界面的后面
-        content.getChildren().add(content.getChildren().size() - 1, view);
+        content.getChildren().add(view);
         AnchorPaneUtil.setPosition(view, 0, 0, 0, 0);
     }
 
