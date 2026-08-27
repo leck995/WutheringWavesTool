@@ -50,6 +50,11 @@ public class AccountView implements FxmlView<AccountViewModel>, Initializable {
         MvvmFX.getNotificationCenter().publish(NotificationKey.DIALOG, viewTuple.getView(),viewTuple.getCodeBehind());
     }
 
+    @FXML
+    void openKujiequ(ActionEvent event) {
+        viewModel.openKujiequInWebView();
+    }
+
     class AccountCell extends ListCell<UserInfo> {
         private final Label userId=new Label();
         private final Label roleId=new Label();

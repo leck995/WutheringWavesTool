@@ -4,6 +4,7 @@ import cn.tealc.teafx.utils.message.MessageInfo;
 import cn.tealc.wutheringwavestool.base.NotificationKey;
 import cn.tealc.wutheringwavestool.base.NotificationManager;
 import cn.tealc.wutheringwavestool.service.UserInfoService;
+import cn.tealc.wutheringwavestool.service.WebKujiequManager;
 import cn.tealc.wutheringwavestool.ui.base.BaseViewModel;
 import com.google.inject.Inject;
 import com.kuro.kujiequ.KujiequManager;
@@ -27,6 +28,9 @@ public class AccountViewModel extends BaseViewModel {
 
     @Inject
     private KujiequManager kujiequManager;
+
+    @Inject
+    private WebKujiequManager webKujiequManager;
 
     private final ObservableList<UserInfo> accountList = FXCollections.observableArrayList();
 
@@ -89,6 +93,18 @@ public class AccountViewModel extends BaseViewModel {
                         NotificationManager.message(MessageInfo.error("获取用户信息失败")));
             }
         });
+    }
+
+
+    /**
+     * 在内嵌 WebView 手机窗中打开库街区
+     */
+    public void openKujiequInWebView() {
+        UserInfo mainUser = userInfoService.getMainUser();
+        if (mainUser != null) {
+            webKujiequManager.setUserInfo(mainUser);
+        }
+        webKujiequManager.openRoleBox();
     }
 
 

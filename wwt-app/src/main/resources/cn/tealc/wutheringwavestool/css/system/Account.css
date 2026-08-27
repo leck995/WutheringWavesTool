@@ -41,3 +41,18 @@
 .kujiequ-account .list-view .list-cell .delete-btn {
     -fx-padding: 2px;
 }
+
+.kujiequ-account-card {
+    -fx-background-color: -color-bg-default-90;
+    -fx-background-radius: 10px;
+    -fx-pref-width: 260px;
+}
+
+.kujiequ-account-card .label {
+    -fx-font-size: 12px;
+}
+
+.kujiequ-account-card .label:first-child {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
